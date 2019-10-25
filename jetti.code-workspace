@@ -9,8 +9,7 @@
 			"path": "ng8"
 		},
 		{
-			"name": "jetti-apps",
-			"path": "jetti-apps"
+			"path": "jetti-apps/finance"
 		}
 	]
 }
