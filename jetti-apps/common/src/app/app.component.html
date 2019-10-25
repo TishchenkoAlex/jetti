@@ -1,0 +1,26 @@
+<p-toast key="1"></p-toast>
+<p-toast key="-1"></p-toast>
+<div class="layout-wrapper" (click)="onLayoutClick()"
+    [ngClass]="{'menu-layout-static': !isOverlay(),
+                'menu-layout-overlay': isOverlay(),
+                'layout-menu-overlay-active': overlayMenuActive,
+                'menu-layout-horizontal': isHorizontal(),
+                'menu-layout-slim': isSlim(),
+                'layout-menu-static-inactive': staticMenuDesktopInactive,
+                'layout-menu-static-active': staticMenuMobileActive}">
+
+  <app-topbar></app-topbar>
+  <div class="layout-menu-container" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)">
+    <p-scrollPanel #layoutMenuScroller [style]="{height: '100%' }">
+      <div class="menu-scroll-content">
+        <app-inline-profile *ngIf="profileMode=='inline'&&!isHorizontal()"></app-inline-profile>
+        <app-menu [reset]="resetMenu"></app-menu>
+      </div>`
+    </p-scrollPanel>
+  </div>
+
+  <div class="layout-main">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

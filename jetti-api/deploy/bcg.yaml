@@ -1,0 +1,77 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: bcg
+  labels:
+    app: bcg
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bcg
+        tier: web
+    spec:
+      containers:
+        - name: jetti
+          image: eu.gcr.io/jetti-pg/jetti
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PORT
+              value: "1433"
+            - name: DB_HOST
+              value: mssql
+            - name: DB_NAME
+              value: bcg
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-db-credentials
+                  key: password
+            - name: DB_ACCOUNTS_HOST
+              value: mssql
+            - name: DB_ACCOUNTS_NAME
+              value: accounts
+            - name: DB_ACCOUNTS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-credentials
+                  key: username
+            - name: DB_ACCOUNTS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: account-db-credentials
+                  key: password
+            - name: REDIS_DB_HOST
+              value: redis-master
+            - name: JTW_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-key
+                  key: JTW_KEY
+            - name: REFRESH_ID
+              value: "3"
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bcg
+  labels:
+    app: bcg
+spec:
+  type: NodePort
+  sessionAffinity: ClientIP
+  selector:
+    app: bcg
+  ports:
+  - port: 8080
+    targetPort: 8080

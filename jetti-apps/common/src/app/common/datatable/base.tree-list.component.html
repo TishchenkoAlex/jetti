@@ -1,0 +1,31 @@
+<div style="width: 300px; margin-right: 2px">
+  <p-toolbar>
+    <div class="ui-toolbar-group-left">
+      <button pButton type="button" icon="pi pi-plus" class="ui-button-success" (click)="add()"
+        [disabled]="(lds.busy$ | async)"></button>
+      <button pButton type="button" icon="fa fa-pencil-square-o" class="ui-button-secondary" (click)="open()"
+        [disabled]="(lds.busy$ | async)" *ngIf="selection?.data?.id"></button>
+      <button pButton type="button" icon="pi pi-clone" class="ui-button-secondary" (click)="copy()"
+        [disabled]="(lds.busy$ | async)" *ngIf="selection?.data?.id"></button>
+      <button pButton type="button" icon="pi pi-trash" class="ui-button-danger" (click)="delete()"
+        *ngIf="selection?.data?.id"></button>
+    </div>
+  </p-toolbar>
+
+  <p-treeTable [value]="treeNodes$ | async" [scrollable]="true" [scrollHeight]="scrollHeight" selectionMode="single"
+    dataKey="id" [(selection)]="selection" (onNodeSelect)="onNodeSelect($event)">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>description</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+      <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+        <td style="width: 500px">
+          <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+          {{rowData.description}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+</div>

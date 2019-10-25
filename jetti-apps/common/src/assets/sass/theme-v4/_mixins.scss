@@ -1,0 +1,14 @@
+@import '../_mixins';
+
+@mixin overlay-shadow() {}
+@mixin input-shadow() {}
+
+@mixin focused-input() {
+    border: 1px solid $inputFocusBorderColor;
+    outline: 0;
+    @include shadow(0 0 0 0.2rem $inputFocusBorderShadowColor);
+}
+
+@mixin overlay() {
+    border: 1px solid $overlayBorderColor;
+}

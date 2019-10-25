@@ -1,0 +1,66 @@
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton type="button" icon="pi pi-plus" class="ui-button-success" (click)="add()"></button>
+    <button pButton type="button" icon="pi pi-clone" class="ui-button-secondary" (click)="copy()"
+      *ngIf="selection?.length === 1"></button>
+    <button pButton type="button" icon="pi pi-trash" class="ui-button-danger" (click)="delete()"
+      *ngIf="selection?.length > 0"></button>
+  </div>
+</p-toolbar>
+
+<p-table [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selection"
+  dataKey="index" [scrollable]="true" (onEditComplete)="onEditComplete($event)" (onEditCancel)="onEditCancel($event)"
+  (onEditInit)="onEditInit($event)">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th [pSortableColumn]="col.field" *ngFor="let col of columns" [ngStyle]="col.style">
+        {{col.label}}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData>
+    <tr [pSelectableRow]="rowData">
+      <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field">
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
+          </ng-template>
+          <ng-template pTemplate="output">
+            <span [ngSwitch]="col.type">
+              <span *ngSwitchCase="'date'">{{ getControlValue(rowData.index, col.field, col.type) }}</span>
+              <span *ngSwitchCase="'datetime'">{{ getControlValue(rowData.index, col.field, col.type) }}</span>
+              <span *ngSwitchCase="'number'">{{getControl(rowData.index).get(col.field)?.value | number:'1.2-2'}}</span>
+              <span *ngSwitchCase="'script'">{{getControl(rowData.index).get(col.field)?.value}}</span>
+              <span *ngSwitchCase="'boolean'">
+                <i
+                  [class]="getControl(rowData.index).get(col.field)?.value ? 'fa fa-check-square' : 'fa fa-square-o'"></i>
+              </span>
+              <span *ngSwitchDefault>{{ getControlValue(rowData.index, col.field, col.type) }}
+              </span>
+            </span>
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td></td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <tr *ngIf="showTotals" style="height: 24px">
+      <th *ngFor="let col of columns" [ngStyle]="col.style">
+        <span [ngSwitch]="col.type" *ngIf="col.totals">
+          <span *ngSwitchCase="'number'" style="padding-right: 5px">
+            {{calcTotals(col.field) | number:'1.2-2'}}
+          </span>
+          <span *ngSwitchDefault></span>
+        </span>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+</p-table>

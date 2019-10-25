@@ -1,0 +1,19 @@
+<!-- <j-tree-list #tl docType="Catalog.Product"></j-tree-list> -->
+<div *ngIf="auth.isLoggedIn$ | async" style="height: calc(100vh - 180px)">
+  <iframe tru width="100%" height="100%" [src]="(auth.url$ | async)" frameborder="0" allowFullScreen="true"></iframe>
+</div>
+<form *ngIf="auth.isLoggedOut$ | async" #f="ngForm" (ngSubmit)="login(f.value.email, f.value.password)">
+  <div class="card login-panel ui-fluid">
+    <div class="login-panel-content">
+      <div class="ui-g">
+        <div class="ui-g-3" style="text-align:left;" style="cursor: pointer;">
+          <img src="/assets/layout/images/login/icon-login.svg" (click)="login(f.value.email, f.value.password)"/>
+        </div>
+        <div class="ui-g-9" style="text-align:right;">
+          <h2 class="welcome-text">Welcome Guest</h2>
+          <span class="guest-sign-in">Sign in to Jetti apps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

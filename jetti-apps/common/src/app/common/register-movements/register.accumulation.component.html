@@ -1,0 +1,29 @@
+<!-- <div style="max-height: 500px; overflow: auto; "> -->
+<p-table [value]="movements$ | async" selectionMode="single" [resizableColumns]="true" [(selection)]="selection">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 24px; text-align: center"></th>
+      <th pResizableColumn pSortableColumn="date" style="width: 150px; text-align: center">date<p-sortIcon field="date"></p-sortIcon></th>
+      <th pResizableColumn pSortableColumn="company" style="width: 150px; text-align: center">company<p-sortIcon field="company"></p-sortIcon></th>
+      <th pResizableColumn [pSortableColumn]="column" *ngFor="let column of (additionalColumns$ | async)" 
+        style="text-align: center; width: 200px">{{column}}
+        <p-sortIcon [field]="column"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData>
+    <tr [pSelectableRow]="rowData">
+      <td style="width: 24px; text-align: center">
+        <i *ngIf="rowData['kind']" class="fa fa-plus" style="color: #5cb85c"></i>
+        <i *ngIf="!rowData['kind']" class="fa fa-minus" style="color: #d9534f"></i>
+      </td>
+      <td style="width: 150px; text-align: center">{{rowData.date | date: 'dd.MM.y HH:mm:ss'}}</td>
+      <td style="width: 150px; text-align: center">{{rowData.company.value}}</td>
+      <td *ngFor="let column of (additionalColumns$ | async)" style="text-align: center; width: 200px">
+        {{ rowData[column]?.value === null ? 'EMPTY' : rowData[column]?.value || rowData[column] }}
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>

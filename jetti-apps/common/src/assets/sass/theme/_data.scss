@@ -1,0 +1,905 @@
+body {
+    .ui-paginator {
+        background-color: $paginatorBgColor;
+        border-color: $headerBorderColor;
+
+        .ui-paginator-first,.ui-paginator-prev,.ui-paginator-next,.ui-paginator-last {
+            padding: .125em .375em;
+            color: $primaryColor;
+            min-width: 34px;
+            min-height: 34px;
+            border: 1px solid $datatableCellBorderColor;
+            margin: 0;
+            vertical-align: top;
+            @include border-radius(0);
+            border-left: 0 none;
+            border-right: 0 none;
+
+            &:not(.ui-state-disabled):not(.ui-state-active):hover {
+                background-color: $datatableHoverBgColor;
+            }
+
+            &.ui-state-disabled {
+                @include opacity(1);
+                background-color: $disabledColor;
+            }
+
+            &:before {
+                position: relative;
+            }
+
+            &:not(.ui-state-disabled):focus {
+                background-color: $datatableHoverBgColor;
+                outline: 0 none;
+            }
+        }
+
+        .ui-paginator-first {
+            background-color: #ffffff;
+            border-right: 1px solid $datatableCellBorderColor;
+            border-left: 1px solid $datatableCellBorderColor;
+            @include border-radius-left($borderRadius);
+            margin-right: -4px;
+
+            &:before {
+                line-height: 2em;
+            }
+        }
+
+        .ui-paginator-prev {
+            background-color: #ffffff;
+            border-right: 1px solid $datatableCellBorderColor;
+            border-left: 1px solid $datatableCellBorderColor;
+            margin-right: -4px;
+
+            &:before {
+                line-height: 2em;
+            }
+        }
+
+        .ui-paginator-next {
+            background-color: #ffffff;
+            border-right: 1px solid $datatableCellBorderColor;
+            border-left: 1px solid $datatableCellBorderColor;
+            margin-left: -4px;
+
+            &:before {
+                line-height: 2em;
+            }
+        }
+
+        .ui-paginator-last {
+            background-color: #ffffff;
+            border-right: 1px solid $datatableCellBorderColor;
+            border-left: 1px solid $datatableCellBorderColor;
+            @include border-radius-right($borderRadius);
+            margin-left: -4px;
+
+            &:before {
+                line-height: 2em;
+            }
+        }
+
+        .ui-paginator-pages {
+            padding: 0;
+            vertical-align: middle;
+            display: inline-block;
+            margin: 0;
+
+            .ui-paginator-page {
+                width: auto;
+                padding: 6px 12px;
+                margin-right: 0;
+                margin-left: 0;
+                border: 1px solid $datatableCellBorderColor;
+                background-color: #ffffff;
+                border-right: 0 none;
+                color: $primaryColor;
+                min-width: 34px;
+                min-height: 34px;
+                @include border-radius(0);
+
+                &.ui-state-active {
+                    background-color: $primaryColor;
+                    color: $primaryTextColor;
+                    border-color: $primaryColor;
+
+                    &:focus {
+                        @include focused-input();
+                        background-color: $primaryColor;
+                    }
+                }
+
+                &:not(.ui-state-active):hover, &:focus {
+                    background-color: $datatableHoverBgColor;
+                    outline: 0 none;
+                }
+            }
+        }
+    }
+
+    .ui-table {
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+        .ui-table-caption,
+        .ui-table-summary {
+            padding: $headerPadding;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .ui-table-caption {
+            border-bottom: 0 none;
+        }
+
+        .ui-table-summary {
+            border-top: 0 none;
+        }
+
+        .ui-table-thead > tr > th,
+        .ui-table-tbody > tr > td,
+        .ui-table-tfoot > tr > td {
+            padding: $datatableCellPadding;
+        }
+
+        .ui-table-thead > tr > th,
+        .ui-table-tfoot > tr > td {
+            color: $headerTextColor;
+            border: 1px solid $datatableCellBorderColor;
+        }
+
+        p-sortIcon {
+            vertical-align: baseline;
+        }
+
+        .ui-sortable-column {
+            color: $textColor;
+
+            .ui-sortable-column-icon {
+                color: $textSecondaryColor;
+            }
+
+            &:not(.ui-state-highlight):hover {
+                @include list-item-hover();
+
+                .ui-sortable-column-icon {
+                    @include list-item-hover();
+                }
+            }
+
+            &.ui-state-highlight {
+                background-color: $primaryColor;
+                color: $primaryTextColor;
+                border-top-color: $primaryColor;
+
+                .ui-sortable-column-icon {
+                    color: $primaryTextColor;
+                }
+            }
+
+            .ui-sortable-column-icon {
+                vertical-align: middle;
+            }
+        }
+
+        .ui-table-tbody {
+            > tr {
+                background: $contentBgColor;
+
+                > td {
+                    background: inherit;
+                    border: 1px solid $datatableCellBorderColor;
+                }
+
+                &.ui-state-highlight {
+                    background-color: $primaryColor;
+                    color: $primaryTextColor;
+                }
+
+                &.ui-contextmenu-selected {
+                    background-color: lighten($primaryColor, 20%);
+                    color: $primaryTextColor;
+                }
+            }
+
+            > tr:nth-child(even) {
+                background-color: $datableEvenRowBgColor;
+
+                &.ui-state-highlight {
+                    background-color: $primaryColor;
+                    color: $primaryTextColor;
+                }
+
+                &.ui-contextmenu-selected {
+                    background-color: lighten($primaryColor, 20%);
+                    color: $primaryTextColor;
+                }
+            }
+        }
+
+        &.ui-table-hoverable-rows {
+            .ui-table-tbody > tr.ui-selectable-row:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
+                cursor: pointer;
+                @include list-item-hover();
+            }
+        }
+    }
+
+    .ui-datatable {
+        .ui-datatable-header, .ui-datatable-footer {
+            padding: $headerPadding;
+        }
+
+        .ui-datatable-header {
+            @include border-radius-top($borderRadius);
+        }
+
+        .ui-datatable-footer {
+            @include border-radius-bottom($borderRadius);
+        }
+
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+
+        .ui-datatable-thead {
+            > tr {
+                > th {
+                    background: #ffffff;
+                    padding: $datatableCellPadding;
+                    border-color: $datatableCellBorderColor;
+                    outline: 0 none;
+                    border-bottom-width: 2px;
+
+                    &.ui-selection-column {
+                        padding: 0.286em 0.857em;
+                    }
+
+                    &.ui-sortable-column:not(.ui-state-active):hover {
+                        background-color:$datatableHoverBgColor;
+                    }
+
+                    &.ui-state-active {
+                        background-color: $highlightBgColor;
+                        color: $highlightTextColor;
+                        border-color: darken($highlightBgColor, 5%);
+                    }
+
+                    .ui-column-title {
+                        font-weight: 700;
+                    }
+
+                    .ui-sortable-column-icon {
+                        margin: -2px 0 0 4px;
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+
+        .ui-datatable-tfoot {
+            > tr {
+                > td {
+                    font-weight: 700;
+                    background-color: #ffffff;
+                    border-color: $datatableCellBorderColor;
+                    padding: $datatableCellPadding;
+                }
+            }
+        }
+
+        .ui-datatable-data {
+            tr {
+                background-color: $contentBgColor;
+                border-color: $datatableCellBorderColor;
+
+                &.ui-rowgroup-header {
+                    background-color: $headerBgColor;
+
+                    .pi {
+                        color: $headerIconColor;
+
+                        &:hover {
+                            color: $headerIconHoverColor;
+                        }
+                    }
+                }
+
+                &.ui-widget-header {
+                    td {
+                        border-color: $datatableCellBorderColor;
+                    }
+                }
+
+                &.ui-datatable-even {
+                    background-color: $datableEvenRowBgColor;
+
+                    &.ui-state-highlight {
+                        background-color: $highlightBgColor;
+                        color: $highlightTextColor;
+                        border-color: darken($highlightBgColor,5%);
+                    }
+                }
+
+                &.ui-datatable-odd {
+                    background-color: $primaryTextColor;
+
+                    &.ui-state-highlight {
+                        background-color: $highlightBgColor;
+                        color: $highlightTextColor;
+                        border-color: darken($highlightBgColor,5%);
+                    }
+                }
+
+                &.ui-state-highlight {
+                    border-color: darken($primaryColor,5%);
+                }
+
+                td {
+                    padding: $datatableCellPadding;
+
+                    &.ui-selection-column {
+                        padding: 0.286em 0.857em;
+                    }
+
+                    .ui-row-toggler {
+                        color: $textSecondaryColor;
+                        @include transition(color .3s);
+
+                        &:hover {
+                            color: $textColor;
+                        }
+                    }
+                }
+
+                &.ui-widget-header {
+                    border: 1px solid $headerBorderColor;
+
+                    a {
+                        color: $headerIconColor;
+                        @include transition(color .3s);
+
+                        &:hover {
+                            color: $headerIconHoverColor;
+                        }
+                    }
+                }
+            }
+
+            &.ui-datatable-hoverable-rows {
+                > tr.ui-widget-content:not(.ui-state-highlight):hover {
+                    cursor: pointer;
+                    background-color: $datatableHoverBgColor;
+                }
+            }
+        }
+
+        .ui-datatable-scrollable-header,
+        .ui-datatable-scrollable-footer {
+            background-color: $headerBgColor;
+
+            .ui-datatable-scrollable-header-box {
+                td {
+                    color: $textColor;
+                }
+            }
+        }
+    }
+
+    .ui-dataview {
+
+        .ui-dataview-content {
+            border-bottom: none;
+        }
+
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+    }
+
+    .ui-datagrid {
+        .ui-datagrid-header {
+            padding: $headerPadding;
+        }
+
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+    }
+
+    .ui-datalist {
+        .ui-datalist-header {
+            padding: $headerPadding;
+        }
+
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+    }
+
+    .ui-datascroller {
+        .ui-datascroller-header,
+        .ui-datascroller-footer {
+            padding: $headerPadding;
+        }
+    }
+
+    .ui-virtualscroller {
+        .ui-virtualscroller-list {
+            li {
+                border-bottom: 1px solid $contentBorderColor;
+            }
+        }
+    }
+
+    .ui-picklist {
+        .ui-picklist-buttons {
+            padding: $contentPadding;
+
+            button {
+                font-size: $fontSize + 2;
+            }
+        }
+
+        .ui-picklist-caption {
+            padding: $headerPadding;
+            @include border-radius-top($borderRadius);
+        }
+
+        .ui-picklist-filter-container {
+            .pi {
+                color: $textSecondaryColor;
+                margin-top: -.5em;
+                margin-left: 0.286em;
+            }
+        }
+
+        .ui-picklist-list {
+            padding: 0.357em 0;
+
+            .ui-picklist-item {
+                padding: $listItemPadding;
+                margin: 0;
+                @include border-radius(0);
+
+                &:not(.ui-state-highlight):hover {
+                    @include list-item-hover();
+                }
+
+                &.ui-state-highlight {
+                    background-color: $highlightBgColor;
+                }
+            }
+        }
+    }
+
+    .ui-orderlist {
+        .ui-orderlist-controls {
+            margin-right: 10px;
+
+            button {
+                font-size: $fontSize + 2;
+            }
+        }
+
+        .ui-orderlist-caption {
+            padding: $headerPadding;
+            @include border-radius-top($borderRadius);
+        }
+
+        .ui-orderlist-filter-container {
+            .pi {
+                margin-top: -.5em;
+                margin-left: 0.286em;
+                color: $textSecondaryColor;
+            }
+        }
+
+        .ui-orderlist-list {
+            padding: 0.357em 0;
+
+            .ui-orderlist-item {
+                padding: $listItemPadding;
+                margin: 0;
+                @include border-radius(0);
+
+                &:not(.ui-state-highlight):hover {
+                    @include list-item-hover();
+                }
+
+                &.ui-state-highlight {
+                    background-color: $highlightBgColor;
+                }
+            }
+        }
+
+        &.ui-grid-responsive {
+            .ui-grid-row {
+                .ui-orderlist-controls {
+                    margin-right: 0;
+                    padding-right: 10px;
+                }
+            }
+        }
+    }
+
+    .ui-carousel {
+        padding: 0;
+
+        .ui-carousel-header {
+            padding: $headerPadding;
+            margin: 0;
+            border: 0 none;
+            border-bottom: 1px solid $headerBorderColor;
+            @include border-radius(0);
+
+            .ui-carousel-header-title {
+                padding: 0;
+            }
+        }
+
+        .ui-carousel-footer {
+            padding: $headerPadding;
+            border: 0 none;
+            border-top: 1px solid $headerBorderColor;
+            margin: 0;
+            @include border-radius(0);
+        }
+
+        .ui-carousel-button {
+            margin-top: .4em;
+            @include transition(color .3s);
+            color: $headerIconColor;
+
+            &:not(.ui-state-disabled):hover {
+                color: $headerIconHoverColor;
+            }
+        }
+
+        .ui-carousel-page-links {
+            margin-top: .4em;
+
+            .ui-carousel-page-link {
+                color: $headerIconColor;
+                @include transition(color $transitionDuration);
+
+                &:hover {
+                    color: darken($headerIconColor, 10%);
+                }
+
+                &.pi-circle-off {
+                    color: $headerIconColor;
+                }
+
+                &.pi-circle-on {
+                    color: $headerIconColor;
+                }
+            }
+        }
+    }
+
+    .ui-organizationchart {
+        .ui-organizationchart-node-content {
+            &.ui-organizationchart-selectable-node:not(.ui-state-highlight):hover {
+                @include list-item-hover();
+            }
+        }
+        .ui-organizationchart-line-down {
+            background-color: darken($contentBorderColor, 10%);
+        }
+
+        .ui-organizationchart-line-left {
+            border-right: 1px solid darken($contentBorderColor, 10%);
+        }
+
+        .ui-organizationchart-line-right {
+
+        }
+
+        .ui-organizationchart-line-top {
+            border-top: 1px solid darken($contentBorderColor, 10%);
+        }
+
+        .ui-organizationchart-node-content {
+            border-color: darken($contentBorderColor, 10%);
+        }
+
+        .ui-organizationchart-node-content .ui-node-toggler {
+            color: $primaryColor;
+            bottom: -.7em;
+            margin-left: -.46em;
+        }
+    }
+
+    .ui-treetable {
+        .ui-paginator {
+            padding: $headerPadding;
+        }
+        .ui-treetable-caption,
+        .ui-treetable-summary {
+            padding: $headerPadding;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .ui-treetable-caption {
+            border-bottom: 0 none;
+        }
+
+        .ui-treetable-summary {
+            border-top: 0 none;
+        }
+
+        .ui-treetable-thead > tr > th,
+        .ui-treetable-tbody > tr > td,
+        .ui-treetable-tfoot > tr > td {
+            padding: $datatableCellPadding;
+        }
+
+        .ui-treetable-thead > tr > th,
+        .ui-treetable-tfoot > tr > td {
+            color: $headerTextColor;
+            border: 1px solid $datatableCellBorderColor;
+        }
+
+        .ui-treetable-thead tr .ui-inputtext {
+            width: 100%;
+        }
+
+        .ui-treetable-scrollable-header {
+            border: none;
+        }
+
+        .ui-treetable-loading-content {
+            .pi-spin {
+                -webkit-animation: 2s linear infinite fa-spin;
+                animation: 2s linear infinite fa-spin;
+                color: #ffffff;
+            }
+        }
+
+        p-treeTableToggler {
+            vertical-align: middle;
+        }
+
+        .ui-sortable-column {
+            color: $textColor;
+
+            .ui-sortable-column-icon {
+                color: $textSecondaryColor;
+            }
+
+            &:not(.ui-state-highlight):hover {
+                @include list-item-hover();
+
+                .ui-sortable-column-icon {
+                    @include list-item-hover();
+                }
+            }
+
+            &.ui-state-highlight {
+                background-color: $primaryColor;
+                color: $primaryTextColor;
+                border-top-color: $primaryColor;
+
+                .ui-sortable-column-icon {
+                    color: $primaryTextColor;
+                }
+            }
+
+            .ui-sortable-column-icon {
+                vertical-align: middle;
+            }
+        }
+
+        .ui-treetable-tbody {
+            > tr {
+                background: $contentBgColor;
+
+                > td {
+                    background: inherit;
+                    border: 1px solid $datatableCellBorderColor;
+
+                    .ui-treetable-toggler {
+                        color: $textSecondaryColor;
+
+                        .pi-chevron-down:before {
+                            content: "\e906";
+                        }
+
+                        .pi-chevron-right:before {
+                            content: "\e905";
+                        }
+
+                        .pi.pi-chevron-down {
+                            vertical-align: middle;
+                        }
+                    }
+
+                    .ui-treetable-chkbox {
+                        vertical-align: middle;
+                        margin-right: .4em;
+                    }
+                }
+
+                &.ui-state-highlight {
+                    background-color: $primaryColor;
+                    color: $primaryTextColor;
+
+                    > td {
+                        background: inherit;
+                        border: $dividerColor;
+
+                        .ui-treetable-toggler {
+                            color: $primaryTextColor;
+                        }
+                    }
+
+                    &.ui-contextmenu-selected {
+                        background-color: $primaryColor;
+                        color: $primaryTextColor;
+                    }
+                }
+            }
+        }
+
+        &.ui-treetable-hoverable-rows {
+            .ui-treetable-tbody > tr:not(.ui-state-highlight):not(.ui-contextmenu-selected):hover {
+                cursor: pointer;
+                @include list-item-hover();
+            }
+        }
+    }
+
+    .ui-tree {
+        padding: .25em .5em;
+
+        .ui-treenode {
+            padding: .15em 0;
+
+            .ui-treenode-content {
+                padding: 0 0 .25em 0;
+
+                .ui-tree-toggler {
+                    font-size: $fontSize + 2;
+                    vertical-align: middle;
+                    display: inline-block;
+                    float: none;
+                    margin: 0;
+                }
+
+                .ui-treenode-icon {
+                    vertical-align: middle;
+                    display: inline-block;
+                    margin: 0;
+                    font-size: $fontSize + 2;
+                }
+
+                .ui-treenode-label {
+                    margin: 0;
+                    vertical-align: middle;
+                    display: inline-block;
+                    padding: 0 .25em;
+
+                    &.ui-state-highlight {
+                        background-color: $highlightBgColor;
+                    }
+                }
+
+                .ui-chkbox {
+                    margin: 0 .25em;
+
+                    .ui-chkbox-icon {
+                        margin: 0;
+                    }
+                }
+
+                &.ui-treenode-selectable {
+                    .ui-treenode-label:not(.ui-state-highlight):hover {
+                        @include list-item-hover();
+                    }
+                }
+
+                > span {
+                    line-height: inherit;
+                }
+
+                &.ui-treenode-dragover {
+                    @include list-item-hover();
+                }
+            }
+        }
+
+        &.ui-tree-horizontal {
+            padding: .85em 0;
+
+            .ui-treenode {
+                background: url("../layout/images/tth-connector.png") repeat-x scroll center center transparent;
+
+                .ui-treenode-content {
+                    padding: $contentPadding;
+                    background-color: $contentBgColor;
+                    border: 1px solid $contentBorderColor;
+
+                    &.ui-state-highlight {
+                        @include list-item-highlight();
+                    }
+
+                    .ui-treenode-label:not(.ui-state-highlight):hover {
+                        background-color: inherit;
+                        color: inherit;
+                    }
+
+                    &.ui-treenode-selectable:not(.ui-state-highlight):hover {
+                        @include list-item-hover();
+                    }
+                }
+            }
+
+            .ui-treenode-connector-line {
+                background: url("../layout/images/tth-connector.png") repeat-y scroll 0 0 transparent
+            }
+        }
+    }
+
+    .fc {
+        .fc-toolbar {
+            .fc-button-group {
+                .ui-state-active {
+                    background-color: darken($primaryColor,10%);
+                    @include shadow(inset 0 3px 5px rgba(0,0,0,.125));
+                }
+            }
+
+            .ui-icon-circle-triangle-e {
+                background: none !important;
+                font-family: 'primeicons';
+                speak: none;
+                font-style: normal;
+                font-weight: normal;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 1;
+                display: inline-block;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-indent: 0px !important;
+                text-align: center;
+
+                &:before {
+                    content: "\e901";
+                }
+                margin-top: 3px;
+            }
+
+            .ui-icon-circle-triangle-w {
+                background: none !important;
+                font-family: 'primeicons';
+                speak: none;
+                font-style: normal;
+                font-weight: normal;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 1;
+                display: inline-block;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-indent: 0px !important;
+                text-align: center;
+
+                &:before {
+                    content: "\e900";
+                }
+                margin-top: 3px;
+            }
+        }
+
+        .fc-event-container {
+            .fc-event {
+                border-color: $primaryColor;
+                background-color: darken($primaryColor,5%);
+            }
+        }
+    }
+}

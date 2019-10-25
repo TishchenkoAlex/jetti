@@ -1,0 +1,78 @@
+#kubectl apply -f deploy/sqlserver.yaml
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mssql
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mssql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mssql
+        tier: sql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mssql
+        image: eu.gcr.io/jetti-pg/mssql
+        ports:
+        - containerPort: 1433
+        #resources:
+          #requests:
+            #cpu: 1
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mssql-db-credentials
+              key: password
+        - name: MSSQL_PID
+          value: Enterprise
+        volumeMounts:
+        - name: mssqldb
+          mountPath: /var/opt/mssql
+      volumes:
+      - name: mssqldb
+        persistentVolumeClaim:
+          claimName: mssql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql
+spec:
+  selector:
+    app: mssql
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-lb
+spec:
+  selector:
+    app: mssql
+  ports:
+    - protocol: TCP
+      port: 14330
+      targetPort: 1433
+  type: LoadBalancer

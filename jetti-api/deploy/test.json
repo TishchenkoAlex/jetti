@@ -1,0 +1,10 @@
+{
+    "FullName": "Федоров Евлампий Вениаминович",
+    "Gender": true,
+    "Product": {
+        "id": null,
+        "code": "",
+        "type": "datetime",
+        "value": "2021-05-09T08:00:00.000Z"
+    }
+}

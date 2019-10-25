@@ -1,0 +1,61 @@
+<div [formGroup]="form" [ngSwitch]="control.controlType" *ngIf="!control.hidden" [style.marginTop]="marginTop()" class="ui-fluid">
+  <div *ngSwitchCase="'string'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    <input [required]="control.required" pInputText [formControlName]="control.key" [readonly]="control.readOnly" autocomplete="off"
+      (focus)="$event.target.select()" spellcheck="false">
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <div *ngSwitchCase="'enum'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    {{ control.value  }}
+    <p-dropdown [options]="control.valuesOptions" [formControlName]="control.key" [showClear]="true" [readonly]="control.readOnly" [required]="control.required"></p-dropdown>
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <div *ngSwitchCase="'textarea'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    <textarea [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly" (focus)="$event.target.select()"
+      spellcheck="false">
+    </textarea>
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <div *ngSwitchCase="'number'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    <input [required]="control.required" pInputText type="number" [formControlName]="control.key" [readonly]="control.readOnly"
+      autocomplete="off" (focus)="$event.target.select()" [id]="control.key">
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <j-autocomplete-png #pc *ngSwitchCase="'autocomplete'" [required]="control.required" [formControlName]="control.key" [disabled]="control.readOnly"
+    [formControl]="form.controls[control.key]" [id]="control.key" [placeholder]="control.label" [hidden]="control.hidden" [type]="control.type"
+    [owner]="control.owner" [showLabel]="control.showLabel" (focus)="pc.select()">
+  </j-autocomplete-png>
+
+  <div *ngSwitchCase="'date'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    <input pInputText class="calendar" [value]="dateTimeValue | date: 'yyyy-MM-dd'" [required]="control.required" [readonly]="control.readOnly"
+      autocomplete="off" (input)="parseDate($event.target.value)" (focus)="$event.target.select()" spellcheck="false" type="date"
+      [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }">
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <div *ngSwitchCase="'datetime'" [ngClass]="{'ui-float-label' : control.showLabel}">
+    <input pInputText class="calendar" [value]="dateTimeValue | date:'yyyy-MM-ddTHH:mm:ss'" step="1" [required]="control.required"
+      [readonly]="control.readOnly" autocomplete="off" (input)="parseDate($event.target.value)" (focus)="$event.target.select()"
+      spellcheck="false" type="datetime-local" [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }">
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+  </div>
+
+  <div *ngSwitchCase="'boolean'" [style.marginTop]="control.showLabel ? '27px': ''">
+    <p-checkbox *ngSwitchCase="'boolean'" binary="true" [label]="control.showLabel ? control.label: ''" [formControlName]="control.key"></p-checkbox>
+  </div>
+
+  <div *ngSwitchCase="'table'">
+    <div [formArrayName]="control.key">
+      <j-table-part-png [formGroup]="form.controls[control.key]" [control]="control"></j-table-part-png>
+    </div>
+  </div>
+
+  <div *ngSwitchCase="'script'">
+    <label *ngIf="control.showLabel" [for]="control.key">{{ control.label }}:</label>
+    <td-code-editor style="height: 200px" flex [language]="control.type" theme="vs" [ngStyle]="control.style" [formControlName]="control.key">
+    </td-code-editor>
+  </div>
+</div>

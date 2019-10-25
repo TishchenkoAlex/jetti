@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "jetti-api",
+			"path": "jetti-api"
+		},
+		{
+			"name": "ng8",
+			"path": "ng8"
+		},
+		{
+			"name": "jetti-apps",
+			"path": "jetti-apps"
+		}
+	]
+}
