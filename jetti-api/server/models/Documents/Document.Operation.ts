@@ -24,7 +24,7 @@ export class DocumentOperation extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Operation.Group', order: 5, label: 'Group', style: { display: 'none' } })
+  @Props({ type: 'Catalog.Operation.Group', required: true, order: 5, label: 'Group', style: { display: 'none' } })
   Group: Ref = null;
 
   @Props({

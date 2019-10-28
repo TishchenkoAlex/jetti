@@ -73,7 +73,7 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
     const AR = await lib.doc.byCode('Catalog.Balance', 'AR', tx);
     const INVENTORY = await lib.doc.byCode('Catalog.Balance', 'INVENTORY', tx);
 
-    const exchangeRate = await lib.info.sliceLast('ExchangeRates', this.date, this.company, 'Rate', { currency: this.currency }, tx) || 1;
+    const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx) || 1;
 
     // AR
     Registers.Accumulation.push(new RegisterAccumulationAR(true, {

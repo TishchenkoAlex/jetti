@@ -34,39 +34,31 @@ export class DocService {
 
   constructor(public api: ApiService, private messageService: MessageService, public confirmationService: ConfirmationService) { }
 
-  save(doc: DocumentBase, close: boolean = false, mode: 'post' | 'save' = 'save') {
-    return this.api.postDoc(doc, mode).toPromise()
-      .then(savedDoc => {
-        this.openSnackBar('success', savedDoc.description, savedDoc.posted ? 'posted' : 'unposted');
-        const subject$ = close ? this._saveClose$ : this._save$;
-        subject$.next(savedDoc);
-        return true;
-      });
+  async save(doc: DocumentBase, close: boolean = false, mode: 'post' | 'save' = 'save') {
+    const savedDoc = await this.api.postDoc(doc, mode).toPromise();
+    this.openSnackBar('success', savedDoc.description, savedDoc.posted ? 'posted' : 'unposted');
+    const subject$ = close ? this._saveClose$ : this._save$;
+    subject$.next(savedDoc);
+    return true;
   }
 
-  delete(id: string) {
-    return this.api.deleteDoc(id).toPromise()
-      .then(deletedDoc => {
-        this._delete$.next(deletedDoc);
-        this.openSnackBar('success', deletedDoc.description, deletedDoc.deleted ? 'deleted' : 'undeleted');
-        return true;
-      });
+  async delete(id: string) {
+    const deletedDoc = await this.api.deleteDoc(id).toPromise();
+    this._delete$.next(deletedDoc);
+    this.openSnackBar('success', deletedDoc.description, deletedDoc.deleted ? 'deleted' : 'undeleted');
+    return true;
   }
 
-  post(id: string) {
-    return this.api.postDocById(id).toPromise()
-      .then(result => {
-        this._post$.next(result);
-        return true;
-      });
+  async post(id: string) {
+    const result = await this.api.postDocById(id).toPromise();
+    this._post$.next(result);
+    return true;
   }
 
-  unpost(id: string) {
-    return this.api.unpostDocById(id).toPromise()
-      .then(result => {
-        this._unpost$.next(result);
-        return true;
-      });
+  async unpost(id: string) {
+    const result = await this.api.unpostDocById(id).toPromise();
+    this._unpost$.next(result);
+    return true;
   }
 
   openSnackBar(severity: string, summary: string, detail: string) {

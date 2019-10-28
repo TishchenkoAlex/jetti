@@ -44,6 +44,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
         this.dataSource = doc[this.control.key];
         this.cd.detectChanges();
       });
+    console.log(this.control, this.formGroup);
   }
 
   getControl(i: number) {

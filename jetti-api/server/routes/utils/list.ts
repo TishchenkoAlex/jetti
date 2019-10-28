@@ -1,11 +1,11 @@
 // tslint:disable:prefer-const
 import { DocumentBase } from '../../models/document';
-import { sdb } from '../../mssql';
+import { MSSQL } from '../../mssql';
 import { DocListRequestBody, DocListResponse } from './../../models/api';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 
-export async function List(params: DocListRequestBody): Promise<DocListResponse> {
+export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => el.right);
   params.command = params.command || 'first';
   const direction = params.command !== 'prev';
@@ -17,7 +17,7 @@ export async function List(params: DocListRequestBody): Promise<DocListResponse>
 
   let row: DocumentBase | null = null;
 
-  if (params.id) { row = (await sdb.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList} d) d WHERE d.id = '${params.id}'`)); }
+  if (params.id) { row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList} d) d WHERE d.id = '${params.id}'`)); }
   if (!row && params.command !== 'last') params.command = 'first';
 
   params.order.forEach(el => el.field += (Props[el.field].type as string).includes('.') ? '.value' : '');
@@ -106,7 +106,7 @@ export async function List(params: DocListRequestBody): Promise<DocListResponse>
   } else
     query = `SELECT TOP ${params.count + 1} * FROM (${QueryList} d) d WHERE ${filterBuilder(params.filter)} ${orderbyAfter} `;
 
-  const data = await sdb.manyOrNone<any>(query);
+  const data = await tx.manyOrNone<any>(query);
   let result: any[] = [];
 
   const continuation = { first: null, last: null };

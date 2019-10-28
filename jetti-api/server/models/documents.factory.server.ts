@@ -1,4 +1,4 @@
-import { MSSQL, sdb } from '../mssql';
+import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
 import { createDocument, IRegisteredDocument } from './../models/documents.factory';
 import { calculateDescription, RefValue } from './api';
@@ -12,19 +12,21 @@ import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentOperationServer } from './Documents/Document.Operation.server';
 import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
 import { DocumentSettingsServer } from './Documents/Document.Settings.server';
+import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
 import { DocumentBaseServer, IFlatDocument } from './ServerDocument';
 
 export const RegisteredServerDocument: IRegisteredDocument<any>[] = [
+  { type: 'Catalog.Operation', Class: CatalogOperationServer },
+  { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
   { type: 'Document.PriceList', Class: DocumentPriceListServer },
-  { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Settings', Class: DocumentSettingsServer },
-  { type: 'Catalog.Operation', Class: CatalogOperationServer },
+  { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
 ];
 
 export async function createDocumentServer<T extends DocumentBaseServer | DocumentBase>
-  (type: DocTypes, document?: IFlatDocument, tx = sdb) {
+  (type: DocTypes, document: IFlatDocument, tx: MSSQL) {
   let result: T;
   const doc = RegisteredServerDocument.find(el => el.type === type);
   if (doc) {
@@ -63,8 +65,8 @@ export async function createDocumentServer<T extends DocumentBaseServer | Docume
   if (result instanceof DocumentOperation && document && document.id) {
     result.f1 = null; result.f2 = null; result.f3 = null;
     if (result.Operation) {
-      Operation = await lib.doc.byIdT<CatalogOperation>(result.Operation as string);
-      Grop = await lib.doc.formControlRef(Operation!.Group as string);
+      Operation = await lib.doc.byIdT<CatalogOperation>(result.Operation as string, tx);
+      Grop = await lib.doc.formControlRef(Operation!.Group as string, tx);
       result.Group = Operation!.Group;
       let i = 1;
       (Operation && Operation.Parameters || []).sort((a, b) => (a.order || 0) - (b.order || 0)).forEach(c => {

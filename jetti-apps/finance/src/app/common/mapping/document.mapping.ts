@@ -29,12 +29,12 @@ export function mapToApi(model: DocumentBase): IFlatDocument {
         for (const p in element) {
           if (element.hasOwnProperty(p)) {
             let value = element[p];
-            if (value && value['type'] &&
-              ['string', 'number', 'boolean', 'datetime'].includes(value['type'])) {
-              value['id'] = null; element[p] = value; continue;
+            if (value && value.type &&
+              ['string', 'number', 'boolean', 'datetime'].includes(value.type)) {
+              value = null; element[p] = value; continue;
             }
-            if (value && value['type'] && !value['value'] && ((value['id'] === '') || (value['id'] === null))) { value = null; }
-            element[p] = value ? value['id'] || value : value || null;
+            if (value && value.type && !value.value && ((value.id === '') || (value.id === null))) { value = null; }
+            element[p] = !(value === undefined || value === null) ? value.id || value : value || null;
           }
         }
         delete element.index;
@@ -47,7 +47,7 @@ export function mapToApi(model: DocumentBase): IFlatDocument {
         value['id'] = null; newDoc[property] = value; continue;
       }
       if (value && value['type'] && !value['value'] && ((value['id'] === '') || (value['id'] === null))) { value = null; }
-      newDoc[property] = value ? value['id'] || value : value || null;
+      newDoc[property] = !(value === undefined || value === null) ? value['id'] || value : value || null;
     }
   }
   return newDoc;

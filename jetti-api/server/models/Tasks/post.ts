@@ -1,11 +1,12 @@
 import * as Queue from 'bull';
-import { sdbq } from '../../mssql';
+import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 
 
 export default async function (job: Queue.Job) {
   await job.progress(0);
   const params = job.data;
+  const tx: MSSQL = job.data.tx;
   const query = `
     SELECT id FROM "Documents"
     WHERE (1=1) AND
@@ -20,7 +21,7 @@ export default async function (job: Queue.Job) {
   const endDate = new Date(params.EndDate);
   endDate.setUTCHours(23, 59, 59, 999);
 
-  const list = await sdbq.manyOrNone<any>(query, [params.type, params.company, startDate.toJSON(), endDate.toJSON()]);
+  const list = await tx.manyOrNone<any>(query, [params.type, params.company, startDate.toJSON(), endDate.toJSON()]);
   const TaskList: any[] = [];
   const count = list.length; let offset = 0;
   job.data.job['total'] = list.length;
@@ -29,7 +30,7 @@ export default async function (job: Queue.Job) {
     let i = 0;
     for (i = 0; i < 25; i++) {
       if (!list[i + offset]) break;
-      const q = lib.doc.postById(list[i + offset].id, true, sdbq);
+      const q = lib.doc.postById(list[i + offset].id, true, tx);
       TaskList.push(q);
     }
     offset = offset + i;

@@ -13,7 +13,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Product', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 3 })
+  @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 5 })
   ProductKind: Ref = null;
 
   @Props({ type: 'Catalog.ProductCategory', label: 'Сategory' })

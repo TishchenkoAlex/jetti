@@ -23,6 +23,7 @@ export interface PropOptions {
   onChange?: Function;
   onChangeServer?: boolean;
   value?: any;
+  unique?: boolean;
 }
 
 export interface DocumentOptions {
@@ -121,7 +122,7 @@ export class DocumentBase {
     this.targetProp(proto, 'description').hidden = proto.isDoc;
     this.targetProp(proto, 'date').hidden = proto.isCatalog;
     this.targetProp(proto, 'date').required = proto.isDoc;
-    this.targetProp(proto, 'company').hidden = proto.isCatalog && !(proto.targetProp(proto, 'company').hiddenInForm === false);
+    this.targetProp(proto, 'company').required = proto.isCatalog !== true;
 
     const result: { [x: string]: PropOptions } = {};
     for (const prop of Object.keys(proto)) {

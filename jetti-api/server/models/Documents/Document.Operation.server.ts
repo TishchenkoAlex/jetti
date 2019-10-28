@@ -4,6 +4,7 @@ import { PatchValue } from '../api';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
 import { createDocumentServer } from '../documents.factory.server';
+import { RegisterInfoSettings } from '../Registers/Info/Settings';
 import { ServerDocument } from '../ServerDocument';
 import { JQueue } from '../Tasks/tasks';
 import { PostResult } from './../post.interfaces';
@@ -47,7 +48,7 @@ export class DocumentOperationServer extends DocumentOperation implements Server
         FROM "Documents" WHERE id = '${this.Operation}'`;
       const Operation = await tx.oneOrNone<{ script: string }>(query);
       const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx);
-      const settings = await lib.info.sliceLastJSON('Settings', this.date, this.company, {}, tx) || {};
+      const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx) || {};
       const accountingCurrency = settings.accountingCurrency || this.currency;
       const exchangeRateAccounting = await lib.info.exchangeRate(this.date, this.company, accountingCurrency, tx);
       const script = `
@@ -69,8 +70,8 @@ export class DocumentOperationServer extends DocumentOperation implements Server
       .filter(r => r.type === 'Register.Accumulation.Inventory' && r.kind === true);
 
     const newInventory = (Registers.Accumulation || [])
-    .filter(r => r.type === 'Register.Accumulation.Inventory' && r.kind === true)
-    .map(r => ({...r, date: r.date ? r.date : this.date}));
+      .filter(r => r.type === 'Register.Accumulation.Inventory' && r.kind === true)
+      .map(r => ({...r, date: r.date ? r.date : this.date}));
 
     if (!(oldInventory.length || newInventory.length)) return Registers;
 

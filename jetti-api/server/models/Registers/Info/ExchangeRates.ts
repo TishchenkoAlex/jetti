@@ -13,7 +13,7 @@ export class RegisterInfoExchangeRates extends RegisterInfo {
   @Props({ type: 'number', required: true })
   Rate = 1;
 
-  @Props({ type: 'number', required: true })
+  @Props({ type: 'number' })
   Mutiplicity = 1;
 
   constructor(public data: {

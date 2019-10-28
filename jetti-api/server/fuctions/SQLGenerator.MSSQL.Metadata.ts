@@ -1,7 +1,8 @@
 import { DocumentOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
-import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
+import { createRegisterInfo, RegisteredRegisterInfo } from '../models/Registers/Info/factory';
+import { excludeRegisterAccumulatioProps, excludeRegisterInfoProps, SQLGenegator } from './SQLGenerator.MSSQL';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
@@ -9,7 +10,7 @@ import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MS
 
 export class SQLGenegatorMetadata {
 
-  static QueryTriggerRegisterAccumulation(doc: { [x: string]: any }, type: string, timeZone = 'UTC') {
+  static QueryTriggerRegisterAccumulation(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
@@ -54,6 +55,36 @@ export class SQLGenegatorMetadata {
     return query;
   } // AT TIME ZONE @TimeZone
 
+  static QueryTriggerRegisterInfo(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') { return `\n, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}"`; }
+      if (type === 'number') { return `\n, CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) "${prop}"`; }
+      return `\n, JSON_VALUE(data, '$.${prop}') "${prop}"`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `\n, CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}"`;
+
+    let insert = ''; let select = '';
+    for (const prop in excludeRegisterInfoProps(doc)) {
+      const type: string = doc[prop].type || 'string';
+      insert += `, "${prop}"`;
+
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+      INSERT INTO "${type}" (date, document, company ${insert})
+      SELECT
+        CAST(date AS datetime) date, document, company ${select}
+      FROM INSERTED WHERE type = N'${type}'; \n\n`;
+    return query;
+  }
+
   static AlterTriggerRegisterAccumulation() {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
@@ -76,6 +107,22 @@ export class SQLGenegatorMetadata {
             FROM Documents WHERE type = 'Catalog.Company' AND id = @company),
           'UTC');
 
+        ${query}
+      END;`;
+    return query;
+  }
+
+  static AlterTriggerRegisterInfo() {
+    let query = '';
+    for (const type of RegisteredRegisterInfo) {
+      const register = createRegisterInfo(type.type, {});
+      query += SQLGenegatorMetadata.QueryTriggerRegisterInfo(register.Props(), register.Prop().type.toString());
+    }
+
+    query = `
+      ALTER TRIGGER "Register.Info.Insert" ON dbo."Register.Info"
+      FOR INSERT AS
+      BEGIN
         ${query}
       END;`;
     return query;
@@ -112,14 +159,50 @@ export class SQLGenegatorMetadata {
       query += `\n
       DROP TABLE "${register.type}";
       CREATE TABLE "${register.type}" (
-        [kind] [bit] NULL,
-        [company] [uniqueidentifier] NULL,
+        [kind] [bit] NOT NULL,
+        [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
         [date] [date] NOT NULL,
         DT BIGINT NOT NULL
         ${select}
       );
-      CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";\n`;
+      CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
+      GRANT SELECT ON "${register.type}" TO jetti;\n`;
+    }
+    return query;
+  }
+
+  static CreateTableRegisterInfo() {
+
+    const simleProperty = (prop: string, type: string, required: boolean) => {
+      const nullText = required ? ' NOT NULL ' : ' NULL ';
+      if (type.includes('.')) { return `, "${prop}" UNIQUEIDENTIFIER ${nullText} \n`; }
+      if (type === 'boolean') { return `, "${prop}" BIT ${nullText} \n`; }
+      if (type === 'date') { return `, "${prop}" DATE ${nullText} \n`; }
+      if (type === 'datetime') { return `, "${prop}" DATE ${nullText} \n`; }
+      if (type === 'number') { return `, "${prop}" MONEY ${nullText}\n`; }
+      return `, "${prop}" NVARCHAR(150) \n ${nullText}`;
+    };
+
+    let query = '';
+    for (const register of RegisteredRegisterInfo) {
+      const doc = createRegisterInfo(register.type, {});
+      const props = doc.Props();
+      let select = '';
+      for (const prop in excludeRegisterInfoProps(doc)) {
+        select += simleProperty(prop, (props[prop].type || 'string'), !!props[prop].required);
+      }
+
+      query += `\n
+      DROP TABLE "${register.type}";
+      CREATE TABLE "${register.type}" (
+        [company] [uniqueidentifier] NOT NULL,
+        [document] [uniqueidentifier] NOT NULL,
+        [date] [date] NOT NULL
+        ${select}
+      );
+      CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
+      GRANT SELECT ON "${register.type}" TO jetti;\n`;
     }
     return query;
   }

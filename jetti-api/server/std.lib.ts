@@ -7,6 +7,8 @@ import { createDocumentServer } from './models/documents.factory.server';
 import { DocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
+import { RegistersInfo } from './models/Registers/Info/factory';
+import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { DocumentBaseServer, IFlatDocument, INoSqlDocument } from './models/ServerDocument';
 import { MSSQL, sdb } from './mssql';
 import { InsertRegisterstoDB } from './routes/utils/execute-script';
@@ -19,40 +21,38 @@ export interface BatchRow {
 export interface JTL {
   db: MSSQL;
   account: {
-    balance: (account: Ref, date: Date, company: Ref) => Promise<number | null>,
-    debit: (account: Ref, date: Date, company: Ref) => Promise<number | null>,
-    kredit: (account: Ref, date: Date, company: Ref) => Promise<number | null>,
-    byCode: (code: string, tx?: MSSQL) => Promise<string | null>
+    balance: (account: Ref, date: Date, company: Ref, tx: MSSQL) => Promise<number | null>,
+    debit: (account: Ref, date: Date, company: Ref, tx: MSSQL) => Promise<number | null>,
+    kredit: (account: Ref, date: Date, company: Ref, tx: MSSQL) => Promise<number | null>,
+    byCode: (code: string, tx: MSSQL) => Promise<string | null>
   };
   register: {
-    movementsByDoc: <T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx?: MSSQL) => Promise<T[]>,
+    movementsByDoc: <T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) => Promise<T[]>,
     balance: (type: RegisterAccumulationTypes, date: Date, resource: string[],
-      analytics: { [key: string]: Ref }, tx?: MSSQL) => Promise<{ [x: string]: number } | null>,
-    avgCost: (date: Date, analytics: { [key: string]: Ref }, tx?: MSSQL) => Promise<number | null>,
-    inventoryBalance: (date: Date, analytics: { [key: string]: Ref }, tx?: MSSQL) => Promise<{ Cost: number, Qty: number } | null>,
+      analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<{ [x: string]: number } | null>,
+    avgCost: (date: Date, analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<number | null>,
+    inventoryBalance: (date: Date, analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<{ Cost: number, Qty: number } | null>,
   };
   doc: {
-    byCode: (type: DocTypes, code: string, tx?: MSSQL) => Promise<string | null>;
-    byId: (id: Ref, tx?: MSSQL) => Promise<IFlatDocument | null>;
-    byIdT: <T extends DocumentBase>(id: string, tx?: MSSQL) => Promise<T | null>;
-    formControlRef: (id: string, tx?: MSSQL) => Promise<RefValue | null>;
-    postById: (id: string, posted: boolean, tx?: MSSQL) => Promise<void>;
-    repostById: (id: Ref, tx?: MSSQL) => Promise<void>;
+    byCode: (type: DocTypes, code: string, tx: MSSQL) => Promise<string | null>;
+    byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
+    byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
+    formControlRef: (id: string, tx: MSSQL) => Promise<RefValue | null>;
+    postById: (id: string, posted: boolean, tx: MSSQL) => Promise<boolean>;
+    repostById: (id: Ref, tx: MSSQL) => Promise<void>;
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
-    docPrefix: (type: DocTypes, tx?: MSSQL) => Promise<string>
+    docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
   };
   info: {
-    sliceLast: (type: string, date: Date, company: Ref, resource: string,
-      analytics: { [key: string]: any }, tx?: MSSQL) => Promise<any>,
-    sliceLastJSON: (type: string, date: Date, company: Ref,
-      analytics: { [key: string]: any }, tx?: MSSQL) => Promise<any>,
-    exchangeRate: (date: Date, company: Ref, currency: Ref, tx?: MSSQL) => Promise<number>
+    sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
+      analytics: { [key: string]: any }, tx: MSSQL) => Promise<T>,
+    exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   inventory: {
     batchRows: (date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number,
-      Inventory: any[], tx?: MSSQL) => Promise<any[]>,
-    batchReturn(retDoc: string, rows: BatchRow[], tx?: MSSQL)
+      Inventory: any[], tx: MSSQL) => Promise<any[]>,
+    batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL)
   };
 }
 
@@ -83,7 +83,6 @@ export const lib: JTL = {
   },
   info: {
     sliceLast,
-    sliceLastJSON,
     exchangeRate
   },
   inventory: {
@@ -92,25 +91,25 @@ export const lib: JTL = {
   }
 };
 
-async function accountByCode(code: string, tx = sdb): Promise<string | null> {
+async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
   const result = await tx.oneOrNone<any>(`
     SELECT id result FROM "Documents" WHERE type = 'Catalog.Account' AND code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 
-async function byCode(type: string, code: string, tx = sdb): Promise<string | null> {
+async function byCode(type: string, code: string, tx: MSSQL): Promise<string | null> {
   const result = await tx.oneOrNone<any>(`SELECT id result FROM "Documents" WHERE type = @p1 AND code = @p2`, [type, code]);
   return result ? result.result as string : null;
 }
 
-async function byId(id: string, tx = sdb): Promise<IFlatDocument | null> {
+async function byId(id: string, tx: MSSQL): Promise<IFlatDocument | null> {
   if (!id) return null;
   const result = await tx.oneOrNone<INoSqlDocument | null>(`
   SELECT * FROM "Documents" WHERE id = '${id}'`);
   if (result) return flatDocument(result); else return null;
 }
 
-async function byIdT<T extends DocumentBase>(id: string, tx = sdb): Promise<T | null> {
+async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T | null> {
   const result = await byId(id, tx);
   if (result) return createDocument<T>(result.type, result); else return null;
 }
@@ -129,7 +128,7 @@ function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
   return flatDoc;
 }
 
-async function docPrefix(type: DocTypes, tx: MSSQL = sdb): Promise<string> {
+async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
   const metadata = configSchema.get(type);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
@@ -140,30 +139,30 @@ async function docPrefix(type: DocTypes, tx: MSSQL = sdb): Promise<string> {
   return '';
 }
 
-async function formControlRef(id: string, tx: MSSQL = sdb): Promise<RefValue | null> {
+async function formControlRef(id: string, tx: MSSQL): Promise<RefValue | null> {
   const result = await tx.oneOrNone<RefValue>(`
     SELECT "id", "code", "description" as "value", "type" FROM "Documents" WHERE id = '${id}'`);
   return result;
 }
 
-async function debit(account: Ref, date = new Date(), company: Ref): Promise<number> {
-  const result = await sdb.oneOrNone<{ result: number }>(`
+async function debit(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
+  const result = await tx.oneOrNone<{ result: number }>(`
     SELECT SUM(sum) result FROM "Register.Account"
     WHERE dt = @p1 AND datetime <= @p2 AND company = @p3
   `, [account, date, company]);
   return result ? result.result : 0;
 }
 
-async function kredit(account: Ref, date = new Date(), company: Ref): Promise<number> {
-  const result = await sdb.oneOrNone<{ result: number }>(`
+async function kredit(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
+  const result = await tx.oneOrNone<{ result: number }>(`
     SELECT SUM(sum) result FROM "Register.Account"
     WHERE kt = @p1 AND datetime <= @p2 AND company = @p3
   `, [account, date, company]);
   return result ? result.result : 0;
 }
 
-async function balance(account: Ref, date = new Date(), company: Ref): Promise<number> {
-  const result = await sdb.oneOrNone<{ result: number }>(`
+async function balance(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
+  const result = await tx.oneOrNone<{ result: number }>(`
   SELECT (SUM(u.dt) - SUM(u.kt)) result FROM (
       SELECT SUM(sum) dt, 0 kt
       FROM "Register.Account"
@@ -179,7 +178,7 @@ async function balance(account: Ref, date = new Date(), company: Ref): Promise<n
 }
 
 async function registerBalance(type: RegisterAccumulationTypes, date = new Date(),
-  resource: string[], analytics: { [key: string]: Ref }, tx = sdb): Promise<{ [x: string]: number }> {
+  resource: string[], analytics: { [key: string]: Ref }, tx: MSSQL): Promise<{ [x: string]: number }> {
 
   const addFields = (key) => `SUM("${key}") "${key}",\n`;
   let fields = ''; for (const el of resource) { fields += addFields(el); } fields = fields.slice(0, -2);
@@ -195,11 +194,11 @@ async function registerBalance(type: RegisterAccumulationTypes, date = new Date(
     ${where}
   `;
 
-  const result = await sdb.oneOrNone<any>(queryText, [date]);
+  const result = await tx.oneOrNone<any>(queryText, [date]);
   return (result ? result : {});
 }
 
-async function avgCost(date: Date, analytics: { [key: string]: Ref }, tx = sdb): Promise<number | null> {
+async function avgCost(date: Date, analytics: { [key: string]: Ref }, tx: MSSQL): Promise<number | null> {
   const queryText = `
   SELECT
     SUM("Cost.In") / ISNULL(SUM("Qty.In"), 1) result
@@ -214,7 +213,7 @@ async function avgCost(date: Date, analytics: { [key: string]: Ref }, tx = sdb):
   return result ? result.result : null;
 }
 
-async function inventoryBalance(date: Date, analytics: { [key: string]: Ref }, tx = sdb): Promise<{ Cost: number, Qty: number } | null> {
+async function inventoryBalance(date: Date, analytics: { [key: string]: Ref }, tx: MSSQL): Promise<{ Cost: number, Qty: number } | null> {
   const queryText = `
   SELECT
     SUM("Cost") "Cost", SUM("Qty") "Qty"
@@ -229,56 +228,30 @@ async function inventoryBalance(date: Date, analytics: { [key: string]: Ref }, t
   return result ? { Cost: result.Cost, Qty: result.Qty } : null;
 }
 
-async function sliceLast(type: string, date = new Date(), company: Ref,
-  resource: string, analytics: { [key: string]: any }, tx = sdb): Promise<number | null> {
-
-  const addWhere = (key: string) => `AND CAST(JSON_VALUE(data, N'$."${key}"') AS UNIQUEIDENTIFIER) = '${analytics[key]}' \n`;
-  let where = ''; for (const el of Object.keys(analytics)) where += addWhere(el);
+async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: MSSQL): Promise<number> {
 
   const queryText = `
-    SELECT TOP 1 JSON_VALUE(data, N'$."${resource}"') result FROM "Register.Info"
+    SELECT TOP 1 [Rate] / CASE WHEN [Mutiplicity] > 0 THEN [Mutiplicity] ELSE 1 END result
+    FROM [Register.Info.ExchangeRates]
     WHERE (1=1)
       AND date <= @p1
-      AND type = 'Register.Info.${type}'
-      AND company = '${company}'
-      ${where}
+      AND company = @p2
+      AND [currency] = @p3
     ORDER BY date DESC`;
-  const result = await tx.oneOrNone<{ result: any }>(queryText, [date]);
-  return result ? result.result : null;
-}
-
-async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx = sdb): Promise<number> {
-
-  const queryText = `
-    SELECT TOP 1 CAST(JSON_VALUE(data, N'$."Rate"') AS money) /
-      CASE
-        WHEN CAST(JSON_VALUE(data, N'$."Mutiplicity"') AS money) > 0 THEN
-          JSON_VALUE(data, N'$."Mutiplicity"')
-        ELSE
-          1
-      END result
-    FROM "Register.Info"
-    WHERE (1=1)
-      AND date <= @p1
-      AND type = 'Register.Info.ExchangeRates'
-      AND company = '${company}'
-      AND CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER) = '${currency}'
-    ORDER BY date DESC`;
-  const result = await tx.oneOrNone<{ result: number }>(queryText, [date]);
+  const result = await tx.oneOrNone<{ result: number }>(queryText, [date, company, currency]);
   return result ? result.result : 1;
 }
 
-async function sliceLastJSON(type: string, date = new Date(), company: Ref,
-  analytics: { [key: string]: any }, tx = sdb): Promise<number | null> {
+async function sliceLast<T extends RegisterInfo>(type: string, date = new Date(), company: Ref,
+  analytics: { [key: string]: any }, tx: MSSQL): Promise<T> {
 
-  const addWhere = (key) => `AND CAST(JSON_VALUE(data, N'$."${key}"') AS UNIQUEIDENTIFIER) = '${analytics[key]}' \n`;
+  const addWhere = (key: string) => `AND "${key}"' = '${analytics[key]}' \n`;
   let where = ''; for (const el of Object.keys(analytics)) { where += addWhere(el); }
 
   const queryText = `
-    SELECT TOP 1 JSON_QUERY(data) result FROM "Register.Info"
+    SELECT TOP 1 * FROM [Register.Info.${type}]
     WHERE (1=1)
       AND date <= @p1
-      AND type = 'Register.Info.${type}'
       AND company = '${company}'
       ${where}
     ORDER BY date DESC`;
@@ -286,63 +259,58 @@ async function sliceLastJSON(type: string, date = new Date(), company: Ref,
   return result ? result.result : null;
 }
 
-export async function postById(id: string, posted: boolean, tx: MSSQL = sdb): Promise<void> {
-  return tx.tx<any>(async subtx => {
-    const doc = (await lib.doc.byId(id, subtx))!;
-    if (doc.deleted) return; // throw new Error('cant POST deleted document');
-    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc!, tx);
-    serverDoc.posted = posted;
+export async function postById(id: string, posted: boolean, tx: MSSQL): Promise<boolean> {
+  const doc = (await lib.doc.byId(id, tx))!;
+  if (doc.deleted) return false;
+  const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc!, tx);
 
-    const deleted = await subtx.manyOrNone(`
+  serverDoc.posted = posted;
+
+  const deleted = await tx.manyOrNone(`
       SELECT * FROM "Accumulation" WHERE document = '${id}';
       DELETE FROM "Register.Account" WHERE document = '${id}';
       DELETE FROM "Register.Info" WHERE document = '${id}';
       DELETE FROM "Accumulation" WHERE document = '${id}';
       UPDATE "Documents" SET posted = @p1, deleted = 0, description = @p2 WHERE id = '${id}' AND posted <> @p1`,
-      [serverDoc.posted, serverDoc.description]);
-    serverDoc['deletedRegisterAccumulation'] = () => deleted;
+    [serverDoc.posted, serverDoc.description]);
+  serverDoc['deletedRegisterAccumulation'] = () => deleted;
 
-    if (serverDoc.isDoc && serverDoc.onPost) {
-      const Registers = await serverDoc.onPost(subtx);
-      if (posted && !doc.deleted) await InsertRegisterstoDB(serverDoc, Registers, subtx);
-    }
-  });
+  if (serverDoc.isDoc && serverDoc.onPost) {
+    const Registers = await serverDoc.onPost(tx);
+    if (posted && !doc.deleted) await InsertRegisterstoDB(serverDoc, Registers, tx);
+  }
+  return true;
 }
 
-export async function repostById(id: Ref, tx: MSSQL = sdb): Promise<void> {
-  return tx.tx<any>(async subtx => {
+export async function repostById(id: Ref, tx: MSSQL): Promise<void> {
+  const doc = (await lib.doc.byId(id, tx))!;
+  if (doc) {
+    if (doc.deleted) return;
+    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type, doc, tx);
 
-    const doc = (await lib.doc.byId(id, subtx))!;
-
-    if (doc) {
-      if (doc.deleted) return;
-
-      const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type, doc, tx);
-
-      const deleted = await subtx.manyOrNone(`
+    const deleted = await tx.manyOrNone(`
         SELECT * FROM "Accumulation" WHERE document = '${id}';
         DELETE FROM "Register.Account" WHERE document = '${id}';
         DELETE FROM "Register.Info" WHERE document = '${id}';
         DELETE FROM "Accumulation" WHERE document = '${id}';
         UPDATE "Documents" SET posted = 1, deleted = 0, description = @p1 WHERE id = '${id}' AND posted = 0;`,
-        [serverDoc.description]);
-      serverDoc['deletedRegisterAccumulation'] = () => deleted;
+      [serverDoc.description]);
+    serverDoc['deletedRegisterAccumulation'] = () => deleted;
 
-      if (serverDoc.isDoc && serverDoc.onPost) {
-        const Registers = await serverDoc.onPost(subtx);
-        await InsertRegisterstoDB(serverDoc, Registers, subtx);
-      }
+    if (serverDoc.isDoc && serverDoc.onPost) {
+      const Registers = await serverDoc.onPost(tx);
+      await InsertRegisterstoDB(serverDoc, Registers, tx);
     }
-  });
+  }
 }
 
-export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL = sdb) {
+export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
   SELECT * FROM Accumulation where type = '${type}' AND document = '${doc}'`;
   return await tx.manyOrNone<T>(queryText);
 }
 
-export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number, BatchRows: any[], tx: MSSQL = sdb) {
+export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number, BatchRows: any[], tx: MSSQL) {
 
   const ResultBatchRows: any[] = [];
 
@@ -407,7 +375,7 @@ export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: 
   return ResultBatchRows;
 }
 
-export async function batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL = sdb) {
+export async function batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL) {
   const rowsKeys = rows.map(r => (r.Storehouse as string) + (r.SKU as string));
   const uniquerowsKeys = rowsKeys.filter((v, i, a) => a.indexOf(v) === i);
   const grouped = uniquerowsKeys.map(r => {

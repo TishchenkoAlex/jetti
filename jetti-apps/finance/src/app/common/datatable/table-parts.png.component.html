@@ -14,9 +14,8 @@
 
   <ng-template pTemplate="header">
     <tr>
-      <th [pSortableColumn]="col.field" *ngFor="let col of columns" [ngStyle]="col.style">
+      <th *ngFor="let col of columns" [ngStyle]="col.style">
         {{col.label}}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
       <th></th>
     </tr>

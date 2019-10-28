@@ -40,7 +40,8 @@ export type DocumentTypes =
   'Document.Invoice' |
   'Document.Operation' |
   'Document.PriceList' |
-  'Document.Settings';
+  'Document.Settings' |
+  'Document.UserSettings';
 
 export type DocTypes =
   CatalogTypes |

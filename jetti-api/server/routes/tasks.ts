@@ -2,16 +2,20 @@ import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { IJobs } from '../models/api';
 import { JQueue, mapJob } from '../models/Tasks/tasks';
+import { sdbq } from '../mssql';
 import { User } from '../routes/user.settings';
 
 export const router = express.Router();
 
 router.post('/jobs/add', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    req.body.data.user = User(req);
-    req.body.data.userId = req.body.data.user;
-    const result = await JQueue.add(req.body.data, req.body.opts);
-    res.json(mapJob(result));
+    await sdbq.tx(async tx => {
+      req.body.data.user = User(req);
+      req.body.data.userId = req.body.data.user;
+      req.body.data.tx = tx;
+      const result = await JQueue.add(req.body.data, req.body.opts);
+      res.json(mapJob(result));
+    }, User(req));
   } catch (err) { next(err); }
 });
 

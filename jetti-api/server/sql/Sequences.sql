@@ -48,3 +48,4 @@ CREATE SEQUENCE [dbo].[Sq.Catalog.ProductCategory] START WITH 0
 GO
 CREATE SEQUENCE [dbo].[Sq.Catalog.ProductKind] START WITH 0
 GO
+CREATE SEQUENCE [dbo].[Sq.Document.UserSettings] START WITH 0

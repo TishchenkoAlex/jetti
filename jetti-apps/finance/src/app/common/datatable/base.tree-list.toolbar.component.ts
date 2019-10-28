@@ -9,7 +9,7 @@ import { BaseTreeListComponent } from '../../common/datatable/base.tree-list.com
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <span *ngFor="let btn of buttons">
-          <button *ngIf="btn.visible" pButton type="button" [ngClass]="btn.styleClass" [icon]="btn.icon" (click)="btn.command"></button>
+          <button *ngIf="btn.visible" pButton type="button" [ngClass]="btn.styleClass" [icon]="btn.icon" (click)="btn.command()"></button>
         </span>
         <ng-content></ng-content>
       </div>

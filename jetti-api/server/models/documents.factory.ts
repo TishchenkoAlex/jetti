@@ -38,6 +38,7 @@ import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentPriceList } from './Documents/Document.PriceList';
 import { DocumentSettings } from './Documents/Document.Settings';
+import { DocumentUserSettings } from './Documents/Document.UserSettings';
 
 export interface IRegisteredDocument<T extends DocumentBase> { type: DocTypes; Class: T; }
 
@@ -89,9 +90,10 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Catalog', Class: CatalogCatalog },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
-  { type: 'Document.Settings', Class: DocumentSettings },
   { type: 'Document.Invoice', Class: DocumentInvoice },
   { type: 'Document.Operation', Class: DocumentOperation },
   { type: 'Document.PriceList', Class: DocumentPriceList },
+  { type: 'Document.Settings', Class: DocumentSettings },
+  { type: 'Document.UserSettings', Class: DocumentUserSettings },
 ];
 

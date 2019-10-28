@@ -1,6 +1,6 @@
 // tslint:disable:max-line-length
 import * as Queue from 'bull';
-import { sdbq } from '../../mssql';
+import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { DocumentBase, Ref } from '../document';
 import { RegisterAccumulationInventory } from '../Registers/Accumulation/Inventory';
@@ -8,6 +8,7 @@ import { RegisterAccumulationInventory } from '../Registers/Accumulation/Invento
 export default async function (job: Queue.Job) {
   await job.progress(0);
   const params = job.data;
+  const tx: MSSQL = job.data.tx;
   const doc = params.doc as DocumentBase;
   const oldInventory = params.Inventory[0];
   const newInventory = params.Inventory[1] as RegisterAccumulationInventory[];
@@ -44,7 +45,7 @@ export default async function (job: Queue.Job) {
         AND SKU IN (SELECT SKU FROM @movementsTable)
         AND batch IN (SELECT batch FROM @movementsTable)
         AND document <> @p1`;
-  const list = await sdbq.manyOrNone<{ document: Ref }>(query, [doc.id, JSON.stringify(Inventory)]);
+  const list = await tx.manyOrNone<{ document: Ref }>(query, [doc.id, JSON.stringify(Inventory)]);
 
   const TaskList: any[] = [];
   const count = list.length; let offset = 0;
@@ -54,7 +55,7 @@ export default async function (job: Queue.Job) {
     let i = 0;
     for (i = 0; i < 5; i++) {
       if (!list[i + offset]) break;
-      const q = lib.doc.repostById(list[i + offset].document, sdbq);
+      const q = lib.doc.repostById(list[i + offset].document, tx);
       TaskList.push(q);
     }
     offset = offset + i;

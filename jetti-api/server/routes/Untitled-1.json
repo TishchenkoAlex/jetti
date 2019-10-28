@@ -1,0 +1,43 @@
+{
+  "Group": "6A02FB90-D2FD-11E9-9483-1F74290EBA2F",
+  "Operation": "AF380410-DE4E-11E9-9BD4-3B84AD40BB5D",
+  "Amount": 10093432,
+  "currency": "651F6690-5B53-11E8-9113-9FF2C9F0136C",
+  "f1": "C3765EA0-D862-11E9-A46F-4F0C8303B47F",
+  "f2": null,
+  "f3": null,
+  "Department": "C3765EA0-D862-11E9-A46F-4F0C8303B47F",
+  "Items": [
+    {
+      "ObjectExplotation": "41A5FA50-DE4F-11E9-9BD4-3B84AD40BB5D",
+      "StartCost": 9018000,
+      "AccumDepreciation": null,
+      "EndCost": 9018000,
+      "StartDate": "2018-03-01T00:00:00.000Z",
+      "Period": null,
+      "Manager": null,
+      "CostEnd": null
+    },
+    {
+      "ObjectExplotation": "A27637F0-DE4F-11E9-9BD4-3B84AD40BB5D",
+      "StartCost": 375432,
+      "AccumDepreciation": null,
+      "EndCost": 375432,
+      "StartDate": "2018-03-01T00:00:00.000Z",
+      "Period": null,
+      "Manager": null,
+      "CostEnd": null
+    },
+    {
+      "ObjectExplotation": "C056FDE0-DE4F-11E9-9BD4-3B84AD40BB5D",
+      "StartCost": 700000,
+      "AccumDepreciation": null,
+      "EndCost": 700000,
+      "StartDate": "2018-03-01T00:00:00.000Z",
+      "Period": null,
+      "Manager": null,
+      "CostEnd": null
+    }
+  ],
+  "serverModule": {}
+}

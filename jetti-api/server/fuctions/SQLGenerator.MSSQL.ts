@@ -8,7 +8,7 @@ export class SQLGenegator {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"\n`;
-      if (type === 'number') return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS MONEY), 0) "${prop}"\n`;
+      if (type === 'number') return `, CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS MONEY) "${prop}"\n`;
       if (type === 'javascript') return `, (SELECT "${prop}" FROM OPENJSON(d.doc) WITH ("${prop}" NVARCHAR(MAX) '$."${prop}"')) "${prop}"\n`;
       return `, JSON_VALUE(d.doc, N'$."${prop}"') "${prop}"\n`;
     };
@@ -125,7 +125,7 @@ export class SQLGenegator {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"\n`; }
-      if (type === 'number') { return `,  ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS MONEY), 0) "${prop}"\n`; }
+      if (type === 'number') { return `,  CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS MONEY) "${prop}"\n`; }
       if (type === 'javascript') return `, (SELECT "${prop}" FROM OPENJSON(d.doc) WITH ("${prop}" NVARCHAR(MAX) '$."${prop}"')) "${prop}"\n`;
       return `, JSON_VALUE(d.doc, N'$."${prop}"') "${prop}"\n`;
     };
@@ -144,7 +144,7 @@ export class SQLGenegator {
 
       const simleProperty = (prop: string, type: string) => {
         if (type === 'boolean') { return `, ISNULL(x."${prop}", 0) "${prop}"\n`; }
-        if (type === 'number') { return `, ISNULL(x."${prop}", 0)  "${prop}"\n`; }
+        if (type === 'number') { return `, x."${prop}"  "${prop}"\n`; }
         return `, x."${prop}"\n`;
       };
 

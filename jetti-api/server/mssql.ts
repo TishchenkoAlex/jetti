@@ -22,6 +22,11 @@ export class MSSQL {
     }
   }
 
+  public async close() {
+    if (this.POOL instanceof sql.ConnectionPool)
+      await this.POOL.close();
+  }
+
   private toJSON(value: any): any {
     if (typeof value === 'string' && (
       (value[0] === '{' && value[value.length - 1] === '}') ||
@@ -59,14 +64,14 @@ export class MSSQL {
   async oneOrNone<T>(text: string, params: any[] = []): Promise<T | null> {
     const request = new sql.Request(<any>(this.POOL));
     this.setParams(params, request);
-    const response = await request.query(`${text}`);
+    const response = await request.query(text);
     return response.recordset.length ? this.complexObject<T>(response.recordset[0]) : null;
   }
 
   async manyOrNone<T>(text: string, params: any[] = []): Promise<T[]> {
     const request = new sql.Request(<any>(this.POOL));
     this.setParams(params, request);
-    const response = await request.query(`${text}`);
+    const response = await request.query(text);
     return response.recordset.map(el => this.complexObject<T>(el)) || [];
   }
 
@@ -84,10 +89,12 @@ export class MSSQL {
     await request.query(text);
   }
 
-  async tx<T>(func: (tx: MSSQL) => Promise<T>) {
+  async tx<T>(func: (tx: MSSQL) => Promise<T>, user: string) {
     const transaction = new sql.Transaction(this.POOL as sql.ConnectionPool);
     await transaction.begin(sql.ISOLATION_LEVEL.READ_COMMITTED);
     try {
+      const request = new sql.Request(transaction);
+      await request.query(`EXEC sys.sp_set_session_context N'user_id', N'${user}'`);
       await func(new MSSQL(this.config, transaction));
       await transaction.commit();
     } catch (err) {
@@ -105,3 +112,9 @@ export class MSSQL {
 export const sdb = new MSSQL(sqlConfig);
 export const sdbq = new MSSQL({ ...sqlConfig, requestTimeout: 1000 * 60 * 60 });
 export const sdba = new MSSQL(sqlConfigAccounts);
+
+process.on('SIGTERM', async () => {
+  await sdb.close();
+  await sdbq.close();
+  await sdba.close();
+});

@@ -61,7 +61,7 @@ export async function doSubscriptions(doc: DocumentBaseServer, script: string, t
     } */
 }
 
-export async function buildViewModel(ServerDoc: DocumentBaseServer, tx = sdb) {
+export async function buildViewModel(ServerDoc: DocumentBaseServer, tx: MSSQL) {
   const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
   const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
   return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
