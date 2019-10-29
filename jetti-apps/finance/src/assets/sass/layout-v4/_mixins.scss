@@ -1,9 +1,0 @@
-@import '../_mixins';
-
-@mixin overlay-shadow {
-   
-}
-
-@mixin overlay() {
-    border: 1px solid $overlayBorderColor;
-}
