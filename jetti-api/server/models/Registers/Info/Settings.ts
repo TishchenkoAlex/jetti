@@ -13,11 +13,9 @@ export class RegisterInfoSettings extends RegisterInfo {
   @Props({ type: 'Catalog.Currency', required: true })
   accountingCurrency: Ref = null;
 
-  constructor(public data: {
-    balanceCurrency: Ref,
-    accountingCurrency: Ref,
-  }) {
-    super(data);
+  constructor(init: Partial<RegisterInfoSettings>) {
+    super(init);
+    Object.assign(this, init);
   }
 }
 

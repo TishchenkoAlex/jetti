@@ -25,14 +25,8 @@ export class RegisterAccumulationLoan extends RegisterAccumulation {
   @Props({ type: 'number' })
   AmountInAccounting = 0;
 
-  constructor(kind: boolean, public data: {
-    Loan: Ref,
-    Counterpartie: Ref,
-    CashFlow: Ref,
-    Amount: number,
-    AmountInBalance: number,
-    AmountInAccounting: number,
-  }) {
-    super(kind, data);
+  constructor (init: Partial<RegisterAccumulationLoan>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

@@ -49,22 +49,8 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'number' })
   AmountInAR = 0;
 
-  constructor(kind: boolean, public data: {
-    currency: Ref,
-    AO: Ref,
-    Department: Ref,
-    Customer: Ref,
-    Product: Ref,
-    Manager: Ref,
-    Storehouse: Ref,
-    Qty: number,
-    Amount: number,
-    AmountInAR: number,
-    AmountInDoc: number,
-    Cost: number,
-    Discount: number,
-    Tax: number,
-  }) {
-    super(kind, data);
+  constructor (init: Partial<RegisterAccumulationSales>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

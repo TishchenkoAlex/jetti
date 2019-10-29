@@ -307,7 +307,7 @@ export class SQLGenegator {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `, ISNULL(JSON_VALUE(r.data, N'$.${prop}'), 0) "${prop}"\n`; }
-      if (type === 'number') { return `, ISNULL(CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY), 0) "${prop}"\n`; }
+      if (type === 'number') { return `, CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY) "${prop}"\n`; }
       return `, JSON_VALUE(r.data, N'$.${prop}') "${prop}"\n`;
     };
 
@@ -343,7 +343,7 @@ export class SQLGenegator {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `, ISNULL(JSON_VALUE(r.data, N'$.${prop}'), 0) "${prop}"\n`; }
-      if (type === 'number') { return `, ISNULL(CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY), 0) "${prop}"\n`; }
+      if (type === 'number') { return `, CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY) "${prop}"\n`; }
       return `, JSON_VALUE(r.data, N'$.${prop}') "${prop}"\n`;
     };
 

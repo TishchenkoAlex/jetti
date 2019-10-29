@@ -3,12 +3,12 @@ import { QueueOptions } from 'bull';
 import { DB_NAME, REDIS_DB_HOST } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../api';
-import cost2 from './cost2';
+import cost from './cost';
 import post from './post';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   post: post,
-  cost: cost2
+  cost: cost
 };
 
 const QueOpts: QueueOptions = {

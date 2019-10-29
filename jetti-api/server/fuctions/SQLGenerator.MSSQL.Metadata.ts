@@ -1,7 +1,7 @@
 import { DocumentOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
-import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
-import { createRegisterInfo, RegisteredRegisterInfo } from '../models/Registers/Info/factory';
+import { createRegisterAccumulation, RegisterAccumulationTypes, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
+import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, excludeRegisterInfoProps, SQLGenegator } from './SQLGenerator.MSSQL';
 
 // tslint:disable:max-line-length
@@ -55,7 +55,7 @@ export class SQLGenegatorMetadata {
     return query;
   } // AT TIME ZONE @TimeZone
 
-  static QueryTriggerRegisterInfo(doc: { [x: string]: any }, type: string) {
+  static QueryTriggerRegisterInfo(doc: { [x: string]: any }, type: RegisterAccumulationTypes) {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `\n, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}"`; }
@@ -88,7 +88,7 @@ export class SQLGenegatorMetadata {
   static AlterTriggerRegisterAccumulation() {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
-      const register = createRegisterAccumulation(type.type, true, {});
+      const register = createRegisterAccumulation({ type: type.type });
       query += SQLGenegatorMetadata.QueryTriggerRegisterAccumulation(register.Props(), register.Prop().type.toString());
     }
 
@@ -114,9 +114,9 @@ export class SQLGenegatorMetadata {
 
   static AlterTriggerRegisterInfo() {
     let query = '';
-    for (const type of RegisteredRegisterInfo) {
-      const register = createRegisterInfo(type.type, {});
-      query += SQLGenegatorMetadata.QueryTriggerRegisterInfo(register.Props(), register.Prop().type.toString());
+    for (const type of GetRegisterInfo()) {
+      const register = createRegisterInfo({ type: type.type });
+      query += SQLGenegatorMetadata.QueryTriggerRegisterInfo(register.Props(), register.Prop().type.toString() as RegisterAccumulationTypes);
     }
 
     query = `
@@ -149,7 +149,7 @@ export class SQLGenegatorMetadata {
 
     let query = '';
     for (const register of RegisteredRegisterAccumulation) {
-      const doc = createRegisterAccumulation(register.type, true, {});
+      const doc = createRegisterAccumulation({ type: register.type });
       const props = doc.Props();
       let select = '';
       for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -185,8 +185,8 @@ export class SQLGenegatorMetadata {
     };
 
     let query = '';
-    for (const register of RegisteredRegisterInfo) {
-      const doc = createRegisterInfo(register.type, {});
+    for (const register of GetRegisterInfo()) {
+      const doc = createRegisterInfo({ type: register.type });
       const props = doc.Props();
       let select = '';
       for (const prop in excludeRegisterInfoProps(doc)) {

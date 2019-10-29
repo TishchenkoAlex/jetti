@@ -1,5 +1,5 @@
-import { RegisterAccumulation, JRegisterAccumulation } from './RegisterAccumulation';
-import { Ref, Props } from '../../document';
+import { Props, Ref } from '../../document';
+import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulation';
 
 @JRegisterAccumulation({
   type: 'Register.Accumulation.Cash.Transit',
@@ -28,15 +28,8 @@ export class RegisterAccumulationCashTransit extends RegisterAccumulation {
   @Props({ type: 'number' })
   AmountInAccounting = 0;
 
-  constructor(kind: boolean, public data: {
-    currency: Ref,
-    Sender: Ref,
-    Recipient: Ref,
-    CashFlow: Ref,
-    Amount: number,
-    AmountInBalance: number,
-    AmountInAccounting: number,
-  }) {
-    super(kind, data);
+  constructor (init: Partial<RegisterAccumulationCashTransit>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

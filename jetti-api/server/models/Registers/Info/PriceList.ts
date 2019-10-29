@@ -1,4 +1,4 @@
-import { Ref, Props } from '../../document';
+import { Props, Ref } from '../../document';
 import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 
 @JRegisterInfo({
@@ -22,14 +22,9 @@ export class RegisterInfoPriceList extends RegisterInfo {
   @Props({ type: 'number', required: true })
   Price = 0;
 
-  constructor(public data: {
-    currency: Ref,
-    Product: Ref,
-    PriceType: Ref,
-    Unit: Ref,
-    Price: number,
-  }) {
-    super(data);
+  constructor(init: Partial<RegisterInfoPriceList>) {
+    super(init);
+    Object.assign(this, init);
   }
 }
 

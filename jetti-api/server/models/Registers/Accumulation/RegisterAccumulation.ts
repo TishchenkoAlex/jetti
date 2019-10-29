@@ -18,7 +18,7 @@ export function JRegisterAccumulation(props: RegisterAccumulationOptions) {
 export class RegisterAccumulation {
   query: string;
   @Props({ type: 'boolean', required: true })
-  kind: boolean;
+  kind = true;
 
   @Props({ type: 'string', hidden: true, hiddenInList: true , required: true})
   type: RegisterAccumulationTypes | null = null;
@@ -32,9 +32,9 @@ export class RegisterAccumulation {
   @Props({ type: 'Catalog.Company', required: true })
   company: Ref = null;
 
-  constructor (kind: boolean, public data: { [x: string]: any } = {}) {
-    this.kind = kind;
-    Object.keys(data).forEach(k => this[k] = data[k]);
+  constructor (init: Partial<RegisterAccumulation>) {
+    Object.assign(this, init);
+    this.type = (this.Prop() as RegisterAccumulationOptions).type;
   }
 
   private targetProp(target: Object, propertyKey: string): PropOptions {

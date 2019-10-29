@@ -21,7 +21,7 @@ export class RegisterInfo {
   type: RegisterInfoTypes | null = null;
 
   @Props({ type: 'datetime', required: true })
-  date = new Date();
+  date: Date = new Date();
 
   @Props({ type: 'Catalog.Company', required: true })
   company: Ref = null;
@@ -29,8 +29,9 @@ export class RegisterInfo {
   @Props({ type: 'Types.Document', hiddenInList: true, required: true })
   document: Ref = null;
 
-  constructor(public data: { [x: string]: any }) {
-    Object.keys(data).forEach(k => this[k] = data[k]);
+  constructor(init: Partial<RegisterInfo>) {
+    Object.assign(this, init);
+    this.type = (this.Prop() as RegisterInfoOptions).type;
   }
 
   private targetProp(target: Object, propertyKey: string): PropOptions {

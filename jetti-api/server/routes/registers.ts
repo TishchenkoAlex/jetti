@@ -12,9 +12,11 @@ export const router = express.Router();
 
 router.get('/register/account/movements/view/:id', async (req, res, next) => {
   try {
+    const id = req.params.id;
+    const query = `SELECT * FROM "Register.Account.View" where "document.id" = '${id}'`;
+
     await sdb.tx(async tx => {
-      const query = `SELECT * FROM "Register.Account.View" where "document.id" = @p1`;
-      const data = await tx.manyOrNoneFromJSON<AccountRegister>(query, [req.params.id]);
+      const data = await tx.manyOrNoneFromJSON<AccountRegister>(query);
       res.json(data);
     }, User(req));
   } catch (err) { next(err); }
@@ -22,12 +24,13 @@ router.get('/register/account/movements/view/:id', async (req, res, next) => {
 
 router.get('/register/accumulation/list/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const id = req.params.id;
+    const query = `SELECT DISTINCT r.type "type" FROM "Accumulation" r WHERE r.document = '${id}'`;
+
     await sdb.tx(async tx => {
-      const result = await tx.manyOrNone<{ type: RegisterAccumulationTypes }>(`
-        SELECT DISTINCT r.type "type" FROM "Accumulation" r
-        WHERE r.document = @p1`, [req.params.id]);
+      const result = await tx.manyOrNone<{ type: RegisterAccumulationTypes }>(query);
       const list = result.map(r => {
-        const regiter = createRegisterAccumulation(r.type, true, {});
+        const regiter = createRegisterAccumulation({ type: r.type });
         const description = (regiter.Prop() as RegisterAccumulationOptions).description;
         return ({ type: r.type, description });
       });
@@ -38,12 +41,13 @@ router.get('/register/accumulation/list/:id', async (req: Request, res: Response
 
 router.get('/register/info/list/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const id = req.params.id;
+    const query = `SELECT DISTINCT r.type "type" FROM "Register.Info" r WHERE r.document = '${id}'`;
+
     await sdb.tx(async tx => {
-      const result = await tx.manyOrNone<{ type: RegisterInfoTypes }>(`
-        SELECT DISTINCT r.type "type" FROM "Register.Info" r
-        WHERE r.document = @p1`, [req.params.id]);
+      const result = await tx.manyOrNone<{ type: RegisterInfoTypes }>(query);
       const list = result.map(r => {
-        const description = (createRegisterInfo(r.type, {}).Prop() as RegisterInfoOptions).description;
+        const description = (createRegisterInfo({ type: r.type }).Prop() as RegisterInfoOptions).description;
         return ({ type: r.type, description });
       });
       res.json(list);
@@ -53,11 +57,12 @@ router.get('/register/info/list/:id', async (req: Request, res: Response, next: 
 
 router.get('/register/accumulation/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const id = req.params.id;
+    const type = req.params.type as RegisterAccumulationTypes;
+    const query = createRegisterAccumulation({ type }).QueryList();
+
     await sdb.tx(async tx => {
-      let result: RegisterAccumulation[]; let config_schema;
-      const JRegister = createRegisterAccumulation(req.params.type as RegisterAccumulationTypes, true, {});
-      config_schema = { queryObject: JRegister.QueryList() };
-      result = await tx.manyOrNone<RegisterAccumulation>(`${config_schema.queryObject} AND r.document = @p1`, [req.params.id]);
+      const result = await tx.manyOrNone<RegisterAccumulation>(`${query} AND r.document = '${id}'`);
       res.json(result);
     }, User(req));
   } catch (err) { next(err); }
@@ -65,11 +70,12 @@ router.get('/register/accumulation/:type/:id', async (req: Request, res: Respons
 
 router.get('/register/info/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const id = req.params.id;
+    const type = req.params.type as RegisterInfoTypes;
+    const query = createRegisterInfo({ type }).QueryList();
+
     await sdb.tx(async tx => {
-      let result: RegisterInfo[]; let config_schema;
-      const JRegister = createRegisterInfo(req.params.type as RegisterInfoTypes, {});
-      config_schema = { queryObject: JRegister.QueryList() };
-      result = await tx.manyOrNone<RegisterInfo>(`${config_schema.queryObject} AND r.document = @p1`, [req.params.id]);
+      const result = await tx.manyOrNone<RegisterInfo>(`${query} AND r.document = '${id}'`);
       res.json(result);
     }, User(req));
   } catch (err) { next(err); }

@@ -11,7 +11,7 @@ import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { DocumentBaseServer, IFlatDocument, INoSqlDocument } from './models/ServerDocument';
 import { MSSQL, sdb } from './mssql';
-import { InsertRegisterstoDB } from './routes/utils/execute-script';
+import { InsertRegistersIntoDB } from './routes/utils/InsertRegistersIntoDB';
 
 export interface BatchRow {
   SKU: Ref; Storehouse: Ref; Qty: number; batch: Ref; Cost: number;
@@ -277,7 +277,7 @@ export async function postById(id: string, posted: boolean, tx: MSSQL): Promise<
 
   if (serverDoc.isDoc && serverDoc.onPost) {
     const Registers = await serverDoc.onPost(tx);
-    if (posted && !doc.deleted) await InsertRegisterstoDB(serverDoc, Registers, tx);
+    if (posted && !doc.deleted) await InsertRegistersIntoDB(serverDoc, Registers, tx);
   }
   return true;
 }
@@ -299,7 +299,7 @@ export async function repostById(id: Ref, tx: MSSQL): Promise<void> {
 
     if (serverDoc.isDoc && serverDoc.onPost) {
       const Registers = await serverDoc.onPost(tx);
-      await InsertRegisterstoDB(serverDoc, Registers, tx);
+      await InsertRegistersIntoDB(serverDoc, Registers, tx);
     }
   }
 }

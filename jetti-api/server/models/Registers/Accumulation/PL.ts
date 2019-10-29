@@ -1,5 +1,5 @@
-import { RegisterAccumulation, JRegisterAccumulation } from './RegisterAccumulation';
-import { Ref, Props } from '../../document';
+import { Props, Ref } from '../../document';
+import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulation';
 
 @JRegisterAccumulation({
   type: 'Register.Accumulation.PL',
@@ -18,12 +18,8 @@ export class RegisterAccumulationPL extends RegisterAccumulation {
   @Props({ type: 'number' })
   Amount = 0;
 
-  constructor(kind: boolean, public data: {
-    Department: Ref,
-    Analytics: Ref,
-    Amount: number,
-    PL: Ref,
-  }) {
-    super(kind, data);
+  constructor (init: Partial<RegisterAccumulationPL>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

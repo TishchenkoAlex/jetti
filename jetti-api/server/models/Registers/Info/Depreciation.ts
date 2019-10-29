@@ -11,7 +11,7 @@ export class RegisterInfoDepreciation extends RegisterInfo {
   OE: Ref = null;
 
   @Props({ type: 'date', required: true })
-  StartDate = new Date();
+  StartDate: Date = new Date();
 
   @Props({ type: 'number', required: true })
   Period = 0;
@@ -25,15 +25,9 @@ export class RegisterInfoDepreciation extends RegisterInfo {
   @Props({ type: 'string', value: ['LIN', 'PROP'] })
   Method = 'LIN';
 
-  constructor(public data: {
-    Method: string,
-    OE: Ref,
-    StartDate: Date,
-    Period: number,
-    StartCost: number,
-    EndCost: number,
-  }) {
-    super(data);
+  constructor(init: Partial<RegisterInfoDepreciation>) {
+    super(init);
+    Object.assign(this, init);
   }
 }
 

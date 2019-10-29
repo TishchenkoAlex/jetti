@@ -76,7 +76,8 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
     const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx) || 1;
 
     // AR
-    Registers.Accumulation.push(new RegisterAccumulationAR(true, {
+    Registers.Accumulation.push(new RegisterAccumulationAR({
+      kind: true,
       AO: this.id,
       Department: this.Department,
       Customer: this.Customer,
@@ -101,7 +102,8 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
       batchRows = await lib.inventory.batchRows(this.date, this.company, this.Storehouse, row.SKU, row.Qty, batchRows, tx);
       for (const batchRow of batchRows) {
 
-        Registers.Accumulation.push(new RegisterAccumulationInventory(false, {
+        Registers.Accumulation.push(new RegisterAccumulationInventory({
+          kind: false,
           Expense: ExpenseCOST,
           Storehouse: this.Storehouse,
           batch: batchRow.batch,
@@ -119,7 +121,8 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
           sum: batchRow.Cost,
         });
 
-        Registers.Accumulation.push(new RegisterAccumulationSales(true, {
+        Registers.Accumulation.push(new RegisterAccumulationSales({
+          kind: true,
           AO: this.id,
           Department: this.Department,
           Customer: this.Customer,
@@ -136,14 +139,16 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
           currency: this.currency
         }));
 
-        Registers.Accumulation.push(new RegisterAccumulationPL(true, {
+        Registers.Accumulation.push(new RegisterAccumulationPL({
+          kind: true,
           Department: this.Department,
           PL: IncomeSALES,
           Analytics: row.SKU,
           Amount: row.Amount * batchRow.rate / exchangeRate,
         }));
 
-        Registers.Accumulation.push(new RegisterAccumulationPL(false, {
+        Registers.Accumulation.push(new RegisterAccumulationPL({
+          kind: false,
           Department: this.Department,
           PL: ExpenseCOST,
           Analytics: row.SKU,
@@ -152,28 +157,32 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
       }
     }
 
-    Registers.Accumulation.push(new RegisterAccumulationBalance(true, {
+    Registers.Accumulation.push(new RegisterAccumulationBalance({
+      kind: true,
       Department: this.Department,
       Balance: AR,
       Analytics: this.Customer,
       Amount: this.Amount / exchangeRate
     }));
 
-    Registers.Accumulation.push(new RegisterAccumulationBalance(false, {
+    Registers.Accumulation.push(new RegisterAccumulationBalance({
+      kind: false,
       Department: this.Department,
       Balance: INVENTORY,
       Analytics: this.Storehouse,
       Amount: totalCost
     }));
 
-    Registers.Accumulation.push(new RegisterAccumulationBalance(true, {
+    Registers.Accumulation.push(new RegisterAccumulationBalance({
+      kind: true,
       Department: this.Department,
       Balance: PL,
       Analytics: ExpenseCOST,
       Amount: totalCost
     }));
 
-    Registers.Accumulation.push(new RegisterAccumulationBalance(false, {
+    Registers.Accumulation.push(new RegisterAccumulationBalance({
+      kind: false,
       Department: this.Department,
       Balance: PL,
       Analytics: IncomeSALES,

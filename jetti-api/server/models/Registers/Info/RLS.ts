@@ -8,15 +8,13 @@ import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 export class RegisterInfoRLS extends RegisterInfo {
 
   @Props({ type: 'string', required: true, unique: true, order: 1 })
-  user: string | null;
+  user = '';
 
   @Props({ type: 'Catalog.Company', required: true, unique: true, order: 2 })
-  company: Ref;
+  company: Ref = null;
 
-  constructor(public data: {
-    user: string,
-    company: Ref,
-  }) {
-    super(data);
+  constructor(init: Partial<RegisterInfoRLS>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

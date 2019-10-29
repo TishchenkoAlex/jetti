@@ -24,14 +24,8 @@ export class RegisterAccumulationInventory extends RegisterAccumulation {
   @Props({ type: 'number' })
   Qty = 0;
 
-  constructor(kind: boolean, public data: {
-    Expense: Ref,
-    Storehouse: Ref,
-    SKU: Ref,
-    batch: Ref,
-    Cost: number,
-    Qty: number,
-  }) {
-    super(kind, data);
+  constructor (init: Partial<RegisterAccumulationInventory>) {
+    super(init);
+    Object.assign(this, init);
   }
 }

@@ -16,11 +16,10 @@ export class RegisterInfoExchangeRates extends RegisterInfo {
   @Props({ type: 'number' })
   Mutiplicity = 1;
 
-  constructor(public data: {
-    currency: Ref,
-    Rate: number,
-    Mutiplicity: number
-  }) {
-    super(data);
+  constructor(init: Partial<RegisterInfoExchangeRates>) {
+    super(init);
+    Object.assign(this, init);
   }
 }
+
+

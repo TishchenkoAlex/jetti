@@ -10,10 +10,10 @@
                 'layout-menu-static-active': staticMenuMobileActive}">
 
   <app-topbar></app-topbar>
-  <div class="layout-menu-container" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)">
-    <p-scrollPanel #layoutMenuScroller [style]="{height: '100%' }">
+  <div class="layout-menu-container" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)" >
+    <app-inline-profile *ngIf="profileMode=='inline'&&!isHorizontal()"></app-inline-profile>
+    <p-scrollPanel #layoutMenuScroller [style]="{'overflow-y': 'hidden' }">
       <div class="menu-scroll-content">
-        <app-inline-profile *ngIf="profileMode=='inline'&&!isHorizontal()"></app-inline-profile>
         <app-menu [reset]="resetMenu"></app-menu>
       </div>`
     </p-scrollPanel>

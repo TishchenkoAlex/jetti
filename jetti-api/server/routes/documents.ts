@@ -2,6 +2,7 @@ import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
+import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
 import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/api';
 import { createDocument } from '../models/documents.factory';
 import { createDocumentServer } from '../models/documents.factory.server';
@@ -14,10 +15,17 @@ import { FormListSettings } from './../models/user.settings';
 import { buildColumnDef } from './../routes/utils/columns-def';
 import { lib } from './../std.lib';
 import { User } from './user.settings';
-import { buildViewModel, doSubscriptions, InsertRegisterstoDB } from './utils/execute-script';
+import { InsertRegistersIntoDB } from './utils/InsertRegistersIntoDB';
 import { List } from './utils/list';
 
 export const router = express.Router();
+
+export async function buildViewModel(ServerDoc: DocumentBaseServer, tx: MSSQL) {
+  const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
+  const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
+  return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
+}
+
 
 // Select documents list for UI (grids/list etc)
 router.post('/list', async (req: Request, res: Response, next: NextFunction) => {
@@ -116,8 +124,6 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
 
       const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type, doc, tx);
 
-      await doSubscriptions(serverDoc, 'before detele', tx);
-
       const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
       if (typeof beforeDelete === 'function') await beforeDelete(tx);
 
@@ -139,8 +145,6 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
 
       if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
 
-      await doSubscriptions(serverDoc, 'after detele', tx);
-
       if (serverDoc && serverDoc.onPost) await serverDoc.onPost(tx);
 
       const view = await buildViewModel(serverDoc, tx);
@@ -153,7 +157,6 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
 async function post(serverDoc: DocumentBaseServer, mode: 'post' | 'save', tx: MSSQL) {
   const id = serverDoc.id;
   const isNew = (await tx.oneOrNone<{ id: string }>(`SELECT id FROM "Documents" WHERE id = '${id}'`) === null);
-  await doSubscriptions(serverDoc, isNew ? 'before insert' : 'before update', tx);
 
   const beforeSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeSave'];
   if (typeof beforeSave === 'function') await beforeSave(tx);
@@ -178,7 +181,7 @@ async function post(serverDoc: DocumentBaseServer, mode: 'post' | 'save', tx: MS
 
   if (serverDoc.isDoc && serverDoc.onPost) {
     const Registers = await serverDoc.onPost(tx);
-    if (serverDoc.posted && !serverDoc.deleted) await InsertRegisterstoDB(serverDoc, Registers, tx);
+    if (serverDoc.posted && !serverDoc.deleted) await InsertRegistersIntoDB(serverDoc, Registers, tx);
   }
 
   const afterPost: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterPost'];
@@ -242,7 +245,6 @@ async function post(serverDoc: DocumentBaseServer, mode: 'post' | 'save', tx: MS
         SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
   }
   serverDoc.map(response);
-  await doSubscriptions(serverDoc, isNew ? 'after insert' : 'after update', tx);
   return serverDoc;
 }
 

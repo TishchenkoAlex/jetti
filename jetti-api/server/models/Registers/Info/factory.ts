@@ -19,12 +19,12 @@ export type RegistersInfo =
     RegisterInfoSettings |
     RegisterInfoRLS;
 
-interface IRegisteredRegisterInfo {
+export interface IRegisteredRegisterInfo {
     type: RegisterInfoTypes;
     Class: typeof RegisterInfo;
 }
 
-export const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
+const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.Settings', Class: RegisterInfoSettings },
@@ -32,7 +32,15 @@ export const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.RLS', Class: RegisterInfoRLS },
 ];
 
-export function createRegisterInfo(type: RegisterInfoTypes, data: { [x: string]: any }) {
-    const doc = RegisteredRegisterInfo.find(el => el.type === type);
-    if (doc) return new doc.Class(data); else throw new Error(`can't create type! ${type} is not registered`);
+export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {
+    const doc = RegisteredRegisterInfo.find(el => el.type === init.type);
+    if (doc) return (new doc.Class(init) as T); else throw new Error(`can't create type! ${init.type} is not registered`);
+}
+
+export function RegisterRegisterInfo(Register: IRegisteredRegisterInfo) {
+    RegisteredRegisterInfo.push(Register);
+}
+
+export function GetRegisterInfo() {
+    return RegisteredRegisterInfo;
 }
