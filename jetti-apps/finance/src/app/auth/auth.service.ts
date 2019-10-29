@@ -6,7 +6,7 @@ import { MsalService } from '@azure/msal-angular';
 import * as jwt_decode from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, tap } from 'rxjs/operators';
-import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/api';
+import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/common-types';
 import { getRoleObjects, RoleObject, RoleType } from '../../../../../jetti-api/server/models/Roles/Base';
 import { environment, OAuthSettings } /*  */ from '../../environments/environment';
 export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '' };

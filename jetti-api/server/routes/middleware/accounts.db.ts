@@ -1,4 +1,4 @@
-import { IAccount } from '../../models/api';
+import { IAccount } from '../../models/common-types';
 import { sdba } from '../../mssql';
 
 export namespace Accounts {

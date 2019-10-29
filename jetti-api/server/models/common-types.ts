@@ -1,7 +1,7 @@
 import * as Queue from 'bull';
-import { AllDocTypes, AllTypes } from '../models/documents.types';
-import { DocumentOptions, Ref } from './../models/document';
 import { ColumnDef } from './column';
+import { DocumentOptions, Ref } from './document';
+import { AllDocTypes, AllTypes } from './documents.types';
 import { RoleType } from './Roles/Base';
 import { FormListFilter, FormListOrder, FormListSettings } from './user.settings';
 

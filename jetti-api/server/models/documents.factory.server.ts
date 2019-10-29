@@ -1,9 +1,9 @@
 import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
 import { createDocument, IRegisteredDocument } from './../models/documents.factory';
-import { calculateDescription, RefValue } from './api';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
+import { calculateDescription, RefValue } from './common-types';
 import { DocumentBase, DocumentOptions } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';

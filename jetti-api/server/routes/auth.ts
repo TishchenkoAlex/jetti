@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import { JTW_KEY } from '../env/environment';
-import { IAccount } from '../models/api';
+import { IAccount } from '../models/common-types';
 import { Accounts } from './middleware/accounts.db';
 import { authHTTP } from './middleware/check-auth';
 

@@ -8,7 +8,7 @@ import { merge, of as observableOf, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
-import { calculateDescription } from '../../../../../../jetti-api/server/models/api';
+import { calculateDescription } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, Ref } from '../../../../../../jetti-api/server/models/document';
 import { DocService } from '../../common/doc.service';
 import { FormControlInfo } from '../dynamic-form/dynamic-form-base';

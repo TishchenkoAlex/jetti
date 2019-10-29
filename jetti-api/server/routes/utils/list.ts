@@ -1,7 +1,7 @@
 // tslint:disable:prefer-const
+import { DocListRequestBody, DocListResponse } from '../../models/common-types';
 import { DocumentBase } from '../../models/document';
 import { MSSQL } from '../../mssql';
-import { DocListRequestBody, DocListResponse } from './../../models/api';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 

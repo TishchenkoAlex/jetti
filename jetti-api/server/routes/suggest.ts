@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { ISuggest } from '../models/api';
+import { ISuggest } from '../models/common-types';
 import { sdb } from '../mssql';
 import { User } from './user.settings';
 
@@ -9,43 +9,42 @@ export const router = express.Router();
 router.get('/suggest/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdb.tx(async tx => {
-    const query = `
+      const query = `
         SELECT id as id, description as value, code as code, type as type
         FROM "Documents" WHERE id = @p1`;
-    const data = await tx.oneOrNone<ISuggest>(query, [req.params.id]);
-    res.json(data);
+      const data = await tx.oneOrNone<ISuggest>(query, [req.params.id]);
+      res.json(data);
     }, User(req));
   } catch (err) { next(err); }
 });
 
 router.get('/suggest/:type/isfolder/*', async (req: Request, res: Response, next: NextFunction) => {
-  let query = '';
-  const type = req.params.type as string;
   try {
-    await sdb.tx(async tx => {
-    query = `
+    const type = req.params.type as string;
+    const query = `
       SELECT top 10 id as id, description as value, code as code, type as type
-      FROM "Documents" WHERE type = '${req.params.type}' AND isfolder = 1
+      FROM "Documents" WHERE type = '${type}' AND isfolder = 1
       AND (description LIKE @p1 OR code LIKE @p1)
-      ORDER BY type, description`;
-    const data = await tx.manyOrNone<any>(query, ['%' + req.params[0] + '%']);
-    res.json(data);
+      ORDER BY type, description, code`;
+
+    await sdb.tx(async tx => {
+      const data = await tx.manyOrNone<any>(query, ['%' + req.params[0] + '%']);
+      res.json(data);
     }, User(req));
   } catch (err) { next(err); }
 });
 
 router.get('/suggest/:type/*', async (req: Request, res: Response, next: NextFunction) => {
-  let query = '';
   const type = req.params.type as string;
+  const query = `
+    SELECT top 10 id as id, description as value, code as code, type as type
+    FROM "Documents" WHERE type = '${type}' AND isfolder = 0
+    AND (description LIKE @p1 OR code LIKE @p1)
+    ORDER BY type, description, code`;
   try {
     await sdb.tx(async tx => {
-    query = `
-      SELECT top 10 id as id, description as value, code as code, type as type
-      FROM "Documents" WHERE type = '${req.params.type}' AND isfolder = 0
-      AND (description LIKE @p1 OR code LIKE @p1)
-      ORDER BY type, description`;
-    const data = await tx.manyOrNone<ISuggest>(query, ['%' + req.params[0] + '%']);
-    res.json(data);
+      const data = await tx.manyOrNone<ISuggest>(query, ['%' + req.params[0] + '%']);
+      res.json(data);
     }, User(req));
   } catch (err) { next(err); }
 });

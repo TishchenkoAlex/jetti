@@ -1,8 +1,8 @@
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
-import { PatchValue } from '../api';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
+import { PatchValue } from '../common-types';
 import { createDocumentServer } from '../documents.factory.server';
 import { RegisterInfoSettings } from '../Registers/Info/Settings';
 import { ServerDocument } from '../ServerDocument';

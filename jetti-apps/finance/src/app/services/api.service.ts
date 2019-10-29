@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
-import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue } from '../../../../../jetti-api/server/models/api';
+import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, Ref } from '../../../../../jetti-api/server/models/document';
 import { AllDocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';

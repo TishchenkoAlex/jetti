@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { IJobs } from '../models/api';
+import { IJobs } from '../models/common-types';
 import { JQueue, mapJob } from '../models/Tasks/tasks';
 import { sdbq } from '../mssql';
 import { User } from '../routes/user.settings';

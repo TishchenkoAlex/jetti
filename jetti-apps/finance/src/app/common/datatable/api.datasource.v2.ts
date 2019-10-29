@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, filter, map, share, switchMap, tap } from 'rxjs/operators';
-import { Continuation, DocListResponse } from '../../../../../../jetti-api/server/models/api';
+import { Continuation, DocListResponse } from '../../../../../../jetti-api/server/models/common-types';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';

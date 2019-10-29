@@ -1,7 +1,7 @@
 import { CatalogCounterpartie } from '../../models/Catalogs/Catalog.Counterpartie';
 import { DocumentBase } from '../../models/document';
 import { MSSQL } from '../../mssql';
-import { lib } from '../../std.lib';
+import { BatchRow, lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { createDocumentServer } from '../documents.factory.server';
 import { RegisterAccumulationAR } from '../Registers/Accumulation/AR';
@@ -96,7 +96,7 @@ export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocu
 
     let totalCost = 0;
 
-    let batchRows: any[] = [];
+    let batchRows: BatchRow[] = [];
     for (const row of this.Items) {
 
       batchRows = await lib.inventory.batchRows(this.date, this.company, this.Storehouse, row.SKU, row.Qty, batchRows, tx);

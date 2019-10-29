@@ -2,7 +2,7 @@ import * as Queue from 'bull';
 import { QueueOptions } from 'bull';
 import { DB_NAME, REDIS_DB_HOST } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
-import { IJob } from '../api';
+import { IJob } from '../common-types';
 import cost from './cost';
 import post from './post';
 

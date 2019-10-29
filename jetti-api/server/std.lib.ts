@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { RefValue } from './models/api';
+import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument } from './models/documents.factory';
@@ -13,10 +13,7 @@ import { DocumentBaseServer, IFlatDocument, INoSqlDocument } from './models/Serv
 import { MSSQL, sdb } from './mssql';
 import { InsertRegistersIntoDB } from './routes/utils/InsertRegistersIntoDB';
 
-export interface BatchRow {
-  SKU: Ref; Storehouse: Ref; Qty: number; batch: Ref; Cost: number;
-  res1: number; res2: number; res3: number; res4: number; res5: number;
-}
+export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
 export interface JTL {
   db: MSSQL;
@@ -51,8 +48,8 @@ export interface JTL {
   };
   inventory: {
     batchRows: (date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number,
-      Inventory: any[], tx: MSSQL) => Promise<any[]>,
-    batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL)
+      BatchRows: any[], tx: MSSQL) => Promise<BatchRow[]>,
+    // batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL)
   };
 }
 
@@ -87,7 +84,7 @@ export const lib: JTL = {
   },
   inventory: {
     batchRows,
-    batchReturn
+    // batchReturn
   }
 };
 
@@ -310,9 +307,9 @@ export async function movementsByDoc<T extends RegisterAccumulation>(type: Regis
   return await tx.manyOrNone<T>(queryText);
 }
 
-export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number, BatchRows: any[], tx: MSSQL) {
+export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number, BatchRows: BatchRow[], tx: MSSQL) {
 
-  const ResultBatchRows: any[] = [];
+  const ResultBatchRows: BatchRow[] = [];
 
   const queryText = `
     SELECT batch, Qty, Cost, b.date FROM (
@@ -374,7 +371,7 @@ export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: 
 
   return ResultBatchRows;
 }
-
+/*
 export async function batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL) {
   const rowsKeys = rows.map(r => (r.Storehouse as string) + (r.SKU as string));
   const uniquerowsKeys = rowsKeys.filter((v, i, a) => a.indexOf(v) === i);
@@ -423,7 +420,7 @@ export async function batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL) {
     }
   }
   return result;
-}
+} */
 
 global['lib'] = lib;
 global['DOC'] = lib.doc;

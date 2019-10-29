@@ -2,7 +2,7 @@ import { Injectable, NgModule } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 // tslint:disable-next-line:max-line-length
 import { ActivatedRouteSnapshot, DetachedRouteHandle, Resolve, RouteReuseStrategy, RouterModule, RouterStateSnapshot, Routes } from '@angular/router';
-import { IViewModel } from '../../../../jetti-api/server/models/api';
+import { IViewModel } from '../../../../jetti-api/server/models/common-types';
 import { AuthGuardService } from './auth/auth.guard.service';
 import { DynamicFormService } from './common/dynamic-form/dynamic-form.service';
 import { TabControllerComponent } from './common/tabcontroller/tabcontroller.component';

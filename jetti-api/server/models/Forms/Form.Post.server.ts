@@ -1,7 +1,18 @@
 import { sdbq } from '../../mssql';
 import { ICallRequest } from '../../routes/utils/interfaces';
+import { DocTypes } from '../documents.types';
 import { JQueue } from '../Tasks/tasks';
 import { FormPost } from './Form.Post';
+import { FormTypes } from './form.types';
+
+export interface ICallRequest {
+  type: FormTypes | DocTypes;
+  formView: { [x: string]: any };
+  method: string;
+  params: any[];
+  user: string;
+  userID: string;
+}
 
 export default class FormPostServer extends FormPost {
 

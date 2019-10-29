@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, map, sampleTime, take } from 'rxjs/operators';
 import * as IO from 'socket.io-client';
-import { IJob, IJobs } from '../../../../../jetti-api/server/models/api';
+import { IJob, IJobs } from '../../../../../jetti-api/server/models/common-types';
 import { AuthService } from '../auth/auth.service';
 import { ApiService } from '../services/api.service';
 import { environment } from './../../environments/environment';

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable } from 'rxjs';
-import { ISuggest } from '../../../../../../jetti-api/server/models/api';
+import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';

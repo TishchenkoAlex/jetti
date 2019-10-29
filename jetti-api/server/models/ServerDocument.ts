@@ -1,5 +1,5 @@
+import { PatchValue } from '../../../jetti-api/server/models/common-types';
 import { MSSQL } from '../mssql';
-import { PatchValue } from './api';
 import { DocumentBase, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { PostResult } from './post.interfaces';

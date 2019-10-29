@@ -4,7 +4,7 @@ import { TreeNode } from 'primeng/api';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { v1 } from 'uuid';
-import { ITree } from '../../../../../../jetti-api/server/models/api';
+import { ITree } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { DocService } from '../../common/doc.service';

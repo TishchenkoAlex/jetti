@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
-import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/api';
+import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/common-types';
 import { createDocument } from '../models/documents.factory';
 import { createDocumentServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
@@ -25,7 +25,6 @@ export async function buildViewModel(ServerDoc: DocumentBaseServer, tx: MSSQL) {
   const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
   return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
 }
-
 
 // Select documents list for UI (grids/list etc)
 router.post('/list', async (req: Request, res: Response, next: NextFunction) => {

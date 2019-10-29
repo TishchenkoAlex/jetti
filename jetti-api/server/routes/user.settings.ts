@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { IAccount } from '../models/api';
+import { IAccount } from '../models/common-types';
 import { sdb, sdba } from '../mssql';
 import { FormListSettings, UserDefaultsSettings } from './../models/user.settings';
 
