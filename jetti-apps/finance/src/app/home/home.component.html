@@ -1,8 +1,10 @@
 <!-- <j-tree-list #tl docType="Catalog.Product"></j-tree-list> -->
-<div *ngIf="auth.isLoggedIn$ | async" style="height: calc(100vh - 180px)">
-  <iframe tru width="100%" height="100%" [src]="(auth.url$ | async)" frameborder="0" allowFullScreen="true"></iframe>
+<div *ngIf="auth.isLoggedIn$ | async" style="display: flex; justify-content: center; height: calc(100vh - 130px); align-items: center;">
+  <a href="https://jettifinance.azurewebsites.net/user/Reports?groupid=31f6e243-cd80-4bb2-8c42-aae8630aac96&reportid=4aa0f435-f093-4256-9dae-65a3c48378cf">
+    PowerBI Reports here ...
+  </a>
 </div>
-<form *ngIf="auth.isLoggedOut$ | async" #f="ngForm" (ngSubmit)="login(f.value.email, f.value.password)">
+<form *ngIf="auth.isLoggedOut$ | async" #f="ngForm">
   <div class="card login-panel ui-fluid">
     <div class="login-panel-content">
       <div class="ui-g">

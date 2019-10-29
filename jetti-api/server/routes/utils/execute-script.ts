@@ -1,10 +1,10 @@
 import { SQLGenegator } from '../../fuctions/SQLGenerator.MSSQL';
 import { PostResult } from '../../models/post.interfaces';
-import { MSSQL, sdb } from '../../mssql';
+import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { DocumentBaseServer } from './../../models/ServerDocument';
 
-export async function InsertRegisterstoDB(doc: DocumentBaseServer, Registers: PostResult, tx = sdb) {
+export async function InsertRegisterstoDB(doc: DocumentBaseServer, Registers: PostResult, tx: MSSQL) {
   let query = '';
   for (const rec of Registers.Account) {
     query += `
@@ -19,7 +19,7 @@ export async function InsertRegisterstoDB(doc: DocumentBaseServer, Registers: Po
         '${rec.debit.account}',
         '${rec.debit.subcounts[0]}', '${rec.debit.subcounts[1]}',
         '${rec.debit.subcounts[2]}', '${rec.debit.subcounts[3]}',
-        ${rec.debit.qty || 0},  '${rec.debit.currency  || doc['currency']}', ${rec.debit.sum || rec.sum || 0},
+        ${rec.debit.qty || 0},  '${rec.debit.currency || doc['currency']}', ${rec.debit.sum || rec.sum || 0},
         '${rec.kredit.account}',
         '${rec.kredit.subcounts[0]}', '${rec.kredit.subcounts[1]}',
         '${rec.kredit.subcounts[2]}', '${rec.kredit.subcounts[3]}',
@@ -29,7 +29,7 @@ export async function InsertRegisterstoDB(doc: DocumentBaseServer, Registers: Po
 
   for (const rec of Registers.Accumulation) {
     const date = rec.date ? rec.date : doc.date;
-    const data = { ...rec.data, type: rec.type, company: rec.company || doc.company, document: doc.id };
+    const data = { ...rec.data, type: rec.type, company: rec.data.company || rec.company || doc.company, document: doc.id };
     query += `
     INSERT INTO "Accumulation" (kind, date, type, company, document, data)
     VALUES (${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
@@ -37,7 +37,7 @@ export async function InsertRegisterstoDB(doc: DocumentBaseServer, Registers: Po
   }
 
   for (const rec of Registers.Info) {
-    const data = { ...rec.data, type: rec.type, document: doc.id, company: rec.company || doc.company };
+    const data = { ...rec.data, type: rec.type, document: doc.id, company: rec.data.company || rec.company || doc.company };
     query += `
     INSERT INTO "Register.Info" (date, type, company, document, data)
     VALUES ('${new Date(doc.date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',

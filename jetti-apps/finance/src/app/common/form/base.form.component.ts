@@ -57,7 +57,6 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore) { }
 
   ngOnInit() {
-    console.log(this.model);
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {

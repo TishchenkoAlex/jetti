@@ -30,7 +30,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
     const UserObject = await lib.doc.byIdT<CatalogUser>(this.user, tx);
 
-    for (const row of this.Company) {
+    for (const row of this.CompanyList) {
       Registers.Info.push(new RegisterInfoRLS({
         company: row.company,
         user: UserObject!.code

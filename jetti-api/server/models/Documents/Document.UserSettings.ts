@@ -15,10 +15,10 @@ export class DocumentUserSettings extends DocumentBase {
   user: Ref = null;
 
   @Props({ type: 'table', required: true, order: 1, label: 'Granted company list' })
-  Company: TableItems[] = [new TableItems()];
+  CompanyList: CompanyItems[] = [new CompanyItems()];
 }
 
-class TableItems {
+class CompanyItems {
   @Props({ type: 'Catalog.Company', required: true, style: {width: '100%'} })
   company: Ref = null;
 }
