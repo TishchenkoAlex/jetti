@@ -6,6 +6,10 @@ body {
   font-size: 0.8em !important;
 }
 
+html, body {
+  height: 100%;
+}
+
 .layout-wrapper .layout-main {
   padding: 70px 8px 0px 8px;
   margin: 0;

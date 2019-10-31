@@ -1,4 +1,4 @@
-import { PatchValue } from '../../../jetti-api/server/models/common-types';
+import { PatchValue } from '../models/common-types';
 import { MSSQL } from '../mssql';
 import { DocumentBase, Ref } from './document';
 import { DocTypes } from './documents.types';

@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './../models/ServerDocument';
-import { ICommand } from './commands';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
+export interface ICommand { command: string; label: string; color?: string; icon: string; }
 
 export interface PropOptions {
   type: AllTypes | AllTypes[];

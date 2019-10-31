@@ -73,7 +73,7 @@
     <j-control *ngIf="vk['script']" [control]="vk['script']" [form]="form"></j-control>
   </p-panel>
 
-  <p-panel *ngIf="(type === 'Catalog.Operation' || 'Catalog.Catalog') && isFolder === false" [toggleable]="true" header="Document module"
+  <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module"
     [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
     <j-control *ngIf="vk['module']" [control]="vk['module']" [form]="form"></j-control>
   </p-panel>
