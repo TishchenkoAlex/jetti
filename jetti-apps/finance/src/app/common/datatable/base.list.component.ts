@@ -218,11 +218,18 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   async post(mode = 'post') {
     const tasksCount = this.selection.length; let i = tasksCount;
     for (const s of this.selection) {
+      if (s.deleted) continue;
       this.lds.counter = Math.round(100 - ((--i) / tasksCount * 100));
       if (mode === 'post') {
-        s.posted = (await this.ds.post(s.id));
+        try {
+          await this.ds.posById(s.id);
+          s.posted = true;
+        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       } else {
-        s.posted = !(await this.ds.unpost(s.id));
+        try {
+        await this.ds.unpostById(s.id);
+        s.posted = false;
+      } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       }
       this.selection = [s];
       setTimeout(() => scrollIntoViewIfNeeded(this.type, 'ui-state-highlight'));
@@ -235,7 +242,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.filters['parent'] = {
       matchMode: '=',
       value: event && event.data && event.data.id ? {
-        id:  event.data.id,
+        id: event.data.id,
         code: '',
         description: event.data.description
       } : null

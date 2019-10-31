@@ -2,16 +2,16 @@ import * as moment from 'moment';
 import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
-import { createDocument } from './models/documents.factory';
+import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer } from './models/documents.factory.server';
 import { DocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { DocumentBaseServer, IFlatDocument, INoSqlDocument } from './models/ServerDocument';
+import { DocumentBaseServer } from './models/ServerDocument';
 import { MSSQL, sdb } from './mssql';
-import { InsertRegistersIntoDB } from './routes/utils/InsertRegistersIntoDB';
+import { adminModeForPost, postDocument, unpostDocument } from './routes/utils/post';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -35,8 +35,8 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     formControlRef: (id: string, tx: MSSQL) => Promise<RefValue | null>;
-    postById: (id: string, posted: boolean, tx: MSSQL) => Promise<boolean>;
-    repostById: (id: Ref, tx: MSSQL) => Promise<void>;
+    postById: (id: Ref, tx: MSSQL) => Promise<{id: Ref, posted: boolean}>;
+    unPostById: (id: Ref, tx: MSSQL) => Promise<{id: Ref, posted: boolean}>;
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
@@ -50,6 +50,9 @@ export interface JTL {
     batchRows: (date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number,
       BatchRows: any[], tx: MSSQL) => Promise<BatchRow[]>,
     // batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL)
+  };
+  util: {
+    postMode: (mode: boolean, tx: MSSQL) => Promise<boolean>,
   };
 }
 
@@ -73,7 +76,7 @@ export const lib: JTL = {
     byIdT: byIdT,
     formControlRef,
     postById,
-    repostById,
+    unPostById,
     noSqlDocument,
     flatDocument,
     docPrefix
@@ -85,6 +88,9 @@ export const lib: JTL = {
   inventory: {
     batchRows,
     // batchReturn
+  },
+  util: {
+    postMode: adminModeForPost
   }
 };
 
@@ -256,49 +262,28 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   return result ? result.result : null;
 }
 
-export async function postById(id: string, posted: boolean, tx: MSSQL): Promise<boolean> {
-  const doc = (await lib.doc.byId(id, tx))!;
-  if (doc.deleted) return false;
-  const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc!, tx);
-
-  serverDoc.posted = posted;
-
-  const deleted = await tx.manyOrNone(`
-      SELECT * FROM "Accumulation" WHERE document = '${id}';
-      DELETE FROM "Register.Account" WHERE document = '${id}';
-      DELETE FROM "Register.Info" WHERE document = '${id}';
-      DELETE FROM "Accumulation" WHERE document = '${id}';
-      UPDATE "Documents" SET posted = @p1, deleted = 0, description = @p2 WHERE id = '${id}' AND posted <> @p1`,
-    [serverDoc.posted, serverDoc.description]);
-  serverDoc['deletedRegisterAccumulation'] = () => deleted;
-
-  if (serverDoc.isDoc && serverDoc.onPost) {
-    const Registers = await serverDoc.onPost(tx);
-    if (posted && !doc.deleted) await InsertRegistersIntoDB(serverDoc, Registers, tx);
-  }
-  return true;
+export async function postById(id: string, tx: MSSQL): Promise<{id: Ref, posted: boolean}> {
+  try {
+    await lib.util.postMode(true, tx);
+    const doc = (await lib.doc.byId(id, tx))!;
+    if (doc && doc.deleted) throw new Error('Cant post deleted document');
+    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    await postDocument(serverDoc, tx);
+    return {id: serverDoc.id, posted: serverDoc.posted};
+  } catch (err) { throw new Error(err); }
+  finally { await lib.util.postMode(false, tx); }
 }
 
-export async function repostById(id: Ref, tx: MSSQL): Promise<void> {
-  const doc = (await lib.doc.byId(id, tx))!;
-  if (doc) {
-    if (doc.deleted) return;
-    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type, doc, tx);
-
-    const deleted = await tx.manyOrNone(`
-        SELECT * FROM "Accumulation" WHERE document = '${id}';
-        DELETE FROM "Register.Account" WHERE document = '${id}';
-        DELETE FROM "Register.Info" WHERE document = '${id}';
-        DELETE FROM "Accumulation" WHERE document = '${id}';
-        UPDATE "Documents" SET posted = 1, deleted = 0, description = @p1 WHERE id = '${id}' AND posted = 0;`,
-      [serverDoc.description]);
-    serverDoc['deletedRegisterAccumulation'] = () => deleted;
-
-    if (serverDoc.isDoc && serverDoc.onPost) {
-      const Registers = await serverDoc.onPost(tx);
-      await InsertRegistersIntoDB(serverDoc, Registers, tx);
-    }
-  }
+export async function unPostById(id: string, tx: MSSQL): Promise<{id: Ref, posted: boolean}> {
+  try {
+    await lib.util.postMode(true, tx);
+    const doc = (await lib.doc.byId(id, tx))!;
+    if (doc && doc.deleted) throw new Error('Cant post deleted document');
+    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    await unpostDocument(serverDoc, tx);
+    return {id: serverDoc.id, posted: serverDoc.posted};
+  } catch (err) { throw new Error(err); }
+  finally { await lib.util.postMode(false, tx); }
 }
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
@@ -371,58 +356,11 @@ export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: 
 
   return ResultBatchRows;
 }
-/*
-export async function batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL) {
-  const rowsKeys = rows.map(r => (r.Storehouse as string) + (r.SKU as string));
-  const uniquerowsKeys = rowsKeys.filter((v, i, a) => a.indexOf(v) === i);
-  const grouped = uniquerowsKeys.map(r => {
-    const filter = rows.filter(f => (f.Storehouse as string) + (f.SKU as string) === r);
-    const Qty = filter.reduce((a, b) => a + b.Qty, 0);
-    const res1 = filter.reduce((a, b) => a + b.res1, 0);
-    const res2 = filter.reduce((a, b) => a + b.res2, 0);
-    const res3 = filter.reduce((a, b) => a + b.res3, 0);
-    const res4 = filter.reduce((a, b) => a + b.res4, 0);
-    const res5 = filter.reduce((a, b) => a + b.res5, 0);
-    return <BatchRow>({ SKU: filter[0].SKU, Storehouse: filter[0].Storehouse, Qty, Cost: 0, batch: null, res1, res2, res3 });
-  });
-  const result: BatchRow[] = [];
-  for (const row of grouped) {
-    const queryText = `
-      SELECT batch, Qty, Cost, b.date FROM (
-      SELECT
-        batch,
-        -SUM("Qty") Qty,
-        SUM("Cost.Out") / ISNULL(SUM("Qty.Out"), -1) Cost
-      FROM "Register.Accumulation.Inventory" r
-      WHERE (1=1)
-        AND "document" = @p1
-      GROUP BY batch
-      HAVING -SUM("Qty") > 0 ) s
-      LEFT JOIN Documents b ON b.id = s.batch
-      ORDER BY b.date, s.batch`;
-    const queryResult = await tx.manyOrNone<{ batch: string, Qty: number, Cost: number }>
-      (queryText, [retDoc]);
-    let total = row.Qty;
-    for (const a of queryResult) {
-      if (total <= 0) break;
-      const q = Math.min(total, a.Qty);
-      const rate = q / row.Qty;
-      result.push({
-        batch: a.batch, Qty: q, Cost: a.Cost * q, Storehouse: row.Storehouse, SKU: row.SKU,
-        res1: row.res1 * rate, res2: row.res2 * rate, res3: row.res3 * rate, res4: row.res3 * rate, res5: row.res3 * rate
-      });
-      total = total - q;
-    }
-    if (total > 0) {
-      const SKU = await lib.doc.byId(row.SKU as string, tx);
-      console.log(`Не достаточно ${total} единиц ${SKU!.description}`);
-      // throw new Error(`Не достаточно ${total} единиц ${SKU!.description}`);
-    }
-  }
-  return result;
-} */
 
 global['lib'] = lib;
 global['DOC'] = lib.doc;
 global['byCode'] = lib.doc.byCode;
 global['moment'] = moment;
+
+
+

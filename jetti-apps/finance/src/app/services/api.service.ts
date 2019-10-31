@@ -59,20 +59,32 @@ export class ApiService {
     return (this.http.get<ISuggest>(query));
   }
 
-  postDoc(doc: DocumentBase, mode: 'post' | 'save' = 'save'): Observable<DocumentBase> {
+  postDoc(doc: DocumentBase): Observable<DocumentBase> {
     const apiDoc = mapToApi(doc);
-    const query = `${environment.api}`;
-    return (this.http.post<DocumentBase>(query, apiDoc, { params: { mode } }));
+    const query = `${environment.api}post`;
+    return (this.http.post<DocumentBase>(query, apiDoc));
   }
 
-  postDocById(id: string): Observable<boolean> {
+  saveDoc(doc: DocumentBase): Observable<DocumentBase> {
+    const apiDoc = mapToApi(doc);
+    const query = `${environment.api}save`;
+    return (this.http.post<DocumentBase>(query, apiDoc));
+  }
+
+  savePostDoc(doc: DocumentBase): Observable<DocumentBase> {
+    const apiDoc = mapToApi(doc);
+    const query = `${environment.api}savepost`;
+    return (this.http.post<DocumentBase>(query, apiDoc));
+  }
+
+  postDocById(id: string): Observable<DocumentBase> {
     const query = `${environment.api}post/${id}`;
-    return (this.http.get(query) as Observable<boolean>);
+    return (this.http.get(query) as Observable<DocumentBase>);
   }
 
-  unpostDocById(id: string): Observable<boolean> {
+  unpostDocById(id: string): Observable<DocumentBase> {
     const query = `${environment.api}unpost/${id}`;
-    return (this.http.get(query) as Observable<boolean>);
+    return (this.http.get(query) as Observable<DocumentBase>);
   }
 
   deleteDoc(id: string): Observable<DocumentBase> {

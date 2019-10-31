@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { merge } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { INoSqlDocument } from '../../../../../../jetti-api/server/models/ServerDocument';
+import { INoSqlDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocService } from '../doc.service';
 import { DynamicComponent } from '../dynamic-component/dynamic-component';
 import { scrollIntoViewIfNeeded } from '../utils';

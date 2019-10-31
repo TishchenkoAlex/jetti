@@ -1,6 +1,7 @@
 import * as sql from 'mssql';
 import { sqlConfig, sqlConfigAccounts } from './env/environment';
 import { dateReviverUTC } from './fuctions/dateReviver';
+import { IJWTPayload } from './routes/auth';
 
 export class MSSQL {
   private POOL: sql.ConnectionPool | sql.Transaction;
@@ -89,12 +90,16 @@ export class MSSQL {
     await request.query(text);
   }
 
-  async tx<T>(func: (tx: MSSQL) => Promise<T>, user: string) {
+  async tx<T>(func: (tx: MSSQL) => Promise<T>, user: IJWTPayload) {
     const transaction = new sql.Transaction(this.POOL as sql.ConnectionPool);
     await transaction.begin(sql.ISOLATION_LEVEL.READ_COMMITTED);
     try {
       const request = new sql.Request(transaction);
-      await request.query(`EXEC sys.sp_set_session_context N'user_id', N'${user}'`);
+      await request.query(`
+        EXEC sys.sp_set_session_context N'user_id', N'${user.email}';
+        EXEC sys.sp_set_session_context N'isAdmin', N'${user.isAdmin}';
+        EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(user.roles)}'
+      `);
       await func(new MSSQL(this.config, transaction));
       await transaction.commit();
     } catch (err) {

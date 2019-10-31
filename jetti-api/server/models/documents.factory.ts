@@ -1,4 +1,3 @@
-import { IFlatDocument } from '../models/ServerDocument';
 import { CatalogAccount } from './Catalogs/Catalog.Account';
 import { CatalogBalance } from './Catalogs/Catalog.Balance';
 import { CatalogBalanceAnalytics } from './Catalogs/Catalog.Balance.Analytics';
@@ -19,6 +18,7 @@ import { CatalogGroupObjectsExploitation } from './Catalogs/Catalog.GroupObjects
 import { CatalogIncome } from './Catalogs/Catalog.Income';
 import { CatalogLoan } from './Catalogs/Catalog.Loan';
 import { CatalogManager } from './Catalogs/Catalog.Manager';
+import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { CatalogObjectsExploitation } from './Catalogs/Catalog.ObjectsExploitation';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationGroup } from './Catalogs/Catalog.Operation.Group';
@@ -27,11 +27,13 @@ import { CatalogPriceType } from './Catalogs/Catalog.PriceType';
 import { CatalogProduct } from './Catalogs/Catalog.Product';
 import { CatalogProductCategory } from './Catalogs/Catalog.ProductCategory';
 import { CatalogProductKind } from './Catalogs/Catalog.ProductKind';
+import { CatalogRoles } from './Catalogs/Catalog.Roles';
 import { CatalogStorehouse } from './Catalogs/Catalog.Storehouse';
 import { CatalogSubcount } from './Catalogs/Catalog.Subcount';
+import { CatalogSubSystem } from './Catalogs/Catalog.SubSystem';
 import { CatalogUnit } from './Catalogs/Catalog.Unit';
 import { CatalogUser } from './Catalogs/Catalog.User';
-import { DocumentBase } from './document';
+import { DocumentBase, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
@@ -41,6 +43,39 @@ import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
 
 export interface IRegisteredDocument<T extends DocumentBase> { type: DocTypes; Class: T; }
+
+export interface INoSqlDocument {
+  id: Ref;
+  date: Date;
+  type: DocTypes;
+  code: string;
+  description: string;
+  company: Ref;
+  user: Ref;
+  posted: boolean;
+  deleted: boolean;
+  isfolder: boolean;
+  parent: Ref;
+  info: string;
+  timestamp: Date;
+  doc: { [x: string]: any };
+}
+
+export interface IFlatDocument {
+  id: Ref;
+  date: Date;
+  type: DocTypes;
+  code: string;
+  description: string;
+  company: Ref;
+  user: Ref;
+  posted: boolean;
+  deleted: boolean;
+  isfolder: boolean;
+  parent: Ref;
+  info: string;
+  timestamp: Date | null;
+}
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
   const doc = RegisteredDocument.find(el => el.type === type);
@@ -81,8 +116,11 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation.Group', Class: CatalogOperationGroup },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
+  { type: 'Catalog.Role', Class: CatalogRoles },
+  { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
+  { type: 'Catalog.Objects', Class: CatalogObjects },
   { type: 'Catalog.Subcount', Class: CatalogSubcount },
   { type: 'Catalog.Brand', Class: CatalogBrand },
   { type: 'Catalog.GroupObjectsExploitation', Class: CatalogGroupObjectsExploitation },

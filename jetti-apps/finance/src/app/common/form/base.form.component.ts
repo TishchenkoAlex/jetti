@@ -52,12 +52,13 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
+  private _postSubscription$: Subscription = Subscription.EMPTY;
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore) { }
 
   ngOnInit() {
-    this._subscription$ = merge(...[this.ds.save$, this.ds.delete$]).pipe(
+    this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
         this.form.patchValue(doc, patchOptionsNoEvents);
@@ -89,12 +90,12 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  Save(doc = this.model, mode: 'save' | 'post' = 'save', close = false, ) { this.showDescription(); this.ds.save(doc, close, mode); }
+  Save() { this.showDescription(); this.ds.save(this.model); }
   Delete() { this.ds.delete(this.model.id); }
+  Post() { const doc = this.model; this.ds.post(doc); }
+  unPost() { this.ds.unpostById(this.id); }
+  PostClose() { const doc = this.model; this.ds.post(doc, true); }
   Copy() { return this.router.navigate([this.model.type, v1().toUpperCase()], { queryParams: { copy: this.id } }); }
-  Post() { const doc = this.model; doc.posted = true; this.Save(doc, 'post'); }
-  unPost() { this.ds.unpost(this.id).then(() => this.form.get('posted')!.patchValue(false, patchOptionsNoEvents)); }
-  PostClose() { const doc = this.model; doc.posted = true; this.Save(doc, 'post', true); }
 
   Goto() {
     return this.router.navigate([this.model.type],
@@ -160,6 +161,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     this._subscription$.unsubscribe();
     this._descriptionSubscription$.unsubscribe();
     this._saveCloseSubscription$.unsubscribe();
+    this._postSubscription$.unsubscribe();
   }
 
 }

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { v1 } from 'uuid';
-import { IFlatDocument } from './../models/ServerDocument';
+import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
