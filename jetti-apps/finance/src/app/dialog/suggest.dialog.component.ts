@@ -56,7 +56,8 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
         field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
         hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
         order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
-        value: schema[field] && schema[field].value
+        value: schema[field] && schema[field].value,
+        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align' : 'center' }
       });
     });
     this.columns$ = of(columns.filter(c => !c.hidden));

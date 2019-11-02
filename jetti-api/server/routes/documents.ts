@@ -15,7 +15,7 @@ import { buildColumnDef } from './../routes/utils/columns-def';
 import { lib } from './../std.lib';
 import { User } from './user.settings';
 import { List } from './utils/list';
-import { adminPost, adminSave } from './utils/post';
+import { postDocument, upsertDocument } from './utils/post';
 
 export const router = express.Router();
 
@@ -152,22 +152,15 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
 router.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      const serverDoc = await adminSave(doc, tx);
-      const view = await buildViewModel(serverDoc, tx);
-      res.json(view);
-    }, User(req));
-  } catch (err) { next(err); }
-});
-
-router.post('/post', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      if (doc.deleted) throw new Error('cant POST deleted document');
-      const serverDoc = await adminPost(doc, tx);
-      const view = await buildViewModel(serverDoc, tx);
-      res.json(view);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+        await lib.util.postMode(true, tx);
+        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        await upsertDocument(serverDoc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (err) { throw err; }
+      finally { await lib.util.postMode(false, tx); }
     }, User(req));
   } catch (err) { next(err); }
 });
@@ -175,21 +168,34 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
 router.post('/savepost', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      const serverDoc = await adminSave(doc, tx);
-      await lib.doc.postById(doc.id, tx);
-      const view = await buildViewModel(serverDoc, tx);
-      res.json(view);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+        if (doc && doc.deleted) throw new Error('Cant POST deleted document');
+        doc.posted = true;
+        await lib.util.postMode(true, tx);
+        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        await upsertDocument(serverDoc, tx);
+        await postDocument(serverDoc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (err) { throw err; }
+      finally { await lib.util.postMode(false, tx); }
     }, User(req));
   } catch (err) { next(err); }
 });
 
-// unPost by id (without returns posted object to client, for post in cicle many docs)
-router.get('/unpost/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/post', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdb.tx(async tx => {
-      const result = await lib.doc.unPostById(req.params.id, tx);
-      res.json(result);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+        if (doc && doc.deleted) throw new Error('Cant POST deleted document');
+        doc.posted = true;
+        await lib.util.postMode(true, tx);
+        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (err) { throw err; }
+      finally { await lib.util.postMode(false, tx); }
     }, User(req));
   } catch (err) { next(err); }
 });
@@ -198,8 +204,18 @@ router.get('/unpost/:id', async (req: Request, res: Response, next: NextFunction
 router.get('/post/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdb.tx(async tx => {
-      const result = await lib.doc.postById(req.params.id, tx);
-      res.json(result);
+      const { id, posted } = await lib.doc.postById(req.params.id, tx);
+      res.json({ id, posted });
+    }, User(req));
+  } catch (err) { next(err); }
+});
+
+// unPost by id (without returns posted object to client, for post in cicle many docs)
+router.get('/unpost/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await sdb.tx(async tx => {
+      const { id, posted } = await lib.doc.unPostById(req.params.id, tx);
+      res.json({ id, posted });
     }, User(req));
   } catch (err) { next(err); }
 });

@@ -73,7 +73,7 @@ export class DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '300px' } })
   description = '';
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, onChangeServer: true })
+  @Props({ type: 'Catalog.Company', order: 4, required: true, onChangeServer: true , style: { width: '250px' }})
   company: Ref = null;
 
   @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })

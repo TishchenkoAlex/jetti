@@ -136,7 +136,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   // tslint:disable-next-line:member-ordering
   postedCol: ColumnDef = ({
     field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
-    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined
+    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
   });
   private _update(col: ColumnDef | undefined, event, center) {
     if (!col) return;

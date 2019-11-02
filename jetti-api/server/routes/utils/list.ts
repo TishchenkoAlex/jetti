@@ -104,7 +104,8 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     query = `SELECT id FROM (${queryBefore} \nUNION ALL\n${queryAfter}) ID`;
     query = `SELECT * FROM (${QueryList} d) d WHERE d.id IN (${query}) ${orderbyAfter} `;
   } else
-    query = `SELECT TOP ${params.count + 1} * FROM (${QueryList} d) d WHERE ${filterBuilder(params.filter)} ${orderbyAfter} `;
+    query = `SELECT TOP ${params.count + 1} * FROM (${QueryList} d) d
+      WHERE ${filterBuilder(params.filter)} ${ params.command === 'first' ? orderbyAfter : orderbyBefore } `;
 
   const data = await tx.manyOrNone<any>(query);
   let result: any[] = [];

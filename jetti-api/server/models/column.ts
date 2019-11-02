@@ -9,6 +9,7 @@ export interface ColumnDef {
     hidden: boolean;
     order: number;
     style: string | {[key: string]: any};
+    headerStyle: string | {[key: string]: any};
     required: boolean;
     readOnly: boolean;
     owner?: OwnerRef[];

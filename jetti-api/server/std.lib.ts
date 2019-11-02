@@ -35,8 +35,8 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     formControlRef: (id: string, tx: MSSQL) => Promise<RefValue | null>;
-    postById: (id: Ref, tx: MSSQL) => Promise<{id: Ref, posted: boolean}>;
-    unPostById: (id: Ref, tx: MSSQL) => Promise<{id: Ref, posted: boolean}>;
+    postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
+    unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
@@ -234,7 +234,7 @@ async function inventoryBalance(date: Date, analytics: { [key: string]: Ref }, t
 async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: MSSQL): Promise<number> {
 
   const queryText = `
-    SELECT TOP 1 [Rate] / CASE WHEN [Mutiplicity] > 0 THEN [Mutiplicity] ELSE 1 END result
+    SELECT TOP 1 CAST([Rate] AS FLOAT) / CASE WHEN [Mutiplicity] > 0 THEN [Mutiplicity] ELSE 1 END result
     FROM [Register.Info.ExchangeRates]
     WHERE (1=1)
       AND date <= @p1
@@ -262,26 +262,26 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   return result ? result.result : null;
 }
 
-export async function postById(id: string, tx: MSSQL): Promise<{id: Ref, posted: boolean}> {
+export async function postById(id: string, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
     if (doc && doc.deleted) throw new Error('Cant post deleted document');
     const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
     await postDocument(serverDoc, tx);
-    return {id: serverDoc.id, posted: serverDoc.posted};
+    return serverDoc;
   } catch (err) { throw new Error(err); }
   finally { await lib.util.postMode(false, tx); }
 }
 
-export async function unPostById(id: string, tx: MSSQL): Promise<{id: Ref, posted: boolean}> {
+export async function unPostById(id: string, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
     if (doc && doc.deleted) throw new Error('Cant post deleted document');
     const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
     await unpostDocument(serverDoc, tx);
-    return {id: serverDoc.id, posted: serverDoc.posted};
+    return serverDoc;
   } catch (err) { throw new Error(err); }
   finally { await lib.util.postMode(false, tx); }
 }
@@ -361,6 +361,3 @@ global['lib'] = lib;
 global['DOC'] = lib.doc;
 global['byCode'] = lib.doc.byCode;
 global['moment'] = moment;
-
-
-

@@ -1,7 +1,5 @@
 import { DocumentBase } from '../../models/document';
-import { IFlatDocument, INoSqlDocument } from '../../models/documents.factory';
-import { createDocumentServer } from '../../models/documents.factory.server';
-import { DocTypes } from '../../models/documents.types';
+import { INoSqlDocument } from '../../models/documents.factory';
 import { RegisterAccumulation } from '../../models/Registers/Accumulation/RegisterAccumulation';
 import { DocumentBaseServer } from '../../models/ServerDocument';
 import { MSSQL } from '../../mssql';
@@ -41,7 +39,7 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   serverDoc['deletedRegisterAccumulation'] = () => deleted;
 }
 
-async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const id = serverDoc.id;
   const isNew = (await tx.oneOrNone<{ id: string }>(`SELECT id FROM "Documents" WHERE id = '${id}'`) === null);
 
@@ -115,27 +113,6 @@ async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   }
   serverDoc.map(response);
   return serverDoc;
-}
-
-export async function adminPost(doc: IFlatDocument, tx: MSSQL) {
-  const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
-  try {
-    await lib.util.postMode(true, tx);
-    await postDocument(serverDoc, tx);
-    return serverDoc;
-  } catch (err) { throw new Error(err); }
-  finally { await lib.util.postMode(false, tx); }
-}
-
-export async function adminSave(doc: IFlatDocument, tx: MSSQL) {
-  if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-  const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
-  try {
-    await lib.util.postMode(true, tx);
-    await upsertDocument(serverDoc, tx);
-    return serverDoc;
-  } catch (err) { throw new Error(err); }
-  finally { await lib.util.postMode(false, tx); }
 }
 
 export async function adminModeForPost(mode: boolean, tx: MSSQL): Promise<boolean> {

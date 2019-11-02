@@ -37,7 +37,8 @@ export function buildColumnDef(view: { [x: string]: PropOptions; }, settings: Fo
     columnDef.push({
       field, type, label, hidden, order, style, required, readOnly, totals, owner, value,
       filter: settings.filter.find(f => f.left === field) || new FormListFilter(field),
-      sort: settings.order.find(f => f.field === field) || new FormListOrder(field)
+      sort: settings.order.find(f => f.field === field) || new FormListOrder(field),
+      headerStyle: { ...style, 'text-align': 'center' }
     });
   });
   columnDef.filter(c => c.type === 'string').forEach(c => c.filter!.center = 'like');
