@@ -21,7 +21,4 @@ export class CatalogManager extends DocumentBase {
   @Props({ type: 'date' })
   Birthday: Date | null = null;
 
-  @Props({ type: 'Types.Subcount', required: true })
-  Product: Ref = null;
-
 }
