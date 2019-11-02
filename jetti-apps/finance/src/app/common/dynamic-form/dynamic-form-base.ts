@@ -31,6 +31,7 @@ export class FormControlInfo {
   order: number;
   controlType: string;
   style: { [key: string]: any };
+  headerStyle: { [key: string]: any };
   owner?: OwnerRef[];
   totals: number;
   showLabel: boolean;

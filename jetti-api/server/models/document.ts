@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { v1 } from 'uuid';
-import { IFlatDocument } from './../models/ServerDocument';
+import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
@@ -73,7 +73,7 @@ export class DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '300px' } })
   description = '';
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, onChangeServer: true })
+  @Props({ type: 'Catalog.Company', order: 4, required: true, onChangeServer: true , style: { width: '250px' }})
   company: Ref = null;
 
   @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })

@@ -55,7 +55,7 @@ export default async function (job: Queue.Job) {
     let i = 0;
     for (i = 0; i < 5; i++) {
       if (!list[i + offset]) break;
-      const q = lib.doc.repostById(list[i + offset].document, tx);
+      const q = lib.doc.postById(list[i + offset].document, tx);
       TaskList.push(q);
     }
     offset = offset + i;

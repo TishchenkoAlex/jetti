@@ -23,6 +23,7 @@ export class RegisterAccumulationListComponent implements OnInit {
     this.accumulationList$ = merge(...[
       this.ds.save$,
       this.ds.delete$,
+      this.ds.post$,
       this.ds.do$]
     ).pipe(
       startWith(this.doc),
@@ -32,6 +33,7 @@ export class RegisterAccumulationListComponent implements OnInit {
     this.infoList$ = merge(...[
       this.ds.save$,
       this.ds.delete$,
+      this.ds.post$,
       this.ds.do$]
     ).pipe(
       startWith(this.doc),

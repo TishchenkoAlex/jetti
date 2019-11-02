@@ -1,6 +1,6 @@
 import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
-import { createDocument, IRegisteredDocument } from './../models/documents.factory';
+import { createDocument, IFlatDocument, IRegisteredDocument } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
 import { calculateDescription, RefValue } from './common-types';
@@ -13,7 +13,7 @@ import { DocumentOperationServer } from './Documents/Document.Operation.server';
 import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
 import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
-import { DocumentBaseServer, IFlatDocument } from './ServerDocument';
+import { DocumentBaseServer } from './ServerDocument';
 
 export const RegisteredServerDocument: IRegisteredDocument<any>[] = [
   { type: 'Catalog.Operation', Class: CatalogOperationServer },

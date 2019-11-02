@@ -33,7 +33,8 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.columns = this.control.controls.map((el) => <ColumnDef>{
       field: el.key, type: el.controlType, label: el.label, hidden: el.hidden, onChange: el.onChange, onChangeServer: el.onChangeServer,
-      order: el.order, style: el.style, required: el.required, readOnly: el.readOnly, totals: el.totals, value: el.value, control: el
+      order: el.order, style: el.style, required: el.required, readOnly: el.readOnly, totals: el.totals, value: el.value, control: el,
+      headerStyle: { ...el.style, 'text-align' : 'center'}
     });
     this.control.controls.forEach(v => v.showLabel = false);
     this.showTotals = this.control.controls.findIndex(v => v.totals > 0) !== -1;
@@ -44,7 +45,6 @@ export class TablePartsComponent implements OnInit, OnDestroy {
         this.dataSource = doc[this.control.key];
         this.cd.detectChanges();
       });
-    console.log(this.control, this.formGroup);
   }
 
   getControl(i: number) {

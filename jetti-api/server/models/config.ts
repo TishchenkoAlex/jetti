@@ -2,6 +2,7 @@ import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
 import { CatalogSubcount } from './../models/Catalogs/Catalog.Subcount';
 import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
+import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions } from './document';
 import { createDocument, RegisteredDocument } from './documents.factory';
 import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
@@ -44,6 +45,7 @@ export const configSchema = new Map([
     if (el.type === 'Catalog.Subcount') { result.QueryList = (doc as CatalogSubcount).QueryList(); }
     if (el.type === 'Catalog.Documents') { result.QueryList = (doc as CatalogDocuments).QueryList(); }
     if (el.type === 'Catalog.Catalogs') { result.QueryList = (doc as CatalogCatalogs).QueryList(); }
+    if (el.type === 'Catalog.Objects') { result.QueryList = (doc as CatalogObjects).QueryList(); }
     return result;
   }),
   ...RegisteredTypes.map(el => {

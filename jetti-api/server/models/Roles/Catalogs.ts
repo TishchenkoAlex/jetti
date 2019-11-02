@@ -12,6 +12,8 @@ export const CatalogsRoleObject: RoleObject[] = [
   { type: 'Catalog.Storehouse', read: true, write: true },
   { type: 'Catalog.Department', read: true, write: true },
   { type: 'Catalog.User', read: true, write: true },
+  { type: 'Catalog.Role', read: true, write: true },
+  { type: 'Catalog.SubSystem', read: true, write: true },
   { type: 'Catalog.Company', read: true, write: true },
   { type: 'Catalog.Currency', read: true, write: true },
   { type: 'Catalog.Person', read: true, write: true },

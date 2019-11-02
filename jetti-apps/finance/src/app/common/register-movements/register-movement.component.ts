@@ -24,6 +24,7 @@ export class RegisterMovementComponent implements OnInit {
     this.movements$ = merge(...[
       this.ds.save$,
       this.ds.delete$,
+      this.ds.post$,
       this.ds.do$]
     ).pipe(startWith(this.doc),
       filter(doc => doc.id === this.doc.id),

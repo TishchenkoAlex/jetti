@@ -25,7 +25,10 @@ export type CatalogTypes =
   'Catalog.Subcount' |
   'Catalog.Documents' |
   'Catalog.Catalogs' |
+  'Catalog.Objects' |
   'Catalog.User' |
+  'Catalog.Role' |
+  'Catalog.SubSystem' |
   'Catalog.Unit' |
   'Catalog.TaxRates' |
   'Catalog.ProductCategory' |
@@ -67,6 +70,7 @@ export type ComplexTypes =
   'Types.Document' |
   'Types.Subcount' |
   'Types.Catalog' |
+  'Types.Object' |
   'Types.ExpenseOrBalance';
 
 export type IncomeExpenseTypes =

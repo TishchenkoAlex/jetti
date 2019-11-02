@@ -1,5 +1,5 @@
 import { DocumentBase } from './../../../../../../jetti-api/server/models/document';
-import { IFlatDocument } from './../../../../../../jetti-api/server/models/ServerDocument';
+import { IFlatDocument } from './../../../../../../jetti-api/server/models/documents.factory';
 
 export function mapToApi(model: DocumentBase): IFlatDocument {
   const newDoc: IFlatDocument = {

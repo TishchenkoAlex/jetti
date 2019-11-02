@@ -10,7 +10,7 @@ export const router = express.Router();
 router.post('/jobs/add', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sdbq.tx(async tx => {
-      req.body.data.user = User(req);
+      req.body.data.user = User(req).email;
       req.body.data.userId = req.body.data.user;
       req.body.data.tx = tx;
       const result = await JQueue.add(req.body.data, req.body.opts);

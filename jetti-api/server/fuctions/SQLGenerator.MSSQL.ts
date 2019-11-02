@@ -1,3 +1,5 @@
+import { AllTypes } from '../models/documents.types';
+
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
 // tslint:disable:forin
@@ -31,8 +33,8 @@ export class SQLGenegator {
         return `, x."${prop}"\n`;
       };
 
-      const complexProperty = (prop: string, type: string) =>
-        type.startsWith('Catalog.Subcount') ?
+      const complexProperty = (prop: string, type: AllTypes) =>
+        checkComlexType(type) ?
           `, x."${prop}" "${prop}.id", x."${prop}" "${prop}.value", '${type}' "${prop}.type", x."${prop}" "${prop}.code"\n` :
           type.startsWith('Types.') ?
             `,  JSON_QUERY(CASE WHEN "${prop}".id IS NULL THEN JSON_QUERY(d.doc, N'$.${prop}')
@@ -40,8 +42,8 @@ export class SQLGenegator {
                 ISNULL("${prop}".type, '${type}') "type", "${prop}".code "code" FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END, '$') "${prop}"\n` :
             `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
 
-      const addLeftJoin = (prop: string, type: string) =>
-        type.startsWith('Catalog.Subcount') ?
+      const addLeftJoin = (prop: string, type: AllTypes) =>
+        checkComlexType(type) ?
           `\n` :
           ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = x."${prop}"\n`;
 
@@ -57,11 +59,11 @@ export class SQLGenegator {
 
       let query = ''; let LeftJoin = ''; let xTable = '';
       for (const prop in value) {
-        const type: string = value[prop].type || 'string';
+        const type: AllTypes = value[prop].type || 'string';
         if (type.includes('.')) {
           query += complexProperty(prop, type);
           LeftJoin += addLeftJoin(prop, type);
-          xTable += `, "${prop}" ${type.startsWith('Catalog.Subcount') ? 'VARCHAR(36)' : 'UNIQUEIDENTIFIER'}\n`;
+          xTable += `, "${prop}" ${checkComlexType(type) ? 'VARCHAR(36)' : 'UNIQUEIDENTIFIER'}\n`;
         } else {
           query += simleProperty(prop, type);
           xTable += xTableLine(prop, type);
@@ -148,8 +150,8 @@ export class SQLGenegator {
         return `, x."${prop}"\n`;
       };
 
-      const complexProperty = (prop: string, type: string) =>
-        type.startsWith('Catalog.Subcount') ?
+      const complexProperty = (prop: string, type: AllTypes) =>
+        checkComlexType(type) ?
           `, x."${prop}" "${prop}.id", x."${prop}" "${prop}.value", '${type}' "${prop}.type", x."${prop}" "${prop}.code"\n` :
           type.startsWith('Types.') ?
             `,  JSON_QUERY(CASE WHEN "${prop}".id IS NULL THEN JSON_QUERY(d.doc, N'$.${prop}')
@@ -157,8 +159,8 @@ export class SQLGenegator {
                 ISNULL("${prop}".type, '${type}') "type", "${prop}".code "code" FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END, '$') "${prop}"\n` :
             `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
 
-      const addLeftJoin = (prop: string, type: string) =>
-        type.startsWith('Catalog.Subcount') ?
+      const addLeftJoin = (prop: string, type: AllTypes) =>
+        checkComlexType(type) ?
           `\n` :
           ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = x."${prop}"\n`;
 
@@ -174,11 +176,11 @@ export class SQLGenegator {
 
       let query = ''; let LeftJoin = ''; let xTable = '';
       for (const prop in value) {
-        const type: string = value[prop].type || 'string';
+        const type: AllTypes = value[prop].type || 'string';
         if (type.includes('.')) {
           query += complexProperty(prop, type);
           LeftJoin += addLeftJoin(prop, type);
-          xTable += `, "${prop}" ${type.startsWith('Catalog.Subcount') ? 'VARCHAR(36)' : 'UNIQUEIDENTIFIER'}\n`;
+          xTable += `, "${prop}" ${checkComlexType(type) ? 'VARCHAR(36)' : 'UNIQUEIDENTIFIER'}\n`;
         } else {
           query += simleProperty(prop, type);
           xTable += xTableLine(prop, type);
@@ -429,4 +431,9 @@ export function excludeRegisterAccumulatioProps(doc) {
 export function excludeRegisterInfoProps(doc) {
   const { kind, date, type, company, data, document, ...newObject } = doc;
   return newObject;
+}
+
+function checkComlexType(type: AllTypes) {
+  const types: AllTypes[] = ['Catalog.Subcount', 'Catalog.Catalogs', 'Catalog.Documents', 'Catalog.Objects'];
+  return (types.indexOf(type)) > -1;
 }
