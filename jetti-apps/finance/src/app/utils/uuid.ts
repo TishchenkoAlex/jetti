@@ -1,5 +1,11 @@
 // tslint:disable: no-bitwise
 export class Utils {
+
+  static decimalToHex(num: number): string {
+    let hex: string = num.toString(16);
+    while (hex.length < 2) hex = '0' + hex;
+    return hex;
+  }
     static createNewGuid(): string {
 
     const cryptoObj: Crypto = window.crypto; // for IE 11
@@ -41,10 +47,5 @@ export class Utils {
       return guidResponse;
     }
   }
-
-  static decimalToHex(num: number): string {
-    let hex: string = num.toString(16);
-    while (hex.length < 2) hex = '0' + hex;
-    return hex;
-  }
 }
+
