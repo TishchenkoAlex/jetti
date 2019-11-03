@@ -1,4 +1,3 @@
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
@@ -9,6 +8,7 @@ import { ServerDocument } from '../ServerDocument';
 import { JQueue } from '../Tasks/tasks';
 import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
+import { MSSQL } from '../../mssql';
 
 export class DocumentOperationServer extends DocumentOperation implements ServerDocument {
 

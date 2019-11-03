@@ -2,9 +2,9 @@ import { DocumentBase } from '../../models/document';
 import { INoSqlDocument } from '../../models/documents.factory';
 import { RegisterAccumulation } from '../../models/Registers/Accumulation/RegisterAccumulation';
 import { DocumentBaseServer } from '../../models/ServerDocument';
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
+import { MSSQL } from '../../mssql';
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 

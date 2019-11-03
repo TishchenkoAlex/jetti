@@ -1,4 +1,3 @@
-import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
 import { createDocument, IFlatDocument, IRegisteredDocument } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
@@ -14,6 +13,7 @@ import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
 import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
 import { DocumentBaseServer } from './ServerDocument';
+import { MSSQL } from '../mssql';
 
 export const RegisteredServerDocument: IRegisteredDocument<any>[] = [
   { type: 'Catalog.Operation', Class: CatalogOperationServer },

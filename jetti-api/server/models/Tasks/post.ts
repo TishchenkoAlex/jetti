@@ -1,7 +1,6 @@
 import * as Queue from 'bull';
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
-
+import { MSSQL } from '../../mssql';
 
 export default async function (job: Queue.Job) {
   await job.progress(0);

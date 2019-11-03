@@ -10,13 +10,12 @@ import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAc
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { DocumentBaseServer } from './models/ServerDocument';
-import { MSSQL, sdb } from './mssql';
 import { adminModeForPost, postDocument, unpostDocument } from './routes/utils/post';
+import { MSSQL } from './mssql';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
 export interface JTL {
-  db: MSSQL;
   account: {
     balance: (account: Ref, date: Date, company: Ref, tx: MSSQL) => Promise<number | null>,
     debit: (account: Ref, date: Date, company: Ref, tx: MSSQL) => Promise<number | null>,
@@ -57,7 +56,6 @@ export interface JTL {
 }
 
 export const lib: JTL = {
-  db: sdb,
   account: {
     balance,
     debit,

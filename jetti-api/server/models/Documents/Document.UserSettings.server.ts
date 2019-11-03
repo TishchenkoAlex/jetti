@@ -1,10 +1,10 @@
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { CatalogUser } from '../Catalogs/Catalog.User';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
 import { ServerDocument } from '../ServerDocument';
 import { DocumentUserSettings } from './Document.UserSettings';
+import { MSSQL } from '../../mssql';
 
 export class DocumentUserSettingsServer extends DocumentUserSettings implements ServerDocument {
 

@@ -1,6 +1,5 @@
 import { CatalogCounterpartie } from '../../models/Catalogs/Catalog.Counterpartie';
 import { DocumentBase } from '../../models/document';
-import { MSSQL } from '../../mssql';
 import { BatchRow, lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { createDocumentServer } from '../documents.factory.server';
@@ -12,6 +11,7 @@ import { RegisterAccumulationSales } from '../Registers/Accumulation/Sales';
 import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentInvoice } from './Document.Invoice';
+import { MSSQL } from '../../mssql';
 
 export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocument {
 

@@ -8,7 +8,6 @@ import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documen
 import { createDocumentServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
 import { DocumentOperation } from '../models/Documents/Document.Operation';
-import { MSSQL, sdb } from '../mssql';
 import { DocumentBaseServer } from './../models/ServerDocument';
 import { FormListSettings } from './../models/user.settings';
 import { buildColumnDef } from './../routes/utils/columns-def';
@@ -16,6 +15,8 @@ import { lib } from './../std.lib';
 import { User } from './user.settings';
 import { List } from './utils/list';
 import { postDocument, upsertDocument } from './utils/post';
+import { MSSQL } from '../mssql';
+import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
 
@@ -28,91 +29,90 @@ export async function buildViewModel(ServerDoc: DocumentBaseServer, tx: MSSQL) {
 // Select documents list for UI (grids/list etc)
 router.post('/list', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await sdb.tx(async tx => {
-      const params = req.body as DocListRequestBody;
-      res.json(await List(params, tx));
-    }, User(req));
+    const sdb = SDB(req);
+    const params = req.body as DocListRequestBody;
+    res.json(await List(params, sdb));
   } catch (err) { next(err); }
 });
 
 const viewAction = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await sdb.tx(async tx => {
-      const params: { [key: string]: any } = req.body;
-      const email = User(req).email;
-      const id: string | undefined = params.id;
-      const type: DocTypes = params.type;
-      const Operation: string | undefined = req.query.Operation || undefined;
-      const isFolder: boolean = req.query.isfolder === 'true';
+    const sdb = SDB(req);
+    const params: { [key: string]: any } = req.body;
+    const email = User(req).email;
+    const id: string | undefined = params.id;
+    const type: DocTypes = params.type;
+    const Operation: string | undefined = req.query.Operation || undefined;
+    const isFolder: boolean = req.query.isfolder === 'true';
 
-      let doc: IFlatDocument | DocumentOperation | null = null;
-      if (id) doc = await lib.doc.byId(id, tx);
-      if (!doc) {
-        doc = Operation ?
-          { ...createDocument<DocumentBaseServer>(type), Operation } :
-          createDocument<DocumentBaseServer>(type);
-        doc!.isfolder = isFolder;
-      }
-      const ServerDoc = await createDocumentServer<DocumentBaseServer>(type, doc as IFlatDocument, tx);
-      if (!ServerDoc) throw new Error(`wrong type ${type}`);
-      if (id) ServerDoc.id = id;
+    let doc: IFlatDocument | DocumentOperation | null = null;
+    if (id) doc = await lib.doc.byId(id, sdb);
+    if (!doc) {
+      doc = Operation ?
+        { ...createDocument<DocumentBaseServer>(type), Operation } :
+        createDocument<DocumentBaseServer>(type);
+      doc!.isfolder = isFolder;
+    }
+    const ServerDoc = await createDocumentServer<DocumentBaseServer>(type, doc as IFlatDocument, sdb);
+    if (!ServerDoc) throw new Error(`wrong type ${type}`);
+    if (id) ServerDoc.id = id;
 
-      let model = {};
-      const querySettings = await tx.oneOrNone<{ doc: FormListSettings }>(`
+    let model = {};
+    const querySettings = await sdb.oneOrNone<{ doc: FormListSettings }>(`
       SELECT JSON_QUERY(settings, '$."${type}"') doc FROM users where email = @p1`, [email]);
-      const settings = querySettings && querySettings.doc || new FormListSettings();
-      const userID = await lib.doc.byCode('Catalog.User', email, tx);
+    const settings = querySettings && querySettings.doc || new FormListSettings();
+    const userID = await lib.doc.byCode('Catalog.User', email, sdb);
 
-      if (id) {
+    if (id) {
 
-        const addIncomeParamsIntoDoc = async (prm: { [x: string]: any }, d: DocumentBase) => {
-          for (const k in prm) {
-            if (k === 'type' || k === 'id' || k === 'new' || k === 'base' || k === 'copy') { continue; }
-            if (typeof params[k] !== 'boolean') d[k] = params[k]; else d[k] = params[k];
-          }
-        };
-
-        const command = req.query.new ? 'new' : req.query.copy ? 'copy' : req.query.base ? 'base' : '';
-        switch (command) {
-          case 'new':
-            // init default values from metadata
-            const schema = ServerDoc.Props();
-            Object.keys(schema).filter(p => schema[p].value !== undefined).forEach(p => ServerDoc[p] = schema[p].value);
-            addIncomeParamsIntoDoc(params, ServerDoc);
-            if (userID) ServerDoc.user = userID;
-            if (ServerDoc.onCreate) { await ServerDoc.onCreate(tx); }
-            break;
-          case 'copy':
-            const copy = await lib.doc.byId(req.query.copy, tx);
-            if (!copy) throw new Error(`base document ${req.query.copy} for copy is not found!`);
-            const copyDoc = await createDocumentServer<DocumentBaseServer>(type, copy, tx);
-            copyDoc.id = id; copyDoc.date = ServerDoc.date; copyDoc.code = '';
-            copyDoc.posted = false; copyDoc.deleted = false; copyDoc.timestamp = null;
-            copyDoc.parent = copyDoc.parent;
-            if (userID) copyDoc.user = userID;
-            ServerDoc.map(copyDoc);
-            addIncomeParamsIntoDoc(params, ServerDoc);
-            ServerDoc.description = 'Copy: ' + ServerDoc.description;
-            break;
-          case 'base':
-            await ServerDoc.baseOn(req.query.base as string, tx);
-            break;
-          default:
-            break;
+      const addIncomeParamsIntoDoc = async (prm: { [x: string]: any }, d: DocumentBase) => {
+        for (const k in prm) {
+          if (k === 'type' || k === 'id' || k === 'new' || k === 'base' || k === 'copy') { continue; }
+          if (typeof params[k] !== 'boolean') d[k] = params[k]; else d[k] = params[k];
         }
-        model = (await buildViewModel(ServerDoc, tx))!;
-      }
+      };
 
-      const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
-      const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata: ServerDoc.Prop() as DocumentOptions, settings };
-      res.json(result);
-    }, User(req));
+      const command = req.query.new ? 'new' : req.query.copy ? 'copy' : req.query.base ? 'base' : '';
+      switch (command) {
+        case 'new':
+          // init default values from metadata
+          const schema = ServerDoc.Props();
+          Object.keys(schema).filter(p => schema[p].value !== undefined).forEach(p => ServerDoc[p] = schema[p].value);
+          addIncomeParamsIntoDoc(params, ServerDoc);
+          if (userID) ServerDoc.user = userID;
+          if (ServerDoc.onCreate) { await ServerDoc.onCreate(sdb); }
+          break;
+        case 'copy':
+          const copy = await lib.doc.byId(req.query.copy, sdb);
+          if (!copy) throw new Error(`base document ${req.query.copy} for copy is not found!`);
+          const copyDoc = await createDocumentServer<DocumentBaseServer>(type, copy, sdb);
+          copyDoc.id = id; copyDoc.date = ServerDoc.date; copyDoc.code = '';
+          copyDoc.posted = false; copyDoc.deleted = false; copyDoc.timestamp = null;
+          copyDoc.parent = copyDoc.parent;
+          if (userID) copyDoc.user = userID;
+          ServerDoc.map(copyDoc);
+          addIncomeParamsIntoDoc(params, ServerDoc);
+          ServerDoc.description = 'Copy: ' + ServerDoc.description;
+          break;
+        case 'base':
+          await ServerDoc.baseOn(req.query.base as string, sdb);
+          break;
+        default:
+          break;
+      }
+      model = (await buildViewModel(ServerDoc, sdb))!;
+    }
+
+    const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
+    const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata: ServerDoc.Prop() as DocumentOptions, settings };
+    res.json(result);
   } catch (err) { next(err); }
 };
 router.post('/view', viewAction);
 
 // Delete or UnDelete document
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  const sdb = SDB(req);
   await sdb.tx(async tx => {
     try {
       await lib.util.postMode(true, tx);
@@ -146,11 +146,12 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       res.json(view);
     } catch (err) { next(err); }
     finally { await lib.util.postMode(false, tx); }
-  }, User(req));
+  });
 });
 
 router.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
@@ -161,12 +162,13 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.post('/savepost', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
@@ -180,12 +182,13 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.post('/post', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
@@ -196,42 +199,46 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 // Post by id (without returns posted object to client, for post in cicle many docs)
 router.get('/post/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const { id, posted } = await lib.doc.postById(req.params.id, tx);
       res.json({ id, posted });
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 // unPost by id (without returns posted object to client, for post in cicle many docs)
 router.get('/unpost/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const { id, posted } = await lib.doc.unPostById(req.params.id, tx);
       res.json({ id, posted });
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 // Get raw document by id
 router.get('/byId/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const result = await lib.doc.byId(req.params.id, tx);
       res.json(result);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.post('/valueChanges/:type/:property', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
       const value: RefValue = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
@@ -249,12 +256,13 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
         result = await serverDoc.onValueChanged(property, value, tx);
       }
       res.json(result);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.post('/command/:type/:command', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
       const command: string = req.params.command;
@@ -267,25 +275,27 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
 
       const view = await buildViewModel(serverDoc, tx);
       res.json(view);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 // Get tree for document list
 router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const query = `select id, description, parent from "Documents" where isfolder = 1 and type = @p1 order by description, parent`;
       res.json(await tx.manyOrNone(query, [req.params.type]));
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 // Get formControlRef
 router.get('/formControlRef/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       res.json(await lib.doc.formControlRef(req.params.id, tx));
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });

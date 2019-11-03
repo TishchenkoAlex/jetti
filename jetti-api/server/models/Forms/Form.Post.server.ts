@@ -1,8 +1,8 @@
-import { sdbq } from '../../mssql';
 import { DocTypes } from '../documents.types';
 import { JQueue } from '../Tasks/tasks';
 import { FormPost } from './Form.Post';
 import { FormTypes } from './form.types';
+import { MSSQL } from '../../mssql';
 
 export interface ICallRequest {
   type: FormTypes | DocTypes;
@@ -20,7 +20,7 @@ export default class FormPostServer extends FormPost {
     Object.assign(this, CallRequest);
   }
 
-  async Execute(tx = sdbq, CR: ICallRequest) {
+  async Execute(tx: MSSQL, CR: ICallRequest) {
     const endDate = new Date(this.CallRequest.formView.EndDate);
     endDate.setHours(23, 59, 59, 999);
 

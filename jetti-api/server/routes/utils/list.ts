@@ -1,9 +1,9 @@
 // tslint:disable:prefer-const
 import { DocListRequestBody, DocListResponse } from '../../models/common-types';
 import { DocumentBase } from '../../models/document';
-import { MSSQL } from '../../mssql';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
+import { MSSQL } from '../../mssql';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => el.right);

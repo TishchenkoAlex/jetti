@@ -5,25 +5,26 @@ import { createRegisterAccumulation, RegisterAccumulationTypes } from '../models
 import { RegisterAccumulation, RegisterAccumulationOptions } from '../models/Registers/Accumulation/RegisterAccumulation';
 import { createRegisterInfo, RegisterInfoTypes } from '../models/Registers/Info/factory';
 import { RegisterInfo, RegisterInfoOptions } from '../models/Registers/Info/RegisterInfo';
-import { sdb } from '../mssql';
-import { User } from './user.settings';
+import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
 
 router.get('/register/account/movements/view/:id', async (req, res, next) => {
   try {
+    const sdb = SDB(req);
     const id = req.params.id;
     const query = `SELECT * FROM "Register.Account.View" where "document.id" = '${id}'`;
 
     await sdb.tx(async tx => {
       const data = await tx.manyOrNoneFromJSON<AccountRegister>(query);
       res.json(data);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/register/accumulation/list/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     const id = req.params.id;
     const query = `SELECT DISTINCT r.type "type" FROM "Accumulation" r WHERE r.document = '${id}'`;
 
@@ -35,12 +36,13 @@ router.get('/register/accumulation/list/:id', async (req: Request, res: Response
         return ({ type: r.type, description });
       });
       res.json(list);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/register/info/list/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     const id = req.params.id;
     const query = `SELECT DISTINCT r.type "type" FROM "Register.Info" r WHERE r.document = '${id}'`;
 
@@ -51,12 +53,13 @@ router.get('/register/info/list/:id', async (req: Request, res: Response, next: 
         return ({ type: r.type, description });
       });
       res.json(list);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/register/accumulation/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     const id = req.params.id;
     const type = req.params.type as RegisterAccumulationTypes;
     const query = createRegisterAccumulation({ type }).QueryList();
@@ -64,12 +67,13 @@ router.get('/register/accumulation/:type/:id', async (req: Request, res: Respons
     await sdb.tx(async tx => {
       const result = await tx.manyOrNone<RegisterAccumulation>(`${query} AND r.document = '${id}'`);
       res.json(result);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/register/info/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     const id = req.params.id;
     const type = req.params.type as RegisterInfoTypes;
     const query = createRegisterInfo({ type }).QueryList();
@@ -77,7 +81,7 @@ router.get('/register/info/:type/:id', async (req: Request, res: Response, next:
     await sdb.tx(async tx => {
       const result = await tx.manyOrNone<RegisterInfo>(`${query} AND r.document = '${id}'`);
       res.json(result);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 

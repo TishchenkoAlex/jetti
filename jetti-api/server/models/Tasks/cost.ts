@@ -1,9 +1,9 @@
 // tslint:disable:max-line-length
 import * as Queue from 'bull';
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { DocumentBase, Ref } from '../document';
 import { RegisterAccumulationInventory } from '../Registers/Accumulation/Inventory';
+import { MSSQL } from '../../mssql';
 
 export default async function (job: Queue.Job) {
   await job.progress(0);

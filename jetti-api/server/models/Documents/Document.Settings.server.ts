@@ -1,8 +1,8 @@
-import { MSSQL } from '../../mssql';
 import { RegisterInfoSettings } from '../Registers/Info/Settings';
 import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentSettings } from './Document.Settings';
+import { MSSQL } from '../../mssql';
 
 export class DocumentSettingsServer extends DocumentSettings implements ServerDocument {
 

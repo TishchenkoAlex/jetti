@@ -1,8 +1,8 @@
-import { MSSQL } from '../../mssql';
 import { RegisterInfoExchangeRates } from '../Registers/Info/ExchangeRates';
 import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentExchangeRates } from './Document.ExchangeRates';
+import { MSSQL } from '../../mssql';
 
 export class DocumentExchangeRatesServer extends DocumentExchangeRates implements ServerDocument {
 

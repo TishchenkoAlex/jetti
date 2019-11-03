@@ -1,25 +1,27 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { ISuggest } from '../models/common-types';
-import { sdb } from '../mssql';
 import { User } from './user.settings';
+import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
 
 router.get('/suggest/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     await sdb.tx(async tx => {
       const query = `
         SELECT id as id, description as value, code as code, type as type
         FROM "Documents" WHERE id = @p1`;
       const data = await tx.oneOrNone<ISuggest>(query, [req.params.id]);
       res.json(data);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/suggest/:type/isfolder/*', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdb = SDB(req);
     const type = req.params.type as string;
     const query = `
       SELECT top 10 id as id, description as value, code as code, type as type
@@ -30,11 +32,12 @@ router.get('/suggest/:type/isfolder/*', async (req: Request, res: Response, next
     await sdb.tx(async tx => {
       const data = await tx.manyOrNone<any>(query, ['%' + req.params[0] + '%']);
       res.json(data);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });
 
 router.get('/suggest/:type/*', async (req: Request, res: Response, next: NextFunction) => {
+  const sdb = SDB(req);
   const type = req.params.type as string;
   const query = `
     SELECT top 10 id as id, description as value, code as code, type as type
@@ -45,6 +48,6 @@ router.get('/suggest/:type/*', async (req: Request, res: Response, next: NextFun
     await sdb.tx(async tx => {
       const data = await tx.manyOrNone<ISuggest>(query, ['%' + req.params[0] + '%']);
       res.json(data);
-    }, User(req));
+    });
   } catch (err) { next(err); }
 });

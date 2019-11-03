@@ -1,31 +1,25 @@
 import * as sql from 'mssql';
-import { sqlConfig, sqlConfigAccounts } from './env/environment';
 import { dateReviverUTC } from './fuctions/dateReviver';
 import { IJWTPayload } from './routes/auth';
 
 export class MSSQL {
-  private POOL: sql.ConnectionPool | sql.Transaction;
 
-  constructor(private config, private transaction?: sql.Transaction) {
-    if (transaction) this.POOL = transaction;
-    else {
-      if (process.env.NODE_ENV === 'production')
-        setInterval(() => {
-          (<sql.ConnectionPool>this.POOL).connect()
-            .then(() => console.log('reconnected', this.config.database))
-            .catch(err => { });
-        }, 20000);
+  private pool: sql.ConnectionPool | sql.Transaction;
 
-      this.POOL = new sql.ConnectionPool(this.config);
-      (<sql.ConnectionPool>this.POOL).connect()
-        .then(() => console.log('connected', this.config.database))
-        .catch(err => console.log('connection error', err));
-    }
+  constructor(private user: IJWTPayload, private GLOBAL_POOL: sql.ConnectionPool, transaction?: sql.Transaction) {
+    if (transaction instanceof sql.Transaction) this.pool = transaction;
+    else this.pool = GLOBAL_POOL;
   }
 
-  public async close() {
-    if (this.POOL instanceof sql.ConnectionPool)
-      await this.POOL.close();
+  private async setSession(request: sql.Request, query: string) {
+    return await request.query(`
+      SET NOCOUNT ON;
+      EXEC sys.sp_set_session_context N'user_id', N'${this.user.email}';
+      EXEC sys.sp_set_session_context N'isAdmin', N'${this.user.isAdmin}';
+      EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(this.user.roles)}';
+      SET NOCOUNT OFF;
+      ${query}
+    `);
   }
 
   private toJSON(value: any): any {
@@ -63,44 +57,43 @@ export class MSSQL {
   }
 
   async oneOrNone<T>(text: string, params: any[] = []): Promise<T | null> {
-    const request = new sql.Request(<any>(this.POOL));
+    const request = new sql.Request(<any>(this.pool));
     this.setParams(params, request);
-    const response = await request.query(text);
+    const response = await this.setSession(request, text);
     return response.recordset.length ? this.complexObject<T>(response.recordset[0]) : null;
   }
 
   async manyOrNone<T>(text: string, params: any[] = []): Promise<T[]> {
-    const request = new sql.Request(<any>(this.POOL));
+    const request = new sql.Request(<any>(this.pool));
     this.setParams(params, request);
-    const response = await request.query(text);
+    const response = await this.setSession(request, text);
     return response.recordset.map(el => this.complexObject<T>(el)) || [];
   }
 
   async manyOrNoneFromJSON<T>(text: string, params: any[] = []): Promise<T[]> {
-    const request = new sql.Request(<any>(this.POOL));
+    const request = new sql.Request(<any>(this.pool));
     this.setParams(params, request);
     const response = await request.query(`${text} FOR JSON PATH, INCLUDE_NULL_VALUES;`);
     const data = response.recordset[0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B'];
     return data ? JSON.parse(data, dateReviverUTC) : [];
   }
 
-  async none<T>(text: string, params: any[] = []) {
-    const request = new sql.Request(<any>(this.POOL));
+  async none(text: string, params: any[] = []) {
+    const request = new sql.Request(<any>(this.pool));
     this.setParams(params, request);
-    await request.query(text);
+    await this.setSession(request, text);
   }
 
-  async tx<T>(func: (tx: MSSQL) => Promise<T>, user: IJWTPayload) {
-    const transaction = new sql.Transaction(this.POOL as sql.ConnectionPool);
-    await transaction.begin(sql.ISOLATION_LEVEL.READ_COMMITTED);
+  async tx<T>(func: (tx: MSSQL) => Promise<T>) {
+    let transaction: sql.Transaction;
+    if (this.pool instanceof sql.ConnectionPool) {
+      transaction = new sql.Transaction(this.pool);
+    } else {
+      transaction = this.pool;
+    }
     try {
-      const request = new sql.Request(transaction);
-      await request.query(`
-        EXEC sys.sp_set_session_context N'user_id', N'${user.email}';
-        EXEC sys.sp_set_session_context N'isAdmin', N'${user.isAdmin}';
-        EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(user.roles)}'
-      `);
-      await func(new MSSQL(this.config, transaction));
+      await transaction.begin(sql.ISOLATION_LEVEL.READ_COMMITTED);
+      await func(new MSSQL(this.user, this.GLOBAL_POOL, transaction));
       await transaction.commit();
     } catch (err) {
       console.log('SQL: error', err);
@@ -113,13 +106,3 @@ export class MSSQL {
     }
   }
 }
-
-export const sdb = new MSSQL(sqlConfig);
-export const sdbq = new MSSQL({ ...sqlConfig, requestTimeout: 1000 * 60 * 60 });
-export const sdba = new MSSQL(sqlConfigAccounts);
-
-process.on('SIGTERM', async () => {
-  await sdb.close();
-  await sdbq.close();
-  await sdba.close();
-});

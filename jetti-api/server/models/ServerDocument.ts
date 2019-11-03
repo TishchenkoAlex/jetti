@@ -1,8 +1,7 @@
 import { PatchValue } from '../models/common-types';
-import { MSSQL } from '../mssql';
 import { DocumentBase, Ref } from './document';
 import { PostResult } from './post.interfaces';
-
+import { MSSQL } from '../mssql';
 
 export abstract class DocumentBaseServer extends DocumentBase implements ServerDocument {
 

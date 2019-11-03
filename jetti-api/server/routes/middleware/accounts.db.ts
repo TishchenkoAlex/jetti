@@ -1,7 +1,11 @@
 import { IAccount } from '../../models/common-types';
-import { sdba } from '../../mssql';
+import { MSSQL } from '../../mssql';
+import { ACCOUNTS_POOL } from '../../sql.pool.accounts';
+
 
 export namespace Accounts {
+
+  const sdba = new MSSQL({email: '1', isAdmin: true, description: '', env: {}, roles: []}, ACCOUNTS_POOL);
 
   export async function get(id: string): Promise<IAccount> {
     const data = await sdba.oneOrNone<any>(`SELECT JSON_QUERY(data) data FROM "accounts" WHERE id = @p1`, [id.toLowerCase()]);

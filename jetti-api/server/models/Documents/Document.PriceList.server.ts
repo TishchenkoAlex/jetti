@@ -1,4 +1,3 @@
-import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { CatalogPriceType } from '../Catalogs/Catalog.PriceType';
 import { createDocumentServer } from '../documents.factory.server';
@@ -7,6 +6,7 @@ import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentInvoice } from './Document.Invoice';
 import { DocumentPriceList } from './Document.PriceList';
+import { MSSQL } from '../../mssql';
 
 export class DocumentPriceListServer extends DocumentPriceList implements ServerDocument {
 

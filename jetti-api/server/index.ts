@@ -4,7 +4,7 @@ import * as compression from 'compression';
 import * as cors from 'cors';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import * as httpServer from 'http';
 import * as path from 'path';
 import 'reflect-metadata';
@@ -21,7 +21,7 @@ import { router as suggests } from './routes/suggest';
 import { router as tasks } from './routes/tasks';
 import { router as userSettings } from './routes/user.settings';
 import { router as utils } from './routes/utils';
-import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
+import { jettiDB, tasksDB, accountDB } from './routes/middleware/db-sessions';
 
 const root = './';
 const app = express();
@@ -33,13 +33,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(root, 'dist')));
 
 const api = `/api`;
-app.use(api, authHTTP, documents);
-app.use(api, authHTTP, userSettings);
-app.use(api, authHTTP, suggests);
-app.use(api, authHTTP, utils);
-app.use(api, authHTTP, registers);
-app.use(api, authHTTP, tasks);
-app.use('/auth', auth);
+app.use(api, authHTTP, jettiDB, documents);
+app.use(api, authHTTP, jettiDB, userSettings);
+app.use(api, authHTTP, jettiDB, suggests);
+app.use(api, authHTTP, jettiDB, utils);
+app.use(api, authHTTP, jettiDB, registers);
+app.use(api, authHTTP, tasksDB, tasks);
+app.use('/auth', accountDB, auth);
 
 app.get('*', (req: Request, res: Response) => {
   res.sendFile('dist/index.html', { root: root });
@@ -61,7 +61,7 @@ const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-const script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
+// const script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
 // console.log(SQLGenegatorMetadata.CreateTableRegisterAccumulation());
 // const script = SQLGenegatorMetadata.CreateTableRegisterInfo();
-fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});
+// fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});

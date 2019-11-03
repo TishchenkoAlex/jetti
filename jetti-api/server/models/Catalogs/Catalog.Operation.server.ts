@@ -1,6 +1,6 @@
-import { MSSQL } from '../../mssql';
 import { ServerDocument } from '../ServerDocument';
 import { CatalogOperation } from './Catalog.Operation';
+import { MSSQL } from '../../mssql';
 
 export class CatalogOperationServer extends CatalogOperation implements ServerDocument {
 
