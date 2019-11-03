@@ -9,13 +9,13 @@ export class RegisterAccumulationBalance extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Balance' })
+  @Props({ type: 'Catalog.Balance', dimension: true })
   Balance: Ref = null;
 
-  @Props({ type: 'Types.Catalog' })
+  @Props({ type: 'Types.Catalog', dimension: true })
   Analytics: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Amount = 0;
 
   constructor (init: Partial<RegisterAccumulationBalance>) {

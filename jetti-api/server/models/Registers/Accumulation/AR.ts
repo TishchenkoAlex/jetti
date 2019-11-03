@@ -7,7 +7,7 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationAR extends RegisterAccumulation {
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
   @Props({ type: 'Catalog.Department' })
@@ -16,7 +16,7 @@ export class RegisterAccumulationAR extends RegisterAccumulation {
   @Props({ type: 'Types.Document' })
   AO: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true })
+  @Props({ type: 'Catalog.Counterpartie', required: true , dimension: true})
   Customer: Ref = null;
 
   @Props({ type: 'datetime' })
@@ -25,10 +25,10 @@ export class RegisterAccumulationAR extends RegisterAccumulation {
   @Props({ type: 'number' })
   AR = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInBalance = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
   constructor (init: Partial<RegisterAccumulationAR>) {

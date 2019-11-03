@@ -7,22 +7,22 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationLoan extends RegisterAccumulation {
 
-  @Props({ type: 'Catalog.Loan' })
+  @Props({ type: 'Catalog.Loan', required: true, dimension: true })
   Loan: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie' })
+  @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
   Counterpartie: Ref = null;
 
-  @Props({ type: 'Catalog.CashFlow' })
+  @Props({ type: 'Catalog.CashFlow', required: true, dimension: true })
   CashFlow: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInBalance = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
   constructor (init: Partial<RegisterAccumulationLoan>) {

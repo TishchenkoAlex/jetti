@@ -7,46 +7,46 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationSales extends RegisterAccumulation {
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', dimension: true  })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true })
+  @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
   Customer: Ref = null;
 
-  @Props({ type: 'Catalog.Product', required: true })
+  @Props({ type: 'Catalog.Product', required: true, dimension: true })
   Product: Ref = null;
 
-  @Props({ type: 'Catalog.Manager' })
+  @Props({ type: 'Catalog.Manager', dimension: true  })
   Manager: Ref = null;
 
   @Props({ type: 'Types.Document' })
   AO: Ref = null;
 
-  @Props({ type: 'Catalog.Storehouse', required: true })
+  @Props({ type: 'Catalog.Storehouse', required: true, dimension: true })
   Storehouse: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Cost = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Qty = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Discount = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Tax = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInDoc = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInAR = 0;
 
   constructor (init: Partial<RegisterAccumulationSales>) {

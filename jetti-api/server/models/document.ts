@@ -24,6 +24,8 @@ export interface PropOptions {
   onChangeServer?: boolean;
   value?: any;
   unique?: boolean;
+  dimension?: boolean;
+  resource?: boolean;
 }
 
 export interface DocumentOptions {

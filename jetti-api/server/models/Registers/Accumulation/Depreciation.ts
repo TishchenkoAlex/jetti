@@ -7,25 +7,25 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationDepreciation extends RegisterAccumulation {
 
-  @Props({ type: 'string', required: true })
+  @Props({ type: 'string', required: true, dimension: true })
   BusinessOperation = '';
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', required: true, dimension: true })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.ObjectsExploitation' })
+  @Props({ type: 'Catalog.ObjectsExploitation', required: true })
   OE: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInBalance = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
   constructor (init: Partial<RegisterAccumulationDepreciation>) {

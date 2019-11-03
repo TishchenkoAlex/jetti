@@ -8,7 +8,7 @@ export interface RegisterAccumulationOptions {
 }
 
 export function JRegisterAccumulation(props: RegisterAccumulationOptions) {
-  return function classDecorator<T extends new(...args: any[]) => {}>(constructor: T) {
+  return function classDecorator<T extends new (...args: any[]) => {}>(constructor: T) {
     Reflect.defineMetadata(symbolProps, props, constructor);
     return class extends constructor {
       type = props.type;
@@ -20,19 +20,19 @@ export class RegisterAccumulation {
   @Props({ type: 'boolean', required: true })
   kind = true;
 
-  @Props({ type: 'string', hidden: true, hiddenInList: true , required: true})
+  @Props({ type: 'string', hidden: true, hiddenInList: true, required: true })
   type: RegisterAccumulationTypes | null = null;
 
-  @Props({ type: 'datetime', required: true })
+  @Props({ type: 'datetime', required: true, dimension: true })
   date = new Date();
 
   @Props({ type: 'Types.Document', hidden: true, hiddenInList: true, required: true })
   document: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true })
+  @Props({ type: 'Catalog.Company', required: true, dimension: true })
   company: Ref = null;
 
-  constructor (init: Partial<RegisterAccumulation>) {
+  constructor(init: Partial<RegisterAccumulation>) {
     Object.assign(this, init);
     this.type = (this.Prop() as RegisterAccumulationOptions).type;
   }

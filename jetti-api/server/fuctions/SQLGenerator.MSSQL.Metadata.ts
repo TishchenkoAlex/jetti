@@ -16,15 +16,17 @@ export class SQLGenegatorMetadata {
       if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
       if (type === 'number') {
         return `
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, NULL) "${prop}.In"
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, NULL, 1) "${prop}.Out" \n`;
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
       }
-      return `, JSON_VALUE(data, '$.${prop}') "${prop}" \n`;
+      if (type === 'date') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') "${prop}" \n`; }
+      if (type === 'datetime') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') "${prop}" \n`; }
+      return `, ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}"`;
+        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
 
     let insert = ''; let select = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -53,17 +55,20 @@ export class SQLGenegatorMetadata {
         CAST(date AS datetime) date, document, company, kind ${select}
       FROM INSERTED WHERE type = N'${type}'; \n`;
     return query;
-  } // AT TIME ZONE @TimeZone
+  }
 
   static QueryTriggerRegisterInfo(doc: { [x: string]: any }, type: RegisterAccumulationTypes) {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') { return `\n, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}"`; }
       if (type === 'number') { return `\n, CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) "${prop}"`; }
-      return `\n, JSON_VALUE(data, '$.${prop}') "${prop}"`;
+      if (type === 'date') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') "${prop}" \n`; }
+      if (type === 'datetime') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') "${prop}" \n`; }
+      return `, ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
-    const complexProperty = (prop: string, type: string) => `\n, CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}"`;
+    const complexProperty = (prop: string, type: string) => `
+        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
 
     let insert = ''; let select = '';
     for (const prop in excludeRegisterInfoProps(doc)) {
@@ -94,19 +99,8 @@ export class SQLGenegatorMetadata {
 
     query = `
       ALTER TRIGGER "Accumulation.Insert" ON dbo."Accumulation"
-      FOR INSERT AS
+      AFTER INSERT AS
       BEGIN
-        DECLARE @TimeZone NVARCHAR(150);
-        DECLARE @company UNIQUEIDENTIFIER;
-
-        SELECT @company = ins.company FROM INSERTED ins;
-
-        SET @TimeZone =
-          ISNULL(
-            (SELECT CAST(JSON_VALUE(doc, N'$.timeZone') AS NVARCHAR(150))
-            FROM Documents WHERE type = 'Catalog.Company' AND id = @company),
-          'UTC');
-
         ${query}
       END;`;
     return query;
@@ -128,14 +122,73 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
+  static CreateTableRegisterAccumulationTotals() {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type.includes('.')) { return `, [${prop}]`; }
+
+      if (type === 'number') {
+        return `
+        , SUM([${prop}]) [${prop}]
+        , SUM([${prop}.In]) [${prop}.In]
+        , SUM([${prop}.Out]) [${prop}.Out]`;
+      }
+
+      if (type === 'string') { return `, [${prop}]`; }
+    };
+
+    let query = '';
+    for (const register of RegisteredRegisterAccumulation) {
+      const doc = createRegisterAccumulation({ type: register.type });
+      const props = doc.Props();
+      let select = ''; let groupBy = '';
+      for (const prop in excludeRegisterAccumulatioProps(doc)) {
+        const dimension = !!props[prop].dimension;
+        const resource = !!props[prop].resource;
+        const type = props[prop].type || 'string';
+        const field = simleProperty(prop, type) || '';
+        if (dimension) groupBy += field;
+        else if (resource) select += field;
+      }
+
+      query += `\n
+      CREATE OR ALTER VIEW [dbo].[${register.type}.Totals]
+      WITH SCHEMABINDING
+      AS
+        SELECT [company], [date]${groupBy}
+        ${select}
+	      , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[${register.type}]
+      GROUP BY [company], [date]${groupBy}
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [ci${register.type}.Totals] ON [dbo].[${register.type}.Totals]
+      ([company], [date] ${groupBy})
+      GO`;
+    }
+
+    return query;
+  }
+
   static CreateTableRegisterAccumulation() {
 
     const simleProperty = (prop: string, type: string, required: boolean) => {
-      const nullText = required ? ' NOT NULL ' : ' NULL ';
-      if (type.includes('.')) { return `, "${prop}" UNIQUEIDENTIFIER ${nullText} \n`; }
-      if (type === 'boolean') { return `, "${prop}" BIT ${nullText} \n`; }
-      if (type === 'date') { return `, "${prop}" DATE ${nullText} \n`; }
-      if (type === 'datetime') { return `, "${prop}" DATE ${nullText} \n`; }
+      const nullText = required ? 'NOT NULL' : 'NOT NULL';
+      if (type.includes('.')) {
+        return `
+        , "${prop}" UNIQUEIDENTIFIER ${nullText} \n`;
+      }
+      if (type === 'boolean') {
+        return `
+        , "${prop}" BIT ${nullText} \n`;
+      }
+      if (type === 'date') {
+        return `
+        , "${prop}" DATE ${nullText} \n`;
+      }
+      if (type === 'datetime') {
+        return `
+        , "${prop}" DATE ${nullText} \n`;
+      }
 
       if (type === 'number') {
         return `
@@ -144,7 +197,8 @@ export class SQLGenegatorMetadata {
         , "${prop}.Out" MONEY ${nullText} \n`;
       }
 
-      return `, "${prop}" NVARCHAR(150) \n ${nullText}`;
+      return `
+        , "${prop}" NVARCHAR(150) ${nullText} \n`;
     };
 
     let query = '';
@@ -157,7 +211,7 @@ export class SQLGenegatorMetadata {
       }
 
       query += `\n
-      DROP TABLE "${register.type}";
+      DROP TABLE IF EXISTS "${register.type}";
       CREATE TABLE "${register.type}" (
         [kind] [bit] NOT NULL,
         [company] [uniqueidentifier] NOT NULL,
@@ -169,6 +223,29 @@ export class SQLGenegatorMetadata {
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
       GRANT SELECT ON "${register.type}" TO jetti;\n`;
     }
+
+    query = `
+      BEGIN TRANSACTION
+      BEGIN TRY
+      ${query}
+
+      DROP TABLE IF EXISTS [Accumulation.Copy];
+
+      SELECT * INTO [Accumulation.Copy] FROM [Accumulation];
+
+      DELETE FROM [Accumulation];
+      INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
+
+      END TRY
+      BEGIN CATCH
+        IF @@TRANCOUNT > 0
+          ROLLBACK TRANSACTION;
+        SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage;
+      END CATCH;
+      IF @@TRANCOUNT > 0
+        COMMIT TRANSACTION;
+      GO
+    `;
     return query;
   }
 

@@ -7,28 +7,28 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationAP extends RegisterAccumulation {
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department'})
   Department: Ref = null;
 
   @Props({ type: 'Types.Document' })
   AO: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true })
+  @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
   Supplier: Ref = null;
 
   @Props({ type: 'datetime' })
   PayDay = new Date();
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInBalance = 0;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
   constructor (init: Partial<RegisterAccumulationAP>) {
