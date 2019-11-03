@@ -14,9 +14,10 @@ import { buildColumnDef } from './../routes/utils/columns-def';
 import { lib } from './../std.lib';
 import { User } from './user.settings';
 import { List } from './utils/list';
-import { postDocument, upsertDocument } from './utils/post';
+import { postDocument, insertDocument, updateDocument, unpostDocument } from './utils/post';
 import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
+import { RegisterAccumulation } from '../models/Registers/Accumulation/RegisterAccumulation';
 
 export const router = express.Router();
 
@@ -155,10 +156,15 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
     await sdb.tx(async tx => {
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+        doc.posted = true;
         await lib.util.postMode(true, tx);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
-        await upsertDocument(serverDoc, tx);
+        if (serverDoc.timestamp) {
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }
@@ -177,7 +183,12 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         await lib.util.postMode(true, tx);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
-        await upsertDocument(serverDoc, tx);
+        if (serverDoc.timestamp) {
+          await unpostDocument(serverDoc, tx);
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
         await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
@@ -196,6 +207,13 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
         doc.posted = true;
         await lib.util.postMode(true, tx);
         const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        if (serverDoc.timestamp) {
+          await unpostDocument(serverDoc, tx);
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
+        await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }

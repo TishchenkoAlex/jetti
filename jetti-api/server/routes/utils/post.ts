@@ -12,10 +12,6 @@ export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   if (typeof beforePost === 'function') await beforePost(tx);
   if (serverDoc.beforePost) await serverDoc.beforePost(tx);
 
-  await unpostDocument(serverDoc, tx);
-  await tx.none(`UPDATE Documents SET posted = 1 WHERE id = '${serverDoc.id}' AND posted <> 1`);
-  serverDoc.posted = true;
-
   if (serverDoc.isDoc && serverDoc.onPost) {
     const Registers = await serverDoc.onPost(tx);
     await InsertRegistersIntoDB(serverDoc, Registers, tx);
@@ -28,20 +24,17 @@ export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 }
 
 export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
-  await tx.none(`UPDATE Documents SET posted = 0 WHERE id = '${serverDoc.id}' AND posted <> 0`);
-  serverDoc.posted = false;
-  const id = serverDoc.id;
+
   const deleted = await tx.manyOrNone<RegisterAccumulation>(`
-    SELECT * FROM "Accumulation" WHERE document = '${id}';
-    DELETE FROM "Register.Account" WHERE document = '${id}';
-    DELETE FROM "Register.Info" WHERE document = '${id}';
-    DELETE FROM "Accumulation" WHERE document = '${id}';`);
+    SELECT * FROM "Accumulation" WHERE document = '${serverDoc.id}';
+    DELETE FROM "Register.Account" WHERE document = '${serverDoc.id}';
+    DELETE FROM "Register.Info" WHERE document = '${serverDoc.id}';
+    DELETE FROM "Accumulation" WHERE document = '${serverDoc.id}';`);
   serverDoc['deletedRegisterAccumulation'] = () => deleted;
 }
 
-export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const id = serverDoc.id;
-  const isNew = (await tx.oneOrNone<{ id: string }>(`SELECT id FROM "Documents" WHERE id = '${id}'`) === null);
 
   const beforeSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeSave'];
   if (typeof beforeSave === 'function') await beforeSave(tx);
@@ -49,16 +42,11 @@ export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   serverDoc.timestamp = new Date();
 
-  const afterSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterSave'];
-  if (typeof afterSave === 'function') await afterSave(tx);
-  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
-
-  // tslint:disable-next-line:no-shadowed-variable
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
   let response: INoSqlDocument;
-  if (isNew) {
-    response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+
+  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
       INSERT INTO Documents(
         [id], [type], [date], [code], [description], [posted], [deleted],
         [parent], [isfolder], [company], [user], [info], [doc])
@@ -81,8 +69,29 @@ export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
         [doc] NVARCHAR(max) N'$.doc' AS JSON
       );
       SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  } else {
-    response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+
+  const afterSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterSave'];
+  if (typeof afterSave === 'function') await afterSave(tx);
+  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
+
+  serverDoc.map(response);
+  return serverDoc;
+}
+
+export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+  const id = serverDoc.id;
+
+  const beforeSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeSave'];
+  if (typeof beforeSave === 'function') await beforeSave(tx);
+  if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
+
+  serverDoc.timestamp = new Date();
+
+  const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
+  const jsonDoc = JSON.stringify(noSqlDocument);
+
+  let response: INoSqlDocument;
+  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
       UPDATE Documents
         SET
           type = i.type, parent = i.parent,
@@ -110,7 +119,11 @@ export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
         ) i
         WHERE Documents.id = i.id;
         SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  }
+
+  const afterSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterSave'];
+  if (typeof afterSave === 'function') await afterSave(tx);
+  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
+
   serverDoc.map(response);
   return serverDoc;
 }

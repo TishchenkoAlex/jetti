@@ -69,6 +69,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.columns$ = _if(() => !!columns.length,
       of(columns),
       this.ds.api.getView(this.type).pipe(map(v => v.columnsDef))).pipe(
+        // tslint:disable-next-line: no-use-before-declare
         tap(c => init(c)),
         map(d => d.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc)) || c.field === 'Group')));
 
@@ -113,7 +114,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
         }
       });
 
-    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
+    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
   }
 
@@ -252,7 +253,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   onContextMenuSelect(event) {
-    let el = (event.originalEvent as MouseEvent).srcElement as any;
+    let el = (event.originalEvent as MouseEvent).target as any;
     if (!el) return;
     while (!el.id && el.lastElementChild) { el = el.lastElementChild; }
     const value = event.data[el.id];

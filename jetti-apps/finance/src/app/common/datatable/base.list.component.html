@@ -25,7 +25,7 @@
       </div>
     </p-toolbar>
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
-      [rows]="pageSize" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="500"
+      [rows]="pageSize" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000"
       (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm" [metaKeySelection]="true"
       [columns]="columns$ | async" class="noselect" [scrollHeight]="scrollHeight" [(selection)]="selection"
       (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"

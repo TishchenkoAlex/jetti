@@ -10,8 +10,9 @@ import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAc
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { DocumentBaseServer } from './models/ServerDocument';
-import { adminModeForPost, postDocument, unpostDocument } from './routes/utils/post';
+import { adminModeForPost, postDocument, unpostDocument, updateDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
+import { buildViewModel } from './routes/documents';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -260,30 +261,33 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   return result ? result.result : null;
 }
 
-export async function postById(id: string, tx: MSSQL) {
+export async function postById(id: Ref, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
-    if (doc && doc.deleted) throw new Error('Cant post deleted document');
     const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    if (doc && doc.deleted) return serverDoc;
+    serverDoc.posted = true;
+    await unpostDocument(serverDoc, tx);
+    await updateDocument(serverDoc, tx);
     await postDocument(serverDoc, tx);
     return serverDoc;
-  } catch (err) { throw new Error(err); }
+  } catch (err) { throw err; }
   finally { await lib.util.postMode(false, tx); }
 }
 
-export async function unPostById(id: string, tx: MSSQL) {
+export async function unPostById(id: Ref, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
-    if (doc && doc.deleted) throw new Error('Cant post deleted document');
     const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
+    await updateDocument(serverDoc, tx);
     return serverDoc;
-  } catch (err) { throw new Error(err); }
+  } catch (err) { throw err; }
   finally { await lib.util.postMode(false, tx); }
 }
-
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
   SELECT * FROM Accumulation where type = '${type}' AND document = '${doc}'`;

@@ -211,6 +211,7 @@ export class SQLGenegatorMetadata {
       }
 
       query += `\n
+      DROP VIEW IF EXISTS "${register.type}.Totals";
       DROP TABLE IF EXISTS "${register.type}";
       CREATE TABLE "${register.type}" (
         [kind] [bit] NOT NULL,

@@ -98,14 +98,18 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   };
 
   let query = '';
-  const queryBefore = queryBuilder(true);
-  const queryAfter = queryBuilder(false);
+  const queryBefore = queryBuilder(false);
+  const queryAfter = queryBuilder(true);
   if (queryBefore) {
     query = `SELECT id FROM (${queryBefore} \nUNION ALL\n${queryAfter}) ID`;
-    query = `SELECT * FROM (${QueryList} d) d WHERE d.id IN (${query}) ${orderbyAfter} `;
+    query = `SELECT * FROM (${QueryList} d) d WHERE d.id IN (${query}) `;
   } else
     query = `SELECT TOP ${params.count + 1} * FROM (${QueryList} d) d
-      WHERE ${filterBuilder(params.filter)} ${ params.command === 'first' ? orderbyAfter : orderbyBefore } `;
+      WHERE ${filterBuilder(params.filter)} `;
+
+  if (params.command === 'first') query = `${query} ${orderbyAfter}`;
+  else if (params.command === 'last') query = `${query} ${orderbyBefore}`;
+  query = `SELECT * FROM (${query}) d ${orderbyAfter}`;
 
   const data = await tx.manyOrNone<any>(query);
   let result: any[] = [];
