@@ -15,7 +15,14 @@ spec:
     spec:
       containers:
         - name: jetti
-          image: eu.gcr.io/jetti-pg/jetti-x100:latest
+          image: eu.gcr.io/jetti-x100/jetti-api:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -23,21 +30,18 @@ spec:
             - name: DB_PORT
               value: "1433"
             - name: DB_HOST
-              value: mssql
+              value: JETTI-DB-01
             - name: DB_NAME
               value: sm
             - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: mssql-db-credentials
-                  key: username
+              value: jetti
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mssql-db-credentials
                   key: password
             - name: DB_ACCOUNTS_HOST
-              value: mssql
+              value: JETTI-DB-01
             - name: DB_ACCOUNTS_NAME
               value: accounts
             - name: DB_ACCOUNTS_USER

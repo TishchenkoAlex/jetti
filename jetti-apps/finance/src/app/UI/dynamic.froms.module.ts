@@ -26,6 +26,7 @@ import { MaterialModule } from './../material.module';
 import { CatalogListComponent } from './../UI/Catalog/calatog-list.component';
 import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
+import { BatchFormComponent } from './Forms/batch.form.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { OperationListComponent } from './Operation/operation.list.component';
     BaseDocListComponent,
     BaseDocFormComponent,
     BaseFormComponent,
+    BatchFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
     CatalogListComponent,
@@ -77,6 +79,7 @@ import { OperationListComponent } from './Operation/operation.list.component';
     BaseDocListComponent,
     BaseDocFormComponent,
     BaseFormComponent,
+    BatchFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
     CatalogListComponent,

@@ -25,6 +25,6 @@ export class LoadingService {
   set color(value) { if (value !== this._color.value) this._color.next(value); }
   get color() { return this._color.value; }
 
-  busy$ = combineLatest(this.loading$, this.color$).pipe(map(r => r[0] && r[1] === 'accent'));
+  busy$ = combineLatest([this.loading$, this.color$]).pipe(map(r => r[0] && r[1] === 'accent'));
 
 }

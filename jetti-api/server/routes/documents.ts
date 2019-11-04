@@ -132,12 +132,10 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       serverDoc.posted = false;
 
       const deleted = await tx.manyOrNone<INoSqlDocument>(`
-        SELECT * FROM "Accumulation" WHERE document = '${id}';
         DELETE FROM "Register.Account" WHERE document = '${id}';
         DELETE FROM "Register.Info" WHERE document = '${id}';
         DELETE FROM "Accumulation" WHERE document = '${id}';
         UPDATE "Documents" SET deleted = @p1, posted = 0 WHERE id = '${id}';`, [serverDoc.deleted]);
-      serverDoc['deletedRegisterAccumulation'] = () => deleted;
 
       const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
       if (typeof afterDelete === 'function') await afterDelete(tx);
@@ -156,7 +154,6 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
     await sdb.tx(async tx => {
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-        doc.posted = true;
         await lib.util.postMode(true, tx);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);

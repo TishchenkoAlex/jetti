@@ -14,6 +14,7 @@ export const FinanceSubSystem: ISubSystem = {
     'Catalog.CashFlow',
     'Catalog.Loan',
     'Catalog.TaxRates',
-    'Form.Post'
+    'Form.Post',
+    'Form.Batch'
   ]
 };

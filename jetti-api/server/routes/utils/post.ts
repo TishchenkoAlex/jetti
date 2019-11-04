@@ -26,11 +26,9 @@ export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   const deleted = await tx.manyOrNone<RegisterAccumulation>(`
-    SELECT * FROM "Accumulation" WHERE document = '${serverDoc.id}';
     DELETE FROM "Register.Account" WHERE document = '${serverDoc.id}';
     DELETE FROM "Register.Info" WHERE document = '${serverDoc.id}';
     DELETE FROM "Accumulation" WHERE document = '${serverDoc.id}';`);
-  serverDoc['deletedRegisterAccumulation'] = () => deleted;
 }
 
 export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {

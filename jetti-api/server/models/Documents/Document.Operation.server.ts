@@ -66,20 +66,6 @@ export class DocumentOperationServer extends DocumentOperation implements Server
       await func(this, Registers, tx, lib, settings, exchangeRate, exchangeRateAccounting);
     }
 
-    const oldInventory = ((this['deletedRegisterAccumulation'] && <any[]>this['deletedRegisterAccumulation']()) || [])
-      .filter(r => r.type === 'Register.Accumulation.Inventory' && r.kind === true);
-
-    const newInventory = (Registers.Accumulation || [])
-      .filter(r => r.type === 'Register.Accumulation.Inventory' && r.kind === true)
-      .map(r => ({...r, date: r.date ? r.date : this.date}));
-
-    if (!(oldInventory.length || newInventory.length)) return Registers;
-
-    await JQueue.add({
-      job: { id: 'cost', description: `${this.description}` },
-      doc: this,
-      Inventory: [oldInventory, newInventory],
-    });
     return Registers;
   }
 

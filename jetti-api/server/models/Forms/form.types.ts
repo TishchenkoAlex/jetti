@@ -1,3 +1,4 @@
 export type FormTypes =
-  'Form.Post'
+  'Form.Post' |
+  'Form.Batch'
 ;

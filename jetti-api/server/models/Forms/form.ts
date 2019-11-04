@@ -1,5 +1,6 @@
 import { PropOptions, symbolProps } from '../document';
 import { FormTypes } from './form.types';
+import { ICallRequest } from './form.factory';
 
 export interface FormOptions {
   type: FormTypes;
