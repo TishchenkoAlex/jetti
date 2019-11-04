@@ -1,7 +1,6 @@
 import { JQueue } from '../Tasks/tasks';
 import { FormPost } from './Form.Post';
 import { MSSQL } from '../../mssql';
-import { ICallRequest } from './form.factory';
 import { IServerForm } from './form.factory.server';
 
 export default class FormPostServer extends FormPost implements IServerForm {
@@ -10,14 +9,15 @@ export default class FormPostServer extends FormPost implements IServerForm {
     const endDate = new Date(this.EndDate);
     endDate.setHours(23, 59, 59, 999);
 
-    const result = (await JQueue.add({
+    const result = await JQueue.add({
       job: { id: 'post', description: '(job) post Invoices' },
       user: user,
       type: this.type,
       company: this.company,
       StartDate: this.StartDate,
       EndDate: endDate
-    }, { jobId: 'FormPostServer' }));
+    }, { jobId: 'FormPostServer' });
+
     return this;
   }
 

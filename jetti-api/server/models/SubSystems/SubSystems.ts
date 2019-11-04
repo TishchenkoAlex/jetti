@@ -49,13 +49,13 @@ export function SubSystemsMenu(filter: RoleObject[] = []) {
     for (const o of s.Objects) {
       if (!filter.find(f => f.type === o)) { continue; }
       try {
-        const prop = createDocument<DocumentBase>(o as DocTypes).Prop() as DocumentOptions;
+        const prop = createDocument(o as DocTypes).Prop() as DocumentOptions;
         const subMenuItem: MenuItem = { type: prop.type, icon: prop.icon, label: prop.menu, routerLink: ['/' + prop.type] };
         menuItem.items!.push(subMenuItem);
         continue;
       } catch (err) {  }
       try {
-        const prop = createForm(o as FormTypes).Prop() as FormOptions;
+        const prop = createForm({type: o as FormTypes}).Prop() as FormOptions;
         const subMenuItem: MenuItem = { type: prop.type, icon: prop.icon, label: prop.menu, routerLink: ['/' + prop.type] };
         menuItem.items!.push(subMenuItem);
       } catch (err) {  }

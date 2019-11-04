@@ -8,23 +8,21 @@ export interface IServerForm {
   Execute(tx: MSSQL, user: string): Promise<FormBase>;
 }
 
-export interface IRegisteredServerForm<T extends FormBase> {
-  type: FormTypes;
-  class: T;
+export type FormBaseServer = FormBase & IServerForm;
+
+export function createFormServer<T extends FormBaseServer>(init?: Partial<FormBase>) {
+  if (init && init.type) {
+    const doc = RegisteredServerForms.get(init.type);
+    if (doc) {
+      const result = <T>new doc;
+      Object.assign(result, init);
+      return result;
+    }
+  }
+  throw new Error(`FORM type ${init!.type} is not registered`);
 }
 
-export function createFormServer(type: FormTypes) {
-  const doc = RegisteredForms.find(el => el.type === type);
-  if (doc) {
-    const createInstance = <T extends FormBase & IServerForm>(c: new () => T): T => new c();
-    const result = createInstance(doc.class);
-    return result;
-  } else throw new Error(`FORM type ${type} is not registered`);
-}
-
-const RegisteredForms: IRegisteredServerForm<any>[] = [
-  { type: 'Form.Post', class: FormPostServer },
-  { type: 'Form.Batch', class: FormBatchServer },
-];
-
-
+const RegisteredServerForms = new Map<FormTypes, typeof FormBase>([
+  ['Form.Post', FormPostServer],
+  ['Form.Batch', FormBatchServer]
+]);

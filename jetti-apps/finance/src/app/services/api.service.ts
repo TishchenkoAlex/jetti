@@ -15,6 +15,8 @@ import { environment } from '../../environments/environment';
 import { IComplexObject } from '../common/dynamic-form/dynamic-form-base';
 import { LoadingService } from '../common/loading.service';
 import { mapToApi } from '../common/mapping/document.mapping';
+import { FormTypes } from '../../../../../jetti-api/server/models/Forms/form.types';
+import { FormBase } from '../../../../../jetti-api/server/models/Forms/form';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -186,6 +188,12 @@ export class ApiService {
   tree(type: AllDocTypes) {
     const query = `${environment.api}tree/${type}`;
     return this.http.get<ITree[]>(query);
+  }
+
+  execute(type: FormTypes, doc: FormBase) {
+    const apiDoc = mapToApi(doc as any);
+    const query = `${environment.api}form/${type}/execute`;
+    return this.http.post<boolean>(query, apiDoc);
   }
 
 }

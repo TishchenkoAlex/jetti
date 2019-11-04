@@ -1,4 +1,3 @@
-// node_modules/typescript/bin/tsc -p ./src/server/ && node src/server/index.js
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cors from 'cors';
@@ -20,6 +19,7 @@ import { router as registers } from './routes/registers';
 import { router as suggests } from './routes/suggest';
 import { router as tasks } from './routes/tasks';
 import { router as userSettings } from './routes/user.settings';
+import { router as form } from './routes/form';
 import { router as utils } from './routes/utils';
 import { jettiDB, tasksDB, accountDB } from './routes/middleware/db-sessions';
 
@@ -39,6 +39,7 @@ app.use(api, authHTTP, jettiDB, suggests);
 app.use(api, authHTTP, jettiDB, utils);
 app.use(api, authHTTP, jettiDB, registers);
 app.use(api, authHTTP, tasksDB, tasks);
+app.use(api, authHTTP, tasksDB, form);
 app.use('/auth', accountDB, auth);
 
 app.get('*', (req: Request, res: Response) => {

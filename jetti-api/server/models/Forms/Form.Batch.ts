@@ -8,6 +8,7 @@ import { Props, Ref } from '../document';
   menu: 'Batch',
 })
 export class FormBatch extends FormBase {
+
   @Props({ type: 'Catalog.Company', order: 1, required: true })
   company: Ref = null;
 

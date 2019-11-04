@@ -3,7 +3,7 @@ import { IFlatDocument } from './../../../../../../jetti-api/server/models/docum
 
 export function mapToApi(model: DocumentBase): IFlatDocument {
   const newDoc: IFlatDocument = {
-    id: model.id,
+    id: model.id || null,
     type: model.type,
     date: model.date || new Date(),
     code: model.code,

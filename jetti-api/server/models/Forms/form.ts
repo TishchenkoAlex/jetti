@@ -1,6 +1,7 @@
-import { PropOptions, symbolProps } from '../document';
+import { PropOptions, symbolProps, Props, Ref } from '../document';
 import { FormTypes } from './form.types';
-import { ICallRequest } from './form.factory';
+import { v1 } from 'uuid';
+import { DocTypes } from '../documents.types';
 
 export interface FormOptions {
   type: FormTypes;
@@ -19,8 +20,46 @@ export function JForm(props: FormOptions) {
   };
 }
 
-export abstract class FormBase {
+export class FormBase {
 
+  @Props({ type: 'string', hidden: true, hiddenInList: true })
+  id = v1();
+
+  @Props({ type: 'string', hidden: true, hiddenInList: true })
+  type: FormTypes;
+
+  @Props({ type: 'datetime', order: 1, hidden: true})
+  date = new Date();
+
+  @Props({ type: 'string', hidden: true, order: 2, style: { width: '135px' } })
+  code = '';
+
+  @Props({ type: 'string', order: 3, hidden: true, style: { width: '300px' } })
+  description = '';
+
+  @Props({ type: 'Catalog.Company', order: 4, hidden: true })
+  company: Ref = null;
+
+  @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
+  user: Ref = null;
+
+  @Props({ type: 'boolean', hidden: true, hiddenInList: true })
+  posted = false;
+
+  @Props({ type: 'boolean', hidden: true, hiddenInList: true })
+  deleted = false;
+
+  @Props({ type: 'Types.Subcount', hidden: true, hiddenInList: true, order: -1 })
+  parent: Ref = null;
+
+  @Props({ type: 'boolean', hidden: true, hiddenInList: true })
+  isfolder = false;
+
+  @Props({ type: 'string', hidden: true,  hiddenInList: true, order: -1, controlType: 'textarea' })
+  info = '';
+
+  @Props({ type: 'datetime', hiddenInList: true, order: -1, hidden: true })
+  timestamp: Date | null = null;
   private targetProp(target: Object, propertyKey: string): PropOptions {
     const result = Reflect.getMetadata(symbolProps, target, propertyKey);
     return result;

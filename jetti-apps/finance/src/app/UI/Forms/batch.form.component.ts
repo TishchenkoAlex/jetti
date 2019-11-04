@@ -8,6 +8,7 @@ import { AuthService } from '../../auth/auth.service';
 import { DocService } from '../../common/doc.service';
 import { FormControlInfo } from 'src/app/common/dynamic-form/dynamic-form-base';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
+import { take } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,14 +64,11 @@ export class BatchFormComponent {
   }
 
   async Execute(): Promise<any> {
-    const data = this.form.value;
-    return await this.ds.api.jobAdd({
-      job: { id: 'batch', description: 'Post documents' },
-      type: data.type.id,
-      company: data.company.id,
-      StartDate: data.StartDate,
-      EndDate: data.EndDate
-    }).toPromise();
+    console.log(this.model);
+    this.ds.api.execute('Form.Batch', this.model).pipe(take(1))
+      .subscribe(data => {
+        console.log('Execute: ', data);
+      });
   }
 
 }

@@ -11,9 +11,6 @@ export class FormPost extends FormBase {
   @Props({ type: 'Catalog.Company', order: 1, required: true })
   company: Ref = null;
 
-  @Props({ type: 'Catalog.Documents', order: 2, required: true })
-  type = '';
-
   @Props({ type: 'date', order: 3, required: true })
   StartDate = new Date();
 
