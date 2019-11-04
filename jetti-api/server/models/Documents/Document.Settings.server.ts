@@ -1,10 +1,10 @@
 import { RegisterInfoSettings } from '../Registers/Info/Settings';
-import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentSettings } from './Document.Settings';
 import { MSSQL } from '../../mssql';
+import { IServerDocument } from '../documents.factory.server';
 
-export class DocumentSettingsServer extends DocumentSettings implements ServerDocument {
+export class DocumentSettingsServer extends DocumentSettings implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {

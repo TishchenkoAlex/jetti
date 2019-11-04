@@ -2,18 +2,17 @@ import { CatalogCounterpartie } from '../../models/Catalogs/Catalog.Counterparti
 import { DocumentBase } from '../../models/document';
 import { BatchRow, lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
-import { createDocumentServer } from '../documents.factory.server';
+import { createDocumentServer, IServerDocument } from '../documents.factory.server';
 import { RegisterAccumulationAR } from '../Registers/Accumulation/AR';
 import { RegisterAccumulationBalance } from '../Registers/Accumulation/Balance';
 import { RegisterAccumulationInventory } from '../Registers/Accumulation/Inventory';
 import { RegisterAccumulationPL } from '../Registers/Accumulation/PL';
 import { RegisterAccumulationSales } from '../Registers/Accumulation/Sales';
-import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentInvoice } from './Document.Invoice';
 import { MSSQL } from '../../mssql';
 
-export class DocumentInvoiceServer extends DocumentInvoice implements ServerDocument {
+export class DocumentInvoiceServer extends DocumentInvoice implements IServerDocument {
 
   async GetPrice(args: any, tx: MSSQL): Promise<{ doc: DocumentBase, result: any }> {
     this.Amount = 0;

@@ -8,7 +8,6 @@ import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documen
 import { createDocumentServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
 import { DocumentOperation } from '../models/Documents/Document.Operation';
-import { DocumentBaseServer } from './../models/ServerDocument';
 import { FormListSettings } from './../models/user.settings';
 import { buildColumnDef } from './../routes/utils/columns-def';
 import { lib } from './../std.lib';
@@ -17,11 +16,10 @@ import { List } from './utils/list';
 import { postDocument, insertDocument, updateDocument, unpostDocument } from './utils/post';
 import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
-import { RegisterAccumulation } from '../models/Registers/Accumulation/RegisterAccumulation';
 
 export const router = express.Router();
 
-export async function buildViewModel(ServerDoc: DocumentBaseServer, tx: MSSQL) {
+export async function buildViewModel(ServerDoc: DocumentBase, tx: MSSQL) {
   const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
   const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
   return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
@@ -50,11 +48,11 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     if (id) doc = await lib.doc.byId(id, sdb);
     if (!doc) {
       doc = Operation ?
-        { ...createDocument<DocumentBaseServer>(type), Operation } :
-        createDocument<DocumentBaseServer>(type);
+        { ...createDocument(type), Operation } :
+        createDocument(type);
       doc!.isfolder = isFolder;
     }
-    const ServerDoc = await createDocumentServer<DocumentBaseServer>(type, doc as IFlatDocument, sdb);
+    const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, sdb);
     if (!ServerDoc) throw new Error(`wrong type ${type}`);
     if (id) ServerDoc.id = id;
 
@@ -86,7 +84,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
         case 'copy':
           const copy = await lib.doc.byId(req.query.copy, sdb);
           if (!copy) throw new Error(`base document ${req.query.copy} for copy is not found!`);
-          const copyDoc = await createDocumentServer<DocumentBaseServer>(type, copy, sdb);
+          const copyDoc = await createDocumentServer(type, copy, sdb);
           copyDoc.id = id; copyDoc.date = ServerDoc.date; copyDoc.code = '';
           copyDoc.posted = false; copyDoc.deleted = false; copyDoc.timestamp = null;
           copyDoc.parent = copyDoc.parent;
@@ -96,7 +94,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           ServerDoc.description = 'Copy: ' + ServerDoc.description;
           break;
         case 'base':
-          await ServerDoc.baseOn(req.query.base as string, sdb);
+          if (ServerDoc.baseOn) await ServerDoc.baseOn(req.query.base as string, sdb);
           break;
         default:
           break;
@@ -122,7 +120,7 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       const doc = await lib.doc.byId(id, tx);
       if (!doc) throw new Error(`API - Delete: document with id '${id}' not found.`);
 
-      const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type, doc, tx);
+      const serverDoc = await createDocumentServer(doc.type, doc, tx);
 
       const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
       if (typeof beforeDelete === 'function') await beforeDelete(tx);
@@ -156,7 +154,7 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
         await lib.util.postMode(true, tx);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
         if (serverDoc.timestamp) {
           await updateDocument(serverDoc, tx);
         } else {
@@ -179,7 +177,7 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         doc.posted = true;
         await lib.util.postMode(true, tx);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
         if (serverDoc.timestamp) {
           await unpostDocument(serverDoc, tx);
           await updateDocument(serverDoc, tx);
@@ -203,7 +201,7 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
         if (doc && doc.deleted) throw new Error('Cant POST deleted document');
         doc.posted = true;
         await lib.util.postMode(true, tx);
-        const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
         if (serverDoc.timestamp) {
           await unpostDocument(serverDoc, tx);
           await updateDocument(serverDoc, tx);
@@ -259,7 +257,7 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
       const value: RefValue = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
       const property: string = req.params.property;
       const type: DocTypes = req.params.type as DocTypes;
-      const serverDoc = await createDocumentServer<DocumentBaseServer>(type, doc, tx);
+      const serverDoc = await createDocumentServer(type, doc, tx);
 
       let result: PatchValue = {};
       const OnChange: (value: RefValue) => Promise<PatchValue> = serverDoc['serverModule'][property + '_OnChange'];
@@ -283,7 +281,7 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
       const command: string = req.params.command;
       const type: DocTypes = req.params.type as DocTypes;
       const args: { [key: string]: any } = req.params.args as any;
-      const serverDoc = await createDocumentServer<DocumentBaseServer>(type, doc, tx);
+      const serverDoc = await createDocumentServer(type, doc, tx);
 
       const docModule: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule'][command];
       if (typeof docModule === 'function') await docModule(args);

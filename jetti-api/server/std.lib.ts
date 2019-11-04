@@ -3,16 +3,14 @@ import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
-import { createDocumentServer } from './models/documents.factory.server';
+import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
 import { DocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { DocumentBaseServer } from './models/ServerDocument';
 import { adminModeForPost, postDocument, unpostDocument, updateDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
-import { buildViewModel } from './routes/documents';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 

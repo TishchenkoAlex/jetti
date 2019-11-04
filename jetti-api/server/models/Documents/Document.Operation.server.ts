@@ -2,15 +2,13 @@ import { lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
 import { PatchValue } from '../common-types';
-import { createDocumentServer } from '../documents.factory.server';
+import { createDocumentServer, IServerDocument } from '../documents.factory.server';
 import { RegisterInfoSettings } from '../Registers/Info/Settings';
-import { ServerDocument } from '../ServerDocument';
-import { JQueue } from '../Tasks/tasks';
 import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
 
-export class DocumentOperationServer extends DocumentOperation implements ServerDocument {
+export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<PatchValue | {} | { [key: string]: any }> {
     if (!value) { return {}; }

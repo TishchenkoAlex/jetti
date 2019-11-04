@@ -1,10 +1,10 @@
 import { RegisterInfoExchangeRates } from '../Registers/Info/ExchangeRates';
-import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentExchangeRates } from './Document.ExchangeRates';
 import { MSSQL } from '../../mssql';
+import { IServerDocument } from '../documents.factory.server';
 
-export class DocumentExchangeRatesServer extends DocumentExchangeRates implements ServerDocument {
+export class DocumentExchangeRatesServer extends DocumentExchangeRates implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {

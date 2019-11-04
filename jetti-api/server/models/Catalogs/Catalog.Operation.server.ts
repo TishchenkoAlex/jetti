@@ -1,8 +1,8 @@
-import { ServerDocument } from '../ServerDocument';
 import { CatalogOperation } from './Catalog.Operation';
 import { MSSQL } from '../../mssql';
+import { IServerDocument } from '../documents.factory.server';
 
-export class CatalogOperationServer extends CatalogOperation implements ServerDocument {
+export class CatalogOperationServer extends CatalogOperation implements IServerDocument {
 
   async onCreate(tx: MSSQL) {
     this.script = `/*

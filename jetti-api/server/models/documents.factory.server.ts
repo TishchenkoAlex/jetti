@@ -1,9 +1,9 @@
 import { lib } from '../std.lib';
-import { createDocument, IFlatDocument, IRegisteredDocument } from './../models/documents.factory';
+import { createDocument, IFlatDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue } from './common-types';
-import { DocumentBase, DocumentOptions } from './document';
+import { calculateDescription, RefValue, PatchValue } from './common-types';
+import { DocumentBase, DocumentOptions, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
 import { DocumentInvoiceServer } from './Documents/Document.Invoce.server';
@@ -12,10 +12,31 @@ import { DocumentOperationServer } from './Documents/Document.Operation.server';
 import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
 import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
-import { DocumentBaseServer } from './ServerDocument';
 import { MSSQL } from '../mssql';
+import { PostResult } from './post.interfaces';
 
-export const RegisteredServerDocument: IRegisteredDocument<any>[] = [
+export interface IServerDocument {
+  onCreate?(tx: MSSQL): Promise<DocumentBase>;
+
+  beforeSave?(tx: MSSQL): Promise<DocumentBase>;
+  afterSave?(tx: MSSQL): Promise<DocumentBase>;
+
+  beforePost?(tx: MSSQL): Promise<DocumentBase>;
+  onPost?(tx: MSSQL): Promise<PostResult>;
+  afterPost?(tx: MSSQL): Promise<DocumentBase>;
+
+  beforeDelete?(tx: MSSQL): Promise<DocumentBase>;
+  afterDelete?(tx: MSSQL): Promise<DocumentBase>;
+
+  onValueChanged?(prop: string, value: any, tx: MSSQL): Promise<PatchValue | {} | { [key: string]: any }>;
+  onCommand?(command: string, args: any, tx: MSSQL): Promise<any>;
+
+  baseOn?(id: Ref, tx: MSSQL): Promise<DocumentBase>;
+}
+
+export type DocumentBaseServer = DocumentBase & IServerDocument;
+
+export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
@@ -25,7 +46,7 @@ export const RegisteredServerDocument: IRegisteredDocument<any>[] = [
   { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
 ];
 
-export async function createDocumentServer<T extends DocumentBaseServer | DocumentBase>
+export async function createDocumentServer<T extends DocumentBaseServer>
   (type: DocTypes, document: IFlatDocument, tx: MSSQL) {
   let result: T;
   const doc = RegisteredServerDocument.find(el => el.type === type);

@@ -1,14 +1,13 @@
 import { lib } from '../../std.lib';
 import { CatalogPriceType } from '../Catalogs/Catalog.PriceType';
-import { createDocumentServer } from '../documents.factory.server';
+import { createDocumentServer, IServerDocument } from '../documents.factory.server';
 import { RegisterInfoPriceList } from '../Registers/Info/PriceList';
-import { ServerDocument } from '../ServerDocument';
 import { PostResult } from './../post.interfaces';
 import { DocumentInvoice } from './Document.Invoice';
 import { DocumentPriceList } from './Document.PriceList';
 import { MSSQL } from '../../mssql';
 
-export class DocumentPriceListServer extends DocumentPriceList implements ServerDocument {
+export class DocumentPriceListServer extends DocumentPriceList implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
     switch (prop) {

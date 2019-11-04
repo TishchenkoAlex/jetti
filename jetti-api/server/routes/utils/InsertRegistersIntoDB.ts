@@ -1,6 +1,6 @@
 import { PostResult } from '../../models/post.interfaces';
-import { DocumentBaseServer } from '../../models/ServerDocument';
 import { MSSQL } from '../../mssql';
+import { DocumentBaseServer } from '../../models/documents.factory.server';
 
 export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: PostResult, tx: MSSQL) {
   let query = '';

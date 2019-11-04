@@ -2,7 +2,11 @@ import { FormBase } from './form';
 import { FormTypes } from './form.types';
 import FormPostServer from './Form.Post.server';
 import FormBatchServer from './Form.Batch.server';
-import { IServerForm } from './serverFrom';
+import { MSSQL } from '../../mssql';
+
+export interface IServerForm {
+  Execute(tx: MSSQL, user: string): Promise<FormBase>;
+}
 
 export interface IRegisteredServerForm<T extends FormBase> {
   type: FormTypes;

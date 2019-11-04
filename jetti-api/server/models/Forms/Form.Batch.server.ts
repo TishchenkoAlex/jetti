@@ -4,7 +4,7 @@ import { MSSQL } from '../../mssql';
 import { ICallRequest } from './form.factory';
 import { FormBase } from './form';
 import { FormBatch } from './Form.Batch';
-import { IServerForm } from './serverFrom';
+import { IServerForm } from './form.factory.server';
 
 export default class FormBatchServer extends FormBatch implements IServerForm {
 

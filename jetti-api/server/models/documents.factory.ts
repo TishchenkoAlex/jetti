@@ -42,8 +42,6 @@ import { DocumentPriceList } from './Documents/Document.PriceList';
 import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
 
-export interface IRegisteredDocument<T extends DocumentBase> { type: DocTypes; Class: T; }
-
 export interface INoSqlDocument {
   id: Ref;
   date: Date;
@@ -88,7 +86,7 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
   } else throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
 }
 
-interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; }
+export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; }
 
 export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Account', Class: CatalogAccount },

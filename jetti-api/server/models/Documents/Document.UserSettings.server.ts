@@ -2,11 +2,11 @@ import { lib } from '../../std.lib';
 import { CatalogUser } from '../Catalogs/Catalog.User';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
-import { ServerDocument } from '../ServerDocument';
 import { DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
+import { IServerDocument } from '../documents.factory.server';
 
-export class DocumentUserSettingsServer extends DocumentUserSettings implements ServerDocument {
+export class DocumentUserSettingsServer extends DocumentUserSettings implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {

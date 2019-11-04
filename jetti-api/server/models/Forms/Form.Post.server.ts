@@ -2,7 +2,7 @@ import { JQueue } from '../Tasks/tasks';
 import { FormPost } from './Form.Post';
 import { MSSQL } from '../../mssql';
 import { ICallRequest } from './form.factory';
-import { IServerForm } from './serverFrom';
+import { IServerForm } from './form.factory.server';
 
 export default class FormPostServer extends FormPost implements IServerForm {
 
