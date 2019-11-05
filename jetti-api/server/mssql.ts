@@ -67,7 +67,9 @@ export class MSSQL {
     const request = new sql.Request(<any>(this.pool));
     this.setParams(params, request);
     const response = await this.setSession(request, text);
-    return response.recordset.map(el => this.complexObject<T>(el)) || [];
+    if (response.recordset) {
+      return response.recordset.map(el => this.complexObject<T>(el)) || [];
+    } else return [];
   }
 
   async manyOrNoneFromJSON<T>(text: string, params: any[] = []): Promise<T[]> {

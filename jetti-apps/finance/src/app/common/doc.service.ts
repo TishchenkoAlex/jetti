@@ -14,8 +14,14 @@ export class DocService {
   private readonly _post$ = new Subject<DocumentBase>();
   post$ = this._post$.asObservable();
 
+  private readonly _postById$ = new Subject<DocumentBase>();
+  postById$ = this._postById$.asObservable();
+
   private readonly _unpost$ = new Subject<DocumentBase>();
   unpost$ = this._unpost$.asObservable();
+
+  private readonly _unpostById$ = new Subject<DocumentBase>();
+  unpostById$ = this._unpostById$.asObservable();
 
   private readonly _delete$ = new Subject<DocumentBase>();
   delete$ = this._delete$.asObservable();
@@ -36,7 +42,7 @@ export class DocService {
 
   async save(doc: DocumentBase) {
     const savedDoc = await this.api.saveDoc(doc).toPromise();
-    this.openSnackBar('success', savedDoc.description, savedDoc.posted ? 'saved' : 'unsaved');
+    this.openSnackBar('success', savedDoc.description, 'saved');
     const subject$ = this._save$;
     subject$.next(savedDoc);
   }
@@ -48,6 +54,13 @@ export class DocService {
     subject$.next(postedDoc);
   }
 
+  async unpost(doc: DocumentBase, close = false) {
+    const postedDoc = await this.api.unPostDoc(doc.id).toPromise();
+    this.openSnackBar('success', postedDoc.description, postedDoc.posted ? 'posted' : 'unposted');
+    const subject$ = close ? this._saveClose$ : this._unpost$;
+    subject$.next(postedDoc);
+  }
+
   async delete(id: string) {
     const deletedDoc = await this.api.deleteDoc(id).toPromise();
     this._delete$.next(deletedDoc);
@@ -56,12 +69,12 @@ export class DocService {
 
   async posById(id: string) {
     const postedDoc = await this.api.postDocById(id).toPromise();
-    this._post$.next(postedDoc);
+    this._postById$.next(postedDoc);
   }
 
   async unpostById(id: string) {
     const postedDoc = await this.api.unpostDocById(id).toPromise();
-    this._unpost$.next(postedDoc);
+    this._unpostById$.next(postedDoc);
   }
 
   openSnackBar(severity: string, summary: string, detail: string) {

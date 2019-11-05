@@ -1,21 +1,24 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, QueryList, ViewChildren, OnDestroy } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBase, FormOptions } from '../../../../../../jetti-api/server/models/Forms/form';
+import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { AuthService } from '../../auth/auth.service';
 import { DocService } from '../../common/doc.service';
 import { FormControlInfo } from 'src/app/common/dynamic-form/dynamic-form-base';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
-import { take } from 'rxjs/operators';
+import { take, filter, sampleTime } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import * as IO from 'socket.io-client';
+import { Subject } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'j-batch-form',
   templateUrl: './batch.form.component.html'
 })
-export class BatchFormComponent {
+export class BatchFormComponent  {
 
   @Input() id = Math.random().toString();
   @Input() type = this.route.snapshot.params.type as string;
@@ -24,20 +27,30 @@ export class BatchFormComponent {
 
   get model() { return this.form.getRawValue() as FormBase; }
 
-  isDoc = this.type.startsWith('Document.');
-  isCopy = this.route.snapshot.queryParams.command === 'copy';
   get docDescription() { return <string>this.form['metadata'].description; }
-  get metadata() { return <FormOptions>this.form['metadata']; }
-  get relations() { return this.form['metadata'].relations || []; }
   get v() { return <FormControlInfo[]>this.form['orderedControls']; }
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
-  get viewModel() { return this.form.getRawValue(); }
   get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.type === 'table'); }
   get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.type === 'table'); }
   get description() { return <FormControl>this.form.get('description'); }
 
+  data = [];
+
   constructor(public router: Router, public route: ActivatedRoute, public media: MediaObserver,
-    public cd: ChangeDetectorRef, public ds: DocService, private auth: AuthService, public tabStore: TabsStore) { }
+    public cd: ChangeDetectorRef, public ds: DocService, private auth: AuthService, public tabStore: TabsStore) {
+
+    this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
+      const wsUrl = `${environment.socket}?token=${u.token}`;
+
+      const socket = IO(wsUrl, { transports: ['websocket'] });
+      socket.on('batch', (data: any) => {
+        if (data && data.data && data.data.message)
+          this.data = [data.data.message, ...this.data];
+          if (this.data.length > 1000) this.data.length = 1000;
+          this.cd.detectChanges();
+      });
+    });
+  }
 
   private _close() {
     this.tabStore.close(this.tabStore.state.tabs[this.tabStore.selectedIndex]);
@@ -64,11 +77,12 @@ export class BatchFormComponent {
   }
 
   async Execute(): Promise<any> {
-    console.log(this.model);
+    this.data = [];
     this.ds.api.execute('Form.Batch', this.model).pipe(take(1))
       .subscribe(data => {
-        console.log('Execute: ', data);
+        this.form.patchValue(data);
       });
   }
 
 }
+

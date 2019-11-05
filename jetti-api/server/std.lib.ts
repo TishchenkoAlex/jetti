@@ -263,7 +263,7 @@ export async function postById(id: Ref, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
-    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
     if (doc && doc.deleted) return serverDoc;
     serverDoc.posted = true;
     await unpostDocument(serverDoc, tx);
@@ -278,7 +278,7 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   try {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
-    const serverDoc = await createDocumentServer<DocumentBaseServer>(doc.type as DocTypes, doc, tx);
+    const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
     serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
     await updateDocument(serverDoc, tx);

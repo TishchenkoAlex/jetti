@@ -24,7 +24,7 @@ router.post('/form/:type/execute', async (req: Request, res: Response, next: Nex
     const doc: FormBase = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
     doc.type = req.params.type as FormTypes;
     const serverDoc = createFormServer(doc);
-    // await serverDoc.Execute(sdb, user.email);
+    await serverDoc.Execute(sdb, user);
     const view = await buildViewModel(serverDoc, sdb);
     res.json(view);
   } catch (err) { next(err); }

@@ -67,6 +67,11 @@ export class ApiService {
     return (this.http.post<DocumentBase>(query, apiDoc));
   }
 
+  unPostDoc(id: Ref): Observable<DocumentBase> {
+    const query = `${environment.api}unpost/${id}`;
+    return (this.http.post<DocumentBase>(query, id));
+  }
+
   saveDoc(doc: DocumentBase): Observable<DocumentBase> {
     const apiDoc = mapToApi(doc);
     const query = `${environment.api}save`;
@@ -193,7 +198,7 @@ export class ApiService {
   execute(type: FormTypes, doc: FormBase) {
     const apiDoc = mapToApi(doc as any);
     const query = `${environment.api}form/${type}/execute`;
-    return this.http.post<boolean>(query, apiDoc);
+    return this.http.post<FormBase>(query, apiDoc);
   }
 
 }

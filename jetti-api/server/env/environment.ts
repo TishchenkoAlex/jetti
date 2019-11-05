@@ -20,6 +20,18 @@ export const sqlConfig: config = {
   options: { encrypt: false }
 };
 
+export const sqlConfigTask: config = {
+  server: process.env.DB_HOST!,
+  port: DB_PORT,
+  database: DB_NAME,
+  user: process.env.DB_TASK_USER,
+  password: process.env.DB_TASK_PASSWORD,
+  requestTimeout: 1000 * 1200,
+  pool: { min: 25, max: 10000/* , acquireTimeoutMillis: 0 */ },
+  options: { encrypt: false }
+};
+
+
 export const sqlConfigAccounts: config = {
   server: process.env.DB_ACCOUNTS_HOST!,
   port: DB_PORT,

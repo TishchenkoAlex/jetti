@@ -8,17 +8,20 @@ import { MSSQL } from '../../mssql';
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => el.right);
   params.command = params.command || 'first';
-  const direction = params.command !== 'prev';
+
   const cs = configSchema.get(params.type);
   let { QueryList, Props } = cs!;
 
-  // списк операций Document.Operation оптимизирован отдельной таблицей
-  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] ' : `SELECT d.* FROM (${QueryList})`;
+  // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
+  QueryList = params.type === 'Document.Operation' ? 'SELECT d.* FROM (SELECT * FROM [Documents.Operation]) d' : `SELECT d.* FROM (${QueryList}) d`;
 
   let row: DocumentBase | null = null;
+  let query = '';
 
-  if (params.id) { row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList} d) d WHERE d.id = '${params.id}'`)); }
+  if (params.id) { row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`)); }
   if (!row && params.command !== 'last') params.command = 'first';
+  const isFirstLast = params.command === 'last' || params.command === 'first';
+  if (row && isFirstLast) row = null;
 
   params.order.forEach(el => el.field += (Props[el.field].type as string).includes('.') ? '.value' : '');
   params.filter.forEach(el => el.left += (Props[el.left] && Props[el.left].type && (Props[el.left].type as string).includes('.')) ? '.id' : '');
@@ -76,7 +79,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     const order = valueOrder.slice();
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
     let queryBuilderResult = `
-      SELECT id FROM (SELECT TOP ${params.count + 1} id FROM (${QueryList} d) ID
+      SELECT id FROM (SELECT TOP ${params.count + 1} id FROM (${QueryList}) ID
       WHERE ${filterBuilder(params.filter)} AND (`;
 
     valueOrder.forEach(_or => {
@@ -97,65 +100,64 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     return queryBuilderResult;
   };
 
-  let query = '';
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
-  if (queryBefore) {
+  if (queryBefore && queryAfter) {
     query = `SELECT id FROM (${queryBefore} \nUNION ALL\n${queryAfter}) ID`;
-    query = `SELECT * FROM (${QueryList} d) d WHERE d.id IN (${query}) `;
-  } else
-    query = `SELECT TOP ${params.count + 1} * FROM (${QueryList} d) d
-      WHERE ${filterBuilder(params.filter)} `;
-
-  if (params.command === 'first') query = `${query} ${orderbyAfter}`;
-  else if (params.command === 'last') query = `${query} ${orderbyBefore}`;
-  query = `SELECT * FROM (${query}) d ${orderbyAfter}`;
+    query = `SELECT * FROM (${QueryList}) d WHERE d.id IN (${query}) ${orderbyAfter}`;
+  } else {
+    if (params.command === 'last')
+      query = `SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${filterBuilder(params.filter)} ${orderbyBefore}) d ${orderbyAfter}`;
+    else
+      query = `SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${filterBuilder(params.filter)} ${orderbyAfter}`;
+  }
 
   const data = await tx.manyOrNone<any>(query);
-  let result: any[] = [];
 
+  return listPostProcess(data, params);
+}
+
+function listPostProcess(data: any[], params: DocListRequestBody) {
+  let result: any[] = [];
   const continuation = { first: null, last: null };
-  const calculateContinuation = () => {
-    const continuationIndex = data.findIndex(d => d.id === params.id);
-    const pageSize = Math.min(data.length, params.count);
-    switch (params.command) {
-      case 'first':
-        continuation.first = null;
-        continuation.last = data[pageSize];
-        result = data.slice(0, pageSize);
-        break;
-      case 'last':
-        continuation.first = data[data.length - 1 - params.count];
-        continuation.last = null;
-        result = data.slice(-pageSize);
-        break;
-      default:
-        if (direction) {
-          continuation.first = data[continuationIndex - params.offset - 1];
-          continuation.last = data[continuationIndex + pageSize - params.offset];
-          result = data.slice(continuation.first ? continuationIndex - params.offset : 0,
-            continuationIndex + pageSize - params.offset);
-          if (result.length < pageSize) {
-            const first = Math.max(continuationIndex - params.offset - (pageSize - result.length), 0);
-            const last = Math.max(continuationIndex - params.offset + result.length, pageSize);
-            continuation.first = data[first - 1];
-            continuation.last = data[last + 1] || data[last];
-            result = data.slice(first, last);
-          }
-        } else {
-          continuation.first = data[continuationIndex - pageSize - params.offset];
-          continuation.last = data[continuationIndex + 1 - params.offset];
-          result = data.slice(continuation.first ?
-            continuationIndex - pageSize + 1 - params.offset : 0, continuationIndex + 1 - params.offset);
-          if (result.length < pageSize) {
-            continuation.first = null;
-            continuation.last = data[pageSize + 1];
-            result = data.slice(0, pageSize);
-          }
+  const continuationIndex = data.findIndex(d => d.id === params.id);
+  const pageSize = Math.min(data.length, params.count);
+  switch (params.command) {
+    case 'first':
+      continuation.first = null;
+      continuation.last = data[pageSize];
+      result = data.slice(0, pageSize);
+      break;
+    case 'last':
+      continuation.first = data[data.length - 1 - params.count];
+      continuation.last = null;
+      result = data.slice(-pageSize);
+      break;
+    default:
+      const direction = params.command !== 'prev';
+      if (direction) {
+        continuation.first = data[continuationIndex - params.offset - 1];
+        continuation.last = data[continuationIndex + pageSize - params.offset];
+        result = data.slice(continuation.first ? continuationIndex - params.offset : 0, continuationIndex + pageSize - params.offset);
+        if (result.length < pageSize) {
+          const first = Math.max(continuationIndex - params.offset - (pageSize - result.length), 0);
+          const last = Math.max(continuationIndex - params.offset + result.length, pageSize);
+          continuation.first = data[first - 1];
+          continuation.last = data[last + 1] || data[last];
+          result = data.slice(first, last);
         }
-    }
-  };
-  calculateContinuation();
+      } else {
+        continuation.first = data[continuationIndex - pageSize - params.offset];
+        continuation.last = data[continuationIndex + 1 - params.offset];
+        result = data.slice(continuation.first ?
+          continuationIndex - pageSize + 1 - params.offset : 0, continuationIndex + 1 - params.offset);
+        if (result.length < pageSize) {
+          continuation.first = null;
+          continuation.last = data[pageSize + 1];
+          result = data.slice(0, pageSize);
+        }
+      }
+  }
   result.length = Math.min(result.length, params.count);
   return { data: result, continuation: continuation };
 }

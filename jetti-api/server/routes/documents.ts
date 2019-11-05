@@ -129,11 +129,12 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       serverDoc.deleted = !!!serverDoc.deleted;
       serverDoc.posted = false;
 
-      const deleted = await tx.manyOrNone<INoSqlDocument>(`
+      const deleted = await tx.none(`
         DELETE FROM "Register.Account" WHERE document = '${id}';
         DELETE FROM "Register.Info" WHERE document = '${id}';
         DELETE FROM "Accumulation" WHERE document = '${id}';
-        UPDATE "Documents" SET deleted = @p1, posted = 0 WHERE id = '${id}';`, [serverDoc.deleted]);
+        UPDATE "Documents" SET deleted = @p1, posted = 0 WHERE id = '${id}';
+      `, [serverDoc.deleted]);
 
       const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
       if (typeof afterDelete === 'function') await afterDelete(tx);
@@ -215,6 +216,17 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
     });
   } catch (err) { next(err); }
 });
+
+router.post('/unpost/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const serverDoc = await lib.doc.unPostById(req.params.id, tx);
+      res.json((await buildViewModel(serverDoc, tx)));
+    });
+  } catch (err) { next(err); }
+});
+
 
 // Post by id (without returns posted object to client, for post in cicle many docs)
 router.get('/post/:id', async (req: Request, res: Response, next: NextFunction) => {

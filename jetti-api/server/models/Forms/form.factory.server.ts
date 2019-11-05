@@ -3,9 +3,10 @@ import { FormTypes } from './form.types';
 import FormPostServer from './Form.Post.server';
 import FormBatchServer from './Form.Batch.server';
 import { MSSQL } from '../../mssql';
+import { IJWTPayload } from '../../routes/auth';
 
 export interface IServerForm {
-  Execute(tx: MSSQL, user: string): Promise<FormBase>;
+  Execute(tx: MSSQL, user: IJWTPayload): Promise<FormBase>;
 }
 
 export type FormBaseServer = FormBase & IServerForm;

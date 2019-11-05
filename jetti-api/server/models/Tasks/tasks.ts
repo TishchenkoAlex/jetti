@@ -5,10 +5,12 @@ import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
 import cost from './cost';
 import post from './post';
+import batch from './batch';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   post: post,
-  cost: cost
+  cost: cost,
+  batch: batch,
 };
 
 const QueOpts: QueueOptions = {
@@ -32,30 +34,34 @@ JQueue.on('error', err => {
 });
 
 JQueue.on('active', (job, jobPromise) => {
-  userSocketsEmit(job.data.userId, 'job', mapJob(job));
+  job.data.message = `${job.data.job.id} is active`;
+  userSocketsEmit(job.data.userId, job.data.job.id, mapJob(job));
 });
 
 JQueue.on('failed', (job, err) => {
+  job.data.message = `${job.data.job.id} failed`;
   const MapJob = mapJob(job);
   MapJob.failedReason = err.message;
   MapJob.finishedOn = new Date().getTime();
-  userSocketsEmit(job.data.userId, 'job', MapJob);
+  userSocketsEmit(job.data.userId, job.data.job.id, MapJob);
 });
 
 JQueue.on('progress', (job, progress: number) => {
-  userSocketsEmit(job.data.userId, 'job', mapJob(job));
+  userSocketsEmit(job.data.userId, job.data.job.id, mapJob(job));
 });
 
 JQueue.on('completed', job => {
+  job.data.message = `${job.data.job.id} completed`;
   const MapJob = mapJob(job);
   MapJob.finishedOn = new Date().getTime();
-  userSocketsEmit(job.data.userId, 'job', MapJob);
+  userSocketsEmit(job.data.userId, job.data.job.id, MapJob);
 });
 
 JQueue.on('stalled', job => {
+  job.data.message = `${job.data.job.id} is stalled`;
   const MapJob = mapJob(job);
   MapJob.finishedOn = new Date().getTime();
-  userSocketsEmit(job.data.userId, 'job', MapJob);
+  userSocketsEmit(job.data.userId, job.data.job.id, MapJob);
 });
 
 export function mapJob(j: Queue.Job) {
@@ -70,7 +76,7 @@ export function mapJob(j: Queue.Job) {
     failedReason: (<any>j).failedReason,
     finishedOn: (<any>j).finishedOn,
     processedOn: (<any>j).processedOn,
-    data: { job: j.data.job }
+    data: { job: j.data.job, message: j.data.message }
   };
   return result;
 }
