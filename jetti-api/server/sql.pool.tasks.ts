@@ -5,3 +5,5 @@ export const TASKS_POOL = new sql.ConnectionPool({...sqlConfigTask, requestTimeo
 TASKS_POOL.connect()
   .then(() => console.log('connected', sqlConfig.database))
   .catch(err => console.log('connection error', err));
+
+TASKS_POOL.on('error', (err: sql.ConnectionError) => console.log(err));
