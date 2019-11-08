@@ -260,17 +260,16 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
 }
 
 export async function postById(id: Ref, tx: MSSQL) {
+  const doc = (await lib.doc.byId(id, tx))!;
   try {
     await lib.util.postMode(true, tx);
-    const doc = (await lib.doc.byId(id, tx))!;
     const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
     if (doc && doc.deleted) return serverDoc;
-    serverDoc.posted = true;
-    await unpostDocument(serverDoc, tx);
-    await updateDocument(serverDoc, tx);
+    if (serverDoc.posted) await unpostDocument(serverDoc, tx);
+    if (!serverDoc.posted) { serverDoc.posted = true; await updateDocument(serverDoc, tx); }
     await postDocument(serverDoc, tx);
     return serverDoc;
-  } catch (err) { throw err; }
+  } catch (err) { throw new Error(`Error on post by id document ${doc.description}, ${err}`); }
   finally { await lib.util.postMode(false, tx); }
 }
 
@@ -279,6 +278,7 @@ export async function unPostById(id: Ref, tx: MSSQL) {
     await lib.util.postMode(true, tx);
     const doc = (await lib.doc.byId(id, tx))!;
     const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+    if (!doc.posted) return serverDoc;
     serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
     await updateDocument(serverDoc, tx);

@@ -1,7 +1,7 @@
 import { PropOptions, symbolProps, Props, Ref } from '../document';
 import { FormTypes } from './form.types';
 import { v1 } from 'uuid';
-import { DocTypes } from '../documents.types';
+import { IJWTPayload } from '../common-types';
 
 export interface FormOptions {
   type: FormTypes;
@@ -22,6 +22,14 @@ export function JForm(props: FormOptions) {
 
 export class FormBase {
 
+  constructor  (user?: IJWTPayload) {
+    if (!user) this.user = { email: '', description: '', env: {}, isAdmin: false, roles: [] }
+    else this.user = user;
+  }
+
+  @Props({ type: 'string', hidden: true, hiddenInList: true })
+  user: IJWTPayload;
+
   @Props({ type: 'string', hidden: true, hiddenInList: true })
   id = v1();
 
@@ -39,9 +47,6 @@ export class FormBase {
 
   @Props({ type: 'Catalog.Company', order: 4, hidden: true })
   company: Ref = null;
-
-  @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
-  user: Ref = null;
 
   @Props({ type: 'boolean', hidden: true, hiddenInList: true })
   posted = false;

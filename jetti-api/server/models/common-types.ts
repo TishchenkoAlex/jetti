@@ -60,6 +60,7 @@ export interface IJob {
   finishedOn: number;
   processedOn: number;
   data: { [x: string]: any };
+  message: string;
 }
 
 export interface IJobs {
@@ -71,15 +72,18 @@ export interface IJobs {
   RepeatableJobs?: Queue.JobInformation[];
 }
 
-export interface IAccount {
+export interface IJWTPayload {
   email: string;
   description: string;
-  created: string;
-  password: string;
-  status: string;
   isAdmin: boolean;
   roles: RoleType[];
   env: { [x: string]: string };
+}
+
+export interface IAccount extends IJWTPayload {
+  created: string;
+  password: string;
+  status: string;
 }
 
 export interface ILoginResponse {

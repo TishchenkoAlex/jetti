@@ -32,6 +32,7 @@ export class TabResolver implements Resolve<FormGroup | IViewModel | null> {
     const id = route.params.id || '';
     const type = route.params.type;
     if (type === 'home') return null;
+    console.log(type, type.startsWith('Form.'));
     if (type.startsWith('Form.')) { return this.dfs.getFormView$(type); }
     if (this.tabStore.state.tabs.findIndex(i => i.docType === type && i.docID === id) === -1) {
       return id ?

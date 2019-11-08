@@ -44,5 +44,6 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
 
 export function createRegisterAccumulation(init: Partial<RegisterAccumulation>) {
   const doc = RegisteredRegisterAccumulation.find(el => el.type === init.type);
-  if (doc) return new doc.Class({type: init.type, ...init}); else throw new Error(`Can't create type! ${init.type} is not registered`);
+  if (doc) return new doc.Class({type: init.type, ...init});
+  else throw new Error(`createRegisterAccumulation: Can't create type! ${init.type} is not registered`);
 }

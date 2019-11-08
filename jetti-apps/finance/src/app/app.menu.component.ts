@@ -28,7 +28,7 @@ export class AppMenuComponent implements OnInit {
 
   constructor(public app: AppComponent, private cd: ChangeDetectorRef) {
     this.model$ = this.app.auth.userProfile$.pipe(
-      map(userProfile => this.buildMenu(getRoleObjects(userProfile.account ? userProfile.account.roles : []))));
+      map(userProfile => this.buildMenu(getRoleObjects(userProfile.account && userProfile.account.roles || []))));
   }
 
   private buildMenu(userRoleObjects: RoleObject[] | undefined) {

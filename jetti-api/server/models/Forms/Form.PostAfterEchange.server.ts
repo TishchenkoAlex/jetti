@@ -1,19 +1,18 @@
 import { JQueue } from '../Tasks/tasks';
-import { MSSQL } from '../../mssql';
-import { FormBatch } from './Form.Batch';
 import { IServerForm } from './form.factory.server';
+import { PostAfterEchange } from './FormPostAfterEchange';
+import { Job } from 'bull';
 
-export default class FormBatchServer extends FormBatch implements IServerForm {
-
+export default class PostAfterEchangeServer extends PostAfterEchange implements IServerForm {
   async Execute() {
     const data = {
-      job: { id: 'batch', description: '[Batch actualisation]' },
+      job: { id: 'sync', description: '[IIKO exchange]' },
       user: this.user,
       company: this.company,
     };
 
     const activeJobs = await JQueue.getActive();
-    const jobs = activeJobs.filter(j => j.data.job.id === 'batch');
+    const jobs = activeJobs.filter(j => j.data.job.id === 'sync');
     if (jobs.length) throw new Error(`job ${jobs[0].data.job.id} is already running`);
 
     await JQueue.add(data);

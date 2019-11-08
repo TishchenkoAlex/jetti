@@ -65,8 +65,9 @@
                 <i *ngIf="event['status'] === 'Waiting'" class="fa fa-fw fa-clock-o"></i>
                 <i *ngIf="event['status'] === 'Failed'" class="fa fa-fw fa-exclamation-circle" style="color: red"></i>
                 <span>
-                  {{event.data && event.data['job'].description}}, {{event.failedReason }} {{(event.progress / 100) | percent}} of {{event.data['job']['total']}},
+                  {{event.data && event.data['job'].description}}, {{event.failedReason }} {{ event.progress }} of {{event.data['job']['total']}},
                   {{ event.finishedOn | date:'short' }}
+                  {{ event.message }}
                 </span>
               </div>
             </a>

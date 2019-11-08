@@ -27,6 +27,7 @@ import { CatalogListComponent } from './../UI/Catalog/calatog-list.component';
 import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { BatchFormComponent } from './Forms/batch.form.component';
+import { SyncFormComponent } from './Forms/sync.form.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,8 @@ import { BatchFormComponent } from './Forms/batch.form.component';
     BaseDocListComponent,
     BaseDocFormComponent,
     BaseFormComponent,
+    SyncFormComponent,
+
     BatchFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
@@ -80,6 +83,7 @@ import { BatchFormComponent } from './Forms/batch.form.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BatchFormComponent,
+    SyncFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
     CatalogListComponent,

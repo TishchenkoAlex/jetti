@@ -15,6 +15,6 @@ RUN node_modules/typescript/bin/tsc -p ./server
 ENV PORT 8080
 EXPOSE 8080
 
-CMD [ "node", "./dist/server/index.js" ]
+CMD [ "node", "./server/dist/index.js" ]
 #docker build -t eu.gcr.io/jetti-x100/jetti-api:latest .
 #docker push eu.gcr.io/jetti-x100/jetti-api:latest

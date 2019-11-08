@@ -1,4 +1,5 @@
 export type FormTypes =
   'Form.Post' |
-  'Form.Batch'
+  'Form.Batch' |
+  'Form.PostAfterEchange'
 ;

@@ -1,9 +1,8 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { IAccount } from '../models/common-types';
+import { IAccount, IJWTPayload } from '../models/common-types';
 import { MSSQL } from '../mssql';
 import { FormListSettings, UserDefaultsSettings } from './../models/user.settings';
-import { IJWTPayload } from './auth';
 import { ACCOUNTS_POOL } from '../sql.pool.accounts';
 import { SDB } from './middleware/db-sessions';
 
@@ -12,7 +11,6 @@ export const router = express.Router();
 export function User(req: Request): IJWTPayload {
   return (<any>req).user as IJWTPayload;
 }
-
 
 router.get('/user/roles', async (req: Request, res: Response, next: NextFunction) => {
   try {

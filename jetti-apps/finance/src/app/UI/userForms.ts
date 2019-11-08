@@ -6,12 +6,14 @@ import { BaseDocFormComponent } from './../common/form/base.form.component';
 import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { BatchFormComponent } from './Forms/batch.form.component';
+import { SyncFormComponent } from './Forms/sync.form.component';
 
 const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<any> } } = {
   'home': { formComponent: HomeComponent, listComponent: HomeComponent },
   'Document.Operation': { formComponent: OperationFormComponent, listComponent: OperationListComponent },
   'Form.Post': { formComponent: BaseFormComponent, listComponent: BaseFormComponent },
   'Form.Batch': { formComponent: BatchFormComponent, listComponent: BatchFormComponent },
+  'Form.PostAfterEchange': { formComponent: SyncFormComponent, listComponent: SyncFormComponent },
   // add user's defined component for list- or doc-Form here
 };
 

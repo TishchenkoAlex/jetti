@@ -1,6 +1,6 @@
 import * as sql from 'mssql';
 import { dateReviverUTC } from './fuctions/dateReviver';
-import { IJWTPayload } from './routes/auth';
+import { IJWTPayload } from './models/common-types';
 
 export class MSSQL {
 

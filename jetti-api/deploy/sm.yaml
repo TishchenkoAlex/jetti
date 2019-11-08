@@ -17,12 +17,12 @@ spec:
         - name: jetti
           image: eu.gcr.io/jetti-x100/jetti-api:latest
           resources:
-            requests:
-              memory: "256Mi"
-              cpu: "500m"
-            limits:
-              memory: "1024Mi"
-              cpu: "1000m"
+ #           requests:
+  #            memory: "256Mi"
+   #           cpu: "1000m"
+    #        limits:
+     #         memory: "1024Mi"
+      #        cpu: "2000m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -36,6 +36,13 @@ spec:
             - name: DB_USER
               value: jetti
             - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-db-credentials
+                  key: password
+            - name: DB_TASK_USER
+              value: yuralex
+            - name: DB_TASK_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mssql-db-credentials

@@ -34,7 +34,8 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {
     const doc = RegisteredRegisterInfo.find(el => el.type === init.type);
-    if (doc) return (new doc.Class(init) as T); else throw new Error(`can't create type! ${init.type} is not registered`);
+    if (doc) return (new doc.Class(init) as T);
+    else throw new Error(`createRegisterInfo: can't create type! ${init.type} is not registered`);
 }
 
 export function RegisterRegisterInfo(Register: IRegisteredRegisterInfo) {

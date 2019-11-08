@@ -3,7 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import { JTW_KEY } from '../env/environment';
-import { IAccount } from '../models/common-types';
+import { IAccount, IJWTPayload } from '../models/common-types';
 import { Accounts } from './middleware/accounts.db';
 import { authHTTP } from './middleware/check-auth';
 
@@ -11,14 +11,6 @@ import { authHTTP } from './middleware/check-auth';
 const email: RegExp = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 export const router = express.Router();
-
-export interface IJWTPayload {
-  email: string;
-  description: string;
-  isAdmin: boolean;
-  roles: string[];
-  env: { [x: string]: string };
-}
 
 router.get('/account', authHTTP, async (req, res, next) => {
   try {
