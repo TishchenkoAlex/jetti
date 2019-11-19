@@ -1,4 +1,4 @@
-import { DocumentOptions } from '../models/document';
+import { DocumentOptions, Props } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisterAccumulationTypes, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
@@ -20,9 +20,12 @@ export class SQLGenegatorMetadata {
         , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
       }
-      if (type === 'date') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') "${prop}" \n`; }
-      if (type === 'datetime') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') "${prop}" \n`; }
-      return `, ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
+      if (type === 'date') { return `
+        , ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') "${prop}" \n`; }
+      if (type === 'datetime') { return `
+        , ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') "${prop}" \n`; }
+      return `
+        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
@@ -47,13 +50,14 @@ export class SQLGenegatorMetadata {
     }
 
     const query = `
-      INSERT INTO "${type}" (DT, date, document, company, kind ${insert})
+      INSERT INTO "${type}" (DT, id, parent, date, document, company, kind, calculated, exchangeRate${insert})
         SELECT
           DATEDIFF_BIG(MICROSECOND, '00010101', [date]) +
-          CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
-          ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
-        CAST(date AS datetime) date, document, company, kind ${select}
-      FROM INSERTED WHERE type = N'${type}'; \n`;
+            CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
+            ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
+          id, parent, CAST(date AS datetime) date, document, company, kind, calculated
+        , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS FLOAT) exchangeRate\n ${select}
+      FROM INSERTED WHERE type = N'${type}'; \n\n`;
     return query;
   }
 
@@ -171,8 +175,9 @@ export class SQLGenegatorMetadata {
 
   static CreateTableRegisterAccumulation() {
 
-    const simleProperty = (prop: string, type: string, required: boolean) => {
-      const nullText = required ? 'NOT NULL' : 'NOT NULL';
+    const simleProperty = (prop: string, type: string, required: boolean, defailts: string) => {
+      let nullText = required ? 'NOT NULL' : 'NOT NULL';
+      if (defailts) nullText = `${nullText} DEFAULT ${defailts}`;
       if (type.includes('.')) {
         return `
         , "${prop}" UNIQUEIDENTIFIER ${nullText} \n`;
@@ -189,14 +194,12 @@ export class SQLGenegatorMetadata {
         return `
         , "${prop}" DATE ${nullText} \n`;
       }
-
       if (type === 'number') {
         return `
         , "${prop}" MONEY ${nullText}
         , "${prop}.In" MONEY ${nullText}
         , "${prop}.Out" MONEY ${nullText} \n`;
       }
-
       return `
         , "${prop}" NVARCHAR(150) ${nullText} \n`;
     };
@@ -207,7 +210,7 @@ export class SQLGenegatorMetadata {
       const props = doc.Props();
       let select = '';
       for (const prop in excludeRegisterAccumulatioProps(doc)) {
-        select += simleProperty(prop, (props[prop].type || 'string'), !!props[prop].required);
+        select += simleProperty(prop, (props[prop].type || 'string'), !!props[prop].required, props[prop].value);
       }
 
       query += `\n
@@ -215,10 +218,14 @@ export class SQLGenegatorMetadata {
       DROP TABLE IF EXISTS "${register.type}";
       CREATE TABLE "${register.type}" (
         [kind] [bit] NOT NULL,
+        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
         [date] [date] NOT NULL,
-        DT BIGINT NOT NULL
+        [DT] [BIGINT] NOT NULL,
+        [parent] [uniqueidentifier] NULL,
+        [exchangeRate] [float] NOT NULL DEFAULT 1
         ${select}
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
@@ -226,16 +233,12 @@ export class SQLGenegatorMetadata {
     }
 
     query = `
+      DROP TABLE IF EXISTS [Accumulation.Copy];
+      SELECT * INTO [Accumulation.Copy] FROM [Accumulation];
       BEGIN TRANSACTION
       BEGIN TRY
+      TRUNCATE TABLE [Accumulation];
       ${query}
-
-      DROP TABLE IF EXISTS [Accumulation.Copy];
-
-      SELECT * INTO [Accumulation.Copy] FROM [Accumulation];
-
-      DELETE FROM [Accumulation];
-      INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
 
       END TRY
       BEGIN CATCH
@@ -246,6 +249,10 @@ export class SQLGenegatorMetadata {
       IF @@TRANCOUNT > 0
         COMMIT TRANSACTION;
       GO
+      ${this.AlterTriggerRegisterAccumulation()}
+      GO
+
+      INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
     `;
     return query;
   }

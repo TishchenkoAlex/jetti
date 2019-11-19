@@ -11,6 +11,7 @@ import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { adminModeForPost, postDocument, unpostDocument, updateDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
+import { v1 } from 'uuid';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -51,6 +52,7 @@ export interface JTL {
   };
   util: {
     postMode: (mode: boolean, tx: MSSQL) => Promise<boolean>,
+    GUID: () =>  Promise<string>
   };
 }
 
@@ -65,7 +67,7 @@ export const lib: JTL = {
     balance: registerBalance,
     inventoryBalance,
     avgCost,
-    movementsByDoc,
+    movementsByDoc
   },
   doc: {
     byCode: byCode,
@@ -87,9 +89,15 @@ export const lib: JTL = {
     // batchReturn
   },
   util: {
-    postMode: adminModeForPost
+    postMode: adminModeForPost,
+    GUID
+
   }
 };
+
+async function GUID(): Promise<string> {
+  return v1();
+}
 
 async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
   const result = await tx.oneOrNone<any>(`
@@ -265,8 +273,8 @@ export async function postById(id: Ref, tx: MSSQL) {
     await lib.util.postMode(true, tx);
     const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
     if (doc && doc.deleted) return serverDoc;
-    if (serverDoc.posted) await unpostDocument(serverDoc, tx);
-    if (!serverDoc.posted) { serverDoc.posted = true; await updateDocument(serverDoc, tx); }
+    if (doc.posted) await unpostDocument(serverDoc, tx);
+    if (!doc.posted) { serverDoc.posted = true; await updateDocument(serverDoc, tx); }
     await postDocument(serverDoc, tx);
     return serverDoc;
   } catch (err) { throw new Error(`Error on post by id document ${doc.description}, ${err}`); }

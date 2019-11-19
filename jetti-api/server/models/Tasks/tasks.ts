@@ -41,7 +41,7 @@ JQueue.on('active', (job, jobPromise) => {
 });
 
 JQueue.on('failed', (job, err) => {
-  job.data.message = `${job.data.job.id} failed`;
+  job.data.message = `${job.data.job.id} failed, ${err.message}`;
   const MapJob = mapJob(job);
   MapJob.failedReason = err.message;
   MapJob.finishedOn = new Date().getTime();

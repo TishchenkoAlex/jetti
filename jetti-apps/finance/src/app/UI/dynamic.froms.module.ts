@@ -28,6 +28,7 @@ import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { BatchFormComponent } from './Forms/batch.form.component';
 import { SyncFormComponent } from './Forms/sync.form.component';
+import { DisableControlDirective } from '../common/directives/disabled-control';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,8 @@ import { SyncFormComponent } from './Forms/sync.form.component';
     DynamicComponent,
     DynamicFormControlComponent,
     AutocompleteComponent,
+
+    DisableControlDirective,
 
     BaseDocListComponent,
     BaseDocFormComponent,

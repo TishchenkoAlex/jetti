@@ -1,6 +1,7 @@
 import { PostResult } from '../../models/post.interfaces';
 import { MSSQL } from '../../mssql';
 import { DocumentBaseServer } from '../../models/documents.factory.server';
+import { v1 } from 'uuid';
 
 export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: PostResult, tx: MSSQL) {
   let query = '';
@@ -29,8 +30,8 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
     const date = rec.date ? rec.date : doc.date;
     const data = {...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
     query += `
-      INSERT INTO "Accumulation" (kind, date, type, company, document, data)
-      VALUES (${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
+      INSERT INTO "Accumulation" (id, parent, kind, date, type, company, document, data)
+      VALUES ('${rec.id || v1()}', '${rec.parent}', ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
     '${doc.id}', JSON_QUERY(N'${JSON.stringify(data)}'));`;
   }
 

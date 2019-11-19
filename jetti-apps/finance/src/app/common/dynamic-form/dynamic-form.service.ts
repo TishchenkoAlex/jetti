@@ -171,7 +171,6 @@ export class DynamicFormService {
   }
 
   getFormView$(type: FormTypes) {
-    console.log('getFormView', type)
     const form = createForm({type: type});
     const view = form.Props();
     const result = getFormGroup(view, {}, false);

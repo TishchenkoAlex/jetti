@@ -1,6 +1,7 @@
 import { SQLGenegator } from '../../../fuctions/SQLGenerator.MSSQL';
 import { PropOptions, Props, Ref, symbolProps } from './../../document';
 import { RegisterAccumulationTypes } from './factory';
+import { v1 } from 'uuid';
 
 export interface RegisterAccumulationOptions {
   type: RegisterAccumulationTypes;
@@ -16,9 +17,20 @@ export function JRegisterAccumulation(props: RegisterAccumulationOptions) {
   };
 }
 export class RegisterAccumulation {
-  query: string;
-  @Props({ type: 'boolean', required: true })
+  @Props({ type: 'string', required: true, hidden: true, hiddenInList: true, value: 'newid()' })
+  id = v1();
+
+  @Props({ type: 'string', required: false, hidden: true, hiddenInList: true })
+  parent = null;
+
+  @Props({ type: 'boolean', required: true, value: '0' })
   kind = true;
+
+  @Props({ type: 'boolean', required: true, value: '0' })
+  calculated = false;
+
+  @Props({ type: 'number', required: true, hidden: true, hiddenInList: true, value: '1' })
+  exchangeRate = 1;
 
   @Props({ type: 'string', hidden: true, hiddenInList: true, required: true })
   type: RegisterAccumulationTypes | null = null;

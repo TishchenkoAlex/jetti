@@ -331,13 +331,49 @@ export class SQLGenegator {
     }
 
     const query = `
-      SELECT r.date, r."kind",
+      SELECT r.id, r.parent, r.date, r."kind", r.calculated,
       "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
       ${select}
       FROM "Accumulation" r
         LEFT JOIN "Documents" company ON company.id = r.company AND "company".type = 'Catalog.Company'
         ${LeftJoin}
       WHERE r.type = '${type}'\n`;
+    return query;
+  }
+
+  static QueryRegisterAccumulatioList2(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') { return `, ISNULL(r."${prop}", 0) "${prop}"\n`; }
+      if (type === 'number') { return `, CAST(r."${prop}" AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"\n`; }
+      return `, r."${prop}" "${prop}"\n`;
+    };
+
+    const complexProperty = (prop: string, type: string) =>
+      `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
+
+    const addLeftJoin = (prop: string, type: string) =>
+      ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = r."${prop}"\n`;
+
+    let LeftJoin = ''; let select = '';
+    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+      const type: string = doc[prop].type || 'string';
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+        LeftJoin += addLeftJoin(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+      SELECT r.id, r.kind, r.date, r.parent, r.calculated, r.exchangeRate,
+      "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
+      ${select}
+      FROM "${type}" r
+        LEFT JOIN "Documents" company ON company.id = r.company AND "company".type = 'Catalog.Company'
+        ${LeftJoin} WHERE (1 = 1)
+                                                                                    \n`;
     return query;
   }
 
@@ -424,7 +460,7 @@ export function excludeProps(doc) {
 }
 
 export function excludeRegisterAccumulatioProps(doc) {
-  const { kind, date, type, company, data, document, ...newObject } = doc;
+  const { id, parent, kind, date, type, company, data, document, exchangeRate, calculated, internal, ...newObject } = doc;
   return newObject;
 }
 

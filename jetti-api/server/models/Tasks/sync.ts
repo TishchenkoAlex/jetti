@@ -13,32 +13,35 @@ export default async function (job: Queue.Job) {
     const query = `
       SELECT id, date, description
       FROM [dbo].[Documents]
-      WHERE posted = 0 and deleted = 0
-        AND [ExchangeBase] IS NOT NULL
+      WHERE posted = 0 and deleted = 0 and type LIKE 'Document.%'
+      AND company = '${params.company}'
+        -- AND [ExchangeBase] IS NOT NULL
       ORDER BY date;
     `;
     const docs = await sdbq.manyOrNone<{ date: Date, description: string, id: Ref }>(query);
     if (docs.length) {
       const TaskList: any[] = [];
-      const count = docs.length; let offset = 0;
+      const count = docs.length;
+      let offset = 0;
       job.data.job['total'] = docs.length;
+      job.data.message = `job started for ${docs.length} documents`;
       await job.update(job.data);
       await job.progress(0);
       while (offset < count) {
-        let i = 0;
-        for (i = 0; i < 50; i++) {
-          if (!docs[i + offset]) break;
-          const q = lib.doc.postById(docs[i + offset].id, sdbq);
+        for (let i = 0; i < 50; i++) {
+          if (!docs[offset]) break;
+          const q = lib.doc.postById(docs[offset].id, sdbq);
           TaskList.push(q);
+          offset = offset + 1;
         }
         await Promise.all(TaskList);
         TaskList.length = 0;
-        offset = offset + 1;
-        job.data.message = `${offset * i} of ${count}, last doc = [${docs[offset].description}]`;
+        job.data.message = `${offset} of ${count}, last doc = [${docs[offset - 1].description}]`;
         await job.update(job.data);
-        await job.progress(offset * i);
+        await job.progress(offset);
       }
     }
+    job.data.message = 'job complete';
     await job.progress(100);
   } catch (ex) { throw ex; }
   finally { await lib.util.postMode(false, sdbq); }

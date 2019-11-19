@@ -62,7 +62,14 @@ const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-// const script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
-// const script = SQLGenegatorMetadata.CreateTableRegisterAccumulation();
-// const script = SQLGenegatorMetadata.CreateTableRegisterInfo();
+// let script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
+// fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});
+
+// script = SQLGenegatorMetadata.CreateTableRegisterAccumulation();
 // fs.writeFile('CreateTableRegisterAccumulation.sql', script, (err) => {});
+
+// script = SQLGenegatorMetadata.AlterTriggerRegisterAccumulation();
+// fs.writeFile('AlterTriggerRegisterAccumulation.sql', script, (err) => {});
+
+// script = SQLGenegatorMetadata.CreateTableRegisterInfo();
+// fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});

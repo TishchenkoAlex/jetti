@@ -6,8 +6,29 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
   description: 'Товары на складах'
 })
 export class RegisterAccumulationInventory extends RegisterAccumulation {
+
+  @Props({ type: 'Catalog.Operation.Type' })
+  OperationType: Ref = null;
+
   @Props({ type: 'Catalog.Expense' })
   Expense: Ref = null;
+  @Props({ type: 'Catalog.Expense.Analytics' })
+  ExpenseAnalytics: Ref = null;
+
+  @Props({ type: 'Catalog.Income' })
+  Income: Ref = null;
+  @Props({ type: 'Catalog.Income' })
+  IncomeAnalytics: Ref = null;
+
+  @Props({ type: 'Catalog.Balance' })
+  BalanceIn: Ref = null;
+  @Props({ type: 'Catalog.Balance.Analytics'})
+  BalanceInAnalytics: Ref = null;
+
+  @Props({ type: 'Catalog.Balance' })
+  BalanceOut: Ref = null;
+  @Props({ type: 'Catalog.Balance.Analytics' })
+  BalanceOutAnalytics: Ref = null;
 
   @Props({ type: 'Catalog.Storehouse', required: true, dimension: true})
   Storehouse: Ref = null;

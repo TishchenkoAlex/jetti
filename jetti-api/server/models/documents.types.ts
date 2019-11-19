@@ -17,6 +17,7 @@ export type CatalogTypes =
   'Catalog.Loan' |
   'Catalog.Operation' |
   'Catalog.Operation.Group' |
+  'Catalog.Operation.Type' |
   'Catalog.Manager' |
   'Catalog.Person' |
   'Catalog.PriceType' |

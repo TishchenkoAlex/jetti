@@ -187,7 +187,7 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         }
         await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
-      } catch (err) { throw err; }
+      } catch (err) { throw err;  }
       finally { await lib.util.postMode(false, tx); }
     });
   } catch (err) { next(err); }

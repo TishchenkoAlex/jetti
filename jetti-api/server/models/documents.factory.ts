@@ -41,6 +41,7 @@ import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentPriceList } from './Documents/Document.PriceList';
 import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
+import { CatalogOperationType } from './Catalogs/Catalog.Operation.Type';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -112,6 +113,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Storehouse', Class: CatalogStorehouse },
   { type: 'Catalog.Operation', Class: CatalogOperation },
   { type: 'Catalog.Operation.Group', Class: CatalogOperationGroup },
+  { type: 'Catalog.Operation.Type', Class: CatalogOperationType },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
   { type: 'Catalog.Role', Class: CatalogRoles },

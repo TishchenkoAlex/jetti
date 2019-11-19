@@ -24,7 +24,9 @@ export class RegisterAccumulationComponent implements OnInit {
   ngOnInit() {
     this.movements$ = this.apiService.getDocAccumulationMovements(this.register, this.doc.id).pipe(share());
     this.additionalColumns$ = this.movements$.pipe(
-      map(data =>  Object.keys(data[0]).filter(el => ['date', 'kind', 'company', 'document'].findIndex(e => e === el) === -1)), share());
+      map(data =>  Object.keys(data[0])
+        .filter(el => ['date', 'kind', 'company', 'document', 'calculated', 'id', 'parent', 'exchangeRate']
+        .findIndex(e => e === el) === -1)), share());
   }
 
 }

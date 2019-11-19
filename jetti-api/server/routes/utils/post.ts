@@ -128,6 +128,9 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 }
 
 export async function adminModeForPost(mode: boolean, tx: MSSQL): Promise<boolean> {
-  await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
-  return mode;
+  try {
+    await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
+    return mode;
+  } catch (err) { }
+  finally { return true; }
 }

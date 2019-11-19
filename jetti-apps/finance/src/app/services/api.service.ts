@@ -201,4 +201,8 @@ export class ApiService {
     return this.http.post<FormBase>(query, apiDoc);
   }
 
+  batchActual() {
+    const query = `${environment.api}batch/actual`;
+    return this.http.get<any[]>(query);
+  }
 }

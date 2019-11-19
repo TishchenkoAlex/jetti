@@ -1,5 +1,5 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, QueryList, ViewChildren, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, QueryList, ViewChildren, OnDestroy, OnInit } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { AuthService } from '../../auth/auth.service';
 import { DocService } from '../../common/doc.service';
 import { FormControlInfo } from 'src/app/common/dynamic-form/dynamic-form-base';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
-import { take, filter, sampleTime } from 'rxjs/operators';
+import { take, filter, sampleTime, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as IO from 'socket.io-client';
 import { Subject } from 'rxjs';
@@ -18,7 +18,7 @@ import { Subject } from 'rxjs';
   selector: 'j-batch-form',
   templateUrl: './batch.form.component.html'
 })
-export class BatchFormComponent  {
+export class BatchFormComponent implements OnDestroy, OnInit {
 
   @Input() id = Math.random().toString();
   @Input() type = this.route.snapshot.params.type as string;
@@ -35,21 +35,35 @@ export class BatchFormComponent  {
   get description() { return <FormControl>this.form.get('description'); }
 
   data = [];
+  private readonly _batchActual$ = new Subject<any[]>();
+  batchActual$ = this._batchActual$.asObservable();
+  socket: SocketIOClient.Socket;
+
+  private readonly _bacthLog$ = new Subject<any[]>();
+  bacthLog$ = this._bacthLog$.asObservable();
 
   constructor(public router: Router, public route: ActivatedRoute, public media: MediaObserver,
     public cd: ChangeDetectorRef, public ds: DocService, private auth: AuthService, public tabStore: TabsStore) {
 
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
-
-      const socket = IO(wsUrl, { transports: ['websocket'] });
-      socket.on('batch', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.data = [data.data.message, ...this.data];
-          if (this.data.length > 1000) this.data.length = 1000;
-          this.cd.detectChanges();
-      });
+      this.socket = IO(wsUrl, { transports: ['websocket'] });
     });
+  }
+
+  ngOnDestroy() {
+    this._batchActual$.complete();
+    this._batchActual$.unsubscribe();
+    this._bacthLog$.complete();
+    this._bacthLog$.unsubscribe();
+  }
+
+  ngOnInit() {
+    this.batchActualRefesh();
+  }
+
+  public async batchActualRefesh() {
+    this.ds.api.batchActual().pipe(take(1)).subscribe(data => this._batchActual$.next(data));
   }
 
   private _close() {
@@ -76,12 +90,17 @@ export class BatchFormComponent  {
     if (autoCapture) autoCapture.focusTrap.focusFirstTabbableElementWhenReady();
   }
 
-  async Execute(): Promise<any> {
+  async Execute(row: any): Promise<any> {
     this.data = [];
-    this.ds.api.execute('Form.Batch', this.model).pipe(take(1))
-      .subscribe(data => {
-        this.form.patchValue(data);
-      });
+    this.form.patchValue({ company: { id: row.company.id, type: 'Catalog.Company', value: row.company.description } });
+    this.socket.on(`batch_${row.company.id}`, (data: any) => {
+      if (data && data.data && data.data.message)
+        this.data.unshift(data);
+      if (this.data.length > 1000) this.data.length = 1000;
+      this._bacthLog$.next(this.data);
+    });
+
+    this.ds.api.execute('Form.Batch', this.model).pipe(take(1)).subscribe();
   }
 
 }
