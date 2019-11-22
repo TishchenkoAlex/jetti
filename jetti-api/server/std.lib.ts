@@ -52,6 +52,8 @@ export interface JTL {
   };
   util: {
     postMode: (mode: boolean, tx: MSSQL) => Promise<boolean>,
+    closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
+    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) =>  Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () =>  Promise<string>
   };
 }
@@ -90,7 +92,9 @@ export const lib: JTL = {
   },
   util: {
     postMode: adminModeForPost,
-    GUID
+    closeMonth: closeMonth,
+    GUID,
+    closeMonthErrors,
 
   }
 };
@@ -152,6 +156,24 @@ async function formControlRef(id: string, tx: MSSQL): Promise<RefValue | null> {
     SELECT "id", "code", "description" as "value", "type" FROM "Documents" WHERE id = '${id}'`);
   return result;
 }
+
+async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
+  const result = await tx.none(`
+    EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
+}
+
+async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
+  const result = await tx.manyOrNone<{Storehouse: Ref, SKU: Ref, Cost: number}>(`
+  SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
+    SELECT Storehouse, SKU, SUM([Cost]) [Cost]
+    FROM [dbo].[Register.Accumulation.Inventory] r
+    WHERE date <= EOMONTH(@p1) AND company = @p2
+    GROUP BY Storehouse, SKU
+    HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+  LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
+  return result;
+}
+
 
 async function debit(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
   const result = await tx.oneOrNone<{ result: number }>(`
@@ -274,8 +296,9 @@ export async function postById(id: Ref, tx: MSSQL) {
     const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
     if (doc && doc.deleted) return serverDoc;
     if (doc.posted) await unpostDocument(serverDoc, tx);
-    if (!doc.posted) { serverDoc.posted = true; await updateDocument(serverDoc, tx); }
+    serverDoc.posted = true;
     await postDocument(serverDoc, tx);
+    if (!doc.posted)  await updateDocument(serverDoc, tx);
     return serverDoc;
   } catch (err) { throw new Error(`Error on post by id document ${doc.description}, ${err}`); }
   finally { await lib.util.postMode(false, tx); }

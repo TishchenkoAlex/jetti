@@ -27,7 +27,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: mssql
-        image: eu.gcr.io/jetti-pg/mssql
+        image: eu.gcr.io/jetti-x100/mssql
         ports:
         - containerPort: 1433
         #resources:
