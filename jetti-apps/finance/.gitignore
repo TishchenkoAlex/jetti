@@ -46,3 +46,4 @@ Thumbs.db
 
 src/server/*.js
 .env
+/.firebase
