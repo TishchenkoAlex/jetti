@@ -6,8 +6,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   icon: 'fa fa-list',
   menu: 'Catalog construcror',
   dimensions: [
-  ],
-  prefix: '',
+  ]
 })
 export class CatalogCatalog extends DocumentBase {
 

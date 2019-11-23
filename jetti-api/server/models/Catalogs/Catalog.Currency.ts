@@ -5,7 +5,6 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Валюта',
   icon: 'fa fa-list',
   menu: 'Валюты',
-  prefix: ''
 })
 export class CatalogCurrency extends DocumentBase {
 

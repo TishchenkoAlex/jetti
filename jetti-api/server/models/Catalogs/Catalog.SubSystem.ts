@@ -5,7 +5,6 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Подсистема',
   icon: 'fa fa-list',
   menu: 'Подсистемы',
-  prefix: ''
 })
 export class CatalogSubSystem extends DocumentBase {
 

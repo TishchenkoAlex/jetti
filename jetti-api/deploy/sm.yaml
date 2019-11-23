@@ -17,12 +17,12 @@ spec:
         - name: jetti
           image: eu.gcr.io/jetti-x100/jetti-api:latest
           resources:
- #           requests:
-  #            memory: "256Mi"
-   #           cpu: "1000m"
-    #        limits:
-     #         memory: "1024Mi"
-      #        cpu: "2000m"
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

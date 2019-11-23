@@ -72,7 +72,6 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       filter(row => row !== undefined)).subscribe(row => {
         this.selection = [row as DocumentBase];
       });
-    this.dataSource.sort();
 
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
       .subscribe(event => this._update(event.col, event.event, event.center));

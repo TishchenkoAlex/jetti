@@ -16,8 +16,8 @@ export const sqlConfig: config = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   requestTimeout: 1000 * 120,
-  pool: { min: 50, max: 10000 },
-  options: { encrypt: false }
+  pool: { min: 100, max: 1000 },
+  options: { encrypt: true }
 };
 
 export const sqlConfigTask: config = {
@@ -28,7 +28,7 @@ export const sqlConfigTask: config = {
   password: process.env.DB_TASK_PASSWORD,
   requestTimeout: 1000 * 1200000,
   pool: { min: 100, max: 1000000 },
-  options: { encrypt: false }
+  options: { encrypt: true }
 };
 
 
@@ -39,6 +39,6 @@ export const sqlConfigAccounts: config = {
   user: process.env.DB_ACCOUNTS_USER,
   password: process.env.DB_ACCOUNTS_PASSWORD ,
   requestTimeout: 1000 * 120,
-  pool: { min: 25, max: 10000 },
+  pool: { min: 25, max: 1000 },
   options: { encrypt: false }
 };

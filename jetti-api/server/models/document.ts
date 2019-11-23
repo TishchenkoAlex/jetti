@@ -34,7 +34,7 @@ export interface DocumentOptions {
   icon: string;
   menu: string;
   dimensions?: { [x: string]: AllTypes }[];
-  prefix: string;
+  prefix?: string;
   commands?: ICommand[];
   presentation?: 'code' | 'description';
   hierarchy?: 'folders' | 'elements';

@@ -5,7 +5,6 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Роль пользователя',
   icon: 'fa fa-list',
   menu: 'Роли пользователя',
-  prefix: ''
 })
 export class CatalogRoles extends DocumentBase {
 

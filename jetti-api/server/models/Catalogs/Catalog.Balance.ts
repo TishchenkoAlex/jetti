@@ -5,7 +5,6 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Статья баланса',
   icon: 'fa fa-list',
   menu: 'Статьи баланса',
-  prefix: '',
   relations: [
     { name: 'Balance analytics', type: 'Catalog.Balance.Analytics', field: 'parent' }
   ],

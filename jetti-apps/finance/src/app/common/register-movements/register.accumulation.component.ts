@@ -29,4 +29,8 @@ export class RegisterAccumulationComponent implements OnInit {
         .findIndex(e => e === el) === -1)), share());
   }
 
+  isNumbert(value): boolean {
+    return Number.parseInt(value, 0) * 0 === 0;
+  }
+
 }

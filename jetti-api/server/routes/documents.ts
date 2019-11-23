@@ -217,17 +217,6 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
   } catch (err) { next(err); }
 });
 
-router.post('/unpost/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      const serverDoc = await lib.doc.unPostById(req.params.id, tx);
-      res.json((await buildViewModel(serverDoc, tx)));
-    });
-  } catch (err) { next(err); }
-});
-
-
 // Post by id (without returns posted object to client, for post in cicle many docs)
 router.get('/post/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -8,7 +8,6 @@ import { DocTypes } from '../documents.types';
   description: 'Catalogs types',
   icon: '',
   menu: 'Catalogs types',
-  prefix: ''
 })
 export class CatalogCatalogs extends DocumentBase {
   @Props({ type: 'Catalog.Documents', hiddenInList: true, order: -1 })

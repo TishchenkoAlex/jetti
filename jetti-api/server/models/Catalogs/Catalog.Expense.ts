@@ -6,7 +6,6 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Статьи расходов',
   hierarchy: 'folders',
-  prefix: '',
   relations: [
     { name: 'Expense analytics', type: 'Catalog.Expense.Analytics', field: 'parent' }
   ]

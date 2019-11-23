@@ -70,11 +70,13 @@ export class DocService {
   async posById(id: string) {
     const postedDoc = await this.api.postDocById(id).toPromise();
     this._postById$.next(postedDoc);
+    return postedDoc;
   }
 
   async unpostById(id: string) {
     const postedDoc = await this.api.unpostDocById(id).toPromise();
     this._unpostById$.next(postedDoc);
+    return postedDoc;
   }
 
   openSnackBar(severity: string, summary: string, detail: string) {

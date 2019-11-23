@@ -26,8 +26,8 @@
       <td style="width: 150px; text-align: center">{{rowData.date | date: 'dd.MM.y HH:mm:ss'}}</td>
       <td style="width: 200px; text-align: center">{{rowData.company.value}}</td>
       <td *ngFor="let column of (additionalColumns$ | async)" style="text-align: center; width: 200px">
-        <div *ngIf="rowData[column] * 0 === 0">{{ rowData[column] | number:'1.4-4' }}</div>
-        <div *ngIf="rowData[column] * 0 !== 0">
+        <div *ngIf="isNumbert(rowData[column])">{{ rowData[column] | number:'1.4-4' }}</div>
+        <div *ngIf="!isNumbert(rowData[column])">
           {{ rowData[column]?.value === null ? 'EMPTY' : rowData[column]?.value || rowData[column] }}</div>
       </td>
       <td style="width: 24px; text-align: center">
