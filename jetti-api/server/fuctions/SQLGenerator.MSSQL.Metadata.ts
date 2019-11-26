@@ -299,7 +299,8 @@ export class SQLGenegatorMetadata {
       const doc = createDocument(catalog.type);
       let select = SQLGenegator.QueryList(doc.Props(), doc.type);
       const type = (doc.Prop() as DocumentOptions).type.split('.');
-      const name = type.length === 1 ? type[0] : type[type.length - 1];
+      let name = '';
+      for (let i = 1; i < type.length; i++) name += type[i];
       select = select.replace('FROM dbo\.\"Documents\" d', `
 
       ,COALESCE(

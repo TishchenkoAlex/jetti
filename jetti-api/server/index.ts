@@ -77,3 +77,6 @@ fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});
 
 script = SQLGenegatorMetadata.AlterTriggerRegisterInfo();
 fs.writeFile('AlterTriggerRegisterInfo.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.CreateViewCatalogs();
+fs.writeFile('CreateViewCatalogs.sql', script, (err) => {});
