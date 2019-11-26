@@ -12,6 +12,7 @@ import { FixedAssetsSubSystem } from './FixedAssets';
 import { ManufacturingSubSystem } from './Manufacturing';
 import { OperationsSubSystem } from './Operations';
 import { SalesSubSystem } from './Sales';
+import { BudgetingSubSystem } from './Budgeting';
 
 export type SubSystem =
   'Common' |
@@ -21,7 +22,8 @@ export type SubSystem =
   'Operations' |
   'FixedAssets' |
   'Manufacturing' |
-  'FixedAssets';
+  'FixedAssets' |
+  'Budgeting';
 
 export interface ISubSystem {
   type: SubSystem;
@@ -37,7 +39,8 @@ export const SubSystems: ISubSystem[] = [
   FinanceSubSystem,
   OperationsSubSystem,
   ManufacturingSubSystem,
-  FixedAssetsSubSystem
+  FixedAssetsSubSystem,
+  BudgetingSubSystem
 ];
 
 export interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }

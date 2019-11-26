@@ -47,6 +47,12 @@
         </div>
       </div>
 
+      <div *ngFor="let control of v">
+        <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'" style="height: 400px; width: 100%;">
+          <j-control [control]="control" [form]="form"></j-control>
+        </div>
+      </div>
+
       <br *ngIf="tables.length">
       <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
         <div *ngFor="let control of tables; let i = index">
@@ -58,6 +64,7 @@
 
       <ng-content></ng-content>
     </div>
+
 
   </p-panel>
   <p-panel #pad [toggleable]="true" header="Additonal Info" [collapsed]="isDoc ? true : false">
@@ -73,8 +80,8 @@
     <j-control *ngIf="vk['script']" [control]="vk['script']" [form]="form"></j-control>
   </p-panel>
 
-  <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module"
-    [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
+  <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module" [collapsed]="true"
+    (collapsedChange)="mp.collapse($event); pad.collapse($event)">
     <j-control *ngIf="vk['module']" [control]="vk['module']" [form]="form"></j-control>
   </p-panel>
 

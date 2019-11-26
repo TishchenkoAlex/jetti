@@ -11,6 +11,7 @@ import { RegisterAccumulationLoan } from './Loan';
 import { RegisterAccumulationPL } from './PL';
 import { RegisterAccumulation } from './RegisterAccumulation';
 import { RegisterAccumulationSales } from './Sales';
+import { RegisterAccumulationBudgetItemTurnover } from './BudgetItemTurnover';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
@@ -24,7 +25,8 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Loan' |
   'Register.Accumulation.PL' |
   'Register.Accumulation.Sales' |
-  'Register.Accumulation.Depreciation';
+  'Register.Accumulation.Depreciation' |
+  'Register.Accumulation.BudgetItemTurnover';
 
 interface IRegisteredRegisterAccumulation { type: RegisterAccumulationTypes; Class: typeof RegisterAccumulation; }
 export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] = [
@@ -40,10 +42,11 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.PL', Class: RegisterAccumulationPL },
   { type: 'Register.Accumulation.Sales', Class: RegisterAccumulationSales },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },
+  { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover }
 ];
 
 export function createRegisterAccumulation(init: Partial<RegisterAccumulation>) {
   const doc = RegisteredRegisterAccumulation.find(el => el.type === init.type);
-  if (doc) return new doc.Class({type: init.type, ...init});
+  if (doc) return new doc.Class({ type: init.type, ...init });
   else throw new Error(`createRegisterAccumulation: Can't create type! ${init.type} is not registered`);
 }

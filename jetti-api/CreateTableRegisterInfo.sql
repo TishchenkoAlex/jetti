@@ -70,3 +70,17 @@
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.RLS" ON "Register.Info.RLS";
       GRANT SELECT ON "Register.Info.RLS" TO jetti;
+
+
+      DROP TABLE "Register.Info.BudgetItemRule";
+      CREATE TABLE "Register.Info.BudgetItemRule" (
+        [company] [uniqueidentifier] NOT NULL,
+        [document] [uniqueidentifier] NOT NULL,
+        [date] [date] NOT NULL
+        , "BudgetItem" UNIQUEIDENTIFIER  NOT NULL  
+, "Scenario" UNIQUEIDENTIFIER  NOT NULL  
+, "Rule" NVARCHAR(150) 
+  NULL 
+      );
+      CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.BudgetItemRule" ON "Register.Info.BudgetItemRule";
+      GRANT SELECT ON "Register.Info.BudgetItemRule" TO jetti;

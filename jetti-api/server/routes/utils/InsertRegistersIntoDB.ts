@@ -32,7 +32,7 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
     query += `
       INSERT INTO "Accumulation" (id, parent, calculated, kind, date, type, company, document, data)
       VALUES ('${rec.id || v1()}', '${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
-    '${doc.id}', JSON_QUERY(N'${JSON.stringify(data)}'));`;
+    '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
 
   for (const rec of Registers.Info) {
@@ -40,7 +40,7 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
     query += `
       INSERT INTO "Register.Info" (date, type, company, document, data)
       VALUES ('${new Date(doc.date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',
-    '${doc.id}', JSON_QUERY(N'${JSON.stringify(data)}'));`;
+    '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
   query = query.replace(/\'undefined\'/g, 'NULL');
   if (query) { await tx.none(query); }

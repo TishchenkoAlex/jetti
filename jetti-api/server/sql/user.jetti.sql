@@ -1,10 +1,9 @@
-/****** Object:  User [jetti]    Script Date: 11/23/2019 5:12:55 PM ******/
 DROP USER [jetti]
 GO
 
-/****** Object:  User [jetti]    Script Date: 11/23/2019 5:12:55 PM ******/
-CREATE USER [jetti] FOR LOGIN [jetti]
+CREATE USER [jetti] WITH PASSWORD='MyNew01Password';
 GO
+
 GRANT SHOWPLAN TO jetti;
 
 GRANT SELECT TO jetti;  
@@ -25,7 +24,7 @@ GRANT SELECT ON [dbo].[Register.Account.View] TO jetti;
 GRANT SELECT ON [dbo].[Register.Accumulation.Inventory] TO jetti;
 
 GRANT UPDATE ON [dbo].[Sq.Catalog.Account] TO jetti;
-GRANT UPDATE ON  [dbo].[Sq.Catalog.Balance] TO jetti;
+GRANT UPDATE ON [dbo].[Sq.Catalog.Balance] TO jetti;
 GRANT UPDATE ON [dbo].[Sq.Catalog.Balance.Analytics] TO jetti;
 GRANT UPDATE ON [dbo].[Sq.Catalog.BankAccount] TO jetti;
 GRANT UPDATE ON [dbo].[Sq.Catalog.CashFlow] TO jetti;

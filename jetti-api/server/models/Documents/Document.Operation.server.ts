@@ -46,8 +46,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         FROM "Documents" WHERE id = '${this.Operation}'`;
       const Operation = await tx.oneOrNone<{ script: string }>(query);
       const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx);
-      const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx) || {};
-      const accountingCurrency = settings.accountingCurrency || this.currency;
+      const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx);
+      const accountingCurrency = settings && settings.accountingCurrency || this.currency;
       const exchangeRateAccounting = await lib.info.exchangeRate(this.date, this.company, accountingCurrency, tx);
       const script = `
       let exchangeRateBalance = exchangeRate;

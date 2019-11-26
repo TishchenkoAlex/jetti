@@ -12,6 +12,7 @@ import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { adminModeForPost, postDocument, unpostDocument, updateDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
+import { TASKS_POOL } from './sql.pool.tasks';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -42,7 +43,7 @@ export interface JTL {
   };
   info: {
     sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
-      analytics: { [key: string]: any }, tx: MSSQL) => Promise<T>,
+      analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   inventory: {
@@ -158,19 +159,20 @@ async function formControlRef(id: string, tx: MSSQL): Promise<RefValue | null> {
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
-  const result = await tx.none(`
+  // const sdb = new MSSQL({ email: '', isAdmin: true, env: {}, description: '', roles: []}, TASKS_POOL);
+  await tx.none(`
     EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
 }
 
 async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
   const result = await tx.manyOrNone<{Storehouse: Ref, SKU: Ref, Cost: number}>(`
-  SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
-    SELECT Storehouse, SKU, SUM([Cost]) [Cost]
-    FROM [dbo].[Register.Accumulation.Inventory] r
-    WHERE date <= EOMONTH(@p1) AND company = @p2
-    GROUP BY Storehouse, SKU
-    HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-  LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
+    SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
+      SELECT Storehouse, SKU, SUM([Cost]) [Cost]
+      FROM [dbo].[Register.Accumulation.Inventory] r
+      WHERE date <= EOMONTH(@p1) AND company = @p2
+      GROUP BY Storehouse, SKU
+      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+    LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
   return result;
 }
 
@@ -273,9 +275,9 @@ async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: 
 }
 
 async function sliceLast<T extends RegisterInfo>(type: string, date = new Date(), company: Ref,
-  analytics: { [key: string]: any }, tx: MSSQL): Promise<T> {
+  analytics: { [key: string]: any }, tx: MSSQL) {
 
-  const addWhere = (key: string) => `AND "${key}"' = '${analytics[key]}' \n`;
+  const addWhere = (key: string) => `AND "${key}" = '${analytics[key]}' \n`;
   let where = ''; for (const el of Object.keys(analytics)) { where += addWhere(el); }
 
   const queryText = `
@@ -285,8 +287,8 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
       AND company = '${company}'
       ${where}
     ORDER BY date DESC`;
-  const result = await tx.oneOrNone<{ result: any }>(queryText, [date]);
-  return result ? result.result : null;
+  const result = await tx.oneOrNone<T>(queryText, [date]);
+  return result;
 }
 
 export async function postById(id: Ref, tx: MSSQL) {

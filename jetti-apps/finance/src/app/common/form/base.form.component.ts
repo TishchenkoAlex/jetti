@@ -15,6 +15,9 @@ import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
 import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
 import { LoadingService } from '../loading.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
+import * as IO from 'socket.io-client';
+import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,7 +57,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
 
-  constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService,
+  constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore) { }
 
   ngOnInit() {
@@ -78,6 +81,15 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       this.form.get('code')!.valueChanges,
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+
+/*     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
+      const wsUrl = `${environment.socket}/${this.id}?token=${u.token}`;
+      const socket = IO(wsUrl, { transports: ['websocket'] });
+      socket.on('post', (data: any) => {
+        console.log(data);
+      });
+    }); */
+
   }
 
   showDescription() {

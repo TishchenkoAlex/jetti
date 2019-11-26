@@ -35,8 +35,10 @@ export type CatalogTypes =
   'Catalog.ProductCategory' |
   'Catalog.ProductKind' |
   'Catalog.ObjectsExploitation' |
-  'Catalog.GroupObjectsExploitation'
- ;
+  'Catalog.GroupObjectsExploitation' |
+  'Catalog.Scenario' |
+  'Catalog.BudgetItem'
+  ;
 
 export type DocumentTypes =
   'Document.CashIn' |

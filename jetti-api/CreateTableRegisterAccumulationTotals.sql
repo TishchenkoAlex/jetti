@@ -257,3 +257,31 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Depreciation.Totals] ON [dbo].[Register.Accumulation.Depreciation.Totals]
       ([company], [date] , [BusinessOperation], [currency], [Department])
       GO
+
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.Totals]
+      WITH SCHEMABINDING
+      AS
+        SELECT [company], [date], [Department], [Scenario], [BudgetItem], [currency]
+        
+        , SUM([Amount]) [Amount]
+        , SUM([Amount.In]) [Amount.In]
+        , SUM([Amount.Out]) [Amount.Out]
+        , SUM([AmountInScenatio]) [AmountInScenatio]
+        , SUM([AmountInScenatio.In]) [AmountInScenatio.In]
+        , SUM([AmountInScenatio.Out]) [AmountInScenatio.Out]
+        , SUM([AmountInCurrency]) [AmountInCurrency]
+        , SUM([AmountInCurrency.In]) [AmountInCurrency.In]
+        , SUM([AmountInCurrency.Out]) [AmountInCurrency.Out]
+        , SUM([AmountInAccounting]) [AmountInAccounting]
+        , SUM([AmountInAccounting.In]) [AmountInAccounting.In]
+        , SUM([AmountInAccounting.Out]) [AmountInAccounting.Out]
+        , SUM([Qty]) [Qty]
+        , SUM([Qty.In]) [Qty.In]
+        , SUM([Qty.Out]) [Qty.Out]
+	      , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.BudgetItemTurnover]
+      GROUP BY [company], [date], [Department], [Scenario], [BudgetItem], [currency]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.BudgetItemTurnover.Totals] ON [dbo].[Register.Accumulation.BudgetItemTurnover.Totals]
+      ([company], [date] , [Department], [Scenario], [BudgetItem], [currency])
+      GO

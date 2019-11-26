@@ -67,9 +67,9 @@ export class ApiService {
     return (this.http.post<DocumentBase>(query, apiDoc));
   }
 
-  unPostDoc(id: Ref): Observable<DocumentBase> {
+  unpostDocById(id: Ref): Observable<DocumentBase> {
     const query = `${environment.api}unpost/${id}`;
-    return (this.http.post<DocumentBase>(query, id));
+    return this.http.get<DocumentBase>(query);
   }
 
   saveDoc(doc: DocumentBase): Observable<DocumentBase> {
@@ -86,11 +86,6 @@ export class ApiService {
 
   postDocById(id: string): Observable<DocumentBase> {
     const query = `${environment.api}post/${id}`;
-    return (this.http.get(query) as Observable<DocumentBase>);
-  }
-
-  unpostDocById(id: string): Observable<DocumentBase> {
-    const query = `${environment.api}unpost/${id}`;
     return (this.http.get(query) as Observable<DocumentBase>);
   }
 

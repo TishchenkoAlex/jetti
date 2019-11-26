@@ -43,7 +43,8 @@ app.use(api, authHTTP, tasksDB, form);
 app.use('/auth', accountDB, auth);
 
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile('dist/index.html', { root: root });
+  res.status(200);
+  res.send('Jetti API');
 });
 
 app.use(errorHandler);
@@ -62,14 +63,17 @@ const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-// let script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
-// fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});
+let script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
+fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});
 
-// script = SQLGenegatorMetadata.CreateTableRegisterAccumulation();
-// fs.writeFile('CreateTableRegisterAccumulation.sql', script, (err) => {});
+script = SQLGenegatorMetadata.CreateTableRegisterAccumulation();
+fs.writeFile('CreateTableRegisterAccumulation.sql', script, (err) => {});
 
-// script = SQLGenegatorMetadata.AlterTriggerRegisterAccumulation();
-// fs.writeFile('AlterTriggerRegisterAccumulation.sql', script, (err) => {});
+script = SQLGenegatorMetadata.AlterTriggerRegisterAccumulation();
+fs.writeFile('AlterTriggerRegisterAccumulation.sql', script, (err) => {});
 
-// script = SQLGenegatorMetadata.CreateTableRegisterInfo();
-// fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});
+script = SQLGenegatorMetadata.CreateTableRegisterInfo();
+fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.AlterTriggerRegisterInfo();
+fs.writeFile('AlterTriggerRegisterInfo.sql', script, (err) => {});

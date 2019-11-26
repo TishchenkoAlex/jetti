@@ -23,6 +23,7 @@ export class CatalogSubcount extends DocumentBase {
     select.push({type: 'string', description: 'string'});
     select.push({type: 'boolean', description: 'boolean'});
     select.push({type: 'table', description: 'table'});
+    select.push({type: 'javascript', description: 'javascript'});
 
     return buildSubcountQueryList(select);
   }

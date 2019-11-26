@@ -551,4 +551,77 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Depreciation'; 
 
 
+      INSERT INTO "Register.Accumulation.BudgetItemTurnover" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+        , "Department"
+        , "Scenario"
+        , "BudgetItem"
+        , "Anatitic1"
+        , "Anatitic2"
+        , "Anatitic3"
+        , "Anatitic4"
+        , "Anatitic5"
+        , "currency"
+        , "Amount"
+        , "Amount.In"
+        , "Amount.Out"
+        , "AmountInScenatio"
+        , "AmountInScenatio.In"
+        , "AmountInScenatio.Out"
+        , "AmountInCurrency"
+        , "AmountInCurrency.In"
+        , "AmountInCurrency.Out"
+        , "AmountInAccounting"
+        , "AmountInAccounting.In"
+        , "AmountInAccounting.Out"
+        , "Qty"
+        , "Qty.In"
+        , "Qty.Out")
+        SELECT
+          DATEDIFF_BIG(MICROSECOND, '00010101', [date]) +
+            CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
+            ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
+          id, parent, CAST(date AS datetime) date, document, company, kind, calculated
+        , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS FLOAT) exchangeRate
+ 
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Scenario"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Scenario"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."BudgetItem"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BudgetItem"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic1"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic1"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic2"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic2"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic3"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic3"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic4"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic4"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic5"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic5"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInScenatio"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInScenatio.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInScenatio.Out" 
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInCurrency"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInCurrency.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInCurrency.Out" 
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
+
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Qty"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
+
+      FROM INSERTED WHERE type = N'Register.Accumulation.BudgetItemTurnover'; 
+
+
       END;

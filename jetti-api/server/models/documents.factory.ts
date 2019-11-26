@@ -42,6 +42,8 @@ import { DocumentPriceList } from './Documents/Document.PriceList';
 import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
 import { CatalogOperationType } from './Catalogs/Catalog.Operation.Type';
+import { CatalogBudgetItem } from './Catalogs/Catalog.BudgetItem';
+import { CatalogScenario } from './Catalogs/Catalog.Scenario';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -126,6 +128,8 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.GroupObjectsExploitation', Class: CatalogGroupObjectsExploitation },
   { type: 'Catalog.ObjectsExploitation', Class: CatalogObjectsExploitation },
   { type: 'Catalog.Catalog', Class: CatalogCatalog },
+  { type: 'Catalog.BudgetItem', Class: CatalogBudgetItem },
+  { type: 'Catalog.Scenario', Class: CatalogScenario },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

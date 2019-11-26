@@ -2,15 +2,15 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: sm
+  name: smaz
   labels:
-    app: sm
+    app: smaz
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: sm
+        app: smaz
         tier: web
     spec:
       containers:
@@ -30,7 +30,7 @@ spec:
             - name: DB_PORT
               value: "1433"
             - name: DB_HOST
-              value: JETTI-DB-01
+              value: jetti-sm.database.windows.net
             - name: DB_NAME
               value: sm
             - name: DB_USER
@@ -69,21 +69,21 @@ spec:
                   name: jwt-key
                   key: JTW_KEY
             - name: REFRESH_ID
-              value: "0005"
+              value: "0003"
             - name: NODE_ENV
               value: "production"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sm
+  name: smaz
   labels:
-    app: sm
+    app: smaz
 spec:
   type: NodePort
   sessionAffinity: ClientIP
   selector:
-    app: sm
+    app: smaz
   ports:
   - port: 8080
     targetPort: 8080
