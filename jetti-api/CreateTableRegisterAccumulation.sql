@@ -10,7 +10,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.AccountablePersons";
       CREATE TABLE "Register.Accumulation.AccountablePersons" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -46,7 +46,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.AP";
       CREATE TABLE "Register.Accumulation.AP" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -86,7 +86,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.AR";
       CREATE TABLE "Register.Accumulation.AR" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -126,7 +126,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Bank";
       CREATE TABLE "Register.Accumulation.Bank" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -164,7 +164,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Balance";
       CREATE TABLE "Register.Accumulation.Balance" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -192,7 +192,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Cash";
       CREATE TABLE "Register.Accumulation.Cash" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -230,7 +230,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Cash.Transit";
       CREATE TABLE "Register.Accumulation.Cash.Transit" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -268,7 +268,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Inventory";
       CREATE TABLE "Register.Accumulation.Inventory" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -318,7 +318,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Loan";
       CREATE TABLE "Register.Accumulation.Loan" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -354,7 +354,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.PL";
       CREATE TABLE "Register.Accumulation.PL" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -382,7 +382,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Sales";
       CREATE TABLE "Register.Accumulation.Sales" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -442,7 +442,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.Depreciation";
       CREATE TABLE "Register.Accumulation.Depreciation" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -480,7 +480,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.BudgetItemTurnover";
       CREATE TABLE "Register.Accumulation.BudgetItemTurnover" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -542,11 +542,10 @@
         COMMIT TRANSACTION;
       GO
       
-      ALTER TRIGGER "Accumulation.Insert" ON dbo."Accumulation"
-      AFTER INSERT AS
-      BEGIN
-        
-      INSERT INTO "Register.Accumulation.AccountablePersons" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AccountablePersons] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.AccountablePersons] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "Employee"
         , "CashFlow"
@@ -584,10 +583,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.AccountablePersons'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.AccountablePersons'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AccountablePersons] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AccountablePersons');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.AP" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AP] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.AP] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "Department"
         , "AO"
@@ -631,10 +643,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.AP'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.AP'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AP] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.AP] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AP');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.AR" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AR] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.AR] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "Department"
         , "AO"
@@ -678,10 +703,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.AR'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.AR'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AR] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.AR] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AR');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Bank" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Bank] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Bank] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "BankAccount"
         , "CashFlow"
@@ -722,10 +760,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Bank'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Bank'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Bank] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Bank] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Bank');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Balance" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Balance] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Balance] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "Department"
         , "Balance"
         , "Analytics"
@@ -749,10 +800,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Balance'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Balance'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Balance] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Balance] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Balance');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Cash" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Cash] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "CashRegister"
         , "CashFlow"
@@ -793,10 +857,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Cash'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Cash'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Cash] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Cash.Transit" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Cash.Transit] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "Sender"
         , "Recipient"
@@ -837,10 +914,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Cash.Transit'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Cash.Transit'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash.Transit');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Inventory" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Inventory] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Inventory] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "OperationType"
         , "Expense"
         , "ExpenseAnalytics"
@@ -898,10 +988,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Inventory'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Inventory'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Inventory] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Inventory] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Inventory');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Loan" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Loan] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Loan] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "Loan"
         , "Counterpartie"
         , "CashFlow"
@@ -939,10 +1042,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Loan'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Loan'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Loan] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Loan] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Loan');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.PL" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.PL] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.PL] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "Department"
         , "PL"
         , "Analytics"
@@ -966,10 +1082,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.PL'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.PL'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.PL] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.PL] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.PL');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Sales" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Sales] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Sales] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "Department"
         , "Customer"
@@ -1047,10 +1176,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAR'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAR.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAR'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAR.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Sales'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Sales'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Sales] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Sales] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Sales');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.Depreciation" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.Depreciation] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "BusinessOperation"
         , "currency"
         , "Department"
@@ -1091,10 +1233,23 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.Depreciation'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.Depreciation'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.Depreciation] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Depreciation');
+    END
+    GO
 
 
-      INSERT INTO "Register.Accumulation.BudgetItemTurnover" (DT, id, parent, date, document, company, kind, calculated, exchangeRate
+    CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [Register.Accumulation.BudgetItemTurnover] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "Department"
         , "Scenario"
         , "BudgetItem"
@@ -1164,10 +1319,19 @@
         , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
 
-      FROM INSERTED WHERE type = N'Register.Accumulation.BudgetItemTurnover'; 
+      FROM INSERTED WHERE type = N'Register.Accumulation.BudgetItemTurnover'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.BudgetItemTurnover');
+    END
+    GO
 
 
-      END;
       GO
 
       INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];

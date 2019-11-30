@@ -5,6 +5,7 @@ import { RegisterInfo } from './RegisterInfo';
 import { RegisterInfoRLS } from './RLS';
 import { RegisterInfoSettings } from './Settings';
 import { RegisterInfoBudgetItemRule } from './BudgetItemRule';
+import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 
 export type RegisterInfoTypes =
     'Register.Info.PriceList' |
@@ -12,7 +13,8 @@ export type RegisterInfoTypes =
     'Register.Info.Settings' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
-    'Register.Info.BudgetItemRule';
+    'Register.Info.BudgetItemRule' |
+    'Register.Info.DepartmentCompanyHistory';
 
 export type RegistersInfo =
     RegisterInfoPriceList |
@@ -33,6 +35,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Depreciation', Class: RegisterInfoDepreciation },
     { type: 'Register.Info.RLS', Class: RegisterInfoRLS },
     { type: 'Register.Info.BudgetItemRule', Class: RegisterInfoBudgetItemRule },
+    { type: 'Register.Info.DepartmentCompanyHistory', Class: DepartmentCompanyHistory },
 ];
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {

@@ -9,7 +9,7 @@ import * as path from 'path';
 import 'reflect-metadata';
 import * as socketIO from 'socket.io';
 import * as ioredis from 'socket.io-redis';
-import { REDIS_DB_HOST } from './env/environment';
+import { REDIS_DB_HOST, REDIS_DB_AUTH } from './env/environment';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { JQueue } from './models/Tasks/tasks';
 import { router as auth } from './routes/auth';
@@ -57,7 +57,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 export const HTTP = httpServer.createServer(app);
 export const IO = socketIO(HTTP);
 IO.use(authIO);
-IO.adapter(ioredis({ host: REDIS_DB_HOST }));
+IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH}));
 
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));

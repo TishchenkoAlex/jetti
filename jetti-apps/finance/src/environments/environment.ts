@@ -1,5 +1,5 @@
-const domain = 'https://smaz.jetti-app.com';
-// const domain = 'http://localhost:3000';
+// const domain = 'https://jetti-api.azurewebsites.net';
+const domain = 'http://localhost:3000';
 
 export const environment = {
   production: false,

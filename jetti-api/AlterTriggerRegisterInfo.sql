@@ -69,4 +69,12 @@
       FROM INSERTED WHERE type = N'Register.Info.BudgetItemRule'; 
 
 
+      INSERT INTO "Register.Info.DepartmentCompanyHistory" (date, document, company , "Department")
+      SELECT
+        CAST(date AS datetime) date, document, company 
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+
+      FROM INSERTED WHERE type = N'Register.Info.DepartmentCompanyHistory'; 
+
+
       END;

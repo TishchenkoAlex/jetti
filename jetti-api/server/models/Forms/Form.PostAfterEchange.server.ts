@@ -15,7 +15,7 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       FROM [dbo].[Documents]
       WHERE (1 = 1) AND
         posted = 0 and deleted = 0 and type LIKE 'Document.%' AND
-        [ExchangeBase] IS NOT NULL
+        [ExchangeBase] IS NOT NULL AND company IS NOT NULL
       GROUP BY company
       HAVING COUNT(*) >0`);
 
@@ -37,7 +37,7 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
     return this;
   }
 }
-setTimeout(async () => {
+/* setTimeout(async () => {
 console.log('start IIKO');
 try {
   const process = new PostAfterEchangeServer();
@@ -53,3 +53,4 @@ setInterval(async () => {
   } catch (ex) { }
 
 }, 1000 * 600);
+ */

@@ -20,4 +20,8 @@ export class CatalogCashRegister extends DocumentBase {
 
   @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false })
   company: Ref = null;
+
+  @Props({ type: 'boolean'})
+  isAccounting = true;
+
 }

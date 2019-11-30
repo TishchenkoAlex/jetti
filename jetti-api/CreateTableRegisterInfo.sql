@@ -84,3 +84,15 @@
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.BudgetItemRule" ON "Register.Info.BudgetItemRule";
       GRANT SELECT ON "Register.Info.BudgetItemRule" TO jetti;
+
+
+      DROP TABLE "Register.Info.DepartmentCompanyHistory";
+      CREATE TABLE "Register.Info.DepartmentCompanyHistory" (
+        [company] [uniqueidentifier] NOT NULL,
+        [document] [uniqueidentifier] NOT NULL,
+        [date] [date] NOT NULL
+        , "Department" UNIQUEIDENTIFIER  NOT NULL  
+
+      );
+      CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.DepartmentCompanyHistory" ON "Register.Info.DepartmentCompanyHistory";
+      GRANT SELECT ON "Register.Info.DepartmentCompanyHistory" TO jetti;

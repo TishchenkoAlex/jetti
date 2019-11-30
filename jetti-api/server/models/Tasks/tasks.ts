@@ -1,6 +1,6 @@
 import * as Queue from 'bull';
 import { QueueOptions } from 'bull';
-import { DB_NAME, REDIS_DB_HOST } from '../../env/environment';
+import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
 import cost from './cost';
@@ -18,6 +18,7 @@ export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
 const QueOpts: QueueOptions = {
   redis: {
     host: REDIS_DB_HOST,
+    password: REDIS_DB_AUTH,
     maxRetriesPerRequest: null,
     enableReadyCheck: false
   },

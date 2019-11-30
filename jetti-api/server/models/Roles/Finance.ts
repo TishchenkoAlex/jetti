@@ -27,6 +27,8 @@ export const FinanceRoleObject: RoleObject[] = [
   { type: 'Catalog.GroupObjectsExploitation', read: true, write: true },
   { type: 'Catalog.ObjectsExploitation', read: true, write: true },
   { type: 'Catalog.Catalog', read: true, write: true },
+  { type: 'Catalog.AcquiringTerminal', read: true, write: true },
+  { type: 'Catalog.Bank', read: true, write: true },
 ];
 
 export interface Permissions { read: boolean; write: boolean; }

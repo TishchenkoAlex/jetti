@@ -37,7 +37,9 @@ export type CatalogTypes =
   'Catalog.ObjectsExploitation' |
   'Catalog.GroupObjectsExploitation' |
   'Catalog.Scenario' |
-  'Catalog.BudgetItem'
+  'Catalog.BudgetItem' |
+  'Catalog.AcquiringTerminal' |
+  'Catalog.Bank'
   ;
 
 export type DocumentTypes =

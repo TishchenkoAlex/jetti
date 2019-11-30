@@ -15,10 +15,13 @@ export class CatalogBankAccount extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' } })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department'})
+  @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false})
+  @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false })
   company: Ref = null;
+
+  @Props({ type: 'Catalog.Bank', required: true })
+  Bank: Ref = null;
 
 }

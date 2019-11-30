@@ -17,6 +17,8 @@ export const FinanceSubSystem: ISubSystem = {
     'Form.Post',
     'Form.Batch',
     'Form.PostAfterEchange',
-    'Catalog.Operation.Type'
+    'Catalog.Operation.Type',
+    'Catalog.AcquiringTerminal',
+    'Catalog.Bank'
   ]
 };

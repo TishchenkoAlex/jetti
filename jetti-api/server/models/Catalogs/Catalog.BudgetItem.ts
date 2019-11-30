@@ -12,7 +12,4 @@ export class CatalogBudgetItem extends DocumentBase {
   @Props({ type: 'Catalog.BudgetItem', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'javascript', hiddenInList: true, style: { height: '300px' } })
-  FactRule = '';
-
 }

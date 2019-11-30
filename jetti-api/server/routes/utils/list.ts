@@ -13,7 +13,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   let { QueryList, Props } = cs!;
 
   // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
-  QueryList = params.type === 'Document.Operation' ? 'SELECT d.* FROM (SELECT * FROM [Documents.Operation]) d' : `SELECT d.* FROM (${QueryList}) d`;
+  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation]' : `${QueryList}`;
 
   let row: DocumentBase | null = null;
   let query = '';
@@ -57,7 +57,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
             break;
           }
           if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
-          if (!f.right) where += ` AND "${f.left}" IS NULL `; else where += ` AND "${f.left}" ${f.center} '${f.right}'`;
+          if (!f.right) where += ` AND "${f.left}" IS NULL `; else where += ` AND "${f.left}" ${f.center} N'${f.right}'`;
           break;
         case 'like':
           where += ` AND "${f.left}" LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
@@ -79,14 +79,14 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     const order = valueOrder.slice();
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
     let queryBuilderResult = `
-      SELECT id FROM (SELECT TOP ${params.count + 1} id FROM (${QueryList}) ID
+      SELECT TOP ${params.count + 1} id FROM (${QueryList}) d
       WHERE ${filterBuilder(params.filter)} AND (`;
 
     valueOrder.forEach(_or => {
       let where = '(';
       order.forEach(_o =>
         where += ` "${_o.field}" ${_o !== order[order.length - 1] ? '=' :
-          dir + ((_o.field === 'id') && isAfter ? '=' : '')} '${_o.value instanceof Date ? _o.value.toJSON() : _o.value}' AND `
+          dir + ((_o.field === 'id') && isAfter ? '=' : '')} N'${_o.value instanceof Date ? _o.value.toJSON() : _o.value}' AND `
       );
       where = where.slice(0, -4);
       order.length--;
@@ -96,15 +96,14 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
     queryBuilderResult += `\n${lastORDER ?
       (dir === '>') ? orderbyAfter : orderbyBefore :
-      (dir === '<') ? orderbyAfter : orderbyBefore}) ID\n`;
+      (dir === '<') ? orderbyAfter : orderbyBefore}\n`;
     return queryBuilderResult;
   };
 
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter) {
-    query = `SELECT id FROM (${queryBefore} \nUNION ALL\n${queryAfter}) ID`;
-    query = `SELECT * FROM (${QueryList}) d WHERE d.id IN (${query}) ${orderbyAfter}`;
+    query = `SELECT * FROM (${QueryList}) d WHERE id IN (${queryBefore} UNION ALL ${queryAfter}) ${orderbyAfter}`;
   } else {
     if (params.command === 'last')
       query = `SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${filterBuilder(params.filter)} ${orderbyBefore}) d ${orderbyAfter}`;

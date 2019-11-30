@@ -50,14 +50,36 @@ export class SQLGenegatorMetadata {
     }
 
     const query = `
-      INSERT INTO "${type}" (DT, id, parent, date, document, company, kind, calculated, exchangeRate${insert})
+    CREATE OR ALTER TRIGGER [Accumulation->${type}] ON [dbo].[Accumulation]
+    AFTER INSERT AS
+    BEGIN
+      INSERT INTO [${type}] (DT, id, parent, date, document, company, kind, calculated, exchangeRate${insert})
         SELECT
           DATEDIFF_BIG(MICROSECOND, '00010101', [date]) +
             CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
             ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
           id, parent, CAST(date AS datetime) date, document, company, kind, calculated
         , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS FLOAT) exchangeRate\n ${select}
-      FROM INSERTED WHERE type = N'${type}'; \n\n`;
+      FROM INSERTED WHERE type = N'${type}'
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-${type}] ON [dbo].[Accumulation]
+    AFTER DELETE AS
+    BEGIN
+      IF (ROWCOUNT_BIG() = 0) RETURN;
+	    DELETE FROM [dbo].[${type}] WHERE id IN (SELECT id from deleted WHERE type = '${type}');
+    END
+    GO\n\n`;
+    return query;
+  }
+
+  static AlterTriggerRegisterAccumulation() {
+    let query = '';
+    for (const type of RegisteredRegisterAccumulation) {
+      const register = createRegisterAccumulation({ type: type.type });
+      query += SQLGenegatorMetadata.QueryTriggerRegisterAccumulation(register.Props(), register.Prop().type.toString());
+    }
     return query;
   }
 
@@ -91,22 +113,6 @@ export class SQLGenegatorMetadata {
       SELECT
         CAST(date AS datetime) date, document, company ${select}
       FROM INSERTED WHERE type = N'${type}'; \n\n`;
-    return query;
-  }
-
-  static AlterTriggerRegisterAccumulation() {
-    let query = '';
-    for (const type of RegisteredRegisterAccumulation) {
-      const register = createRegisterAccumulation({ type: type.type });
-      query += SQLGenegatorMetadata.QueryTriggerRegisterAccumulation(register.Props(), register.Prop().type.toString());
-    }
-
-    query = `
-      ALTER TRIGGER "Accumulation.Insert" ON dbo."Accumulation"
-      AFTER INSERT AS
-      BEGIN
-        ${query}
-      END;`;
     return query;
   }
 
@@ -218,7 +224,7 @@ export class SQLGenegatorMetadata {
       DROP TABLE IF EXISTS "${register.type}";
       CREATE TABLE "${register.type}" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] NOT NULL DEFAULT newid(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,

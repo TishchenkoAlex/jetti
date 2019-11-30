@@ -5,6 +5,7 @@ dotenv();
 
 export const DB_NAME = process.env.DB_NAME!;
 export const REDIS_DB_HOST = process.env.REDIS_DB_HOST!;
+export const REDIS_DB_AUTH = process.env.REDIS_DB_AUTH;
 export const JTW_KEY = process.env.JTW_KEY!;
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
@@ -30,7 +31,6 @@ export const sqlConfigTask: config = {
   pool: { min: 1000, max: 1000 * 100 },
   options: { encrypt: true }
 };
-
 
 export const sqlConfigAccounts: config = {
   server: process.env.DB_ACCOUNTS_HOST!,

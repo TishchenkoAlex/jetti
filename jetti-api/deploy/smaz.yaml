@@ -1,4 +1,4 @@
-#kubectl apply -f deploy/sm.yaml
+#az aks get-credentials --resource-group x100-kube --name jetti-apps
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: jetti
-          image: eu.gcr.io/jetti-x100/jetti-api:latest
+          image: jetticr.azurecr.io/jetti-api:latest
           resources:
             requests:
               memory: "128Mi"
@@ -48,7 +48,7 @@ spec:
                   name: mssql-db-credentials
                   key: password
             - name: DB_ACCOUNTS_HOST
-              value: JETTI-DB-01
+              value: sql.jetti-app.com
             - name: DB_ACCOUNTS_NAME
               value: accounts
             - name: DB_ACCOUNTS_USER
@@ -62,14 +62,14 @@ spec:
                   name: account-db-credentials
                   key: password
             - name: REDIS_DB_HOST
-              value: redis-master
+              value: redis
             - name: JTW_KEY
               valueFrom:
                 secretKeyRef:
                   name: jwt-key
                   key: JTW_KEY
             - name: REFRESH_ID
-              value: "0003"
+              value: "0001"
             - name: NODE_ENV
               value: "production"
 ---

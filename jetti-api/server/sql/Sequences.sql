@@ -49,3 +49,8 @@ GO
 CREATE SEQUENCE [dbo].[Sq.Catalog.ProductKind] START WITH 0
 GO
 CREATE SEQUENCE [dbo].[Sq.Document.UserSettings] START WITH 0
+GO
+CREATE SEQUENCE [dbo].[Sq.Catalog.AcquiringTerminal] START WITH 0
+GO
+GRANT UPDATE ON [dbo].[Sq.Catalog.AcquiringTerminal] TO [jetti];
+GO
