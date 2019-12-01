@@ -48,6 +48,14 @@
         autocomplete="off" (completeMethod)="getSuggests($event.query)" field="value" (onSelect)="this.value = this.suggest.value"
         [inputStyle]="inputStyle" (onClear)="handleReset($event)" dataKey="id" (onFocus)="this.focus.emit($event)" (onBlur)="onBlur($event)"
         [autoHighlight]="true" spellcheck="false" appendTo="body">
+        <ng-template let-data pTemplate="item">
+          <div fxLayout="row" fxLayoutGap="5px" style="align-content: center; align-items: center;">
+            <i *ngIf="data.isfolder" class="pi pi-folder"></i>
+            <i *ngIf="!data.isfolder" class="pi pi-list"></i>
+            <div>{{data.value}}</div>
+            <div>({{data.code}})</div>
+          </div>
+      </ng-template>
       </p-autoComplete>
       <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind" (click)="handleSearch($event)"
         [tabIndex]=-1></button>

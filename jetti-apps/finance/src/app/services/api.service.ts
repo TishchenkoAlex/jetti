@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
 import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue } from '../../../../../jetti-api/server/models/common-types';
-import { DocumentBase, Ref } from '../../../../../jetti-api/server/models/document';
+import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/models/document';
 import { AllDocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
 import { RegisterInfo } from '../../../../../jetti-api/server/models/Registers/Info/RegisterInfo';
@@ -50,15 +50,9 @@ export class ApiService {
     return this.http.post<IViewModel>(query, { type, id, ...params }, { params });
   }
 
-  getSuggests(docType: string, filter = '', isfolder = false): Observable<ISuggest[]> {
-    if (!filter) return of([] as ISuggest[]);
-    const query = `${environment.api}suggest/${docType}/${isfolder ? 'isfolder/' : ''}${filter}`;
+  getSuggests(docType: string, filter: string, storageType: StorageType): Observable<ISuggest[]> {
+    const query = `${environment.api}suggest/${docType}?filter=${filter}&storageType=${storageType}`;
     return this.http.get<ISuggest[]>(query);
-  }
-
-  getSuggestsById(id: string): Observable<ISuggest> {
-    const query = `${environment.api}suggest/${id}`;
-    return (this.http.get<ISuggest>(query));
   }
 
   postDoc(doc: DocumentBase): Observable<DocumentBase> {

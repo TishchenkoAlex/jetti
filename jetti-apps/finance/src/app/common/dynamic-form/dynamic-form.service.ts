@@ -7,6 +7,7 @@ import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
 import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl } from './dynamic-form-base';
+import { StorageType } from '../../../../../../jetti-api/server/models/document';
 
 export function cloneFormGroup(formGroup: FormGroup): FormGroup {
   const newFormGroup = new FormGroup({});
@@ -66,11 +67,12 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const owner = prop['owner'] || null;
       const onChange = prop['onChange'];
       const onChangeServer = !!prop['onChangeServer'];
+      const storageType = prop['storageType'] as StorageType || 'items';
       let value = prop['value'];
       let newControl: FormControlInfo;
       const controlOptions: IFormControlInfo = {
         key, label, type: controlType, required, readOnly,
-        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value
+        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType
       };
       switch (controlType) {
         case 'table':

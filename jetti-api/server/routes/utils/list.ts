@@ -6,7 +6,7 @@ import { FilterInterval, FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
-  params.filter = (params.filter || []).filter(el => el.right);
+  params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
   params.command = params.command || 'first';
 
   const cs = configSchema.get(params.type);
@@ -42,7 +42,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   valueOrder = valueOrder.filter(el => el.value);
 
   const filterBuilder = (filter: FormListFilter[]) => {
-    let where = params.type === 'Document.Operation' ? ' (1 = 1) ' : ' isfolder = 0 ';
+    let where = ' (1 = 1) ';
 
     filter.filter(f => !(f.right === null || f.right === undefined)).forEach(f => {
       switch (f.center) {
@@ -50,6 +50,10 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
           if (Array.isArray(f.right)) { // time interval
             if (f.right[0]) where += ` AND "${f.left}" >= '${f.right[0]}'`;
             if (f.right[1]) where += ` AND "${f.left}" <= '${f.right[1]}'`;
+            break;
+          }
+          if (typeof f.right === 'boolean') {
+            where += ` AND "${f.left}" ${f.center} '${f.right}'`;
             break;
           }
           if (typeof f.right === 'object') {
@@ -110,7 +114,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     else
       query = `SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${filterBuilder(params.filter)} ${orderbyAfter}`;
   }
-
+  // console.log(query);
   const data = await tx.manyOrNone<any>(query);
 
   return listPostProcess(data, params);

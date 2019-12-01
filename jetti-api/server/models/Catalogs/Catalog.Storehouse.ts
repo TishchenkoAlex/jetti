@@ -5,11 +5,12 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Склад',
   icon: 'fa fa-list',
   menu: 'Склады',
-  prefix: 'STOR-'
+  prefix: 'STOR-',
+  hierarchy: 'folders'
 })
 export class CatalogStorehouse extends DocumentBase {
 
-  @Props({ type: 'Catalog.Storehouse', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Storehouse', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Department'})

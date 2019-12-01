@@ -62,6 +62,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (!this.settings && this.routeData) this.settings = this.routeData.settings;
     if (!this.type) this.type = this.route.snapshot.params.type;
+
     const columns: ColumnDef[] = this.routeData ? this.routeData.columnsDef || [] : [];
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
@@ -144,6 +145,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (!col) return;
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+
     this.prepareDataSource(this.multiSortMeta);
     this.dataSource.sort();
   }

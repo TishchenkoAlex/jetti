@@ -27,7 +27,7 @@ import { CatalogPriceType } from './Catalogs/Catalog.PriceType';
 import { CatalogProduct } from './Catalogs/Catalog.Product';
 import { CatalogProductCategory } from './Catalogs/Catalog.ProductCategory';
 import { CatalogProductKind } from './Catalogs/Catalog.ProductKind';
-import { CatalogRoles } from './Catalogs/Catalog.Roles';
+import { CatalogRole } from './Catalogs/Catalog.Role';
 import { CatalogStorehouse } from './Catalogs/Catalog.Storehouse';
 import { CatalogSubcount } from './Catalogs/Catalog.Subcount';
 import { CatalogSubSystem } from './Catalogs/Catalog.SubSystem';
@@ -120,7 +120,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation.Type', Class: CatalogOperationType },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
-  { type: 'Catalog.Role', Class: CatalogRoles },
+  { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },

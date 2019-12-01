@@ -19,7 +19,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 })
 export class CatalogOperation extends DocumentBase {
 
-  @Props({ type: 'Catalog.Operation', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Operation', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Operation.Group', order: 2, label: 'Operation group', required: true, style: { width: '30%' } })

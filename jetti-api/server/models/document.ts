@@ -5,6 +5,7 @@ import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
 export interface ICommand { command: string; label: string; color?: string; icon: string; }
+export type StorageType = 'folders' | 'items' | 'all';
 
 export interface PropOptions {
   type: AllTypes | AllTypes[];
@@ -26,6 +27,7 @@ export interface PropOptions {
   unique?: boolean;
   dimension?: boolean;
   resource?: boolean;
+  storageType?: StorageType;
 }
 
 export interface DocumentOptions {

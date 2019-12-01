@@ -1,6 +1,6 @@
 import { JQueue } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
-import { PostAfterEchange } from './FormPostAfterEchange';
+import { PostAfterEchange } from './Form.PostAfterEchange';
 import { lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { MSSQL } from '../../mssql';
@@ -15,9 +15,11 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       FROM [dbo].[Documents]
       WHERE (1 = 1) AND
         posted = 0 and deleted = 0 and type LIKE 'Document.%' AND
-        [ExchangeBase] IS NOT NULL AND company IS NOT NULL
+        [ExchangeBase] IS NOT NULL AND
+        company IS NOT NULL AND
+        company IN (SELECT id FROM [dbo].[Documents] where type = 'Catalog.Company' AND parent = @p1)
       GROUP BY company
-      HAVING COUNT(*) >0`);
+      HAVING COUNT(*) >0`, [this.company]);
 
     for (const row of companyList) {
       const companyObject = await lib.doc.byIdT<CatalogCompany>(row.company, sdbq);

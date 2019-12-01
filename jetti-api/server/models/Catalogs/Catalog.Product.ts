@@ -10,7 +10,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 })
 export class CatalogProduct extends DocumentBase {
 
-  @Props({ type: 'Catalog.Product', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Product', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 5 })

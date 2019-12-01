@@ -1,3 +1,5 @@
+import { StorageType } from '../../../../../../jetti-api/server/models/document';
+
 export interface OwnerRef { dependsOn: string; filterBy: string; }
 
 export type ControlTypes = 'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'table' | 'enum';
@@ -18,6 +20,7 @@ export interface IFormControlInfo {
   onChange?: ((doc: any, value: any) => Promise<any>) | string;
   onChangeServer?: boolean;
   value: any;
+  storageType: StorageType;
 }
 
 export class FormControlInfo {
@@ -35,6 +38,7 @@ export class FormControlInfo {
   owner?: OwnerRef[];
   totals: number;
   showLabel: boolean;
+  storageType: StorageType;
   value: any;
   valuesOptions: { label: string, value: string | null }[];
   change: string;
@@ -54,6 +58,7 @@ export class FormControlInfo {
     this.totals = options.totals;
     this.owner = options.owner;
     this.showLabel = true;
+    this.storageType = options.storageType;
     this.value = options.value;
     this.valuesOptions = [];
     this.onChange = options.onChange;

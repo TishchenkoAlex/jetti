@@ -50,7 +50,6 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
         }
 
         if (this.control.onChangeServer) {
-          console.log('onChangeServer');
           this.api.valueChanges(this.form!.root.value, this.control.key, value)
             .then(patch => {
               this.form.patchValue(patch || {});

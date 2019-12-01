@@ -2,7 +2,7 @@ import { FormPost } from './Form.Post';
 import { FormBase } from './form';
 import { FormTypes } from './form.types';
 import { FormBatch } from './Form.Batch';
-import { PostAfterEchange } from './FormPostAfterEchange';
+import { PostAfterEchange } from './Form.PostAfterEchange';
 
 export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
   if (init && init.type) {

@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { OwnerRef } from '../../../../../../jetti-api/server/models/document';
+import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
@@ -37,6 +37,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   @Input() required = false;
   @Input() disabled = false;
   @Input() hidden = false;
+  @Input() storageType: StorageType;
   @Input() tabIndex = -1;
   @Input() showOpen = true;
   @Input() showFind = true;
@@ -110,8 +111,8 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
 
   constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef) { }
 
-  getSuggests(text) {
-    this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.isCatalogParent);
+  getSuggests(text: string) {
+    this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.storageType);
   }
 
   handleReset = (event: Event) => this.value = this.EMPTY;
@@ -143,7 +144,8 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
           result.filter.push({ left: row.filterBy, center: '=', right: fc!.value });
       }
     }
-    // if (this.isCatalogParent) { result.push({ left: 'isfolder', center: '=', right: true }); }
+    if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
+    if (this.storageType === 'items') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
     if (this.type.startsWith('Document.')) {
       const doc = this.formControl && this.formControl.root.value;
       if (doc && doc.company.id) {

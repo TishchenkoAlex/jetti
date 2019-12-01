@@ -5,11 +5,12 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Касса',
   icon: 'fa fa-list',
   menu: 'Кассы',
-  prefix: 'CSREG-'
+  prefix: 'CSREG-',
+  hierarchy: 'folders'
 })
 export class CatalogCashRegister extends DocumentBase {
 
-  @Props({ type: 'Catalog.CashRegister', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.CashRegister', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' } })

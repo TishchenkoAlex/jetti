@@ -5,11 +5,12 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Менеджер',
   icon: 'fa fa-list',
   menu: 'Менеджеры',
-  prefix: 'MAN-'
+  prefix: 'MAN-',
+  hierarchy: 'folders'
 })
 export class CatalogManager extends DocumentBase {
 
-  @Props({ type: 'Catalog.Manager', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Manager', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'string', required: true })
