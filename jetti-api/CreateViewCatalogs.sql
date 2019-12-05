@@ -50,6 +50,8 @@
       
     WHERE d.[type] = 'Catalog.Account' 
       GO
+      GRANT SELECT ON dbo."Catalog.Account" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Balance" WITH SCHEMABINDING AS
         
@@ -100,6 +102,8 @@
       
     WHERE d.[type] = 'Catalog.Balance' 
       GO
+      GRANT SELECT ON dbo."Catalog.Balance" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Balance.Analytics" WITH SCHEMABINDING AS
         
@@ -147,6 +151,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Balance.Analytics' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Balance.Analytics" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.BankAccount" WITH SCHEMABINDING AS
@@ -214,6 +220,8 @@
 
     WHERE d.[type] = 'Catalog.BankAccount' 
       GO
+      GRANT SELECT ON dbo."Catalog.BankAccount" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.CashFlow" WITH SCHEMABINDING AS
         
@@ -261,6 +269,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.CashFlow' 
+      GO
+      GRANT SELECT ON dbo."Catalog.CashFlow" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.CashRegister" WITH SCHEMABINDING AS
@@ -323,6 +333,8 @@
 
     WHERE d.[type] = 'Catalog.CashRegister' 
       GO
+      GRANT SELECT ON dbo."Catalog.CashRegister" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Currency" WITH SCHEMABINDING AS
         
@@ -370,6 +382,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Currency' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Currency" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Company" WITH SCHEMABINDING AS
@@ -426,6 +440,8 @@
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Company' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Company" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Counterpartie" WITH SCHEMABINDING AS
@@ -492,6 +508,8 @@
 
     WHERE d.[type] = 'Catalog.Counterpartie' 
       GO
+      GRANT SELECT ON dbo."Catalog.Counterpartie" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Department" WITH SCHEMABINDING AS
         
@@ -539,6 +557,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Department' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Department" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Expense" WITH SCHEMABINDING AS
@@ -594,6 +614,8 @@
 
     WHERE d.[type] = 'Catalog.Expense' 
       GO
+      GRANT SELECT ON dbo."Catalog.Expense" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Expense.Analytics" WITH SCHEMABINDING AS
         
@@ -641,6 +663,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Expense.Analytics' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Expense.Analytics" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Income" WITH SCHEMABINDING AS
@@ -695,6 +719,8 @@
       LEFT JOIN dbo."Documents" "Account" ON "Account".id = CAST(JSON_VALUE(d.doc, N'$."Account"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Income' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Income" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Loan" WITH SCHEMABINDING AS
@@ -756,6 +782,8 @@
 
     WHERE d.[type] = 'Catalog.Loan' 
       GO
+      GRANT SELECT ON dbo."Catalog.Loan" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Manager" WITH SCHEMABINDING AS
         
@@ -807,6 +835,8 @@
       
     WHERE d.[type] = 'Catalog.Manager' 
       GO
+      GRANT SELECT ON dbo."Catalog.Manager" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Person" WITH SCHEMABINDING AS
         
@@ -854,6 +884,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Person' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Person" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.PriceType" WITH SCHEMABINDING AS
@@ -909,6 +941,8 @@
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.PriceType' 
+      GO
+      GRANT SELECT ON dbo."Catalog.PriceType" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Product" WITH SCHEMABINDING AS
@@ -983,6 +1017,8 @@
 
     WHERE d.[type] = 'Catalog.Product' 
       GO
+      GRANT SELECT ON dbo."Catalog.Product" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.ProductCategory" WITH SCHEMABINDING AS
         
@@ -1030,6 +1066,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.ProductCategory' 
+      GO
+      GRANT SELECT ON dbo."Catalog.ProductCategory" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.ProductKind" WITH SCHEMABINDING AS
@@ -1079,6 +1117,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.ProductKind' 
+      GO
+      GRANT SELECT ON dbo."Catalog.ProductKind" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Storehouse" WITH SCHEMABINDING AS
@@ -1133,6 +1173,8 @@
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Storehouse' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Storehouse" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Operation" WITH SCHEMABINDING AS
@@ -1190,6 +1232,8 @@
 
     WHERE d.[type] = 'Catalog.Operation' 
       GO
+      GRANT SELECT ON dbo."Catalog.Operation" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Operation.Group" WITH SCHEMABINDING AS
         
@@ -1239,6 +1283,8 @@
       
     WHERE d.[type] = 'Catalog.Operation.Group' 
       GO
+      GRANT SELECT ON dbo."Catalog.Operation.Group" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Operation.Type" WITH SCHEMABINDING AS
         
@@ -1287,6 +1333,8 @@
       
     WHERE d.[type] = 'Catalog.Operation.Type' 
       GO
+      GRANT SELECT ON dbo."Catalog.Operation.Type" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Unit" WITH SCHEMABINDING AS
         
@@ -1334,6 +1382,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Unit' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Unit" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.User" WITH SCHEMABINDING AS
@@ -1384,6 +1434,58 @@
       
     WHERE d.[type] = 'Catalog.User' 
       GO
+      GRANT SELECT ON dbo."Catalog.User" TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW dbo."Catalog.UsersGroup" WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "UsersGroup", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+
+    
+
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description ) as "UsersGroup.Level4"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)) "UsersGroup.Level3"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+          COALESCE(
+            (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description))) "UsersGroup.Level2"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+              (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+             (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)))) as "UsersGroup.Level1"
+      FROM dbo."Documents" d
+
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+    WHERE d.[type] = 'Catalog.UsersGroup' 
+      GO
+      GRANT SELECT ON dbo."Catalog.UsersGroup" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Role" WITH SCHEMABINDING AS
         
@@ -1431,6 +1533,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Role' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Role" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.SubSystem" WITH SCHEMABINDING AS
@@ -1481,6 +1585,8 @@
       
     WHERE d.[type] = 'Catalog.SubSystem' 
       GO
+      GRANT SELECT ON dbo."Catalog.SubSystem" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Documents" WITH SCHEMABINDING AS
         
@@ -1528,6 +1634,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Documents' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Documents" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Catalogs" WITH SCHEMABINDING AS
@@ -1577,6 +1685,58 @@
       
     WHERE d.[type] = 'Catalog.Catalogs' 
       GO
+      GRANT SELECT ON dbo."Catalog.Catalogs" TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW dbo."Catalog.Forms" WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "Forms", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+
+    
+
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description ) as "Forms.Level4"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)) "Forms.Level3"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+          COALESCE(
+            (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description))) "Forms.Level2"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+              (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+             (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)))) as "Forms.Level1"
+      FROM dbo."Documents" d
+
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+    WHERE d.[type] = 'Catalog.Forms' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Forms" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Objects" WITH SCHEMABINDING AS
         
@@ -1624,6 +1784,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Objects' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Objects" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Subcount" WITH SCHEMABINDING AS
@@ -1673,6 +1835,8 @@
       
     WHERE d.[type] = 'Catalog.Subcount' 
       GO
+      GRANT SELECT ON dbo."Catalog.Subcount" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Brand" WITH SCHEMABINDING AS
         
@@ -1720,6 +1884,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.Brand' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Brand" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.GroupObjectsExploitation" WITH SCHEMABINDING AS
@@ -1769,6 +1935,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.GroupObjectsExploitation' 
+      GO
+      GRANT SELECT ON dbo."Catalog.GroupObjectsExploitation" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.ObjectsExploitation" WITH SCHEMABINDING AS
@@ -1825,6 +1993,8 @@
 
     WHERE d.[type] = 'Catalog.ObjectsExploitation' 
       GO
+      GRANT SELECT ON dbo."Catalog.ObjectsExploitation" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Catalog" WITH SCHEMABINDING AS
         
@@ -1879,6 +2049,8 @@
       
     WHERE d.[type] = 'Catalog.Catalog' 
       GO
+      GRANT SELECT ON dbo."Catalog.Catalog" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.BudgetItem" WITH SCHEMABINDING AS
         
@@ -1926,6 +2098,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Catalog.BudgetItem' 
+      GO
+      GRANT SELECT ON dbo."Catalog.BudgetItem" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Scenario" WITH SCHEMABINDING AS
@@ -1980,6 +2154,8 @@
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Scenario' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Scenario" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.AcquiringTerminal" WITH SCHEMABINDING AS
@@ -2047,6 +2223,8 @@
 
     WHERE d.[type] = 'Catalog.AcquiringTerminal' 
       GO
+      GRANT SELECT ON dbo."Catalog.AcquiringTerminal" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Bank" WITH SCHEMABINDING AS
         
@@ -2100,6 +2278,8 @@
       
     WHERE d.[type] = 'Catalog.Bank' 
       GO
+      GRANT SELECT ON dbo."Catalog.Bank" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Document.ExchangeRates" WITH SCHEMABINDING AS
         
@@ -2147,6 +2327,8 @@
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
     WHERE d.[type] = 'Document.ExchangeRates' 
+      GO
+      GRANT SELECT ON dbo."Document.ExchangeRates" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Document.Invoice" WITH SCHEMABINDING AS
@@ -2229,6 +2411,8 @@
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Document.Invoice' 
+      GO
+      GRANT SELECT ON dbo."Document.Invoice" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Document.Operation" WITH SCHEMABINDING AS
@@ -2315,6 +2499,8 @@
 
     WHERE d.[type] = 'Document.Operation' 
       GO
+      GRANT SELECT ON dbo."Document.Operation" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Document.PriceList" WITH SCHEMABINDING AS
         
@@ -2369,6 +2555,8 @@
       LEFT JOIN dbo."Documents" "PriceType" ON "PriceType".id = CAST(JSON_VALUE(d.doc, N'$."PriceType"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Document.PriceList' 
+      GO
+      GRANT SELECT ON dbo."Document.PriceList" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Document.Settings" WITH SCHEMABINDING AS
@@ -2430,6 +2618,8 @@
 
     WHERE d.[type] = 'Document.Settings' 
       GO
+      GRANT SELECT ON dbo."Document.Settings" TO jetti;
+      GO
 
       CREATE OR ALTER VIEW dbo."Document.UserSettings" WITH SCHEMABINDING AS
         
@@ -2437,6 +2627,16 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+        IIF("UserOrGroup".id IS NULL, JSON_VALUE(d.doc, N'$."UserOrGroup".id'), "UserOrGroup".id) "UserOrGroup.id",
+        IIF("UserOrGroup".id IS NULL, JSON_VALUE(d.doc, N'$."UserOrGroup".value'), "UserOrGroup".description) "UserOrGroup.value",
+        IIF("UserOrGroup".id IS NULL, JSON_VALUE(d.doc, N'$."UserOrGroup".type'), "UserOrGroup".type) "UserOrGroup.type"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."COMP"') AS BIT), 0) "COMP"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."DEPT"') AS BIT), 0) "DEPT"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."STOR"') AS BIT), 0) "STOR"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."CASH"') AS BIT), 0) "CASH"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."BANK"') AS BIT), 0) "BANK"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."GROUP"') AS BIT), 0) "GROUP"
 
     
 
@@ -2476,5 +2676,9 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "UserOrGroup" ON "UserOrGroup".id = CAST(JSON_VALUE(d.doc, N'$."UserOrGroup"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Document.UserSettings' 
+      GO
+      GRANT SELECT ON dbo."Document.UserSettings" TO jetti;
       GO

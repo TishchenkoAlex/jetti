@@ -44,15 +44,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AccountablePersons] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AccountablePersons');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AP] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -103,15 +94,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.AP'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AP] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AP] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AP');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AR] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -164,15 +146,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AR] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AR] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AR');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Bank] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -221,15 +194,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Bank] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Bank] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Bank');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Balance] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -260,15 +224,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Balance'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Balance] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Balance] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Balance');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -318,15 +273,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Cash] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -375,15 +321,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash.Transit');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Inventory] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -400,6 +337,7 @@
         , "Storehouse"
         , "SKU"
         , "batch"
+        , "Department"
         , "Cost"
         , "Cost.In"
         , "Cost.Out"
@@ -437,6 +375,8 @@
 
         , CAST(ISNULL(JSON_VALUE(data, N'$."batch"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "batch"
 
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Cost"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Cost.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Cost.Out" 
@@ -448,15 +388,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Inventory'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Inventory] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Inventory] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Inventory');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Loan] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -503,15 +434,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Loan] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Loan] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Loan');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.PL] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -542,15 +464,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.PL'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.PL] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.PL] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.PL');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Sales] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -637,15 +550,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Sales] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Sales] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Sales');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -693,15 +597,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Depreciation'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Depreciation] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Depreciation');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -779,12 +674,3 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.BudgetItemTurnover'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.BudgetItemTurnover');
-    END
-    GO
-

@@ -3,7 +3,7 @@
     <div class="profile" [ngClass]="{'profile-expanded':active}">
       <a href="#" (click)="onClick($event)">
         <!-- <img class="profile-image" src={{appAuth.userProfile$.value.account?.picture}} /> -->
-        <span class="profile-name">{{ (appAuth.userProfile$ | async)?.account?.email }}</span>
+        <span class="profile-name">{{ (appAuth.userProfile$ | async)?.account?.description }}</span>
         <i class="fa fa-fw fa-caret-down"></i>
         <span class="profile-role">{{ (appAuth.userProfile$ | async)?.account?.email }}</span>
       </a>

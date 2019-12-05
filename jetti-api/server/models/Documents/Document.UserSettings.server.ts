@@ -28,12 +28,12 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
 
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
-    const UserObject = await lib.doc.byIdT<CatalogUser>(this.user, tx);
+    const UserObject = await lib.doc.byIdT<CatalogUser>(this.UserOrGroup, tx);
 
     for (const row of this.CompanyList) {
       Registers.Info.push(new RegisterInfoRLS({
         company: row.company,
-        user: UserObject!.code
+        user: UserObject!.code,
       }));
     }
     return Registers;

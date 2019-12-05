@@ -5,6 +5,7 @@ import { TypesExpenseOrBalance } from './Types.ExpenseOrBalance';
 import { TypesObject } from './Types.Object';
 import { TypesSubcount } from './Types.Subcount';
 import { TypesBase } from './TypesBase';
+import { TypesUserOrGroup } from './Types.UserOrGroup';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -23,4 +24,5 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
   { type: 'Types.ExpenseOrBalance', Class: TypesExpenseOrBalance },
+  { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
 ];

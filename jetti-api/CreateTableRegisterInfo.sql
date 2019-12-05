@@ -13,8 +13,9 @@
 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.PriceList" ON "Register.Info.PriceList";
+      GO
       GRANT SELECT ON "Register.Info.PriceList" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.ExchangeRates";
       CREATE TABLE "Register.Info.ExchangeRates" (
@@ -27,8 +28,9 @@
 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.ExchangeRates" ON "Register.Info.ExchangeRates";
+      GO
       GRANT SELECT ON "Register.Info.ExchangeRates" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.Settings";
       CREATE TABLE "Register.Info.Settings" (
@@ -40,8 +42,9 @@
 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.Settings" ON "Register.Info.Settings";
+      GO
       GRANT SELECT ON "Register.Info.Settings" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.Depreciation";
       CREATE TABLE "Register.Info.Depreciation" (
@@ -57,8 +60,9 @@
   NULL 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.Depreciation" ON "Register.Info.Depreciation";
+      GO
       GRANT SELECT ON "Register.Info.Depreciation" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.RLS";
       CREATE TABLE "Register.Info.RLS" (
@@ -69,8 +73,9 @@
   NOT NULL 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.RLS" ON "Register.Info.RLS";
+      GO
       GRANT SELECT ON "Register.Info.RLS" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.BudgetItemRule";
       CREATE TABLE "Register.Info.BudgetItemRule" (
@@ -83,8 +88,9 @@
   NULL 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.BudgetItemRule" ON "Register.Info.BudgetItemRule";
+      GO
       GRANT SELECT ON "Register.Info.BudgetItemRule" TO jetti;
-
+      GO
 
       DROP TABLE "Register.Info.DepartmentCompanyHistory";
       CREATE TABLE "Register.Info.DepartmentCompanyHistory" (
@@ -95,4 +101,6 @@
 
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Info.DepartmentCompanyHistory" ON "Register.Info.DepartmentCompanyHistory";
+      GO
       GRANT SELECT ON "Register.Info.DepartmentCompanyHistory" TO jetti;
+      GO

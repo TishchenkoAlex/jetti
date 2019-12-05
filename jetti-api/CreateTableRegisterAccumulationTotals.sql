@@ -21,6 +21,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.AccountablePersons.Totals] ON [dbo].[Register.Accumulation.AccountablePersons.Totals]
       ([company], [date] , [currency], [Employee], [CashFlow])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.AccountablePersons.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.Totals]
       WITH SCHEMABINDING
@@ -43,6 +45,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.AP.Totals] ON [dbo].[Register.Accumulation.AP.Totals]
       ([company], [date] , [currency], [Supplier])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.AP.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.Totals]
       WITH SCHEMABINDING
@@ -61,6 +65,8 @@
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.AR.Totals] ON [dbo].[Register.Accumulation.AR.Totals]
       ([company], [date] , [currency], [Customer])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.AR.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.Totals]
@@ -84,6 +90,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Bank.Totals] ON [dbo].[Register.Accumulation.Bank.Totals]
       ([company], [date] , [currency], [BankAccount], [CashFlow], [Analytics])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Bank.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Totals]
       WITH SCHEMABINDING
@@ -99,6 +107,8 @@
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Balance.Totals] ON [dbo].[Register.Accumulation.Balance.Totals]
       ([company], [date] , [Balance], [Analytics])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Balance.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Totals]
@@ -122,6 +132,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Cash.Totals] ON [dbo].[Register.Accumulation.Cash.Totals]
       ([company], [date] , [currency], [CashRegister], [CashFlow], [Analytics])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Cash.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.Totals]
       WITH SCHEMABINDING
@@ -144,11 +156,13 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Cash.Transit.Totals] ON [dbo].[Register.Accumulation.Cash.Transit.Totals]
       ([company], [date] , [currency], [Sender], [Recipient], [CashFlow])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Cash.Transit.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.Totals]
       WITH SCHEMABINDING
       AS
-        SELECT [company], [date], [Storehouse], [SKU], [batch]
+        SELECT [company], [date], [Storehouse], [SKU], [batch], [Department]
         
         , SUM([Cost]) [Cost]
         , SUM([Cost.In]) [Cost.In]
@@ -158,10 +172,12 @@
         , SUM([Qty.Out]) [Qty.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.Inventory]
-      GROUP BY [company], [date], [Storehouse], [SKU], [batch]
+      GROUP BY [company], [date], [Storehouse], [SKU], [batch], [Department]
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Inventory.Totals] ON [dbo].[Register.Accumulation.Inventory.Totals]
-      ([company], [date] , [Storehouse], [SKU], [batch])
+      ([company], [date] , [Storehouse], [SKU], [batch], [Department])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Inventory.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.Totals]
@@ -185,6 +201,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Loan.Totals] ON [dbo].[Register.Accumulation.Loan.Totals]
       ([company], [date] , [Loan], [Counterpartie], [CashFlow])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Loan.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.Totals]
       WITH SCHEMABINDING
@@ -200,6 +218,8 @@
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.PL.Totals] ON [dbo].[Register.Accumulation.PL.Totals]
       ([company], [date] , [Department], [PL], [Analytics])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.PL.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.Totals]
@@ -235,6 +255,8 @@
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Sales.Totals] ON [dbo].[Register.Accumulation.Sales.Totals]
       ([company], [date] , [currency], [Department], [Customer], [Product], [Manager], [Storehouse])
       GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Sales.Totals] TO jetti;
+      GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.Totals]
       WITH SCHEMABINDING
@@ -256,6 +278,8 @@
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.Depreciation.Totals] ON [dbo].[Register.Accumulation.Depreciation.Totals]
       ([company], [date] , [BusinessOperation], [currency], [Department])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.Depreciation.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.Totals]
@@ -284,4 +308,6 @@
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.BudgetItemTurnover.Totals] ON [dbo].[Register.Accumulation.BudgetItemTurnover.Totals]
       ([company], [date] , [Department], [Scenario], [BudgetItem], [currency])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.BudgetItemTurnover.Totals] TO jetti;
       GO

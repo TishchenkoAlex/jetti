@@ -106,7 +106,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
-  if (queryBefore && queryAfter) {
+  if (queryBefore && queryAfter && row) {
     query = `SELECT * FROM (${QueryList}) d WHERE id IN (${queryBefore} UNION ALL ${queryAfter}) ${orderbyAfter}`;
   } else {
     if (params.command === 'last')
@@ -114,7 +114,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     else
       query = `SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${filterBuilder(params.filter)} ${orderbyAfter}`;
   }
-  // console.log(query);
   const data = await tx.manyOrNone<any>(query);
 
   return listPostProcess(data, params);

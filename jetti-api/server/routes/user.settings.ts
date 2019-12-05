@@ -1,9 +1,7 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { IAccount, IJWTPayload } from '../models/common-types';
-import { MSSQL } from '../mssql';
+import { IJWTPayload } from '../models/common-types';
 import { FormListSettings, UserDefaultsSettings } from './../models/user.settings';
-import { ACCOUNTS_POOL } from '../sql.pool.accounts';
 import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
@@ -11,16 +9,6 @@ export const router = express.Router();
 export function User(req: Request): IJWTPayload {
   return (<any>req).user as IJWTPayload;
 }
-
-router.get('/user/roles', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const email = User(req);
-    const sdba = new MSSQL({email: '', isAdmin: true, description: '', env: {}, roles: []}, ACCOUNTS_POOL);
-    const query = `select JSON_QUERY(data, '$') data from "accounts" where id = @p1`;
-    const result = await sdba.oneOrNone<{data: IAccount}>(query, [email.email]);
-    res.json(result ? result.data && result.data.roles : []);
-  } catch (err) { next(err); }
-});
 
 router.get('/user/settings/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -61,5 +49,14 @@ router.post('/user/settings/defaults', async (req: Request, res: Response, next:
     const query = `update users set settings = JSON_MODIFY(settings, '$."defaults"', JSON_QUERY(@p1)) where email = @p2`;
     await sdb.none(query, [JSON.stringify(data), user.email]);
     res.json(true);
+  } catch (err) { next(err); }
+});
+
+router.get('/user/roles', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = User(req);
+    const sdb = SDB(req);
+    const result = ['Admin'];
+    res.json(result);
   } catch (err) { next(err); }
 });

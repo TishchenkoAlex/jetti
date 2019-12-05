@@ -11,11 +11,11 @@ import { DocumentOperation } from '../models/Documents/Document.Operation';
 import { FormListSettings } from './../models/user.settings';
 import { buildColumnDef } from './../routes/utils/columns-def';
 import { lib } from './../std.lib';
-import { User } from './user.settings';
 import { List } from './utils/list';
 import { postDocument, insertDocument, updateDocument, unpostDocument } from './utils/post';
 import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
+import { User } from './user.settings';
 
 export const router = express.Router();
 

@@ -29,7 +29,7 @@
       (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm" [metaKeySelection]="true"
       [columns]="columns$ | async" class="noselect" [scrollHeight]="scrollHeight" [(selection)]="selection"
       (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
-      [(contextMenuSelection)]="contextMenuSelection">
+      [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false">
 
       <ng-template pTemplate="header">
         <tr>

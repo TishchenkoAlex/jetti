@@ -10,7 +10,7 @@
       DROP TABLE IF EXISTS "Register.Accumulation.AccountablePersons";
       CREATE TABLE "Register.Accumulation.AccountablePersons" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -36,17 +36,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.AccountablePersons_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.AccountablePersons" ON "Register.Accumulation.AccountablePersons";
-      GRANT SELECT ON "Register.Accumulation.AccountablePersons" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.AccountablePersons" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.AP.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.AP";
       CREATE TABLE "Register.Accumulation.AP" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -76,17 +77,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.AP_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.AP" ON "Register.Accumulation.AP";
-      GRANT SELECT ON "Register.Accumulation.AP" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.AP" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.AR.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.AR";
       CREATE TABLE "Register.Accumulation.AR" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -116,17 +118,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.AR_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.AR" ON "Register.Accumulation.AR";
-      GRANT SELECT ON "Register.Accumulation.AR" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.AR" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Bank.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Bank";
       CREATE TABLE "Register.Accumulation.Bank" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -154,17 +157,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Bank_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Bank" ON "Register.Accumulation.Bank";
-      GRANT SELECT ON "Register.Accumulation.Bank" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Bank" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Balance.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Balance";
       CREATE TABLE "Register.Accumulation.Balance" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -182,17 +186,18 @@
         , "Amount" MONEY NOT NULL
         , "Amount.In" MONEY NOT NULL
         , "Amount.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Balance_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Balance" ON "Register.Accumulation.Balance";
-      GRANT SELECT ON "Register.Accumulation.Balance" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Balance" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Cash.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Cash";
       CREATE TABLE "Register.Accumulation.Cash" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -220,17 +225,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Cash_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Cash" ON "Register.Accumulation.Cash";
-      GRANT SELECT ON "Register.Accumulation.Cash" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Cash" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Cash.Transit.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Cash.Transit";
       CREATE TABLE "Register.Accumulation.Cash.Transit" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -258,17 +264,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Cash.Transit_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Cash.Transit" ON "Register.Accumulation.Cash.Transit";
-      GRANT SELECT ON "Register.Accumulation.Cash.Transit" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Cash.Transit" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Inventory.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Inventory";
       CREATE TABLE "Register.Accumulation.Inventory" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -301,6 +308,8 @@
 
         , "batch" UNIQUEIDENTIFIER NOT NULL 
 
+        , "Department" UNIQUEIDENTIFIER NOT NULL 
+
         , "Cost" MONEY NOT NULL
         , "Cost.In" MONEY NOT NULL
         , "Cost.Out" MONEY NOT NULL 
@@ -308,17 +317,18 @@
         , "Qty" MONEY NOT NULL
         , "Qty.In" MONEY NOT NULL
         , "Qty.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Inventory_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Inventory" ON "Register.Accumulation.Inventory";
-      GRANT SELECT ON "Register.Accumulation.Inventory" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Inventory" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Loan.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Loan";
       CREATE TABLE "Register.Accumulation.Loan" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -344,17 +354,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Loan_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Loan" ON "Register.Accumulation.Loan";
-      GRANT SELECT ON "Register.Accumulation.Loan" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Loan" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.PL.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.PL";
       CREATE TABLE "Register.Accumulation.PL" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -372,17 +383,18 @@
         , "Amount" MONEY NOT NULL
         , "Amount.In" MONEY NOT NULL
         , "Amount.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.PL_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.PL" ON "Register.Accumulation.PL";
-      GRANT SELECT ON "Register.Accumulation.PL" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.PL" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Sales.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Sales";
       CREATE TABLE "Register.Accumulation.Sales" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -432,17 +444,18 @@
         , "AmountInAR" MONEY NOT NULL
         , "AmountInAR.In" MONEY NOT NULL
         , "AmountInAR.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Sales_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Sales" ON "Register.Accumulation.Sales";
-      GRANT SELECT ON "Register.Accumulation.Sales" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Sales" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.Depreciation.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.Depreciation";
       CREATE TABLE "Register.Accumulation.Depreciation" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -470,17 +483,18 @@
         , "AmountInAccounting" MONEY NOT NULL
         , "AmountInAccounting.In" MONEY NOT NULL
         , "AmountInAccounting.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.Depreciation_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.Depreciation" ON "Register.Accumulation.Depreciation";
-      GRANT SELECT ON "Register.Accumulation.Depreciation" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.Depreciation" TO jetti;
 
       DROP VIEW IF EXISTS "Register.Accumulation.BudgetItemTurnover.Totals";
       DROP TABLE IF EXISTS "Register.Accumulation.BudgetItemTurnover";
       CREATE TABLE "Register.Accumulation.BudgetItemTurnover" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -526,11 +540,12 @@
         , "Qty" MONEY NOT NULL
         , "Qty.In" MONEY NOT NULL
         , "Qty.Out" MONEY NOT NULL 
-
+,
+        CONSTRAINT [FK_Register.Accumulation.BudgetItemTurnover_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.Register.Accumulation.BudgetItemTurnover" ON "Register.Accumulation.BudgetItemTurnover";
-      GRANT SELECT ON "Register.Accumulation.BudgetItemTurnover" TO jetti;
 
+      GRANT SELECT ON "Register.Accumulation.BudgetItemTurnover" TO jetti;
 
       END TRY
       BEGIN CATCH
@@ -587,15 +602,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AccountablePersons] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AccountablePersons');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AP] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -646,15 +652,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.AP'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AP] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AP] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AP');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.AR] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -707,15 +704,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.AR] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.AR] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.AR');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Bank] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -764,15 +752,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Bank] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Bank] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Bank');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Balance] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -803,15 +782,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Balance'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Balance] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Balance] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Balance');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -861,15 +831,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Cash] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -918,15 +879,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Cash.Transit] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Cash.Transit');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Inventory] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -943,6 +895,7 @@
         , "Storehouse"
         , "SKU"
         , "batch"
+        , "Department"
         , "Cost"
         , "Cost.In"
         , "Cost.Out"
@@ -980,6 +933,8 @@
 
         , CAST(ISNULL(JSON_VALUE(data, N'$."batch"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "batch"
 
+        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Cost"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Cost.In"
         , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Cost.Out" 
@@ -991,15 +946,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Inventory'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Inventory] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Inventory] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Inventory');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Loan] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -1046,15 +992,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Loan] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Loan] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Loan');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.PL] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -1085,15 +1022,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.PL'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.PL] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.PL] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.PL');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Sales] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -1180,15 +1108,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Sales] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Sales] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Sales');
-    END
-    GO
-
-
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
     AFTER INSERT AS
     BEGIN
@@ -1236,15 +1155,6 @@
       FROM INSERTED WHERE type = N'Register.Accumulation.Depreciation'
     END
     GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.Depreciation] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.Depreciation] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.Depreciation');
-    END
-    GO
-
 
     CREATE OR ALTER TRIGGER [Accumulation->Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
     AFTER INSERT AS
@@ -1323,16 +1233,6 @@
     END
     GO
 
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-Register.Accumulation.BudgetItemTurnover] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id from deleted WHERE type = 'Register.Accumulation.BudgetItemTurnover');
-    END
-    GO
-
-
-      GO
 
       INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
     

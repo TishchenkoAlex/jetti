@@ -4,7 +4,6 @@ import { RoleObject, RoleType } from '../../../../../jetti-api/server/models/Rol
 import { AuthService } from '../auth/auth.service';
 import { ApiService } from './../services/api.service';
 
-
 @Injectable()
 export class AuthGuardService implements CanActivate {
 
@@ -22,8 +21,7 @@ export class AuthGuardService implements CanActivate {
     }
 
     return this.api.getUserRoles().toPromise()
-      .then(data => check(data.roles, data.Objects))
+      .then(data => { this.auth.userRoles = data.roles; return check(data.roles, data.Objects); })
       .catch(err => false);
   }
 }
-

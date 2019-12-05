@@ -1,4 +1,3 @@
-import { AllDocTypes } from '../documents.types';
 import { RoleObject, RoleType } from './Base';
 
 export const FinanceRoleObject: RoleObject[] = [
@@ -30,16 +29,3 @@ export const FinanceRoleObject: RoleObject[] = [
   { type: 'Catalog.AcquiringTerminal', read: true, write: true },
   { type: 'Catalog.Bank', read: true, write: true },
 ];
-
-export interface Permissions { read: boolean; write: boolean; }
-
-export const RoleObjects = new Map<RoleType, Map<AllDocTypes, Permissions>>([
-  ['Finance', new Map<AllDocTypes, Permissions>([
-    ['Catalog.Account', { read: true, write: true }],
-    ['Catalog.Account', { read: true, write: true }],
-    ['Catalog.Account', { read: true, write: true }],
-  ])],
-  ['Finance', new Map<AllDocTypes, Permissions>([
-    ['Catalog.Account', { read: true, write: true }]
-  ])]
-]);

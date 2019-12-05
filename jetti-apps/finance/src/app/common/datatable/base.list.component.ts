@@ -37,7 +37,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
   routeData = this.route.snapshot.data.detail as IViewModel;
 
-  @Input() pageSize = 250;
+  @Input() pageSize = 100;
   @Input() type: DocTypes;
   @Input() settings: FormListSettings;
   get isDoc() { return this.type.startsWith('Document.'); }

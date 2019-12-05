@@ -470,6 +470,6 @@ export function excludeRegisterInfoProps(doc) {
 }
 
 function checkComlexType(type: AllTypes) {
-  const types: AllTypes[] = ['Catalog.Subcount', 'Catalog.Catalogs', 'Catalog.Documents', 'Catalog.Objects'];
+  const types: AllTypes[] = ['Catalog.Subcount', 'Catalog.Catalogs', 'Catalog.Documents', 'Catalog.Objects', 'Catalog.Forms'];
   return (types.indexOf(type)) > -1;
 }

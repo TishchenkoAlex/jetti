@@ -39,6 +39,9 @@ export class RegisterAccumulationInventory extends RegisterAccumulation {
   @Props({ type: 'Types.Document', required: true, dimension: true})
   batch: Ref = null;
 
+  @Props({ type: 'Catalog.Department', required: true, dimension: true})
+  Department: Ref = null;
+
   @Props({ type: 'number', resource: true })
   Cost = 0;
 

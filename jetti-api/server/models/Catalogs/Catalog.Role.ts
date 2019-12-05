@@ -23,11 +23,13 @@ export class CatalogRole extends DocumentBase {
   @Props({ type: 'table', order: 3, label: 'Granted Operation Groups' })
   OperationGroups: OperationGroups[] = [new OperationGroups()];
 
+  @Props({ type: 'table', order: 4, label: 'Granted Subsystems' })
+  Subsystems: Subsystems[] = [new Subsystems()];
 }
 
 class Catalogs {
-  @Props({ type: 'Catalog.Catalogs', required: true, order: -1 })
-  Object: Ref = null;
+  @Props({ type: 'Catalog.Catalogs', required: true, style: { width: '100%' }})
+  Catalog: Ref = null;
 
   @Props({ type: 'boolean' })
   read = true;
@@ -37,8 +39,8 @@ class Catalogs {
 }
 
 class Documents {
-  @Props({ type: 'Catalog.Documents', required: true, order: -1 })
-  Object: Ref = null;
+  @Props({ type: 'Catalog.Documents', required: true, style: { width: '100%' }})
+  Document: Ref = null;
 
   @Props({ type: 'boolean' })
   read = true;
@@ -48,15 +50,20 @@ class Documents {
 }
 
 class OperationGroups {
-  @Props({ type: 'Catalog.Operation.Group', order: -1 })
-  Object: Ref = null;
+  @Props({ type: 'Catalog.Operation.Group', required: true, style: { width: '100%' }})
+  Group: Ref = null;
 
   @Props({ type: 'boolean' })
   read = true;
 
   @Props({ type: 'boolean' })
   write = false;
-
 }
 
+class Subsystems {
+  @Props({ type: 'Catalog.SubSystem', required: true, style: { width: '100%' }})
+  SubSystem: Ref = null;
 
+  @Props({ type: 'boolean' })
+  read = true;
+}

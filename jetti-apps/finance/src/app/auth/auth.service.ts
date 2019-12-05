@@ -37,10 +37,11 @@ export class AuthService {
 
   public async login(email: string, password: string) {
     await this.msalService.loginPopup(OAuthSettings.scopes);
+    const user =  this.msalService.getUser().displayableId;
     const acquireTokenSilentResult = await this.msalService.acquireTokenSilent(OAuthSettings.scopes);
 
     return this.http.post<ILoginResponse>(`${environment.auth}login`,
-      { email, password, token: acquireTokenSilentResult }).pipe(
+      { email: user, password, token: acquireTokenSilentResult }).pipe(
         tap(loginResponse => { if (loginResponse.account) { this.init(loginResponse); } }),
         shareReplay());
   }

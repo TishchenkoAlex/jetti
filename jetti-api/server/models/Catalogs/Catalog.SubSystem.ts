@@ -17,15 +17,29 @@ export class CatalogSubSystem extends DocumentBase {
   @Props({ type: 'string', required: true })
   icon = '';
 
-  @Props({ type: 'table', required: true, order: 1, label: 'Granted objects' })
-  Objects: Objects[] = [new Objects()];
-}
+  @Props({ type: 'table', order: 1, label: 'Catalogs' })
+  Catalogs: Catalogs[] = [new Catalogs()];
 
-class Objects {
-  @Props({ type: 'Catalog.Objects', required: true })
-  Object: Ref = null;
+  @Props({ type: 'table', order: 2, label: 'Documents' })
+  Documents: Documents[] = [new Documents()];
 
-  @Props({ type: 'boolean' })
-  show = true;
+  @Props({ type: 'table', order: 3, label: 'Forms' })
+  Forms: Forms[] = [new Forms()];
 
 }
+
+class Catalogs {
+  @Props({ type: 'Catalog.Catalogs', required: true, style: { width: '100%' }})
+  Catalog: Ref = null;
+}
+
+class Documents {
+  @Props({ type: 'Catalog.Documents', required: true, style: { width: '100%' }})
+  Document: Ref = null;
+}
+
+class Forms {
+  @Props({ type: 'Catalog.Forms', required: true, style: { width: '100%' }})
+  Form: Ref = null;
+}
+

@@ -1,7 +1,6 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { ISuggest } from '../models/common-types';
-import { User } from './user.settings';
 import { SDB } from './middleware/db-sessions';
 import { StorageType } from '../models/document';
 

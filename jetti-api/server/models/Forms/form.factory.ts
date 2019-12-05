@@ -16,7 +16,7 @@ export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
   throw new Error(`createForm: FORM type ${init && init.type} is not registered.`);
 }
 
-const RegisteredForms = new Map<FormTypes, typeof FormBase>([
+export const RegisteredForms = new Map<FormTypes, typeof FormBase>([
   ['Form.Post', FormPost],
   ['Form.Batch', FormBatch],
   ['Form.PostAfterEchange', PostAfterEchange]

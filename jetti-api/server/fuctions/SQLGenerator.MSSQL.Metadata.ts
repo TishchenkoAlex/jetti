@@ -62,15 +62,7 @@ export class SQLGenegatorMetadata {
         , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS FLOAT) exchangeRate\n ${select}
       FROM INSERTED WHERE type = N'${type}'
     END
-    GO
-
-    CREATE OR ALTER TRIGGER [dbo].[Accumulation<-${type}] ON [dbo].[Accumulation]
-    AFTER DELETE AS
-    BEGIN
-      IF (ROWCOUNT_BIG() = 0) RETURN;
-	    DELETE FROM [dbo].[${type}] WHERE id IN (SELECT id from deleted WHERE type = '${type}');
-    END
-    GO\n\n`;
+    GO\n`;
     return query;
   }
 
@@ -173,6 +165,8 @@ export class SQLGenegatorMetadata {
       GO
       CREATE UNIQUE CLUSTERED INDEX [ci${register.type}.Totals] ON [dbo].[${register.type}.Totals]
       ([company], [date] ${groupBy})
+      GO
+      GRANT SELECT ON [dbo].[${register.type}.Totals] TO jetti;
       GO`;
     }
 
@@ -224,7 +218,7 @@ export class SQLGenegatorMetadata {
       DROP TABLE IF EXISTS "${register.type}";
       CREATE TABLE "${register.type}" (
         [kind] [bit] NOT NULL,
-        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+        [id] [uniqueidentifier] PRIMARY KEY NONCLUSTERED DEFAULT NEWID() ,
         [calculated] [bit] NOT NULL DEFAULT 0,
         [company] [uniqueidentifier] NOT NULL,
         [document] [uniqueidentifier] NOT NULL,
@@ -232,10 +226,12 @@ export class SQLGenegatorMetadata {
         [DT] [BIGINT] NOT NULL,
         [parent] [uniqueidentifier] NULL,
         [exchangeRate] [float] NOT NULL DEFAULT 1
-        ${select}
+        ${select},
+        CONSTRAINT [FK_${register.type}_Accumulation] FOREIGN KEY (id) REFERENCES dbo.Accumulation (id) ON UPDATE CASCADE ON DELETE CASCADE
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
-      GRANT SELECT ON "${register.type}" TO jetti;\n`;
+
+      GRANT SELECT ON "${register.type}" TO jetti;`;
     }
 
     query = `
@@ -256,7 +252,6 @@ export class SQLGenegatorMetadata {
         COMMIT TRANSACTION;
       GO
       ${this.AlterTriggerRegisterAccumulation()}
-      GO
 
       INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
     `;
@@ -293,7 +288,9 @@ export class SQLGenegatorMetadata {
         ${select}
       );
       CREATE CLUSTERED COLUMNSTORE INDEX "cci.${register.type}" ON "${register.type}";
-      GRANT SELECT ON "${register.type}" TO jetti;\n`;
+      GO
+      GRANT SELECT ON "${register.type}" TO jetti;
+      GO`;
     }
     return query;
   }
@@ -344,6 +341,8 @@ export class SQLGenegatorMetadata {
       query += `\n
       CREATE OR ALTER VIEW dbo."${catalog.type}" WITH SCHEMABINDING AS
         ${select}
+      GO
+      GRANT SELECT ON dbo."${catalog.type}" TO jetti;
       GO`;
     }
     return query;

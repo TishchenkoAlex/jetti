@@ -46,6 +46,8 @@ import { CatalogBudgetItem } from './Catalogs/Catalog.BudgetItem';
 import { CatalogScenario } from './Catalogs/Catalog.Scenario';
 import { CatalogAcquiringTerminal } from './Catalogs/Catalog.AcquiringTerminal';
 import { CatalogBank } from './Catalogs/Catalog.Bank';
+import { CatalogForms } from './Catalogs/Catalog.Forms';
+import { CatalogUsersGroup } from './Catalogs/Catalog.UsersGroup';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -120,12 +122,16 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation.Type', Class: CatalogOperationType },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
+  { type: 'Catalog.UsersGroup', Class: CatalogUsersGroup},
   { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
+
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
+  { type: 'Catalog.Forms', Class: CatalogForms },
   { type: 'Catalog.Objects', Class: CatalogObjects },
   { type: 'Catalog.Subcount', Class: CatalogSubcount },
+
   { type: 'Catalog.Brand', Class: CatalogBrand },
   { type: 'Catalog.GroupObjectsExploitation', Class: CatalogGroupObjectsExploitation },
   { type: 'Catalog.ObjectsExploitation', Class: CatalogObjectsExploitation },

@@ -71,12 +71,12 @@ export class FormControlInfo {
 }
 
 export class TextboxFormControl extends FormControlInfo {
-  value = '';
   controlType = 'string';
   type = 'string';
   constructor(options: IFormControlInfo) {
     super(options);
     if (options.style) this.style = options.style;
+    if (this.value === undefined) this.value = '';
   }
 }
 
@@ -96,29 +96,28 @@ export class EnumFormControl extends FormControlInfo {
 }
 
 export class TextareaFormControl extends FormControlInfo {
-  value = '';
   controlType = 'textarea';
   type = 'string';
   style = { 'min-width': '100%' };
   constructor(options: IFormControlInfo) {
     super(options);
     if (options.style) this.style = options.style;
+    if (this.value === undefined) this.value = '';
   }
 }
 
 export class BooleanFormControl extends FormControlInfo {
-  value = false;
   controlType = 'boolean';
   type = 'boolean';
   style = { 'min-width': '24px', 'max-width': '24px', 'width': '90px', 'text-align': 'center', 'margin-top': '26px' };
   constructor(options: IFormControlInfo) {
     super(options);
     if (options.style) this.style = options.style;
+    if (this.value === undefined) this.value = false;
   }
 }
 
 export class DateFormControl extends FormControlInfo {
-  value = new Date();
   controlType = 'date';
   type = 'date';
   style = { 'min-width': '130px', 'max-width': '130px', 'width': '130px' };
@@ -129,7 +128,6 @@ export class DateFormControl extends FormControlInfo {
 }
 
 export class DateTimeFormControl extends FormControlInfo {
-  value = new Date();
   controlType = 'datetime';
   type = 'datetime';
   style = { 'min-width': '195px', 'max-width': '195px', 'width': '195px' };
@@ -140,13 +138,13 @@ export class DateTimeFormControl extends FormControlInfo {
 }
 
 export class NumberFormControl extends FormControlInfo {
-  value = 0;
   controlType = 'number';
   type = 'number';
   style = { 'min-width': '100px', 'max-width': '100px', 'width': '100px', 'text-align': 'right' };
   constructor(options: IFormControlInfo) {
     super(options);
     if (options.style) this.style = options.style;
+    if (this.value === undefined) this.value = 0;
   }
 }
 
@@ -171,7 +169,6 @@ export class TableDynamicControl extends FormControlInfo {
 }
 
 export class ScriptFormControl extends FormControlInfo {
-  value = '';
   controlType = 'script';
   type = 'javascipt';
   style = { 'width': '600px', 'min-width': '600px', 'max-width': '600px' };
@@ -180,6 +177,7 @@ export class ScriptFormControl extends FormControlInfo {
     super(options);
     if (options.style) this.style = options.style;
     if (options.type) this.type = options.type;
+    if (this.value === undefined) this.value = '';
   }
 }
 

@@ -3,15 +3,11 @@ import { QueueOptions } from 'bull';
 import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
-import cost from './cost';
 import post from './post';
-import batch from './batch';
 import sync from './sync';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   post: post,
-  cost: cost,
-  batch: batch,
   sync: sync
 };
 
@@ -23,6 +19,7 @@ const QueOpts: QueueOptions = {
     enableReadyCheck: false
   },
   prefix: DB_NAME,
+  limiter: { max: 10000, duration: 1000 * 60 * 60 }
 };
 
 export let JQueue = new Queue(DB_NAME, QueOpts);
@@ -80,7 +77,7 @@ export function mapJob(j: Queue.Job) {
     finishedOn: (<any>j).finishedOn,
     processedOn: (<any>j).processedOn,
     message: j.data.message,
-    data: {...j.data,  message: j.data.message }
+    data: { ...j.data, message: j.data.message }
   };
   return result;
 }

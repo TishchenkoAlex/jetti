@@ -11,14 +11,16 @@ export default async function (job: Queue.Job) {
   await lib.util.postMode(true, sdbq);
   try {
     const query = `
-      SELECT TOP 1000 d.id, d.date, d.description
+      SELECT TOP 10000 d.id, d.date, d.description
       FROM [dbo].[Documents] d
       WHERE (1 = 1) AND
-        d.company = '${params.company}' AND
-        d.posted = 0 and d.deleted = 0 and d.type LIKE 'Document.%' AND
+        d.company = @p1 ${params.StartDate ? ' AND date between @p2 AND @p3 ' : ''}
+        ${params.rePost ? '' : ' AND posted = 0 '} AND
+        d.deleted = 0 and d.type LIKE 'Document.%' AND
         d.[ExchangeBase] IS NOT NULL
       ORDER BY d.date;`;
-    const docs = await sdbq.manyOrNone<{ date: Date, description: string, id: Ref, companyName: string }>(query);
+    const docs = await sdbq.manyOrNone<{ date: Date, description: string, id: Ref, companyName: string }>(
+      query, [params.company, params.StartDate, params.EndDate]);
     job.data.message = `found ${docs.length} docs for ${params.companyName}, id=${params.company}`;
     await job.progress(0);
     if (docs.length) {
@@ -30,10 +32,10 @@ export default async function (job: Queue.Job) {
       await job.update(job.data);
       await job.progress(0);
       while (offset < count) {
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
           if (!docs[offset]) break;
-          const q = lib.doc.postById(docs[offset].id, sdbq);
-          TaskList.push(q);
+            const q = lib.doc.postById(docs[offset].id, sdbq);
+            TaskList.push(q);
           offset = offset + 1;
         }
         await Promise.all(TaskList);

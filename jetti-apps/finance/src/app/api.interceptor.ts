@@ -22,6 +22,7 @@ export class ApiInterceptor implements HttpInterceptor {
       req.url.includes('user/settings') ||
       req.url.includes('/jobs') ||
       req.url.includes('/byId') ||
+      req.url.includes('/suggest') ||
       req.url.includes('/formControlRef'));
 
     if (isDevMode()) console.log('http', req.url);

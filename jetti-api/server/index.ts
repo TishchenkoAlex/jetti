@@ -21,7 +21,8 @@ import { router as tasks } from './routes/tasks';
 import { router as userSettings } from './routes/user.settings';
 import { router as form } from './routes/form';
 import { router as utils } from './routes/utils';
-import { jettiDB, tasksDB, accountDB } from './routes/middleware/db-sessions';
+import { router as exchange } from './routes/exchange';
+import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 
 const root = './';
 const app = express();
@@ -40,7 +41,8 @@ app.use(api, authHTTP, jettiDB, utils);
 app.use(api, authHTTP, jettiDB, registers);
 app.use(api, authHTTP, tasksDB, tasks);
 app.use(api, authHTTP, tasksDB, form);
-app.use('/auth', accountDB, auth);
+app.use('/auth', jettiDB, auth);
+app.use('/exchange', jettiDB, exchange);
 
 app.get('*', (req: Request, res: Response) => {
   res.status(200);

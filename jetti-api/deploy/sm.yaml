@@ -16,13 +16,13 @@ spec:
       containers:
         - name: jetti
           image: eu.gcr.io/jetti-x100/jetti-api:latest
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "500m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
+          #resources:
+            #requests:
+              #memory: "128Mi"
+              #cpu: "1000m"
+            #limits:
+              #memory: "256Mi"
+              #cpu: "1000m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -68,6 +68,9 @@ spec:
                 secretKeyRef:
                   name: jwt-key
                   key: JTW_KEY
+            - name: EXCHANGE_ACCESS_KEY
+              valueFrom:
+              value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
               value: "0001"
             - name: NODE_ENV

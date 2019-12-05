@@ -12,5 +12,13 @@ export class PostAfterEchange extends FormBase {
   @Props({ type: 'Catalog.Company', order: 1})
   company: Ref = null;
 
+  @Props({ type: 'date', order: 2})
+  StartDate = null;
+
+  @Props({ type: 'date', order: 3 })
+  EndDate = null;
+
+  @Props({ type: 'boolean', order: 4})
+  rePost = false;
 }
 
