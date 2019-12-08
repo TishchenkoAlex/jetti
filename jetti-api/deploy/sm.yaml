@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sm
 spec:
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -16,10 +16,10 @@ spec:
       containers:
         - name: jetti
           image: eu.gcr.io/jetti-x100/jetti-api:latest
-          #resources:
-            #requests:
-              #memory: "128Mi"
-              #cpu: "1000m"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "1000m"
             #limits:
               #memory: "256Mi"
               #cpu: "1000m"

@@ -9,16 +9,19 @@ import { Props, Ref } from '../document';
 })
 export class PostAfterEchange extends FormBase {
 
-  @Props({ type: 'Catalog.Company', order: 1})
+  @Props({ type: 'Catalog.Company', order: 1 })
   company: Ref = null;
 
-  @Props({ type: 'date', order: 2})
-  StartDate = null;
+  @Props({ type: 'date', order: 2 })
+  StartDate: Date | null = null;
 
   @Props({ type: 'date', order: 3 })
-  EndDate = null;
+  EndDate: Date | null = null;
 
-  @Props({ type: 'boolean', order: 4})
+  @Props({ type: 'Catalog.Operation', order: 4 })
+  Operation: Ref = null;
+
+  @Props({ type: 'boolean', order: 5 })
   rePost = false;
 }
 

@@ -71,7 +71,8 @@ export type PrimitiveTypes =
   'table' |
   'json' |
   'javascript'|
-  'textarea';
+  'textarea' |
+  'enum';
 
 export type ComplexTypes =
   'Types.Document' |
@@ -90,7 +91,6 @@ export type IncomeExpenseAnalyticTypes =
 'Catalog.Income.Analytics';
 
 export type AllTypes =
-  'enum' |
   PrimitiveTypes |
   ComplexTypes |
   DocTypes;

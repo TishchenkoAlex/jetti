@@ -11,7 +11,6 @@ router.post('/login', async (req, res, next) => {
   // setka.service.account@sushi-master.net
   try {
     const { email, password } = req.body;
-    console.log(req.body, process.env.EXCHANGE_ACCESS_KEY);
     if (!email) { return res.status(401).json({ message: 'Auth failed: user name required' }); }
     if (!password) { return res.status(401).json({ message: 'Auth failed: password required' }); }
     if (!(email === 'setka.service.account@sushi-master.net')) {

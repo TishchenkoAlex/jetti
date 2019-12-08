@@ -79,7 +79,7 @@ export class SyncFormComponent  {
     this.data = [];
     this.ds.api.execute('Form.PostAfterEchange', this.model).pipe(take(1))
       .subscribe(data => {
-        this.form.patchValue(data);
+        // this.form.patchValue(data);
       });
   }
 
