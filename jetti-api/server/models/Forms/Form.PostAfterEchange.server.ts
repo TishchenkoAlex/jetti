@@ -23,7 +23,7 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       GROUP BY company
       HAVING COUNT(*) >0
       ORDER BY 2 DESC`;
-    const companyList = await sdbq.manyOrNone<{ company: Ref, count: number }>(query, 
+    const companyList = await sdbq.manyOrNone<{ company: Ref, count: number }>(query,
       [this.company, this.StartDate, this.EndDate, this.Operation]);
 
     for (const row of companyList) {
