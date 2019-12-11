@@ -23,7 +23,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
   @Input() type: DocTypes;
   @Input() id: string;
-  @Input() pageSize = 250;
+  @Input() pageSize = 100;
   @Input() settings: FormListSettings = new FormListSettings();
   @Output() Select = new EventEmitter<ISuggest>();
   doc: DocumentBase | undefined;
@@ -35,6 +35,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get showTree() { return this.doc && this.doc.Prop && (<DocumentOptions>this.doc.Prop()).hierarchy === 'folders'; }
 
   dataSource: ApiDataSource;
 
@@ -127,5 +128,19 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._debonceSubscription$.unsubscribe();
     this.debonce$.complete();
+  }
+
+  parentChange(event) {
+    this.filters['parent'] = {
+      matchMode: '=',
+      value: event && event.data && event.data.id ? {
+        id: event.data.id,
+        code: '',
+        type: this.type,
+        description: event.data.description
+      } : null
+    };
+    this.prepareDataSource();
+    this.dataSource.sort();
   }
 }

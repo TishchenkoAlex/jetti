@@ -9,6 +9,7 @@ import { Ref } from '../document';
 
 export default class PostAfterEchangeServer extends PostAfterEchange implements IServerForm {
   async Execute() {
+    this.user.isAdmin  = true;
     if (this.EndDate) this.EndDate.setHours(23, 59, 59, 999);
     const sdbq = new MSSQL(this.user, TASKS_POOL);
     const query = `
@@ -31,7 +32,7 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       const companyDescription = companyObject && companyObject.description;
       const data = {
         job: { id: `sync`, description: `[IIKO exchange for  ${companyDescription}]` },
-        user: null,
+        user: this.user,
         company: row.company,
         companyName: companyDescription,
         StartDate: this.StartDate,

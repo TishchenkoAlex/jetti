@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { TreeNode } from 'primeng/api';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
@@ -21,14 +21,17 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   @Output() selectionChange = new EventEmitter();
   @Input() type: DocTypes;
   @Input() owner: BaseDocListComponent;
+  @Input() showCommands = true;
+  @Input() id: string;
+  @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
   treeNodes$: Observable<TreeNode[]>;
   selection: TreeNode;
 
   private paginator = new Subject<DocumentBase>();
   private _docSubscription$: Subscription = Subscription.EMPTY;
-  get scrollHeight() { return `${(window.innerHeight - 275)}px`; }
 
-  constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService) { }
+  // tslint:disable-next-line: max-line-length
+  constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
 
@@ -48,22 +51,23 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
             children: this.buildTreeNodes(tree, null),
           }]),
           tap(treeNodes => {
-            let current: TreeNode | undefined = treeNodes[0];
-            if (doc) {
-              const findDoc = this.findDoc(treeNodes, doc);
-              if (findDoc) current = findDoc;
-            }
-            this.selection = current;
+            this.findDoc(treeNodes, this.id).then(data => {
+              this.selection = data;
+              this.cd.markForCheck();
+            });
           }));
       }));
+
     setTimeout(() => this.paginator.next());
   }
 
-  private findDoc(tree: TreeNode[], doc: DocumentBase): TreeNode | undefined {
-    const result = tree.find(el => el.data.id === (doc.parent as any).id);
+  private async findDoc(tree: TreeNode[], id: string): Promise<TreeNode | undefined> {
+    if (!id) { return undefined;  }
+    const doc = await this.ds.api.byId(id);
+    const result = tree.find(el => el.data.id === doc.parent);
     if (result) return result;
     for (let i = 0; i < tree.length; i++) {
-      const childrenResult = this.findDoc(tree[i].children || [], doc);
+      const childrenResult = this.findDoc(tree[i].children || [], doc.id);
       if (childrenResult) return childrenResult;
     }
   }

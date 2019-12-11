@@ -248,6 +248,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       value: event && event.data && event.data.id ? {
         id: event.data.id,
         code: '',
+        type: this.type,
         description: event.data.description
       } : null
     };

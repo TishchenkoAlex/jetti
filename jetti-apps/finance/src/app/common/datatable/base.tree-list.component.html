@@ -1,5 +1,5 @@
 <div style="width: 300px; margin-right: 2px">
-  <p-toolbar>
+  <p-toolbar *ngIf="showCommands">
     <div class="ui-toolbar-group-left">
       <button pButton type="button" icon="pi pi-plus" class="ui-button-success" (click)="add()"
         [disabled]="(lds.busy$ | async)"></button>
@@ -16,12 +16,15 @@
     dataKey="id" [(selection)]="selection" (onNodeSelect)="onNodeSelect($event)">
     <ng-template pTemplate="header">
       <tr>
+        <th>folders</th>
+      </tr>
+      <tr>
         <th>description</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
       <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
-        <td style="width: 500px">
+        <td style="width: 298px">
           <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
           {{rowData.description}}
         </td>

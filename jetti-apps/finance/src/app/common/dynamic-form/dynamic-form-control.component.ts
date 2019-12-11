@@ -12,6 +12,7 @@ import { FormControlInfo } from './dynamic-form-base';
 export class DynamicFormControlComponent implements OnInit, OnDestroy {
   @Input() control: FormControlInfo;
   @Input() form: FormGroup;
+  @Input() appendTo;
   formControl: FormControl;
 
   valueChanges$: Subscription = Subscription.EMPTY;

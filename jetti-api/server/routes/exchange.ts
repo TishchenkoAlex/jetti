@@ -45,3 +45,10 @@ router.post('/v1.0/hello', authHTTP, async (req: Request, res: Response, next: N
   } catch (err) { next(err); }
 });
 
+router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // const user = User(req);
+    return res.json(200);
+  } catch (err) { next(err); }
+});
+

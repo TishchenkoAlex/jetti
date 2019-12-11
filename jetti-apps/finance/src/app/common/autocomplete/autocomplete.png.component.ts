@@ -6,11 +6,12 @@ import * as moment from 'moment';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
+import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
+import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -52,6 +53,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   @ViewChild('ac', { static: false }) input: AutoComplete;
   @Input() id: string;
   @Input() formControl: FormControl;
+  @Input() appendTo;
 
   form: FormGroup = new FormGroup({
     suggest: new FormControl({ value: this.value, disabled: this.disabled }, AutocompleteValidator(this))
@@ -70,6 +72,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   get EMPTY() { return { id: null, code: null, type: this.type, value: null }; }
   get isEMPTY() { return this.isComplexControl && !(this.value && this.value.value); }
   get isCatalogParent() { return this.type.startsWith('Catalog.') && this.id === 'parent'; }
+  get hierarchy() { return (createDocument(this.type as any).Props()).hierarchy;  }
 
   private _value: IComplexObject;
   @Input() set value(obj) {

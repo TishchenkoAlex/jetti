@@ -69,6 +69,6 @@
 </form>
 
 <p-dialog *ngIf="showDialog" [header]="this.placeholder" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
-  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '550px', width: '580px'}">
+  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '550px', width: '900px'}" [appendTo]="appendTo">
   <j-suggest-list [type]="value.type || type" [id]="value.id" [settings]="calcFilters()" (Select)="searchComplete($event)"></j-suggest-list>
 </p-dialog>

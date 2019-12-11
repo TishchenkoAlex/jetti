@@ -19,7 +19,7 @@ spec:
           resources:
             requests:
               memory: "256Mi"
-              cpu: "1000m"
+              cpu: "800m"
             #limits:
               #memory: "256Mi"
               #cpu: "1000m"
@@ -72,7 +72,7 @@ spec:
               valueFrom:
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "0001"
+              value: "0003"
             - name: NODE_ENV
               value: "production"
 ---
