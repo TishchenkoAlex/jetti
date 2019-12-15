@@ -243,6 +243,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   parentChange(event) {
+    this.id = {id: null, posted: false};
     this.filters['parent'] = {
       matchMode: '=',
       value: event && event.data && event.data.id ? {

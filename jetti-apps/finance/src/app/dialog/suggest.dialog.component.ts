@@ -131,6 +131,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   }
 
   parentChange(event) {
+    this.id = null;
     this.filters['parent'] = {
       matchMode: '=',
       value: event && event.data && event.data.id ? {
