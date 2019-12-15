@@ -21,4 +21,7 @@ export class CatalogAcquiringTerminal extends DocumentBase {
   @Props({ type: 'Catalog.Department'})
   Department: Ref = null;
 
+  @Props({ type: 'boolean'})
+  isDefault = false;
+
 }

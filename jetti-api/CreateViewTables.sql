@@ -1333,6 +1333,7 @@
       , [Catalog.AcquiringTerminal.BankAccount] [BankAccount]
       , [Catalog.AcquiringTerminal.Counterpartie] [Counterpartie]
       , [Catalog.AcquiringTerminal.Department] [Department]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."isDefault"') AS BIT), 0) [isDefault]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.AcquiringTerminal'
     GO
