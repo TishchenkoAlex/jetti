@@ -173,6 +173,7 @@
 
         ISNULL("Bank".description, N'') "Bank.value", ISNULL("Bank".type, N'Catalog.Bank') "Bank.type",
           CAST(JSON_VALUE(d.doc, N'$."Bank"') AS UNIQUEIDENTIFIER) "Bank.id"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."isDefault"') AS BIT), 0) "isDefault"
 
     
 
@@ -509,6 +510,207 @@
     WHERE d.[type] = 'Catalog.Counterpartie' 
       GO
       GRANT SELECT ON dbo."Catalog.Counterpartie" TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW dbo."Catalog.Counterpartie.BankAccount" WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "CounterpartieBankAccount", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
+          CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
+,
+
+        ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
+          CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
+,
+
+        ISNULL("Bank".description, N'') "Bank.value", ISNULL("Bank".type, N'Catalog.Bank') "Bank.type",
+          CAST(JSON_VALUE(d.doc, N'$."Bank"') AS UNIQUEIDENTIFIER) "Bank.id"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."isDefault"') AS BIT), 0) "isDefault"
+,
+
+        ISNULL("owner".description, N'') "owner.value", ISNULL("owner".type, N'Catalog.Counterpartie') "owner.type",
+          CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER) "owner.id"
+
+    
+
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description ) as "CounterpartieBankAccount.Level4"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)) "CounterpartieBankAccount.Level3"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+          COALESCE(
+            (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description))) "CounterpartieBankAccount.Level2"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+              (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+             (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)))) as "CounterpartieBankAccount.Level1"
+      FROM dbo."Documents" d
+
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+      LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Bank" ON "Bank".id = CAST(JSON_VALUE(d.doc, N'$."Bank"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "owner" ON "owner".id = CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Catalog.Counterpartie.BankAccount' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Counterpartie.BankAccount" TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW dbo."Catalog.Contract" WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "Contract", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("owner".description, N'') "owner.value", ISNULL("owner".type, N'Catalog.Counterpartie') "owner.type",
+          CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER) "owner.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."kind"'), '') "kind"
+,
+
+        ISNULL("BusinessDirection".description, N'') "BusinessDirection.value", ISNULL("BusinessDirection".type, N'Catalog.BusinessDirection') "BusinessDirection.type",
+          CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER) "BusinessDirection.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
+,
+
+        ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
+          CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
+,
+
+        ISNULL("Manager".description, N'') "Manager.value", ISNULL("Manager".type, N'Catalog.Manager') "Manager.type",
+          CAST(JSON_VALUE(d.doc, N'$."Manager"') AS UNIQUEIDENTIFIER) "Manager.id"
+
+    
+
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description ) as "Contract.Level4"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)) "Contract.Level3"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+          COALESCE(
+            (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description))) "Contract.Level2"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+              (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+             (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)))) as "Contract.Level1"
+      FROM dbo."Documents" d
+
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+      LEFT JOIN dbo."Documents" "owner" ON "owner".id = CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "BusinessDirection" ON "BusinessDirection".id = CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Manager" ON "Manager".id = CAST(JSON_VALUE(d.doc, N'$."Manager"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Catalog.Contract' 
+      GO
+      GRANT SELECT ON dbo."Catalog.Contract" TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW dbo."Catalog.BusinessDirection" WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "BusinessDirection", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+
+    
+
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description ) as "BusinessDirection.Level4"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)) "BusinessDirection.Level3"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+          COALESCE(
+            (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description))) "BusinessDirection.Level2"
+      ,COALESCE(
+        (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+          (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+              (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id =
+             (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent]))),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id =
+            (SELECT [parent] from [dbo].[Documents] where [dbo].[Documents].id = d.[parent])),
+        COALESCE(
+          (SELECT description from [dbo].[Documents] where [dbo].[Documents].id = d.[parent] ), d.description)))) as "BusinessDirection.Level1"
+      FROM dbo."Documents" d
+
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+    WHERE d.[type] = 'Catalog.BusinessDirection' 
+      GO
+      GRANT SELECT ON dbo."Catalog.BusinessDirection" TO jetti;
       GO
 
       CREATE OR ALTER VIEW dbo."Catalog.Department" WITH SCHEMABINDING AS

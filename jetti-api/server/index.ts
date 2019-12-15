@@ -80,5 +80,12 @@ fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});
 script = SQLGenegatorMetadata.AlterTriggerRegisterInfo();
 fs.writeFile('AlterTriggerRegisterInfo.sql', script, (err) => {});
 
-script = SQLGenegatorMetadata.CreateViewCatalogs();
-fs.writeFile('CreateViewCatalogs.sql', script, (err) => {});
+script = SQLGenegatorMetadata.CreateViewCatalogsv2();
+fs.writeFile('CreateViewCatalogsv2.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.CreateViewTables();
+fs.writeFile('CreateViewTables.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.CreateDocumentIndexes();
+fs.writeFile('CreateDocumentIndexes.sql', script, (err) => {});
+

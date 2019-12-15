@@ -51,7 +51,7 @@ export class SQLGenegator {
         switch (type) {
           case 'number': return `, "${prop}" MONEY\n`;
           case 'boolean': return `, "${prop}" BIT\n`;
-          case 'date':     return `, "${prop}" DATE\n`;
+          case 'date': return `, "${prop}" DATE\n`;
           case 'datetime': return `, "${prop}" DATETIME\n`;
           default: return `, "${prop}" NVARCHAR(max)\n`;
         }
@@ -304,6 +304,118 @@ export class SQLGenegator {
 
     return query;
   }
+
+  static QueryList2(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') return `, d."${prop}" "${prop}"\n`;
+      if (type === 'number') return `, d."${prop}" "${prop}"\n`;
+      return `, d."${prop}" "${prop}"\n`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `,
+        "${prop}".id "${prop}.id",
+        ISNULL("${prop}".description, N'') "${prop}.value",
+        ISNULL("${prop}".type, N'${type}') "${prop}.type"
+      `;
+
+    const addLeftJoin = (prop: string, type: string) =>
+      type.startsWith('Types.') ? `
+        LEFT JOIN dbo."Documents" "${prop}" ON "${prop}".id = d."${prop}"\n` : `
+        LEFT JOIN dbo."${type}.v" "${prop}" ON "${prop}".id = d."${prop}"\n`;
+
+    let query = `
+      SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+    `;
+
+    let LeftJoin = '';
+
+    for (const prop in excludeProps(doc)) {
+      const type = doc[prop].type || 'string';
+      if (type.includes('.')) {
+        query += complexProperty(prop, type);
+        LeftJoin += addLeftJoin(prop, type);
+      } else if (type !== 'table') {
+        query += simleProperty(prop, type);
+      }
+    }
+
+    query += `
+    FROM dbo."${type}.v" d
+      LEFT JOIN dbo."${type}.v" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Catalog.User.v" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Catalog.Company.v" "company" ON "company".id = d.company
+      ${LeftJoin}
+    WHERE (1 = 1)
+    `;
+
+    return query;
+  }
+
+  static QueryListView(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') return `
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS BIT), 0) [${prop}]`;
+      if (type === 'number') return `
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS MONEY), 0) [${prop}]`;
+      return `
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS NVARCHAR(150)), '') [${prop}]`;
+    };
+
+    let fields = '';
+
+    let index = ''; let vColumns = '';
+    for (const prop in excludeProps(doc)) {
+      const _type = doc[prop].type || 'string';
+      if (_type.includes('.')) {
+        index += `
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.${prop}] ON [dbo].[${type}.v]([${prop}], [id]);`;
+        vColumns += `
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [${type}.${prop}];
+    ALTER TABLE Documents ADD [${type}.${prop}] AS CAST(JSON_VALUE(doc, N'$."${prop}"') AS UNIQUEIDENTIFIER) PERSISTED;`;
+        fields += `
+      , [${type}.${prop}] [${prop}]`;
+      } else if (_type !== 'table') {
+        fields += simleProperty(prop, _type);
+      }
+    }
+
+    const query = `
+    DROP VIEW IF EXISTS [dbo].[${type}.v];
+    GO
+    ${vColumns};
+    GO
+    CREATE VIEW [dbo].[${type}.v]
+    WITH SCHEMABINDING
+    AS
+      SELECT
+        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+        ${fields}
+    FROM dbo.[Documents]
+    WHERE [type] = '${type}'
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [${type}.v.id] ON [dbo].[${type}.v]([id],[type], [description]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.decription] ON [dbo].[${type}.v]([description],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [dbo].[${type}.v]([code],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [dbo].[${type}.v]([company],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [dbo].[${type}.v]([parent],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [dbo].[${type}.v]([date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.isfolder] ON [dbo].[${type}.v]([isfolder],[id]);
+    ${index}
+    GO
+    GRANT SELECT ON [dbo].[${type}.v] TO JETTI;
+    GO
+    -------------------------
+    `;
+
+    return query;
+  }
+
 
   static QueryRegisterAccumulatioList(doc: { [x: string]: any }, type: string) {
 

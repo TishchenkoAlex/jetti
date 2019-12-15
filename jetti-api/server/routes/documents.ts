@@ -57,9 +57,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     if (id) ServerDoc.id = id;
 
     let model = {};
-    const querySettings = await sdb.oneOrNone<{ doc: FormListSettings }>(`
-      SELECT JSON_QUERY(settings, '$."${type}"') doc FROM users where email = @p1`, [email]);
-    const settings = querySettings && querySettings.doc || new FormListSettings();
+    const settings = new FormListSettings();
     const userID = await lib.doc.byCode('Catalog.User', email, sdb);
 
     if (id) {

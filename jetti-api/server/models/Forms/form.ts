@@ -23,7 +23,7 @@ export function JForm(props: FormOptions) {
 export class FormBase {
 
   constructor  (user?: IJWTPayload) {
-    if (!user) this.user = { email: '', description: '', env: {}, isAdmin: false, roles: [] }
+    if (!user) this.user = { email: '', description: '', env: {}, isAdmin: false, roles: [] };
     else this.user = user;
   }
 

@@ -347,4 +347,72 @@ export class SQLGenegatorMetadata {
     }
     return query;
   }
+
+  static CreateViewCatalogsv2() {
+
+    let query = '';
+    for (const catalog of RegisteredDocument) {
+      const doc = createDocument(catalog.type);
+      let select = SQLGenegator.QueryList(doc.Props(), doc.type);
+      const type = (doc.Prop() as DocumentOptions).type.split('.');
+      let name = '';
+      for (let i = 1; i < type.length; i++) name += type[i];
+      select = select.replace('FROM dbo\.\"Documents\" d', `
+      , ISNULL(l5.description, d.description) [${name}.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [${name}.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [${name}.Level1]
+      FROM dbo.Documents d
+        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
+        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
+        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
+        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
+        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
+      `).replace('d.description,', `d.description "${name}",`);
+
+      query += `\n
+      DROP VIEW IF EXISTS dbo.[${catalog.type}];
+      GO
+      CREATE OR ALTER VIEW dbo.[${catalog.type}] WITH SCHEMABINDING AS
+        ${select}
+      GO
+      GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
+      SELECT
+	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
+	      d.id, d.date [date],
+	      d.description Presentation
+        FROM dbo.[Documents] d
+      GO
+      `;
+    }
+    return query;
+  }
+
+  static CreateViewTables() {
+
+    let select = '';
+    for (const catalog of RegisteredDocument) {
+      const doc = createDocument(catalog.type);
+      select += SQLGenegator.QueryListView(doc.Props(), doc.type);
+    }
+    return select;
+  }
+
+  static CreateDocumentIndexes() {
+
+    let select = '';
+    for (const catalog of RegisteredDocument) {
+      const doc = createDocument(catalog.type);
+      select += `
+    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='${catalog.type}')`;
+    }
+    return select;
+  }
 }

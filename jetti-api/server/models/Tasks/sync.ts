@@ -34,12 +34,23 @@ export default async function (job: Queue.Job) {
       await job.update(job.data);
       await job.progress(0);
       while (offset < count) {
-        for (let i = 0; i < 50; i++) {
-          if (!docs[offset]) break;
+          let ids = '';
+          for (let i = 0; i < 50; i++) {
+            if (!docs[offset]) break;
+            ids = ids + `'${docs[offset].id}',`;
+          }
+          ids = ids.slice(0, -1);
+          const deleteQuery = `
+          DELETE FROM Accumulation where document in (${ids});
+          UPDATE Documents set posted = 0 where id in (${ids});`;
+          await sdbq.none(deleteQuery);
+
+          for (let i = 0; i < 50; i++) {
+            if (!docs[offset]) break;
             const q = lib.doc.postById(docs[offset].id, sdbq);
             TaskList.push(q);
-          offset = offset + 1;
-        }
+            offset = offset + 1;
+          }
         await Promise.all(TaskList);
         TaskList.length = 0;
         job.data.message = `${params.companyName}, ${offset} of ${count}, last doc -> [${docs[offset - 1].description}]`;
@@ -52,4 +63,3 @@ export default async function (job: Queue.Job) {
   } catch (ex) { throw ex; }
   finally { await lib.util.postMode(false, sdbq); }
 }
-

@@ -24,4 +24,7 @@ export class CatalogBankAccount extends DocumentBase {
   @Props({ type: 'Catalog.Bank', required: true })
   Bank: Ref = null;
 
+  @Props({ type: 'boolean', required: false })
+  isDefault = false;
+
 }

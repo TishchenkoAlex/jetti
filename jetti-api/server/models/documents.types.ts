@@ -41,7 +41,10 @@ export type CatalogTypes =
   'Catalog.Scenario' |
   'Catalog.BudgetItem' |
   'Catalog.AcquiringTerminal' |
-  'Catalog.Bank'
+  'Catalog.Bank' |
+  'Catalog.Counterpartie.BankAccount' |
+  'Catalog.Contract' |
+  'Catalog.BusinessDirection'
   ;
 
 export type DocumentTypes =

@@ -48,6 +48,10 @@ import { CatalogAcquiringTerminal } from './Catalogs/Catalog.AcquiringTerminal';
 import { CatalogBank } from './Catalogs/Catalog.Bank';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
 import { CatalogUsersGroup } from './Catalogs/Catalog.UsersGroup';
+import { CatalogCounterpartieBankAccount } from './Catalogs/Catalog.Counterpartie.BankAccount';
+import { CatalogContract } from './Catalogs/Catalog.Contract';
+import { CatalogBusinessDirection } from './Catalogs/Catalog.BusinessDirection';
+
 
 export interface INoSqlDocument {
   id: Ref;
@@ -105,6 +109,10 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Currency', Class: CatalogCurrency },
   { type: 'Catalog.Company', Class: CatalogCompany },
   { type: 'Catalog.Counterpartie', Class: CatalogCounterpartie },
+  { type: 'Catalog.Counterpartie.BankAccount', Class: CatalogCounterpartieBankAccount },
+  { type: 'Catalog.Contract', Class: CatalogContract },
+  { type: 'Catalog.BusinessDirection', Class: CatalogBusinessDirection },
+
   { type: 'Catalog.Department', Class: CatalogDepartment },
   { type: 'Catalog.Expense', Class: CatalogExpense },
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
@@ -122,7 +130,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation.Type', Class: CatalogOperationType },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
-  { type: 'Catalog.UsersGroup', Class: CatalogUsersGroup},
+  { type: 'Catalog.UsersGroup', Class: CatalogUsersGroup },
   { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
 
@@ -139,7 +147,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.BudgetItem', Class: CatalogBudgetItem },
   { type: 'Catalog.Scenario', Class: CatalogScenario },
   { type: 'Catalog.AcquiringTerminal', Class: CatalogAcquiringTerminal },
-  { type: 'Catalog.Bank', Class: CatalogBank},
+  { type: 'Catalog.Bank', Class: CatalogBank },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

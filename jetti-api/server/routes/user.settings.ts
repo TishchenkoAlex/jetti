@@ -14,9 +14,9 @@ router.get('/user/settings/:type', async (req: Request, res: Response, next: Nex
   try {
     const user = User(req);
     const sdb = SDB(req);
-    const query = `select JSON_QUERY(settings, '$."${req.params.type}"') data from users where email = @p1`;
-    const result = await sdb.oneOrNone<{ data: FormListSettings }>(query, [user.email]);
-    res.json(result ? result.data : new FormListSettings());
+    // const query = `select JSON_QUERY(settings, '$."${req.params.type}"') data from users where email = @p1`;
+    // const result = await sdb.oneOrNone<{ data: FormListSettings }>(query, [user.email]);
+    res.json(new FormListSettings());
   } catch (err) { next(err); }
 });
 
@@ -25,8 +25,8 @@ router.post('/user/settings/:type', async (req, res, next) => {
     const user = User(req);
     const sdb = SDB(req);
     const data = req.body || {};
-    const query = `update users set settings = JSON_MODIFY(settings, '$."${req.params.type}"', JSON_QUERY(@p1)) where email = @p2`;
-    await sdb.none(query, [JSON.stringify(data), user.email]);
+    // const query = `update users set settings = JSON_MODIFY(settings, '$."${req.params.type}"', JSON_QUERY(@p1)) where email = @p2`;
+    // await sdb.none(query, [JSON.stringify(data), user.email]);
     res.json(true);
   } catch (err) { next(err); }
 });
@@ -35,9 +35,9 @@ router.get('/user/settings/defaults', async (req: Request, res: Response, next: 
   try {
     const user = User(req);
     const sdb = SDB(req);
-    const query = `select JSON_QUERY(settings, '$."defaults"') data from users where email = @p1`;
-    const result = await sdb.oneOrNone<{ data: UserDefaultsSettings }>(query, [user.email]);
-    res.json(result ? result.data : new UserDefaultsSettings());
+    // const query = `select JSON_QUERY(settings, '$."defaults"') data from users where email = @p1`;
+    // const result = await sdb.oneOrNone<{ data: UserDefaultsSettings }>(query, [user.email]);
+    res.json(new UserDefaultsSettings());
   } catch (err) { next(err); }
 });
 
@@ -46,8 +46,8 @@ router.post('/user/settings/defaults', async (req: Request, res: Response, next:
     const user = User(req);
     const sdb = SDB(req);
     const data = req.body || new UserDefaultsSettings();
-    const query = `update users set settings = JSON_MODIFY(settings, '$."defaults"', JSON_QUERY(@p1)) where email = @p2`;
-    await sdb.none(query, [JSON.stringify(data), user.email]);
+    // const query = `update users set settings = JSON_MODIFY(settings, '$."defaults"', JSON_QUERY(@p1)) where email = @p2`;
+    // await sdb.none(query, [JSON.stringify(data), user.email]);
     res.json(true);
   } catch (err) { next(err); }
 });

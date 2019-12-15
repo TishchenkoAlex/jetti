@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sm
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -20,9 +20,9 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "800m"
-            #limits:
-              #memory: "256Mi"
-              #cpu: "1000m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -72,7 +72,7 @@ spec:
               valueFrom:
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "0003"
+              value: "0002"
             - name: NODE_ENV
               value: "production"
 ---

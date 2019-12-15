@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit } from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
+import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -29,7 +30,7 @@ function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => AutocompleteComponent), multi: true, },
   ]
 })
-export class AutocompleteComponent implements ControlValueAccessor, Validator {
+export class AutocompleteComponent implements ControlValueAccessor, Validator, OnInit {
   locale = calendarLocale; dateFormat = dateFormat;
 
   @Input() readOnly = false;
@@ -45,7 +46,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   @Input() showClear = true;
   @Input() showLabel = true;
   @Input() type = '';
-  @Input() inputStyle: {[x: string]: any };
+  @Input() inputStyle: { [x: string]: any };
   @Input() checkValue = true;
   @Input() openButton = true;
   @Output() change = new EventEmitter();
@@ -64,6 +65,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   private NO_EVENT = false;
   showDialog = false;
   Moment = moment;
+  filters = new FormListSettings();
 
   get isComplexValue() { return this.value && this.value.type && this.value.type.includes('.'); }
   get isTypeControl() { return this.type && this.type.startsWith('Types.'); }
@@ -72,7 +74,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
   get EMPTY() { return { id: null, code: null, type: this.type, value: null }; }
   get isEMPTY() { return this.isComplexControl && !(this.value && this.value.value); }
   get isCatalogParent() { return this.type.startsWith('Catalog.') && this.id === 'parent'; }
-  get hierarchy() { return (createDocument(this.type as any).Props()).hierarchy;  }
+  get hierarchy() { return (createDocument(this.type as any).Props()).hierarchy; }
 
   private _value: IComplexObject;
   @Input() set value(obj) {
@@ -83,6 +85,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
     this.suggest.patchValue(this._value);
     if (!this.NO_EVENT) { this.onChange(this._value); this.change.emit(this._value); }
     this.NO_EVENT = false;
+
   }
   get value() { return this._value; }
 
@@ -167,6 +170,10 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator {
     if (date instanceof Date) this.formControl.setValue(date);
     else if (!date && this.required) this.formControl.setErrors({ 'invalid date': true });
     else if (!date && !this.required) this.formControl.setValue(date);
+  }
+
+  ngOnInit() {
+    this.filters = this.calcFilters();
   }
 
 }

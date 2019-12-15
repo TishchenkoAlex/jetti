@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 128Gi
+  storageClassName: standard
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -18,9 +30,9 @@ spec:
         - containerPort: 6379
           protocol: TCP
         resources:
-#          requests:
-#            cpu: 500m
-#            memory: 300Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
         volumeMounts:
         - mountPath: /data
           name: redisdata
@@ -29,18 +41,6 @@ spec:
       - name: redisdata
         persistentVolumeClaim:
           claimName: redis-data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: redis-data
-spec:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: managed-premium
-  resources:
-    requests:
-      storage: 10Gi
 ---
 apiVersion: v1
 kind: Service

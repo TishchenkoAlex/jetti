@@ -156,7 +156,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.debonce$.next({ col, event, center });
   }
 
-  onLazyLoad(event) {
+  onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
     this.multiSortMeta = event.multiSortMeta;
     this.prepareDataSource();
     this.dataSource.sort();

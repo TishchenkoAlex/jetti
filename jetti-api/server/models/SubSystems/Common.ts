@@ -4,14 +4,9 @@ export const CommonSubSystem: ISubSystem = {
   type: 'Common',
   icon: 'fa fa-fw fa-sign-in', description: 'Common', Objects: [
     'Catalog.User',
-    'Catalog.UsersGroup',
-    'Catalog.Role',
-    'Catalog.SubSystem',
     'Catalog.Department',
     'Catalog.Company',
     'Catalog.Currency',
     'Document.ExchangeRates',
-    'Document.Settings',
-    'Document.UserSettings'
   ]
 };
