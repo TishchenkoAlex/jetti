@@ -254,3 +254,8 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.UserSettings')
+    DROP INDEX IF EXISTS [Document.CashRequest] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='Document.CashRequest')

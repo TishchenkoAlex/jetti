@@ -1620,3 +1620,55 @@
     GO
     -------------------------
     
+    DROP VIEW IF EXISTS [dbo].[Document.CashRequest.v];
+    GO
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Department];
+    ALTER TABLE Documents ADD [Document.CashRequest.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.CashFlow];
+    ALTER TABLE Documents ADD [Document.CashRequest.CashFlow] AS CAST(JSON_VALUE(doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Recipient];
+    ALTER TABLE Documents ADD [Document.CashRequest.Recipient] AS CAST(JSON_VALUE(doc, N'$."Recipient"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Currency];
+    ALTER TABLE Documents ADD [Document.CashRequest.Currency] AS CAST(JSON_VALUE(doc, N'$."Currency"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.OperationGroup];
+    ALTER TABLE Documents ADD [Document.CashRequest.OperationGroup] AS CAST(JSON_VALUE(doc, N'$."OperationGroup"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Operation];
+    ALTER TABLE Documents ADD [Document.CashRequest.Operation] AS CAST(JSON_VALUE(doc, N'$."Operation"') AS UNIQUEIDENTIFIER) PERSISTED;;
+    GO
+    CREATE VIEW [dbo].[Document.CashRequest.v]
+    WITH SCHEMABINDING
+    AS
+      SELECT
+        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+        
+      , [Document.CashRequest.Department] [Department]
+      , [Document.CashRequest.CashFlow] [CashFlow]
+      , [Document.CashRequest.Recipient] [Recipient]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Amount"') AS MONEY), 0) [Amount]
+      , [Document.CashRequest.Currency] [Currency]
+      , [Document.CashRequest.OperationGroup] [OperationGroup]
+      , [Document.CashRequest.Operation] [Operation]
+    FROM dbo.[Documents]
+    WHERE [type] = 'Document.CashRequest'
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [Document.CashRequest.v.id] ON [dbo].[Document.CashRequest.v]([id],[type], [description]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.decription] ON [dbo].[Document.CashRequest.v]([description],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.code] ON [dbo].[Document.CashRequest.v]([code],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.company] ON [dbo].[Document.CashRequest.v]([company],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.parent] ON [dbo].[Document.CashRequest.v]([parent],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.date] ON [dbo].[Document.CashRequest.v]([date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.isfolder] ON [dbo].[Document.CashRequest.v]([isfolder],[id]);
+    
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Department] ON [dbo].[Document.CashRequest.v]([Department], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.CashFlow] ON [dbo].[Document.CashRequest.v]([CashFlow], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Recipient] ON [dbo].[Document.CashRequest.v]([Recipient], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Currency] ON [dbo].[Document.CashRequest.v]([Currency], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.OperationGroup] ON [dbo].[Document.CashRequest.v]([OperationGroup], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Operation] ON [dbo].[Document.CashRequest.v]([Operation], [id]);
+    GO
+    GRANT SELECT ON [dbo].[Document.CashRequest.v] TO JETTI;
+    GO
+    -------------------------
+    

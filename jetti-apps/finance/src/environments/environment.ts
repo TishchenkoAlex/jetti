@@ -1,5 +1,6 @@
 // const domain = 'https://jetti-api.azurewebsites.net';
 const domain = 'http://localhost:3000';
+const BPAPI = 'http://35.204.78.79/JettiProcesses/hs';
 
 export const environment = {
   production: false,
@@ -8,6 +9,7 @@ export const environment = {
   socket: domain,
   host: domain,
   path: '',
+  BPAPI
 };
 
 export const OAuthSettings = {

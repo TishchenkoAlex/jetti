@@ -31,4 +31,5 @@ export const FinanceRoleObject: RoleObject[] = [
   { type: 'Catalog.Catalog', read: true, write: true },
   { type: 'Catalog.AcquiringTerminal', read: true, write: true },
   { type: 'Catalog.Bank', read: true, write: true },
+  { type: 'Document.CashRequest', read: true, write: true },
 ];

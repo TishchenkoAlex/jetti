@@ -51,6 +51,7 @@ import { CatalogUsersGroup } from './Catalogs/Catalog.UsersGroup';
 import { CatalogCounterpartieBankAccount } from './Catalogs/Catalog.Counterpartie.BankAccount';
 import { CatalogContract } from './Catalogs/Catalog.Contract';
 import { CatalogBusinessDirection } from './Catalogs/Catalog.BusinessDirection';
+import { DocumentCashRequest } from './Documents/Document.CashRequest';
 
 
 export interface INoSqlDocument {
@@ -155,5 +156,6 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Document.PriceList', Class: DocumentPriceList },
   { type: 'Document.Settings', Class: DocumentSettings },
   { type: 'Document.UserSettings', Class: DocumentUserSettings },
+  { type: 'Document.CashRequest', Class: DocumentCashRequest }
 ];
 
