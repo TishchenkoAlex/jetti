@@ -10,7 +10,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     'Document.Invoice'
   ],
   relations: [
-    { name: 'Client invoices', type: 'Document.Invoice', field: 'Customer' }
+    { name: 'Contracts', type: 'Catalog.Contract', field: 'owner' },
+    { name: 'Bank account', type: 'Catalog.Counterpartie.BankAccount', field: 'owner' }
   ],
   hierarchy: 'folders'
 })

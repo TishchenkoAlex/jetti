@@ -35,14 +35,14 @@ export class AuthService {
 
   constructor(private router: Router, private http: HttpClient, private msalService: MsalService, public sanitizer: DomSanitizer) { }
 
-  public async login(email: string, password: string) {
+  public async login() {
     await this.msalService.loginPopup(OAuthSettings.scopes);
     const user =  this.msalService.getUser().displayableId;
     const acquireTokenSilentResult = await this.msalService.acquireTokenSilent(OAuthSettings.scopes);
 
     return this.http.post<ILoginResponse>(`${environment.auth}login`,
-      { email: user, password, token: acquireTokenSilentResult }).pipe(
-        tap(loginResponse => { if (loginResponse.account) { this.init(loginResponse); } }),
+      { email: user, password: null, token: acquireTokenSilentResult }).pipe(
+        tap(loginResponse => this.init(loginResponse)),
         shareReplay());
   }
 

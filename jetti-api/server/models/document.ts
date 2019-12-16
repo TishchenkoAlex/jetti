@@ -41,7 +41,7 @@ export interface DocumentOptions {
   presentation?: 'code' | 'description';
   hierarchy?: 'folders' | 'elements';
   copyTo?: DocTypes[];
-  relations?: [{ name: string, type: DocTypes, field: string }];
+  relations?: { name: string, type: DocTypes, field: string }[];
 }
 
 export type Ref = string | null;

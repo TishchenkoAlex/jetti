@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit, OnDestroy } from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
@@ -13,6 +13,7 @@ import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
+import { take, distinct, share, shareReplay } from 'rxjs/operators';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -30,7 +31,7 @@ function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => AutocompleteComponent), multi: true, },
   ]
 })
-export class AutocompleteComponent implements ControlValueAccessor, Validator, OnInit {
+export class AutocompleteComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   @Input() readOnly = false;
@@ -66,6 +67,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   showDialog = false;
   Moment = moment;
   filters = new FormListSettings();
+  rootValueChanges$ = Subscription.EMPTY;
 
   get isComplexValue() { return this.value && this.value.type && this.value.type.includes('.'); }
   get isTypeControl() { return this.type && this.type.startsWith('Types.'); }
@@ -141,7 +143,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     this.value = { id: this.isTypeValue ? null : row.id, code: row.code, type: row.type, value: this.isTypeValue ? null : row.value };
   }
 
-  calcFilters() {
+  calcFilters(data?: any) {
     const result = new FormListSettings();
     if (this.owner && this.owner.length) {
       for (const row of this.owner) {
@@ -173,7 +175,13 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
 
   ngOnInit() {
+    if (this.formControl && this.formControl.root)
+      this.rootValueChanges$ = this.formControl.root.valueChanges.subscribe(data => this.filters = this.calcFilters(data));
     this.filters = this.calcFilters();
+  }
+
+  ngOnDestroy() {
+    this.rootValueChanges$.unsubscribe();
   }
 
 }
