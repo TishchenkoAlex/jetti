@@ -13,10 +13,7 @@ export class HomeComponent  {
 
   constructor(public ts: EventsService, public auth: AuthService) { }
 
-  async login(email: string, password: string) {
-    (await this.auth.login()).pipe(take(1)).subscribe(
-      r => { },
-      console.error
-    );
+  async login() {
+    (await this.auth.login()).pipe(take(1)).subscribe();
   }
 }
