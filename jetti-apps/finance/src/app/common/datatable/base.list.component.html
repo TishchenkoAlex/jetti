@@ -29,12 +29,17 @@
       (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm" [metaKeySelection]="true"
       [columns]="columns$ | async" class="noselect" [scrollHeight]="scrollHeight" [(selection)]="selection"
       (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
-      [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false">
-
+      [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand">
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+            <col>
+            <col *ngFor="let column of tbl.columns">
+        </colgroup>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th [ngStyle]="{'width': '30px', 'text-align': 'center'}"></th>
-          <th pReorderableColumn [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
+          <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
             [ngStyle]="column.style">
             {{column.label}}
             <p-sortIcon [field]="column.field"></p-sortIcon>
@@ -99,7 +104,7 @@
             <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
             <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
           </td>
-          <td *ngFor="let column of tbl.columns" [ngStyle]="column.style">
+          <td *ngFor="let column of tbl.columns" [ngStyle]="column.style" class="ui-resizable-column">
             <span [ngSwitch]="column.type" [id]="column.field">
               <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
               <span *ngSwitchCase="'datetime'"

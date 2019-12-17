@@ -67,18 +67,19 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    this.columns$ = _if(() => !!columns.length,
-      of(columns),
-      this.ds.api.getView(this.type).pipe(map(v => v.columnsDef))).pipe(
-        // tslint:disable-next-line: no-use-before-declare
-        tap(c => init(c)),
-        map(d => d.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc)) || c.field === 'Group')));
-
     const init = (c: ColumnDef[]) => {
       this.setSortOrder();
       this.setFilters();
       this.setContextMenu(c);
     };
+
+    this.columns$ = _if(() => !!columns.length,
+      of(columns),
+      this.ds.api.getView(this.type).pipe(map(v => v.columnsDef)))
+      .pipe(
+        tap(c => init(c)),
+        map(d => d.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc))))
+      );
 
     this._docSubscription$ = merge(...[
         this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(

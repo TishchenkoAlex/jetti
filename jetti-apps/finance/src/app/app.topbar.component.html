@@ -13,7 +13,7 @@
     </a>
 
     <ul class="topbar-items fadeInDown" [ngClass]="{'topbar-items-visible': app.topbarMenuActive}">
-      <li #profile class="profile-item" *ngIf="app.profileMode==='top'||app.isHorizontal()" [ngClass]="{'active-top-menu':app.activeTopbarItem === profile}">
+      <li #profile class="profile-item" [ngClass]="{'active-top-menu':app.activeTopbarItem === profile}">
 
         <a href="#" (click)="app.onTopbarItemClick($event,profile)">
           <app-inline-profile #prof [inline]="false"></app-inline-profile>
