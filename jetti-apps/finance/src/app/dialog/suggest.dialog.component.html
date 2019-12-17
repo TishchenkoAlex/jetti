@@ -8,7 +8,7 @@
   <div style="display: flex; flex-direction: column; overflow-x: auto">
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
       sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection" [filterDelay]="500"
-      [metaKeySelection]="true" [columns]="columns$ | async" class="noselect" [scrollHeight]="'409px'"
+      [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'409px'"
       [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
       [lazyLoadOnInit]="false">
 

@@ -28,7 +28,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   @Output() Select = new EventEmitter<ISuggest>();
   doc: DocumentBase | undefined;
 
-  columns$: Observable<ColumnDef[]>;
+  columns: ColumnDef[] = [];
   selection: DocumentBase[] = [];
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
@@ -61,7 +61,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
         headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align' : 'center' }
       });
     });
-    this.columns$ = of(columns.filter(c => !c.hidden));
+    this.columns = [...columns.filter(c => !c.hidden)];
 
     this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     this.setSortOrder();

@@ -3,12 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { iif as _if, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { debounceTime, filter, map, tap } from 'rxjs/operators';
+import { iif as _if, merge, Observable, of, Subject, Subscription, fromEvent } from 'rxjs';
+import { debounceTime, filter, map, tap, take, shareReplay } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
-import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { buildColumnDef } from '../../../../../../jetti-api/server/routes/utils/columns-def';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { calendarLocale, dateFormat } from '../../primeNG.module';
 import { scrollIntoViewIfNeeded } from '../utils';
@@ -18,6 +18,9 @@ import { UserSettingsService } from './../../auth/settings/user.settings.service
 import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+
+const WH = 278;
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +29,6 @@ import { LoadingService } from './../../common/loading.service';
 })
 export class BaseDocListComponent implements OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
-  get scrollHeight() { return `${(window.innerHeight - 275)}px`; }
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService,
     public uss: UserSettingsService, public lds: LoadingService) { }
@@ -35,9 +37,11 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
-  routeData = this.route.snapshot.data.detail as IViewModel;
+  resizeObservable$: Observable<string>;
 
-  @Input() pageSize = 100;
+  scrollHeight = `${(window.innerHeight - WH)}px`;
+
+  @Input() pageSize = Math.round((window.innerHeight - WH) / 28);
   @Input() type: DocTypes;
   @Input() settings: FormListSettings;
   get isDoc() { return this.type.startsWith('Document.'); }
@@ -47,43 +51,53 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.selection = [{ id: value.id, type: this.type, posted: value.posted }];
   }
 
-  columns$: Observable<ColumnDef[]>;
+  columns: ColumnDef[] = [];
   selection: any[] = [];
   contextMenuSelection = [];
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
   contexCommands: MenuItem[] = [];
   ctxData = { column: '', value: undefined };
-  showTree = this.routeData.metadata.hierarchy === 'folders';
-  showTreeButton = this.showTree;
-
+  showTree = false;
+  showTreeButton = true;
+  routeData = this.route.snapshot.data.detail as IViewModel;
+  postedCol: ColumnDef = ({
+    field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
+    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
+  });
   dataSource: ApiDataSource;
 
   ngOnInit() {
-    if (!this.settings && this.routeData) this.settings = this.routeData.settings;
+    const dependFromRoute = !this.type;
     if (!this.type) this.type = this.route.snapshot.params.type;
-
-    const columns: ColumnDef[] = this.routeData ? this.routeData.columnsDef || [] : [];
-
+    if (!this.settings) this.settings = this.routeData.settings;
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    const init = (c: ColumnDef[]) => {
-      this.setSortOrder();
-      this.setFilters();
-      this.setContextMenu(c);
-    };
+    const Doc = createDocument(this.type);
+    const Props = Doc.Props();
+    this.columns = buildColumnDef(Props, this.settings);
 
-    this.columns$ = _if(() => !!columns.length,
-      of(columns),
-      this.ds.api.getView(this.type).pipe(map(v => v.columnsDef)))
-      .pipe(
-        tap(c => init(c)),
-        map(d => d.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc))))
-      );
+    this.showTree = (Doc.Prop() as DocumentOptions).hierarchy === 'folders';
+    this.showTreeButton = this.showTree;
+
+    this.resizeObservable$ = fromEvent(window, 'resize')
+      .pipe(debounceTime(500), map(evt => {
+        const h = window.innerHeight - WH;
+        this.dataSource.pageSize = Math.round(h / 28);
+        const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
+        this.dataSource.refresh(id);
+        return `${h}px`;
+      }));
+
+    this.setSortOrder();
+    this.setFilters();
+    this.setContextMenu(this.columns);
+
+    this.columns = [...this.columns.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc)))];
 
     this._docSubscription$ = merge(...[
-        this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
-      filter(doc => doc && doc.type === this.type))
+      this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
+        filter(doc => doc && doc.type === this.type))
       .subscribe(doc => {
         const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
         if (exist) {
@@ -96,26 +110,23 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       });
 
     // обработка команды найти в списке
-    this._routeSubscruption$ = this.route.queryParams.pipe(
-      filter(params => this.route.snapshot.params.type === this.type && params.goto && !this.route.snapshot.params.id))
-      .subscribe(params => {
-        const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
-        if (exist) {
-          this.router.navigate([this.type], { replaceUrl: true })
-            .then(() => {
-              this.dataSource.refresh(exist.id);
-              this.id = { id: exist.id, posted: exist.posted };
-            });
-        } else {
-          this.router.navigate([this.type], { replaceUrl: true })
-            .then(() => {
+    if (dependFromRoute) {
+      this._routeSubscruption$ = this.route.queryParams.pipe(
+        filter(params => this.route.snapshot.params.type === this.type && params.goto && !this.route.snapshot.params.id))
+        .subscribe(params => {
+          const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
+          if (exist) {
+            this.router.navigate([this.type], { replaceUrl: true }).then(() =>
+              this.refresh(params.goto));
+          } else {
+            this.router.navigate([this.type], { replaceUrl: true }).then(() => {
               this.filters = {};
               this.prepareDataSource();
-              this.dataSource.goto(params.goto);
-              this.id = { id: params.goto, posted: params.posted };
+              this.goto(params.goto);
             });
-        }
-      });
+          }
+        });
+    }
 
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
@@ -137,20 +148,15 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // tslint:disable-next-line:member-ordering
-  postedCol: ColumnDef = ({
-    field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
-    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
-  });
   private _update(col: ColumnDef | undefined, event, center) {
     if (!col) return;
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-
+    this.id = { id: null, posted: null };
     this.prepareDataSource(this.multiSortMeta);
-    this.dataSource.sort();
+    this.last();
   }
-  update(col: ColumnDef, event, center = 'like') {
+  update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
       if (typeof event !== 'boolean') event = null;
     }
@@ -160,7 +166,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
     this.multiSortMeta = event.multiSortMeta;
     this.prepareDataSource();
-    this.dataSource.sort();
+    if (this.id.id) this.dataSource.sort();
+    else this.last();
   }
 
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -232,9 +239,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
         } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       } else {
         try {
-        await this.ds.unpostById(s.id);
-        s.posted = false;
-      } catch (err) { this.ds.openSnackBar('error', s.description, err); }
+          await this.ds.unpostById(s.id);
+          s.posted = false;
+        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       }
       this.selection = [s];
       setTimeout(() => scrollIntoViewIfNeeded(this.type, 'ui-state-highlight'));
@@ -244,7 +251,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   parentChange(event) {
-    this.id = {id: null, posted: false};
+    this.id = { id: null, posted: false };
     this.filters['parent'] = {
       matchMode: '=',
       value: event && event.data && event.data.id ? {
@@ -275,6 +282,56 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
         .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' })
     };
     this.uss.setFormListSettings(this.type, formListSettings);
+  }
+
+  private listen() {
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0)
+        this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
+    });
+  }
+
+  last() {
+    this.listen();
+    this.dataSource.last();
+  }
+
+  first() {
+    this.listen();
+    this.dataSource.first();
+  }
+
+  prev() {
+    this.listen();
+    this.dataSource.prev();
+  }
+
+  next() {
+    this.listen();
+    this.dataSource.next();
+  }
+
+
+  private listenRefresh(id: string) {
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0) {
+        const row = d.find(el => el.id === id);
+        if (row)
+          this.id = { id: row.id, posted: row.posted };
+      }
+    });
+  }
+
+  refresh(id: string) {
+    this.listenRefresh(id);
+    this.dataSource.refresh(id);
+  }
+
+  goto(id: string) {
+    this.listenRefresh(id);
+    this.dataSource.goto(id);
   }
 
   ngOnDestroy() {
