@@ -17,6 +17,9 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', required: true })
   prefix = '';
 
+  @Props({ type: 'Catalog.Company' })
+  Intercompany: Ref = null;
+
   @Props({ type: 'enum', required: true, value: [
     'UTC',
     'Central European Standard Time',

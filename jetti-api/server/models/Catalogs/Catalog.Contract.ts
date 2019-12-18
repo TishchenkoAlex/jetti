@@ -16,14 +16,20 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Counterpartie', required: true, order: 1 })
   owner: Ref = null;
 
+  @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
+  Status = 'OPEN';
+
   @Props({ type: 'enum', value: ['AR', 'AP', 'EXPORT'], required: true })
   kind = 'AR';
 
+  @Props({ type: 'date', required: true })
+  StartDate: Ref = null;
+
+  @Props({ type: 'date', required: false})
+  EndDate: Ref = null;
+
   @Props({ type: 'Catalog.BusinessDirection', required: true })
   BusinessDirection: Ref = null;
-
-  @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
-  Status = 'OPEN';
 
   @Props({ type: 'Catalog.Currency', required: true })
   currency: Ref = null;
