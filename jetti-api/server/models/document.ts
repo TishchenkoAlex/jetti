@@ -101,6 +101,9 @@ export class DocumentBase {
   @Props({ type: 'datetime', hiddenInList: true, order: -1, hidden: true })
   timestamp: Date | null = null;
 
+  @Props({ type: 'Document.WorkFlow', hiddenInList: true, order: -1 })
+  workflow: Ref = null;
+
   private targetProp(target: Object, propertyKey: string): PropOptions {
     const result = Reflect.getMetadata(symbolProps, target, propertyKey);
     return result;

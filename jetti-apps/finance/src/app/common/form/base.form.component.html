@@ -22,9 +22,11 @@
         </p-splitButton>
         <p-splitButton *ngIf="commands.length" [model]="commands" styleClass="ui-button-secondary" label="commands">
         </p-splitButton>
-        <button *ngIf="!isNew" pButton type="button" icon="fa fa-list" class="ui-button-secondary" (click)="Goto()"
+        <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
+        [disabled]="(lds.busy$ | async)"></button>
+        <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="Goto()"
           [disabled]="(lds.busy$ | async)"></button>
-        <button *ngIf="isPosted" pButton type="button" icon="fa fa-print" class="ui-button-secondary"
+        <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
           [disabled]="(lds.busy$ | async)"></button>
       </div>
     </p-toolbar>
@@ -71,6 +73,7 @@
     <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
       <j-control *ngIf="vk['parent']" [control]="vk['parent']" [form]="form"></j-control>
       <j-control *ngIf="vk['user']" [control]="vk['user']" [form]="form"></j-control>
+      <j-control *ngIf="vk['workflow']" [control]="vk['workflow']" [form]="form"></j-control>
     </div>
     <j-control *ngIf="vk['info']" [control]="vk['info']" [form]="form"></j-control>
   </p-panel>

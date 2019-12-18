@@ -11,8 +11,7 @@
         *ngIf="selection?.data?.id"></button>
     </div>
   </p-toolbar>
-
-  <p-treeTable [value]="treeNodes$ | async" [scrollable]="true" [scrollHeight]="scrollHeight" selectionMode="single"
+  <p-treeTable [value]="treeNodes" [scrollable]="true" [scrollHeight]="scrollHeight" selectionMode="single"
     dataKey="id" [(selection)]="selection" (onNodeSelect)="onNodeSelect($event)">
     <ng-template pTemplate="header">
       <tr>

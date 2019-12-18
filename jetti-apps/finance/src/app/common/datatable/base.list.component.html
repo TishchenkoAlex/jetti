@@ -1,7 +1,7 @@
 <div [ngStyle]="{'display': showTree ? 'flex': 'block'}" [class]="'scroll-' + type" [id]="type">
 
   <div *ngIf="showTree" style="margin-right: 4px">
-    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [owner]="this"></j-tree-list>
+    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)"></j-tree-list>
   </div>
 
   <div style="display: flex; flex-direction: column; overflow-x: auto">

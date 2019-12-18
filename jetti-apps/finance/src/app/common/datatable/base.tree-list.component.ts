@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnI
 import { Router } from '@angular/router';
 import { TreeNode } from 'primeng/api';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, switchMap, tap, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { ITree } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
@@ -10,7 +10,6 @@ import { DocTypes } from '../../../../../../jetti-api/server/models/documents.ty
 import { DocService } from '../../common/doc.service';
 import { ApiService } from '../../services/api.service';
 import { LoadingService } from '../loading.service';
-import { BaseDocListComponent } from './base.list.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,11 +19,9 @@ import { BaseDocListComponent } from './base.list.component';
 export class BaseTreeListComponent implements OnInit, OnDestroy {
   @Output() selectionChange = new EventEmitter();
   @Input() type: DocTypes;
-  @Input() owner: BaseDocListComponent;
   @Input() showCommands = true;
-  @Input() id: string;
   @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
-  treeNodes$: Observable<TreeNode[]>;
+  treeNodes: TreeNode[] = [];
   selection: TreeNode;
 
   private paginator = new Subject<DocumentBase>();
@@ -39,42 +36,40 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
       filter(doc => doc && doc.type === this.type)).
       subscribe(doc => this.paginator.next(doc));
 
-    this.treeNodes$ = this.paginator.pipe(
-      switchMap(doc => {
-        return this.api.tree(this.type).pipe(
-          map(tree => <TreeNode[]>[{
-            label: '(All)',
-            data: { id: undefined, description: '(All)' },
-            expanded: true,
-            expandedIcon: 'fa fa-folder-open',
-            collapsedIcon: 'fa fa-folder',
-            children: this.buildTreeNodes(tree, null),
-          }]),
-          tap(treeNodes => {
-            this.findDoc(treeNodes, this.id).then(data => {
-              this.selection = data;
-              this.cd.markForCheck();
-            });
-          }));
-      }));
-
-    setTimeout(() => this.paginator.next());
+    this.api.tree(this.type).pipe(take(1),
+      map(tree => <TreeNode[]>[{
+        label: '(All)',
+        data: { id: undefined, description: '(All)' },
+        expanded: true,
+        expandedIcon: 'fa fa-folder-open',
+        collapsedIcon: 'fa fa-folder',
+        children: this.buildTreeNodes(tree, null)
+      }]))
+      .subscribe(data => {
+        this.treeNodes = data;
+        this.cd.markForCheck();
+      });
   }
 
-  private async findDoc(tree: TreeNode[], id: string): Promise<TreeNode | undefined> {
-    if (!id) { return undefined;  }
-    const doc = await this.ds.api.byId(id);
-    const result = tree.find(el => el.data.id === doc.parent);
+  private findDoc(tree: TreeNode[], id: string): TreeNode | undefined {
+    if (!id) { return undefined; }
+    const result = tree.find(el => el.data.id === id);
     if (result) return result;
     for (let i = 0; i < tree.length; i++) {
-      const childrenResult = this.findDoc(tree[i].children || [], doc.id);
+      const childrenResult = this.findDoc(tree[i].children || [], id);
       if (childrenResult) return childrenResult;
     }
+  }
+
+  setSelection(id: string) {
+    this.selection = this.findDoc(this.treeNodes, id);
+    this.cd.markForCheck();
   }
 
   private buildTreeNodes(tree: ITree[], parent: string | null): TreeNode[] {
     return tree.filter(el => el.parent === parent).map(el => {
       return <TreeNode>{
+        parent,
         label: el.description,
         data: { id: el.id, description: el.description },
         expanded: true,

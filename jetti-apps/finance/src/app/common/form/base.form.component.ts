@@ -160,6 +160,14 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  startWorkFlow() {
+    this.ds.startWorkFlow(this.id).then(doc => {
+      this.form.patchValue({ workflow: { id: doc.id, type: doc.type, code: doc.code, value: doc.description } });
+      this.Save();
+      this.router.navigate([doc.type, doc.id]);
+    });
+  }
+
   ngOnDestroy() {
     this._subscription$.unsubscribe();
     this._descriptionSubscription$.unsubscribe();

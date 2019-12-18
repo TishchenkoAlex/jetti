@@ -38,6 +38,9 @@ export class DocService {
   private readonly _do$ = new Subject<DocumentBase>();
   do$ = this._do$.asObservable();
 
+  private readonly _workflow$ = new Subject<DocumentBase>();
+  workflow$ = this._workflow$.asObservable();
+
   constructor(public api: ApiService, private messageService: MessageService, public confirmationService: ConfirmationService) { }
 
   async save(doc: DocumentBase) {
@@ -77,6 +80,11 @@ export class DocService {
     const postedDoc = await this.api.unpostDocById(id).toPromise();
     this._unpostById$.next(postedDoc);
     return postedDoc;
+  }
+
+  async startWorkFlow(id: string) {
+    const workflow = await this.api.startWorkFlow(id).toPromise();
+    return workflow;
   }
 
   openSnackBar(severity: string, summary: string, detail: string) {

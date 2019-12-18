@@ -1,10 +1,9 @@
 <div [ngStyle]="{'display': showTree ? 'flex': 'block'}" [class]="'scroll-' + type" [id]="type">
 
   <div *ngIf="showTree" style="margin-right: 4px;">
-    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [owner]="this" [showCommands]="false" [id]="id"
+    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [showCommands]="false" [id]="selection"
     [scrollHeight]="'409px'"></j-tree-list>
   </div>
-
   <div style="display: flex; flex-direction: column; overflow-x: auto">
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
       sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection" [filterDelay]="500"
