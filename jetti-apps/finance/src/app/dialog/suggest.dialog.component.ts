@@ -75,7 +75,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       map(rows => rows.find(r => r.id === this.id)),
       filter(row => row !== undefined)).subscribe(row => {
         this.selection = [row as DocumentBase];
-        this.tl.setSelection(row.parent['id']);
+        if (this.tl) this.tl.setSelection(row.parent['id']);
       });
 
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))

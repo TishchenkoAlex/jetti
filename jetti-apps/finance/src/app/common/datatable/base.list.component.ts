@@ -167,7 +167,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.multiSortMeta = event.multiSortMeta;
     this.prepareDataSource();
     if (this.id.id) this.dataSource.sort();
-    else this.last();
+    else this.isCatalog ? this.first() : this.last();
   }
 
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -298,7 +298,11 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   first() {
-    this.listen();
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0)
+        this.id = { id: d[0].id, posted: d[0].posted };
+    });
     this.dataSource.first();
   }
 
