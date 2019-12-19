@@ -254,3 +254,8 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.UserSettings')
+    DROP INDEX IF EXISTS [Document.WorkFlow] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='Document.WorkFlow')

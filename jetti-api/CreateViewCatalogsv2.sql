@@ -8,6 +8,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isForex"') AS BIT), 0) "isForex"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isActive"') AS BIT), 0) "isActive"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isPassive"') AS BIT), 0) "isPassive"
@@ -29,6 +33,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Account' 
       GO
       GRANT SELECT ON dbo.[Catalog.Account] TO jetti;
@@ -50,6 +56,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isActive"') AS BIT), 0) "isActive"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isPassive"') AS BIT), 0) "isPassive"
 
@@ -70,6 +80,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Balance' 
       GO
       GRANT SELECT ON dbo.[Catalog.Balance] TO jetti;
@@ -91,6 +103,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [BalanceAnalytics.Level5]
@@ -109,6 +125,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Balance.Analytics' 
       GO
       GRANT SELECT ON dbo.[Catalog.Balance.Analytics] TO jetti;
@@ -130,6 +148,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
@@ -161,6 +183,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
@@ -188,6 +212,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [CashFlow.Level5]
@@ -206,6 +234,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.CashFlow' 
       GO
       GRANT SELECT ON dbo.[Catalog.CashFlow] TO jetti;
@@ -227,6 +257,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
@@ -254,6 +288,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
@@ -279,6 +315,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Currency.Level5]
@@ -297,6 +337,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Currency' 
       GO
       GRANT SELECT ON dbo.[Catalog.Currency] TO jetti;
@@ -320,9 +362,17 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
           CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."prefix"'), '') "prefix"
+,
+
+        ISNULL("Intercompany".description, N'') "Intercompany.value", ISNULL("Intercompany".type, N'Catalog.Company') "Intercompany.type",
+          CAST(JSON_VALUE(d.doc, N'$."Intercompany"') AS UNIQUEIDENTIFIER) "Intercompany.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."timeZone"'), '') "timeZone"
 
     
@@ -342,7 +392,11 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Intercompany" ON "Intercompany".id = CAST(JSON_VALUE(d.doc, N'$."Intercompany"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Company' 
       GO
@@ -365,6 +419,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."kind"'), '') "kind"
 , ISNULL(JSON_VALUE(d.doc, N'$."FullName"'), '') "FullName"
 ,
@@ -398,6 +456,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Counterpartie' 
@@ -421,6 +481,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
@@ -456,6 +520,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
@@ -487,14 +553,20 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("owner".description, N'') "owner.value", ISNULL("owner".type, N'Catalog.Counterpartie') "owner.type",
           CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER) "owner.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
 , ISNULL(JSON_VALUE(d.doc, N'$."kind"'), '') "kind"
+, ISNULL(JSON_VALUE(d.doc, N'$."StartDate"'), '') "StartDate"
+, ISNULL(JSON_VALUE(d.doc, N'$."EndDate"'), '') "EndDate"
 ,
 
         ISNULL("BusinessDirection".description, N'') "BusinessDirection.value", ISNULL("BusinessDirection".type, N'Catalog.BusinessDirection') "BusinessDirection.type",
           CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER) "BusinessDirection.id"
-, ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
@@ -521,6 +593,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "owner" ON "owner".id = CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "BusinessDirection" ON "BusinessDirection".id = CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER)
@@ -550,6 +624,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [BusinessDirection.Level5]
@@ -568,6 +646,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.BusinessDirection' 
       GO
       GRANT SELECT ON dbo.[Catalog.BusinessDirection] TO jetti;
@@ -589,6 +669,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Department.Level5]
@@ -607,6 +691,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Department' 
       GO
       GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
@@ -630,6 +716,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("Account".description, N'') "Account.value", ISNULL("Account".type, N'Catalog.Account') "Account.type",
           CAST(JSON_VALUE(d.doc, N'$."Account"') AS UNIQUEIDENTIFIER) "Account.id"
 
@@ -650,6 +740,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Account" ON "Account".id = CAST(JSON_VALUE(d.doc, N'$."Account"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Expense' 
@@ -673,6 +765,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [ExpenseAnalytics.Level5]
@@ -691,6 +787,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Expense.Analytics' 
       GO
       GRANT SELECT ON dbo.[Catalog.Expense.Analytics] TO jetti;
@@ -714,6 +812,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("Account".description, N'') "Account.value", ISNULL("Account".type, N'Catalog.Account') "Account.type",
           CAST(JSON_VALUE(d.doc, N'$."Account"') AS UNIQUEIDENTIFIER) "Account.id"
 
@@ -734,6 +836,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Account" ON "Account".id = CAST(JSON_VALUE(d.doc, N'$."Account"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Income' 
@@ -757,6 +861,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
@@ -783,6 +891,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
@@ -808,6 +918,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."FullName"'), '') "FullName"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."Gender"') AS BIT), 0) "Gender"
 , ISNULL(JSON_VALUE(d.doc, N'$."Birthday"'), '') "Birthday"
@@ -829,6 +943,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Manager' 
       GO
       GRANT SELECT ON dbo.[Catalog.Manager] TO jetti;
@@ -850,6 +966,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Person.Level5]
@@ -868,6 +988,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Person' 
       GO
       GRANT SELECT ON dbo.[Catalog.Person] TO jetti;
@@ -891,6 +1013,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
           CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."TaxInclude"') AS BIT), 0) "TaxInclude"
@@ -912,6 +1038,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.PriceType' 
@@ -935,6 +1063,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("ProductKind".description, N'') "ProductKind.value", ISNULL("ProductKind".type, N'Catalog.ProductKind') "ProductKind.type",
@@ -970,6 +1102,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "ProductKind" ON "ProductKind".id = CAST(JSON_VALUE(d.doc, N'$."ProductKind"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "ProductCategory" ON "ProductCategory".id = CAST(JSON_VALUE(d.doc, N'$."ProductCategory"') AS UNIQUEIDENTIFIER)
@@ -999,6 +1133,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [ProductCategory.Level5]
@@ -1017,6 +1155,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.ProductCategory' 
       GO
       GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
@@ -1038,6 +1178,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."ProductType"'), '') "ProductType"
 
     
@@ -1057,6 +1201,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.ProductKind' 
       GO
       GRANT SELECT ON dbo.[Catalog.ProductKind] TO jetti;
@@ -1080,6 +1226,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
           CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
 
@@ -1100,6 +1250,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Storehouse' 
@@ -1125,6 +1277,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("Group".description, N'') "Group.value", ISNULL("Group".type, N'Catalog.Operation.Group') "Group.type",
           CAST(JSON_VALUE(d.doc, N'$."Group"') AS UNIQUEIDENTIFIER) "Group.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."script"'), '') "script"
@@ -1147,6 +1303,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Group" ON "Group".id = CAST(JSON_VALUE(d.doc, N'$."Group"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Operation' 
@@ -1170,6 +1328,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."Prefix"'), '') "Prefix"
 
     
@@ -1189,6 +1351,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Operation.Group' 
       GO
       GRANT SELECT ON dbo.[Catalog.Operation.Group] TO jetti;
@@ -1210,6 +1374,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [OperationType.Level5]
@@ -1228,6 +1396,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Operation.Type' 
       GO
       GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
@@ -1249,6 +1419,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Unit.Level5]
@@ -1267,6 +1441,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Unit' 
       GO
       GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
@@ -1288,6 +1464,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."isAdmin"') AS BIT), 0) "isAdmin"
 
     
@@ -1307,6 +1487,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.User' 
       GO
       GRANT SELECT ON dbo.[Catalog.User] TO jetti;
@@ -1328,6 +1510,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [UsersGroup.Level5]
@@ -1346,6 +1532,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.UsersGroup' 
       GO
       GRANT SELECT ON dbo.[Catalog.UsersGroup] TO jetti;
@@ -1367,6 +1555,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Role.Level5]
@@ -1385,6 +1577,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Role' 
       GO
       GRANT SELECT ON dbo.[Catalog.Role] TO jetti;
@@ -1406,6 +1600,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."icon"'), '') "icon"
 
     
@@ -1425,6 +1623,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.SubSystem' 
       GO
       GRANT SELECT ON dbo.[Catalog.SubSystem] TO jetti;
@@ -1446,6 +1646,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Documents.Level5]
@@ -1464,6 +1668,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Documents' 
       GO
       GRANT SELECT ON dbo.[Catalog.Documents] TO jetti;
@@ -1485,6 +1691,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Catalogs.Level5]
@@ -1503,6 +1713,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Catalogs' 
       GO
       GRANT SELECT ON dbo.[Catalog.Catalogs] TO jetti;
@@ -1524,6 +1736,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Forms.Level5]
@@ -1542,6 +1758,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Forms' 
       GO
       GRANT SELECT ON dbo.[Catalog.Forms] TO jetti;
@@ -1563,6 +1781,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Objects.Level5]
@@ -1581,6 +1803,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Objects' 
       GO
       GRANT SELECT ON dbo.[Catalog.Objects] TO jetti;
@@ -1602,6 +1826,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Subcount.Level5]
@@ -1620,6 +1848,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Subcount' 
       GO
       GRANT SELECT ON dbo.[Catalog.Subcount] TO jetti;
@@ -1641,6 +1871,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [Brand.Level5]
@@ -1659,6 +1893,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Brand' 
       GO
       GRANT SELECT ON dbo.[Catalog.Brand] TO jetti;
@@ -1680,6 +1916,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."Method"'), '') "Method"
 
     
@@ -1699,6 +1939,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.GroupObjectsExploitation' 
       GO
       GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation] TO jetti;
@@ -1722,6 +1964,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("Group".description, N'') "Group.value", ISNULL("Group".type, N'Catalog.ObjectsExploitation') "Group.type",
           CAST(JSON_VALUE(d.doc, N'$."Group"') AS UNIQUEIDENTIFIER) "Group.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."InventoryNumber"'), '') "InventoryNumber"
@@ -1743,6 +1989,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Group" ON "Group".id = CAST(JSON_VALUE(d.doc, N'$."Group"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.ObjectsExploitation' 
@@ -1766,6 +2014,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."prefix"'), '') "prefix"
 , ISNULL(JSON_VALUE(d.doc, N'$."icon"'), '') "icon"
 , ISNULL(JSON_VALUE(d.doc, N'$."menu"'), '') "menu"
@@ -1790,6 +2042,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Catalog' 
       GO
       GRANT SELECT ON dbo.[Catalog.Catalog] TO jetti;
@@ -1811,6 +2065,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [BudgetItem.Level5]
@@ -1829,6 +2087,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.BudgetItem' 
       GO
       GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;
@@ -1852,6 +2112,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
           CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
 
@@ -1872,6 +2136,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Scenario' 
@@ -1895,6 +2161,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("BankAccount".description, N'') "BankAccount.value", ISNULL("BankAccount".type, N'Catalog.BankAccount') "BankAccount.type",
@@ -1926,6 +2196,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "BankAccount" ON "BankAccount".id = CAST(JSON_VALUE(d.doc, N'$."BankAccount"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Counterpartie" ON "Counterpartie".id = CAST(JSON_VALUE(d.doc, N'$."Counterpartie"') AS UNIQUEIDENTIFIER)
@@ -1953,6 +2225,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 , ISNULL(JSON_VALUE(d.doc, N'$."Code1"'), '') "Code1"
 , ISNULL(JSON_VALUE(d.doc, N'$."Code2"'), '') "Code2"
 , ISNULL(JSON_VALUE(d.doc, N'$."Address"'), '') "Address"
@@ -1976,6 +2252,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Catalog.Bank' 
       GO
       GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
@@ -1997,6 +2275,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 
     
       , ISNULL(l5.description, d.description) [ExchangeRates.Level5]
@@ -2015,6 +2297,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
     WHERE d.[type] = 'Document.ExchangeRates' 
       GO
       GRANT SELECT ON dbo.[Document.ExchangeRates] TO jetti;
@@ -2036,6 +2320,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
@@ -2078,6 +2366,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Storehouse" ON "Storehouse".id = CAST(JSON_VALUE(d.doc, N'$."Storehouse"') AS UNIQUEIDENTIFIER)
@@ -2109,6 +2399,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("Group".description, N'') "Group.value", ISNULL("Group".type, N'Catalog.Operation.Group') "Group.type",
@@ -2152,6 +2446,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "Group" ON "Group".id = CAST(JSON_VALUE(d.doc, N'$."Group"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Operation" ON "Operation".id = CAST(JSON_VALUE(d.doc, N'$."Operation"') AS UNIQUEIDENTIFIER)
@@ -2187,6 +2483,10 @@
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+
         ISNULL("PriceType".description, N'') "PriceType.value", ISNULL("PriceType".type, N'Catalog.PriceType') "PriceType.type",
           CAST(JSON_VALUE(d.doc, N'$."PriceType"') AS UNIQUEIDENTIFIER) "PriceType.id"
 , ISNULL(CAST(JSON_VALUE(d.doc, N'$."TaxInclude"') AS BIT), 0) "TaxInclude"
@@ -2208,6 +2508,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "PriceType" ON "PriceType".id = CAST(JSON_VALUE(d.doc, N'$."PriceType"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Document.PriceList' 
@@ -2231,6 +2533,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
         ISNULL("balanceCurrency".description, N'') "balanceCurrency.value", ISNULL("balanceCurrency".type, N'Catalog.Currency') "balanceCurrency.type",
@@ -2257,6 +2563,8 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "balanceCurrency" ON "balanceCurrency".id = CAST(JSON_VALUE(d.doc, N'$."balanceCurrency"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "accountingCurrency" ON "accountingCurrency".id = CAST(JSON_VALUE(d.doc, N'$."accountingCurrency"') AS UNIQUEIDENTIFIER)
@@ -2282,6 +2590,10 @@
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
         IIF("UserOrGroup".id IS NULL, JSON_VALUE(d.doc, N'$."UserOrGroup".id'), "UserOrGroup".id) "UserOrGroup.id",
         IIF("UserOrGroup".id IS NULL, JSON_VALUE(d.doc, N'$."UserOrGroup".value'), "UserOrGroup".description) "UserOrGroup.value",
@@ -2310,11 +2622,65 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
       LEFT JOIN dbo."Documents" "UserOrGroup" ON "UserOrGroup".id = CAST(JSON_VALUE(d.doc, N'$."UserOrGroup"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Document.UserSettings' 
       GO
       GRANT SELECT ON dbo.[Document.UserSettings] TO jetti;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
+      SELECT
+	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
+	      d.id, d.date [date],
+	      d.description Presentation
+        FROM dbo.[Documents] d
+      GO
+      
+
+      DROP VIEW IF EXISTS dbo.[Document.WorkFlow];
+      GO
+      CREATE OR ALTER VIEW dbo.[Document.WorkFlow] WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "WorkFlow", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+,
+        IIF("Document".id IS NULL, JSON_VALUE(d.doc, N'$."Document".id'), "Document".id) "Document.id",
+        IIF("Document".id IS NULL, JSON_VALUE(d.doc, N'$."Document".value'), "Document".description) "Document.value",
+        IIF("Document".id IS NULL, JSON_VALUE(d.doc, N'$."Document".type'), "Document".type) "Document.type"
+, ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
+
+    
+      , ISNULL(l5.description, d.description) [WorkFlow.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [WorkFlow.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [WorkFlow.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [WorkFlow.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [WorkFlow.Level1]
+      FROM dbo.Documents d
+        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
+        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
+        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
+        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
+        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
+      
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Document" ON "Document".id = CAST(JSON_VALUE(d.doc, N'$."Document"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Document.WorkFlow' 
+      GO
+      GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
       GO
       CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
       SELECT

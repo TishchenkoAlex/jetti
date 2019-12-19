@@ -90,22 +90,3 @@
     </p-table>
   </div>
 </div>
-
-<div style="bottom: 8px; left: 8px; right: 8px; position: absolute">
-  <p-toolbar>
-    <div class="ui-toolbar-group-left">
-      <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-        [disabled]="selection?.length !== 1" (click)="open(selection[0])"></button>
-    </div>
-    <div class="ui-toolbar-group-right">
-      <button pButton type="button" icon="pi pi-fast-backward" (click)="selection = []; dataSource?.first()"
-        [disabled]="!dataSource?.continuation?.first"></button>
-      <button pButton type="button" icon="pi pi-step-backward" (click)="selection = []; dataSource?.prev()"
-        [disabled]="!dataSource?.continuation?.first"></button>
-      <button pButton type="button" icon="pi pi-step-forward" (click)="selection = []; dataSource?.next()"
-        [disabled]="!dataSource?.continuation?.last"></button>
-      <button pButton type="button" icon="pi pi-fast-forward" (click)="selection = []; dataSource?.last()"
-        [disabled]="!dataSource?.continuation?.last"></button>
-    </div>
-  </p-toolbar>
-</div>

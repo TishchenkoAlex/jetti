@@ -287,8 +287,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private listen() {
     this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0)
-        this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
+      if (d.length > 0)this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
     });
   }
 
@@ -300,8 +299,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   first() {
     this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0)
-        this.id = { id: d[0].id, posted: d[0].posted };
+      if (d.length > 0) this.id = { id: d[0].id, posted: d[0].posted };
     });
     this.dataSource.first();
   }
@@ -312,6 +310,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   next() {
+    console.log(this.filters);
     this.listen();
     this.dataSource.next();
   }

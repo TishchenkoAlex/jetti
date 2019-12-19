@@ -1,7 +1,9 @@
 
     DROP VIEW IF EXISTS [dbo].[Catalog.Account.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Account.workflow];
+    ALTER TABLE Documents ADD [Catalog.Account.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Account.v]
     WITH SCHEMABINDING
@@ -9,6 +11,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Account.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isForex"') AS BIT), 0) [isForex]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isActive"') AS BIT), 0) [isActive]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isPassive"') AS BIT), 0) [isPassive]
@@ -24,6 +27,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.date] ON [dbo].[Catalog.Account.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.isfolder] ON [dbo].[Catalog.Account.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.workflow] ON [dbo].[Catalog.Account.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Account.v] TO JETTI;
     GO
@@ -31,7 +35,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Balance.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Balance.workflow];
+    ALTER TABLE Documents ADD [Catalog.Balance.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Balance.v]
     WITH SCHEMABINDING
@@ -39,6 +45,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Balance.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isActive"') AS BIT), 0) [isActive]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isPassive"') AS BIT), 0) [isPassive]
     FROM dbo.[Documents]
@@ -53,6 +60,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.date] ON [dbo].[Catalog.Balance.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.isfolder] ON [dbo].[Catalog.Balance.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.workflow] ON [dbo].[Catalog.Balance.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Balance.v] TO JETTI;
     GO
@@ -60,7 +68,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Balance.Analytics.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Balance.Analytics.workflow];
+    ALTER TABLE Documents ADD [Catalog.Balance.Analytics.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Balance.Analytics.v]
     WITH SCHEMABINDING
@@ -68,6 +78,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Balance.Analytics.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Balance.Analytics'
     GO
@@ -80,6 +91,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.date] ON [dbo].[Catalog.Balance.Analytics.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.isfolder] ON [dbo].[Catalog.Balance.Analytics.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.workflow] ON [dbo].[Catalog.Balance.Analytics.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Balance.Analytics.v] TO JETTI;
     GO
@@ -88,6 +100,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.BankAccount.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.BankAccount.workflow];
+    ALTER TABLE Documents ADD [Catalog.BankAccount.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.BankAccount.currency];
     ALTER TABLE Documents ADD [Catalog.BankAccount.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.BankAccount.Department];
@@ -101,6 +115,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.BankAccount.workflow] [workflow]
       , [Catalog.BankAccount.currency] [currency]
       , [Catalog.BankAccount.Department] [Department]
       , [Catalog.BankAccount.Bank] [Bank]
@@ -117,6 +132,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.date] ON [dbo].[Catalog.BankAccount.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.isfolder] ON [dbo].[Catalog.BankAccount.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.workflow] ON [dbo].[Catalog.BankAccount.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.currency] ON [dbo].[Catalog.BankAccount.v]([currency], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.Department] ON [dbo].[Catalog.BankAccount.v]([Department], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.Bank] ON [dbo].[Catalog.BankAccount.v]([Bank], [id]);
@@ -127,7 +143,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.CashFlow.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.CashFlow.workflow];
+    ALTER TABLE Documents ADD [Catalog.CashFlow.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.CashFlow.v]
     WITH SCHEMABINDING
@@ -135,6 +153,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.CashFlow.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.CashFlow'
     GO
@@ -147,6 +166,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.date] ON [dbo].[Catalog.CashFlow.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.isfolder] ON [dbo].[Catalog.CashFlow.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.workflow] ON [dbo].[Catalog.CashFlow.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.CashFlow.v] TO JETTI;
     GO
@@ -155,6 +175,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.CashRegister.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.CashRegister.workflow];
+    ALTER TABLE Documents ADD [Catalog.CashRegister.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.CashRegister.currency];
     ALTER TABLE Documents ADD [Catalog.CashRegister.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.CashRegister.Department];
@@ -166,6 +188,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.CashRegister.workflow] [workflow]
       , [Catalog.CashRegister.currency] [currency]
       , [Catalog.CashRegister.Department] [Department]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isAccounting"') AS BIT), 0) [isAccounting]
@@ -181,6 +204,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.date] ON [dbo].[Catalog.CashRegister.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.isfolder] ON [dbo].[Catalog.CashRegister.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.workflow] ON [dbo].[Catalog.CashRegister.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.currency] ON [dbo].[Catalog.CashRegister.v]([currency], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.Department] ON [dbo].[Catalog.CashRegister.v]([Department], [id]);
     GO
@@ -190,7 +214,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Currency.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Currency.workflow];
+    ALTER TABLE Documents ADD [Catalog.Currency.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Currency.v]
     WITH SCHEMABINDING
@@ -198,6 +224,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Currency.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Currency'
     GO
@@ -210,6 +237,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.date] ON [dbo].[Catalog.Currency.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.isfolder] ON [dbo].[Catalog.Currency.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.workflow] ON [dbo].[Catalog.Currency.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Currency.v] TO JETTI;
     GO
@@ -218,8 +246,12 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Company.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Company.workflow];
+    ALTER TABLE Documents ADD [Catalog.Company.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Company.currency];
-    ALTER TABLE Documents ADD [Catalog.Company.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;;
+    ALTER TABLE Documents ADD [Catalog.Company.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Company.Intercompany];
+    ALTER TABLE Documents ADD [Catalog.Company.Intercompany] AS CAST(JSON_VALUE(doc, N'$."Intercompany"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Company.v]
     WITH SCHEMABINDING
@@ -227,8 +259,10 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Company.workflow] [workflow]
       , [Catalog.Company.currency] [currency]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."prefix"') AS NVARCHAR(150)), '') [prefix]
+      , [Catalog.Company.Intercompany] [Intercompany]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."timeZone"') AS NVARCHAR(150)), '') [timeZone]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Company'
@@ -242,7 +276,9 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.date] ON [dbo].[Catalog.Company.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.isfolder] ON [dbo].[Catalog.Company.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.workflow] ON [dbo].[Catalog.Company.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.currency] ON [dbo].[Catalog.Company.v]([currency], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.Intercompany] ON [dbo].[Catalog.Company.v]([Intercompany], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Company.v] TO JETTI;
     GO
@@ -251,6 +287,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Counterpartie.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Counterpartie.workflow];
+    ALTER TABLE Documents ADD [Catalog.Counterpartie.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Counterpartie.Department];
     ALTER TABLE Documents ADD [Catalog.Counterpartie.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -260,6 +298,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Counterpartie.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."kind"') AS NVARCHAR(150)), '') [kind]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."FullName"') AS NVARCHAR(150)), '') [FullName]
       , [Catalog.Counterpartie.Department] [Department]
@@ -284,6 +323,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.date] ON [dbo].[Catalog.Counterpartie.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.isfolder] ON [dbo].[Catalog.Counterpartie.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.workflow] ON [dbo].[Catalog.Counterpartie.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.Department] ON [dbo].[Catalog.Counterpartie.v]([Department], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Counterpartie.v] TO JETTI;
@@ -293,6 +333,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Counterpartie.BankAccount.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Counterpartie.BankAccount.workflow];
+    ALTER TABLE Documents ADD [Catalog.Counterpartie.BankAccount.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Counterpartie.BankAccount.currency];
     ALTER TABLE Documents ADD [Catalog.Counterpartie.BankAccount.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Counterpartie.BankAccount.Department];
@@ -308,6 +350,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Counterpartie.BankAccount.workflow] [workflow]
       , [Catalog.Counterpartie.BankAccount.currency] [currency]
       , [Catalog.Counterpartie.BankAccount.Department] [Department]
       , [Catalog.Counterpartie.BankAccount.Bank] [Bank]
@@ -325,6 +368,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.date] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.isfolder] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.workflow] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.currency] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([currency], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.Department] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([Department], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.Bank] ON [dbo].[Catalog.Counterpartie.BankAccount.v]([Bank], [id]);
@@ -337,6 +381,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Contract.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Contract.workflow];
+    ALTER TABLE Documents ADD [Catalog.Contract.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Contract.owner];
     ALTER TABLE Documents ADD [Catalog.Contract.owner] AS CAST(JSON_VALUE(doc, N'$."owner"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Contract.BusinessDirection];
@@ -352,10 +398,13 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Contract.workflow] [workflow]
       , [Catalog.Contract.owner] [owner]
-      , ISNULL(CAST(JSON_VALUE(doc, N'$."kind"') AS NVARCHAR(150)), '') [kind]
-      , [Catalog.Contract.BusinessDirection] [BusinessDirection]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Status"') AS NVARCHAR(150)), '') [Status]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."kind"') AS NVARCHAR(150)), '') [kind]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."StartDate"') AS NVARCHAR(150)), '') [StartDate]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."EndDate"') AS NVARCHAR(150)), '') [EndDate]
+      , [Catalog.Contract.BusinessDirection] [BusinessDirection]
       , [Catalog.Contract.currency] [currency]
       , [Catalog.Contract.Manager] [Manager]
     FROM dbo.[Documents]
@@ -370,6 +419,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.date] ON [dbo].[Catalog.Contract.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.isfolder] ON [dbo].[Catalog.Contract.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.workflow] ON [dbo].[Catalog.Contract.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.owner] ON [dbo].[Catalog.Contract.v]([owner], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.BusinessDirection] ON [dbo].[Catalog.Contract.v]([BusinessDirection], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.currency] ON [dbo].[Catalog.Contract.v]([currency], [id]);
@@ -381,7 +431,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.BusinessDirection.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.BusinessDirection.workflow];
+    ALTER TABLE Documents ADD [Catalog.BusinessDirection.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.BusinessDirection.v]
     WITH SCHEMABINDING
@@ -389,6 +441,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.BusinessDirection.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.BusinessDirection'
     GO
@@ -401,6 +454,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.date] ON [dbo].[Catalog.BusinessDirection.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.isfolder] ON [dbo].[Catalog.BusinessDirection.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.workflow] ON [dbo].[Catalog.BusinessDirection.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.BusinessDirection.v] TO JETTI;
     GO
@@ -408,7 +462,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Department.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Department.workflow];
+    ALTER TABLE Documents ADD [Catalog.Department.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Department.v]
     WITH SCHEMABINDING
@@ -416,6 +472,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Department.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Department'
     GO
@@ -428,6 +485,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.date] ON [dbo].[Catalog.Department.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.isfolder] ON [dbo].[Catalog.Department.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.workflow] ON [dbo].[Catalog.Department.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Department.v] TO JETTI;
     GO
@@ -436,6 +494,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Expense.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Expense.workflow];
+    ALTER TABLE Documents ADD [Catalog.Expense.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Expense.Account];
     ALTER TABLE Documents ADD [Catalog.Expense.Account] AS CAST(JSON_VALUE(doc, N'$."Account"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -445,6 +505,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Expense.workflow] [workflow]
       , [Catalog.Expense.Account] [Account]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Expense'
@@ -458,6 +519,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.date] ON [dbo].[Catalog.Expense.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.isfolder] ON [dbo].[Catalog.Expense.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.workflow] ON [dbo].[Catalog.Expense.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.Account] ON [dbo].[Catalog.Expense.v]([Account], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Expense.v] TO JETTI;
@@ -466,7 +528,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Expense.Analytics.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Expense.Analytics.workflow];
+    ALTER TABLE Documents ADD [Catalog.Expense.Analytics.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Expense.Analytics.v]
     WITH SCHEMABINDING
@@ -474,6 +538,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Expense.Analytics.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Expense.Analytics'
     GO
@@ -486,6 +551,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.date] ON [dbo].[Catalog.Expense.Analytics.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.isfolder] ON [dbo].[Catalog.Expense.Analytics.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.workflow] ON [dbo].[Catalog.Expense.Analytics.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Expense.Analytics.v] TO JETTI;
     GO
@@ -494,6 +560,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Income.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Income.workflow];
+    ALTER TABLE Documents ADD [Catalog.Income.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Income.Account];
     ALTER TABLE Documents ADD [Catalog.Income.Account] AS CAST(JSON_VALUE(doc, N'$."Account"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -503,6 +571,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Income.workflow] [workflow]
       , [Catalog.Income.Account] [Account]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Income'
@@ -516,6 +585,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.date] ON [dbo].[Catalog.Income.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.isfolder] ON [dbo].[Catalog.Income.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.workflow] ON [dbo].[Catalog.Income.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.Account] ON [dbo].[Catalog.Income.v]([Account], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Income.v] TO JETTI;
@@ -525,6 +595,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Loan.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Loan.workflow];
+    ALTER TABLE Documents ADD [Catalog.Loan.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Loan.Department];
     ALTER TABLE Documents ADD [Catalog.Loan.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Loan.currency];
@@ -536,6 +608,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Loan.workflow] [workflow]
       , [Catalog.Loan.Department] [Department]
       , [Catalog.Loan.currency] [currency]
     FROM dbo.[Documents]
@@ -550,6 +623,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.date] ON [dbo].[Catalog.Loan.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.isfolder] ON [dbo].[Catalog.Loan.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.workflow] ON [dbo].[Catalog.Loan.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.Department] ON [dbo].[Catalog.Loan.v]([Department], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.currency] ON [dbo].[Catalog.Loan.v]([currency], [id]);
     GO
@@ -559,7 +633,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Manager.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Manager.workflow];
+    ALTER TABLE Documents ADD [Catalog.Manager.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Manager.v]
     WITH SCHEMABINDING
@@ -567,6 +643,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Manager.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."FullName"') AS NVARCHAR(150)), '') [FullName]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Gender"') AS BIT), 0) [Gender]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Birthday"') AS NVARCHAR(150)), '') [Birthday]
@@ -582,6 +659,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.date] ON [dbo].[Catalog.Manager.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.isfolder] ON [dbo].[Catalog.Manager.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.workflow] ON [dbo].[Catalog.Manager.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Manager.v] TO JETTI;
     GO
@@ -589,7 +667,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Person.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Person.workflow];
+    ALTER TABLE Documents ADD [Catalog.Person.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Person.v]
     WITH SCHEMABINDING
@@ -597,6 +677,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Person.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Person'
     GO
@@ -609,6 +690,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.date] ON [dbo].[Catalog.Person.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.isfolder] ON [dbo].[Catalog.Person.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.workflow] ON [dbo].[Catalog.Person.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Person.v] TO JETTI;
     GO
@@ -617,6 +699,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.PriceType.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.PriceType.workflow];
+    ALTER TABLE Documents ADD [Catalog.PriceType.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.PriceType.currency];
     ALTER TABLE Documents ADD [Catalog.PriceType.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -626,6 +710,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.PriceType.workflow] [workflow]
       , [Catalog.PriceType.currency] [currency]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."TaxInclude"') AS BIT), 0) [TaxInclude]
     FROM dbo.[Documents]
@@ -640,6 +725,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.date] ON [dbo].[Catalog.PriceType.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.isfolder] ON [dbo].[Catalog.PriceType.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.workflow] ON [dbo].[Catalog.PriceType.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.currency] ON [dbo].[Catalog.PriceType.v]([currency], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.PriceType.v] TO JETTI;
@@ -649,6 +735,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Product.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Product.workflow];
+    ALTER TABLE Documents ADD [Catalog.Product.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Product.ProductKind];
     ALTER TABLE Documents ADD [Catalog.Product.ProductKind] AS CAST(JSON_VALUE(doc, N'$."ProductKind"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Product.ProductCategory];
@@ -664,6 +752,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Product.workflow] [workflow]
       , [Catalog.Product.ProductKind] [ProductKind]
       , [Catalog.Product.ProductCategory] [ProductCategory]
       , [Catalog.Product.Brand] [Brand]
@@ -681,6 +770,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.date] ON [dbo].[Catalog.Product.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.isfolder] ON [dbo].[Catalog.Product.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.workflow] ON [dbo].[Catalog.Product.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.ProductKind] ON [dbo].[Catalog.Product.v]([ProductKind], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.ProductCategory] ON [dbo].[Catalog.Product.v]([ProductCategory], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.Brand] ON [dbo].[Catalog.Product.v]([Brand], [id]);
@@ -692,7 +782,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.ProductCategory.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.ProductCategory.workflow];
+    ALTER TABLE Documents ADD [Catalog.ProductCategory.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.ProductCategory.v]
     WITH SCHEMABINDING
@@ -700,6 +792,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.ProductCategory.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.ProductCategory'
     GO
@@ -712,6 +805,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.date] ON [dbo].[Catalog.ProductCategory.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.isfolder] ON [dbo].[Catalog.ProductCategory.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.workflow] ON [dbo].[Catalog.ProductCategory.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.ProductCategory.v] TO JETTI;
     GO
@@ -719,7 +813,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.ProductKind.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.ProductKind.workflow];
+    ALTER TABLE Documents ADD [Catalog.ProductKind.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.ProductKind.v]
     WITH SCHEMABINDING
@@ -727,6 +823,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.ProductKind.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."ProductType"') AS NVARCHAR(150)), '') [ProductType]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.ProductKind'
@@ -740,6 +837,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.date] ON [dbo].[Catalog.ProductKind.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.isfolder] ON [dbo].[Catalog.ProductKind.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.workflow] ON [dbo].[Catalog.ProductKind.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.ProductKind.v] TO JETTI;
     GO
@@ -748,6 +846,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Storehouse.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Storehouse.workflow];
+    ALTER TABLE Documents ADD [Catalog.Storehouse.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Storehouse.Department];
     ALTER TABLE Documents ADD [Catalog.Storehouse.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -757,6 +857,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Storehouse.workflow] [workflow]
       , [Catalog.Storehouse.Department] [Department]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Storehouse'
@@ -770,6 +871,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.date] ON [dbo].[Catalog.Storehouse.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.isfolder] ON [dbo].[Catalog.Storehouse.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.workflow] ON [dbo].[Catalog.Storehouse.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.Department] ON [dbo].[Catalog.Storehouse.v]([Department], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Storehouse.v] TO JETTI;
@@ -779,6 +881,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Operation.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Operation.workflow];
+    ALTER TABLE Documents ADD [Catalog.Operation.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Operation.Group];
     ALTER TABLE Documents ADD [Catalog.Operation.Group] AS CAST(JSON_VALUE(doc, N'$."Group"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -788,6 +892,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Operation.workflow] [workflow]
       , [Catalog.Operation.Group] [Group]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."script"') AS NVARCHAR(150)), '') [script]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."module"') AS NVARCHAR(150)), '') [module]
@@ -803,6 +908,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.date] ON [dbo].[Catalog.Operation.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.isfolder] ON [dbo].[Catalog.Operation.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.workflow] ON [dbo].[Catalog.Operation.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.Group] ON [dbo].[Catalog.Operation.v]([Group], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Operation.v] TO JETTI;
@@ -811,7 +917,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Operation.Group.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Operation.Group.workflow];
+    ALTER TABLE Documents ADD [Catalog.Operation.Group.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Operation.Group.v]
     WITH SCHEMABINDING
@@ -819,6 +927,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Operation.Group.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Prefix"') AS NVARCHAR(150)), '') [Prefix]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Operation.Group'
@@ -832,6 +941,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.date] ON [dbo].[Catalog.Operation.Group.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.isfolder] ON [dbo].[Catalog.Operation.Group.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.workflow] ON [dbo].[Catalog.Operation.Group.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Operation.Group.v] TO JETTI;
     GO
@@ -839,7 +949,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Operation.Type.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Operation.Type.workflow];
+    ALTER TABLE Documents ADD [Catalog.Operation.Type.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Operation.Type.v]
     WITH SCHEMABINDING
@@ -847,6 +959,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Operation.Type.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Operation.Type'
     GO
@@ -859,6 +972,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.date] ON [dbo].[Catalog.Operation.Type.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.isfolder] ON [dbo].[Catalog.Operation.Type.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.workflow] ON [dbo].[Catalog.Operation.Type.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Operation.Type.v] TO JETTI;
     GO
@@ -866,7 +980,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Unit.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Unit.workflow];
+    ALTER TABLE Documents ADD [Catalog.Unit.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Unit.v]
     WITH SCHEMABINDING
@@ -874,6 +990,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Unit.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Unit'
     GO
@@ -886,6 +1003,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.date] ON [dbo].[Catalog.Unit.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.isfolder] ON [dbo].[Catalog.Unit.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.workflow] ON [dbo].[Catalog.Unit.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Unit.v] TO JETTI;
     GO
@@ -893,7 +1011,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.User.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.User.workflow];
+    ALTER TABLE Documents ADD [Catalog.User.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.User.v]
     WITH SCHEMABINDING
@@ -901,6 +1021,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.User.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."isAdmin"') AS BIT), 0) [isAdmin]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.User'
@@ -914,6 +1035,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.date] ON [dbo].[Catalog.User.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.isfolder] ON [dbo].[Catalog.User.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.workflow] ON [dbo].[Catalog.User.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.User.v] TO JETTI;
     GO
@@ -921,7 +1043,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.UsersGroup.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.UsersGroup.workflow];
+    ALTER TABLE Documents ADD [Catalog.UsersGroup.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.UsersGroup.v]
     WITH SCHEMABINDING
@@ -929,6 +1053,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.UsersGroup.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.UsersGroup'
     GO
@@ -941,6 +1066,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.date] ON [dbo].[Catalog.UsersGroup.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.isfolder] ON [dbo].[Catalog.UsersGroup.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.workflow] ON [dbo].[Catalog.UsersGroup.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.UsersGroup.v] TO JETTI;
     GO
@@ -948,7 +1074,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Role.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Role.workflow];
+    ALTER TABLE Documents ADD [Catalog.Role.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Role.v]
     WITH SCHEMABINDING
@@ -956,6 +1084,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Role.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Role'
     GO
@@ -968,6 +1097,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.date] ON [dbo].[Catalog.Role.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.isfolder] ON [dbo].[Catalog.Role.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.workflow] ON [dbo].[Catalog.Role.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Role.v] TO JETTI;
     GO
@@ -975,7 +1105,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.SubSystem.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.SubSystem.workflow];
+    ALTER TABLE Documents ADD [Catalog.SubSystem.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.SubSystem.v]
     WITH SCHEMABINDING
@@ -983,6 +1115,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.SubSystem.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."icon"') AS NVARCHAR(150)), '') [icon]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.SubSystem'
@@ -996,6 +1129,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.date] ON [dbo].[Catalog.SubSystem.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.isfolder] ON [dbo].[Catalog.SubSystem.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.workflow] ON [dbo].[Catalog.SubSystem.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.SubSystem.v] TO JETTI;
     GO
@@ -1003,7 +1137,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Documents.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Documents.workflow];
+    ALTER TABLE Documents ADD [Catalog.Documents.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Documents.v]
     WITH SCHEMABINDING
@@ -1011,6 +1147,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Documents.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Documents'
     GO
@@ -1023,6 +1160,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Documents.v.date] ON [dbo].[Catalog.Documents.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Documents.v.isfolder] ON [dbo].[Catalog.Documents.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Documents.v.workflow] ON [dbo].[Catalog.Documents.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Documents.v] TO JETTI;
     GO
@@ -1030,7 +1168,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Catalogs.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Catalogs.workflow];
+    ALTER TABLE Documents ADD [Catalog.Catalogs.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Catalogs.v]
     WITH SCHEMABINDING
@@ -1038,6 +1178,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Catalogs.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Catalogs'
     GO
@@ -1050,6 +1191,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalogs.v.date] ON [dbo].[Catalog.Catalogs.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalogs.v.isfolder] ON [dbo].[Catalog.Catalogs.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalogs.v.workflow] ON [dbo].[Catalog.Catalogs.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Catalogs.v] TO JETTI;
     GO
@@ -1057,7 +1199,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Forms.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Forms.workflow];
+    ALTER TABLE Documents ADD [Catalog.Forms.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Forms.v]
     WITH SCHEMABINDING
@@ -1065,6 +1209,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Forms.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Forms'
     GO
@@ -1077,6 +1222,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Forms.v.date] ON [dbo].[Catalog.Forms.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Forms.v.isfolder] ON [dbo].[Catalog.Forms.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Forms.v.workflow] ON [dbo].[Catalog.Forms.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Forms.v] TO JETTI;
     GO
@@ -1084,7 +1230,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Objects.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Objects.workflow];
+    ALTER TABLE Documents ADD [Catalog.Objects.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Objects.v]
     WITH SCHEMABINDING
@@ -1092,6 +1240,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Objects.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Objects'
     GO
@@ -1104,6 +1253,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Objects.v.date] ON [dbo].[Catalog.Objects.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Objects.v.isfolder] ON [dbo].[Catalog.Objects.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Objects.v.workflow] ON [dbo].[Catalog.Objects.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Objects.v] TO JETTI;
     GO
@@ -1111,7 +1261,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Subcount.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Subcount.workflow];
+    ALTER TABLE Documents ADD [Catalog.Subcount.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Subcount.v]
     WITH SCHEMABINDING
@@ -1119,6 +1271,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Subcount.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Subcount'
     GO
@@ -1131,6 +1284,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Subcount.v.date] ON [dbo].[Catalog.Subcount.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Subcount.v.isfolder] ON [dbo].[Catalog.Subcount.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Subcount.v.workflow] ON [dbo].[Catalog.Subcount.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Subcount.v] TO JETTI;
     GO
@@ -1138,7 +1292,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Brand.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Brand.workflow];
+    ALTER TABLE Documents ADD [Catalog.Brand.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Brand.v]
     WITH SCHEMABINDING
@@ -1146,6 +1302,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Brand.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Brand'
     GO
@@ -1158,6 +1315,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.date] ON [dbo].[Catalog.Brand.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.isfolder] ON [dbo].[Catalog.Brand.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.workflow] ON [dbo].[Catalog.Brand.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Brand.v] TO JETTI;
     GO
@@ -1165,7 +1323,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.GroupObjectsExploitation.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.GroupObjectsExploitation.workflow];
+    ALTER TABLE Documents ADD [Catalog.GroupObjectsExploitation.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.GroupObjectsExploitation.v]
     WITH SCHEMABINDING
@@ -1173,6 +1333,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.GroupObjectsExploitation.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Method"') AS NVARCHAR(150)), '') [Method]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.GroupObjectsExploitation'
@@ -1186,6 +1347,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.date] ON [dbo].[Catalog.GroupObjectsExploitation.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.isfolder] ON [dbo].[Catalog.GroupObjectsExploitation.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.workflow] ON [dbo].[Catalog.GroupObjectsExploitation.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.GroupObjectsExploitation.v] TO JETTI;
     GO
@@ -1194,6 +1356,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.ObjectsExploitation.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.ObjectsExploitation.workflow];
+    ALTER TABLE Documents ADD [Catalog.ObjectsExploitation.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.ObjectsExploitation.Group];
     ALTER TABLE Documents ADD [Catalog.ObjectsExploitation.Group] AS CAST(JSON_VALUE(doc, N'$."Group"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -1203,6 +1367,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.ObjectsExploitation.workflow] [workflow]
       , [Catalog.ObjectsExploitation.Group] [Group]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."InventoryNumber"') AS NVARCHAR(150)), '') [InventoryNumber]
     FROM dbo.[Documents]
@@ -1217,6 +1382,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.date] ON [dbo].[Catalog.ObjectsExploitation.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.isfolder] ON [dbo].[Catalog.ObjectsExploitation.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.workflow] ON [dbo].[Catalog.ObjectsExploitation.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.Group] ON [dbo].[Catalog.ObjectsExploitation.v]([Group], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.ObjectsExploitation.v] TO JETTI;
@@ -1225,7 +1391,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Catalog.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Catalog.workflow];
+    ALTER TABLE Documents ADD [Catalog.Catalog.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Catalog.v]
     WITH SCHEMABINDING
@@ -1233,6 +1401,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Catalog.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."prefix"') AS NVARCHAR(150)), '') [prefix]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."icon"') AS NVARCHAR(150)), '') [icon]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."menu"') AS NVARCHAR(150)), '') [menu]
@@ -1251,6 +1420,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.date] ON [dbo].[Catalog.Catalog.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.isfolder] ON [dbo].[Catalog.Catalog.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.workflow] ON [dbo].[Catalog.Catalog.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Catalog.v] TO JETTI;
     GO
@@ -1258,7 +1428,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.BudgetItem.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.BudgetItem.workflow];
+    ALTER TABLE Documents ADD [Catalog.BudgetItem.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.BudgetItem.v]
     WITH SCHEMABINDING
@@ -1266,6 +1438,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.BudgetItem.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.BudgetItem'
     GO
@@ -1278,6 +1451,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.date] ON [dbo].[Catalog.BudgetItem.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.isfolder] ON [dbo].[Catalog.BudgetItem.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.workflow] ON [dbo].[Catalog.BudgetItem.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.BudgetItem.v] TO JETTI;
     GO
@@ -1286,6 +1460,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.Scenario.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Scenario.workflow];
+    ALTER TABLE Documents ADD [Catalog.Scenario.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Scenario.currency];
     ALTER TABLE Documents ADD [Catalog.Scenario.currency] AS CAST(JSON_VALUE(doc, N'$."currency"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -1295,6 +1471,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Scenario.workflow] [workflow]
       , [Catalog.Scenario.currency] [currency]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Scenario'
@@ -1308,6 +1485,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.date] ON [dbo].[Catalog.Scenario.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.isfolder] ON [dbo].[Catalog.Scenario.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.workflow] ON [dbo].[Catalog.Scenario.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.currency] ON [dbo].[Catalog.Scenario.v]([currency], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Scenario.v] TO JETTI;
@@ -1317,6 +1495,8 @@
     DROP VIEW IF EXISTS [dbo].[Catalog.AcquiringTerminal.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.AcquiringTerminal.workflow];
+    ALTER TABLE Documents ADD [Catalog.AcquiringTerminal.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.AcquiringTerminal.BankAccount];
     ALTER TABLE Documents ADD [Catalog.AcquiringTerminal.BankAccount] AS CAST(JSON_VALUE(doc, N'$."BankAccount"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.AcquiringTerminal.Counterpartie];
@@ -1330,6 +1510,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.AcquiringTerminal.workflow] [workflow]
       , [Catalog.AcquiringTerminal.BankAccount] [BankAccount]
       , [Catalog.AcquiringTerminal.Counterpartie] [Counterpartie]
       , [Catalog.AcquiringTerminal.Department] [Department]
@@ -1346,6 +1527,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.date] ON [dbo].[Catalog.AcquiringTerminal.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.isfolder] ON [dbo].[Catalog.AcquiringTerminal.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.workflow] ON [dbo].[Catalog.AcquiringTerminal.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.BankAccount] ON [dbo].[Catalog.AcquiringTerminal.v]([BankAccount], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.Counterpartie] ON [dbo].[Catalog.AcquiringTerminal.v]([Counterpartie], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.Department] ON [dbo].[Catalog.AcquiringTerminal.v]([Department], [id]);
@@ -1356,7 +1538,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Catalog.Bank.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.Bank.workflow];
+    ALTER TABLE Documents ADD [Catalog.Bank.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Catalog.Bank.v]
     WITH SCHEMABINDING
@@ -1364,6 +1548,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Catalog.Bank.workflow] [workflow]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Code1"') AS NVARCHAR(150)), '') [Code1]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Code2"') AS NVARCHAR(150)), '') [Code2]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Address"') AS NVARCHAR(150)), '') [Address]
@@ -1381,6 +1566,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.date] ON [dbo].[Catalog.Bank.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.isfolder] ON [dbo].[Catalog.Bank.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.workflow] ON [dbo].[Catalog.Bank.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Catalog.Bank.v] TO JETTI;
     GO
@@ -1388,7 +1574,9 @@
     
     DROP VIEW IF EXISTS [dbo].[Document.ExchangeRates.v];
     GO
-    ;
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.ExchangeRates.workflow];
+    ALTER TABLE Documents ADD [Document.ExchangeRates.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
     CREATE VIEW [dbo].[Document.ExchangeRates.v]
     WITH SCHEMABINDING
@@ -1396,6 +1584,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.ExchangeRates.workflow] [workflow]
     FROM dbo.[Documents]
     WHERE [type] = 'Document.ExchangeRates'
     GO
@@ -1408,6 +1597,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.date] ON [dbo].[Document.ExchangeRates.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.isfolder] ON [dbo].[Document.ExchangeRates.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.workflow] ON [dbo].[Document.ExchangeRates.v]([workflow], [id]);
     GO
     GRANT SELECT ON [dbo].[Document.ExchangeRates.v] TO JETTI;
     GO
@@ -1416,6 +1606,8 @@
     DROP VIEW IF EXISTS [dbo].[Document.Invoice.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Invoice.workflow];
+    ALTER TABLE Documents ADD [Document.Invoice.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Invoice.Department];
     ALTER TABLE Documents ADD [Document.Invoice.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Invoice.Storehouse];
@@ -1433,6 +1625,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.Invoice.workflow] [workflow]
       , [Document.Invoice.Department] [Department]
       , [Document.Invoice.Storehouse] [Storehouse]
       , [Document.Invoice.Customer] [Customer]
@@ -1454,6 +1647,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.date] ON [dbo].[Document.Invoice.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.isfolder] ON [dbo].[Document.Invoice.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.workflow] ON [dbo].[Document.Invoice.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.Department] ON [dbo].[Document.Invoice.v]([Department], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.Storehouse] ON [dbo].[Document.Invoice.v]([Storehouse], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.Customer] ON [dbo].[Document.Invoice.v]([Customer], [id]);
@@ -1467,6 +1661,8 @@
     DROP VIEW IF EXISTS [dbo].[Document.Operation.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Operation.workflow];
+    ALTER TABLE Documents ADD [Document.Operation.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Operation.Group];
     ALTER TABLE Documents ADD [Document.Operation.Group] AS CAST(JSON_VALUE(doc, N'$."Group"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Operation.Operation];
@@ -1486,6 +1682,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.Operation.workflow] [workflow]
       , [Document.Operation.Group] [Group]
       , [Document.Operation.Operation] [Operation]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."Amount"') AS MONEY), 0) [Amount]
@@ -1505,6 +1702,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.date] ON [dbo].[Document.Operation.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.isfolder] ON [dbo].[Document.Operation.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.workflow] ON [dbo].[Document.Operation.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [dbo].[Document.Operation.v]([Group], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [dbo].[Document.Operation.v]([Operation], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [dbo].[Document.Operation.v]([currency], [id]);
@@ -1519,6 +1717,8 @@
     DROP VIEW IF EXISTS [dbo].[Document.PriceList.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.PriceList.workflow];
+    ALTER TABLE Documents ADD [Document.PriceList.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.PriceList.PriceType];
     ALTER TABLE Documents ADD [Document.PriceList.PriceType] AS CAST(JSON_VALUE(doc, N'$."PriceType"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -1528,6 +1728,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.PriceList.workflow] [workflow]
       , [Document.PriceList.PriceType] [PriceType]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."TaxInclude"') AS BIT), 0) [TaxInclude]
     FROM dbo.[Documents]
@@ -1542,6 +1743,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.date] ON [dbo].[Document.PriceList.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.isfolder] ON [dbo].[Document.PriceList.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.workflow] ON [dbo].[Document.PriceList.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.PriceType] ON [dbo].[Document.PriceList.v]([PriceType], [id]);
     GO
     GRANT SELECT ON [dbo].[Document.PriceList.v] TO JETTI;
@@ -1551,6 +1753,8 @@
     DROP VIEW IF EXISTS [dbo].[Document.Settings.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Settings.workflow];
+    ALTER TABLE Documents ADD [Document.Settings.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Settings.balanceCurrency];
     ALTER TABLE Documents ADD [Document.Settings.balanceCurrency] AS CAST(JSON_VALUE(doc, N'$."balanceCurrency"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.Settings.accountingCurrency];
@@ -1562,6 +1766,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.Settings.workflow] [workflow]
       , [Document.Settings.balanceCurrency] [balanceCurrency]
       , [Document.Settings.accountingCurrency] [accountingCurrency]
     FROM dbo.[Documents]
@@ -1576,6 +1781,7 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.date] ON [dbo].[Document.Settings.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.isfolder] ON [dbo].[Document.Settings.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.workflow] ON [dbo].[Document.Settings.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.balanceCurrency] ON [dbo].[Document.Settings.v]([balanceCurrency], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.accountingCurrency] ON [dbo].[Document.Settings.v]([accountingCurrency], [id]);
     GO
@@ -1586,6 +1792,8 @@
     DROP VIEW IF EXISTS [dbo].[Document.UserSettings.v];
     GO
     
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.UserSettings.workflow];
+    ALTER TABLE Documents ADD [Document.UserSettings.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
     ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.UserSettings.UserOrGroup];
     ALTER TABLE Documents ADD [Document.UserSettings.UserOrGroup] AS CAST(JSON_VALUE(doc, N'$."UserOrGroup"') AS UNIQUEIDENTIFIER) PERSISTED;;
     GO
@@ -1595,6 +1803,7 @@
       SELECT
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
+      , [Document.UserSettings.workflow] [workflow]
       , [Document.UserSettings.UserOrGroup] [UserOrGroup]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."COMP"') AS BIT), 0) [COMP]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."DEPT"') AS BIT), 0) [DEPT]
@@ -1614,9 +1823,46 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.date] ON [dbo].[Document.UserSettings.v]([date],[id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.isfolder] ON [dbo].[Document.UserSettings.v]([isfolder],[id]);
     
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.workflow] ON [dbo].[Document.UserSettings.v]([workflow], [id]);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.UserOrGroup] ON [dbo].[Document.UserSettings.v]([UserOrGroup], [id]);
     GO
     GRANT SELECT ON [dbo].[Document.UserSettings.v] TO JETTI;
+    GO
+    -------------------------
+    
+    DROP VIEW IF EXISTS [dbo].[Document.WorkFlow.v];
+    GO
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.WorkFlow.workflow];
+    ALTER TABLE Documents ADD [Document.WorkFlow.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.WorkFlow.Document];
+    ALTER TABLE Documents ADD [Document.WorkFlow.Document] AS CAST(JSON_VALUE(doc, N'$."Document"') AS UNIQUEIDENTIFIER) PERSISTED;;
+    GO
+    CREATE VIEW [dbo].[Document.WorkFlow.v]
+    WITH SCHEMABINDING
+    AS
+      SELECT
+        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+        
+      , [Document.WorkFlow.workflow] [workflow]
+      , [Document.WorkFlow.Document] [Document]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Status"') AS NVARCHAR(150)), '') [Status]
+    FROM dbo.[Documents]
+    WHERE [type] = 'Document.WorkFlow'
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [Document.WorkFlow.v.id] ON [dbo].[Document.WorkFlow.v]([id],[type], [description]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.decription] ON [dbo].[Document.WorkFlow.v]([description],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.code] ON [dbo].[Document.WorkFlow.v]([code],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.company] ON [dbo].[Document.WorkFlow.v]([company],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.parent] ON [dbo].[Document.WorkFlow.v]([parent],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.date] ON [dbo].[Document.WorkFlow.v]([date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.isfolder] ON [dbo].[Document.WorkFlow.v]([isfolder],[id]);
+    
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.workflow] ON [dbo].[Document.WorkFlow.v]([workflow], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.Document] ON [dbo].[Document.WorkFlow.v]([Document], [id]);
+    GO
+    GRANT SELECT ON [dbo].[Document.WorkFlow.v] TO JETTI;
     GO
     -------------------------
     

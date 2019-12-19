@@ -23,7 +23,7 @@ export class SQLGenegator {
         `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
 
     const addLeftJoin = (prop: string, type: string) =>
-      ` LEFT JOIN "Documents" "${prop}" WITH (NOLOCK) ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
+      ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
 
     const tableProperty = (prop: string, value: any) => {
 
@@ -45,7 +45,7 @@ export class SQLGenegator {
       const addLeftJoin = (prop: string, type: AllTypes) =>
         checkComlexType(type) ?
           `\n` :
-          ` LEFT JOIN "Documents" "${prop}" WITH (NOLOCK) ON "${prop}".id = x."${prop}"\n`;
+          ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = x."${prop}"\n`;
 
       function xTableLine(prop: string, type: string) {
         switch (type) {
@@ -114,10 +114,10 @@ export class SQLGenegator {
     }
 
     query += `
-      FROM "Documents" d WITH (NOLOCK)
-      LEFT JOIN "Documents" "parent" WITH (NOLOCK) ON "parent".id = d."parent"
-      LEFT JOIN "Documents" "user" WITH (NOLOCK) ON "user".id = d."user"
-      LEFT JOIN "Documents" "company" WITH (NOLOCK) ON "company".id = d.company
+      FROM "Documents" d
+      LEFT JOIN "Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN "Documents" "user" ON "user".id = d."user"
+      LEFT JOIN "Documents" "company" ON "company".id = d.company
       ${LeftJoin}
       WHERE d.type = '${type}' `;
     return query;
@@ -274,7 +274,7 @@ export class SQLGenegator {
           CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}.id"\n`;
 
     const addLeftJoin = (prop: string, type: string) => `
-      LEFT JOIN dbo."Documents" "${prop}" WITH (NOLOCK) ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
+      LEFT JOIN dbo."Documents" "${prop}" ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
 
     let query = `
       SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
@@ -295,10 +295,10 @@ export class SQLGenegator {
     }
 
     query += `
-    FROM dbo."Documents" d WITH (NOLOCK)
-      LEFT JOIN dbo."Documents" "parent" WITH (NOLOCK) ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" WITH (NOLOCK) ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" WITH (NOLOCK) ON "company".id = d.company
+    FROM dbo."Documents" d
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       ${LeftJoin}
     WHERE d.[type] = '${type}' `;
 

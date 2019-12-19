@@ -22,8 +22,8 @@
         </p-splitButton>
         <p-splitButton *ngIf="commands.length" [model]="commands" styleClass="ui-button-secondary" label="commands">
         </p-splitButton>
-        <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
-        [disabled]="(lds.busy$ | async)"></button>
+<!--         <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
+        [disabled]="(lds.busy$ | async)"></button> -->
         <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="Goto()"
           [disabled]="(lds.busy$ | async)"></button>
         <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary"

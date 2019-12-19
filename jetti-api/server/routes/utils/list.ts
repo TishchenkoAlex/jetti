@@ -14,7 +14,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   let { QueryList, Props, Prop } = cs!;
 
   // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
-  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] WITH (NOLOCK) ' : `${QueryList}`;
+  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] ' : `${QueryList}`;
 
   let row: DocumentBase | null = null;
   let query = '';
@@ -22,9 +22,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   if (params.id) {
     row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`));
-    if (Prop?.hierarchy === 'folders' && row?.parent) {
-      params.filter.push({left: 'parent', center: '=', right: row.parent});
-    }
   }
   if (!row && params.command !== 'last') params.command = 'first';
   const isFirstLast = params.command === 'last' || params.command === 'first';

@@ -21,6 +21,7 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   @Input() type: DocTypes;
   @Input() showCommands = true;
   @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
+  treeNodes$: Observable<TreeNode[]>;
   treeNodes: TreeNode[] = [];
   selection: TreeNode;
 
@@ -36,19 +37,22 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
       filter(doc => doc && doc.type === this.type)).
       subscribe(doc => this.paginator.next(doc));
 
-    this.api.tree(this.type).pipe(take(1),
-      map(tree => <TreeNode[]>[{
-        label: '(All)',
-        data: { id: undefined, description: '(All)' },
-        expanded: true,
-        expandedIcon: 'fa fa-folder-open',
-        collapsedIcon: 'fa fa-folder',
-        children: this.buildTreeNodes(tree, null)
-      }]))
-      .subscribe(data => {
-        this.treeNodes = data;
-        this.cd.markForCheck();
-      });
+    this.treeNodes$ = this.paginator.pipe(
+      switchMap(doc => {
+        return this.api.tree(this.type).pipe(
+          map(tree => <TreeNode[]>[{
+            label: '(All)',
+            data: { id: undefined, description: '(All)' },
+            expanded: true,
+            expandedIcon: 'fa fa-folder-open',
+            collapsedIcon: 'fa fa-folder',
+            children: this.buildTreeNodes(tree, null),
+          }]),
+          tap(treeNodes => {
+            this.treeNodes = treeNodes;
+          }));
+      }));
+    setTimeout(() => this.paginator.next());
   }
 
   private findDoc(tree: TreeNode[], id: string): TreeNode | undefined {
@@ -69,7 +73,6 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   private buildTreeNodes(tree: ITree[], parent: string | null): TreeNode[] {
     return tree.filter(el => el.parent === parent).map(el => {
       return <TreeNode>{
-        parent,
         label: el.description,
         data: { id: el.id, description: el.description },
         expanded: true,
@@ -97,10 +100,6 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   }
 
   delete = () => this.ds.delete(this.selection.data.id);
-
-  onSelectionChange(event) {
-    this.selectionChange.emit(event);
-  }
 
   onDragEnd(event) {
     // console.log('drop', event);
