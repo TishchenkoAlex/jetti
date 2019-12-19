@@ -95,13 +95,13 @@
           [disabled]="sl.selection?.length !== 1" (click)="sl.open(sl.selection[0])"></button>
       </div>
       <div class="ui-toolbar-group-right">
-        <button pButton type="button" icon="pi pi-fast-backward" (click)="selection = []; sl.dataSource?.first()"
+        <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"
           [disabled]="!sl.dataSource?.continuation?.first"></button>
-        <button pButton type="button" icon="pi pi-step-backward" (click)="selection = []; sl.dataSource?.prev()"
+        <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selection = []; sl.dataSource?.prev()"
           [disabled]="!sl.dataSource?.continuation?.first"></button>
-        <button pButton type="button" icon="pi pi-step-forward" (click)="selection = []; sl.dataSource?.next()"
+        <button pButton type="button" icon="pi pi-step-forward" (click)="sl.selection = []; sl.dataSource?.next()"
           [disabled]="!sl.dataSource?.continuation?.last"></button>
-        <button pButton type="button" icon="pi pi-fast-forward" (click)="selection = []; sl.dataSource?.last()"
+        <button pButton type="button" icon="pi pi-fast-forward" (click)="sl.selection = []; sl.dataSource?.last()"
           [disabled]="!sl.dataSource?.continuation?.last"></button>
       </div>
     </p-toolbar>
