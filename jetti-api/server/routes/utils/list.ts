@@ -14,7 +14,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   let { QueryList, Props, Prop } = cs!;
 
   // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
-  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation]' : `${QueryList}`;
+  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] WITH (NOLOCK) ' : `${QueryList}`;
 
   let row: DocumentBase | null = null;
   let query = '';
@@ -46,7 +46,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   valueOrder.forEach(o => orderbyAfter += '"' + o.field + (o.order === 'asc' ? '" ASC, ' : '" DESC, '));
   orderbyAfter = orderbyAfter.slice(0, -2);
 
-  valueOrder = valueOrder.filter(el => el.value);
+  valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
 
   const filterBuilder = (filter: FormListFilter[]) => {
     let where = ' (1 = 1) ';
