@@ -54,8 +54,8 @@ export type DocumentTypes =
   'Document.Operation' |
   'Document.PriceList' |
   'Document.Settings' |
-  'Document.CashRequest' |
-  'Document.UserSettings';
+  'Document.UserSettings' |
+  'Document.WorkFlow';
 
 export type DocTypes =
   CatalogTypes |

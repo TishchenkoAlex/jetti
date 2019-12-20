@@ -181,16 +181,25 @@ p-table .ui-button-icon-only .pi {
   width: 28px;
 }
 
+p-autocomplete {
+  width: 100%;
+  .ui-autocomplete {
+    width: 100%;
+  }  
+}
+
 j-autocomplete-png { 
   .ui-button.ui-button-icon-only .ui-button-text {
     padding: 0px;
     width: 1.8em;
   }
   .ui-inputtext {
+    width: 100%;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
   }
 }
+
 
 /*  */
 .ui-datepicker.ui-widget .ui-datepicker-calendar td a {
@@ -301,4 +310,8 @@ body .ui-treetable .ui-treetable-thead > tr > th, body .ui-treetable .ui-treetab
 
 .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-list-item {
   padding: 6px 6px !important;
+}
+
+.ui-dialog .ui-dialog-footer {
+  padding: 4px !important;
 }

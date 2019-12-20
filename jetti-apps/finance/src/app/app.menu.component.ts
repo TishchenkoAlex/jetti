@@ -20,7 +20,7 @@ import { AppComponent } from './app.component';
       parentActive="true">
     </ul>`
 })
-export class AppMenuComponent implements OnInit {
+export class AppMenuComponent {
 
   @Input() reset: boolean;
 
@@ -32,53 +32,12 @@ export class AppMenuComponent implements OnInit {
   }
 
   private buildMenu(userRoleObjects: RoleObject[] | undefined) {
-    return [...[
+    return [
       { label: 'Dashboard', icon: 'fa fa-fw fa-home', routerLink: [''] },
-      {
-        label: 'Customization', icon: 'fa fa-fw fa-bars',
-        items: [
-          { label: 'Static Menu', icon: 'fa fa-fw fa-bars', command: () => this.app.changeToStaticMenu() },
-          { label: 'Overlay Menu', icon: 'fa fa-fw fa-bars', command: () => this.app.changeToOverlayMenu() },
-          { label: 'Slim Menu', icon: 'fa fa-fw fa-bars', command: () => this.app.changeToSlimMenu() },
-          { label: 'Horizontal Menu', icon: 'fa fa-fw fa-bars', command: () => this.app.changeToHorizontalMenu() },
-          {
-            label: 'Inline Profile', icon: 'fa fa-sun-o fa-fw', command: () => {
-              this.app.profileMode = 'inline';
-            }
-          },
-          {
-            label: 'Top Profile', icon: 'fa fa-moon-o fa-fw', command: () => {
-              this.app.profileMode = 'top';
-            }
-          },
-          { label: 'Light Menu', icon: 'fa fa-sun-o fa-fw', command: () => this.app.darkMenu = false },
-          { label: 'Dark Menu', icon: 'fa fa-moon-o fa-fw', command: () => this.app.darkMenu = true }
-        ]
-      },
-    ],
-    ...SubSystemsMenu(userRoleObjects),
-    { label: 'Utils', icon: 'fa fa-fw fa-wrench', routerLink: ['/'] },
-    { label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/'] }
+      ...SubSystemsMenu(userRoleObjects),
+      { label: 'Utils', icon: 'fa fa-fw fa-wrench', routerLink: ['/'] },
+      { label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/'] }
     ];
-  }
-
-  ngOnInit() {
-
-  }
-
-  changeTheme(theme: string) {
-    const themeLink: HTMLLinkElement = <HTMLLinkElement>document.getElementById('theme-css');
-
-    themeLink.href = 'assets/theme/theme-' + theme + '.css';
-  }
-
-  changeLayout(layout: string, special?: boolean) {
-    const layoutLink: HTMLLinkElement = <HTMLLinkElement>document.getElementById('layout-css');
-    layoutLink.href = 'assets/layout/css/layout-' + layout + '.css';
-
-    if (special) {
-      this.app.darkMenu = true;
-    }
   }
 }
 
@@ -87,14 +46,14 @@ export class AppMenuComponent implements OnInit {
   template: `
     <ng-template ngFor let-child let-i="index" [ngForOf]="(root ? item : item.items)">
       <li [ngClass]="{'active-menuitem': isActive(i)}" [class]="child.badgeStyleClass" *ngIf="child.visible === false ? false : true">
-        <a [href]="child.url" (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)"
+        <a [href]="child.url" (click)="itemClick($event,child,i)"
            class="ripplelink" *ngIf="!child.routerLink"
             [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
             <i [ngClass]="child.icon"></i><span>{{child.label}}</span>
             <i class="fa fa-fw fa-angle-down menuitem-toggle-icon" *ngIf="child.items"></i>
             <span class="menuitem-badge" *ngIf="child.badge">{{child.badge}}</span>
         </a>
-        <a (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)" class="ripplelink" *ngIf="child.routerLink"
+        <a (click)="itemClick($event,child,i)" class="ripplelink" *ngIf="child.routerLink"
             [routerLink]="child.routerLink" routerLinkActive="active-menuitem-routerlink"
             [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
             <i [ngClass]="child.icon"></i><span>{{child.label}}</span>
@@ -107,7 +66,7 @@ export class AppMenuComponent implements OnInit {
         </div>
         <div class="submenu-arrow" *ngIf="child.items"></div>
         <ul app-submenu [item]="child" *ngIf="child.items" [visible]="isActive(i)" [reset]="reset"
-            [@children]="(app.isSlim()||app.isHorizontal())&&root ? isActive(i) ?
+            [@children]="(false)&&root ? isActive(i) ?
              'visible' : 'hidden' : isActive(i) ? 'visibleAnimated' : 'hiddenAnimated'">
         </ul>
       </li>
@@ -172,22 +131,10 @@ export class AppSubMenuComponent {
 
     // hide menu
     if (!item.items) {
-      if (this.app.isHorizontal() || this.app.isSlim()) {
-        this.app.resetMenu = true;
-      } else {
-        this.app.resetMenu = false;
-      }
-
+      this.app.resetMenu = false;
       this.app.overlayMenuActive = false;
       this.app.staticMenuMobileActive = false;
       this.app.menuHoverActive = !this.app.menuHoverActive;
-    }
-  }
-
-  onMouseEnter(index: number) {
-    if (this.root && this.app.menuHoverActive && (this.app.isHorizontal() || this.app.isSlim())
-      && !this.app.isMobile() && !this.app.isTablet()) {
-      this.activeIndex = index;
     }
   }
 
@@ -201,9 +148,5 @@ export class AppSubMenuComponent {
 
   set reset(val: boolean) {
     this._reset = val;
-
-    if (this._reset && (this.app.isHorizontal() || this.app.isSlim())) {
-      this.activeIndex = null;
-    }
   }
 }

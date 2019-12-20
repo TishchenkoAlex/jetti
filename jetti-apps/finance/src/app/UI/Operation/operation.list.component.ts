@@ -4,23 +4,33 @@ import { SelectItem } from 'primeng/components/common/selectitem';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BaseDocListComponent } from './../../common/datatable/base.list.component';
+import { FormGroup, FormControl } from '@angular/forms';
 
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <p-dropdown (onChange)="onChange($event)"
-      [style]="{'width' : '100%'}"
-      [scrollHeight]="500"
-      [filter]="true"
-      [showClear]="true"
-      [options]="operationsGroups$ | async"
-      [ngModel]="super?.filters['Group']?.value" [autofocus]="true">
-    </p-dropdown>
-    <j-list></j-list>`
+  <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="6px" style="margin-top: 12px; margin-bottom: 6px">
+      <div fxFlex>
+        <j-autocomplete-png [ngModel]="super?.filters['company']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"
+          (ngModelChange)="super.update({field: 'company', filter: null}, $event, '=')"
+          id="company" placeholder="Select company" type="Catalog.Company">
+        </j-autocomplete-png>
+      </div>
+      <div fxFlex>
+        <j-autocomplete-png [ngModel]="super?.filters['Group']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"
+          (ngModelChange)="super.update({field: 'Group', filter: null}, $event, '=')"
+          id="Group" placeholder="Select group of operation" type="Catalog.Operation.Group">
+        </j-autocomplete-png>
+      </div>
+      </div>
+  </div>
+  <j-list></j-list>
+  `
 })
 export class OperationListComponent implements OnInit {
-  @ViewChild(BaseDocListComponent, { static: true}) super: BaseDocListComponent;
+  @ViewChild(BaseDocListComponent, { static: true }) super: BaseDocListComponent;
 
   operationsGroups$: Observable<SelectItem[]>;
 

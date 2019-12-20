@@ -11,17 +11,6 @@ export class AuthGuardService implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (route.params.type === 'home') { return true; }
-
-    const check = (roles: RoleType[], objects: RoleObject[]) =>
-      roles.findIndex(r => r === 'Admin') >= 0 ||
-      objects.findIndex(el => el.type === route.params.type) >= 0;
-
-    if (this.auth.userRoles.length) {
-      return check(this.auth.userRoles, this.auth.userRoleObjects);
-    }
-
-    return this.api.getUserRoles().toPromise()
-      .then(data => { this.auth.userRoles = data.roles; return check(data.roles, data.Objects); })
-      .catch(err => false);
+    return true;
   }
 }

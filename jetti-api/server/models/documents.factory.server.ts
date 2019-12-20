@@ -14,6 +14,7 @@ import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
 import { MSSQL } from '../mssql';
 import { PostResult } from './post.interfaces';
+import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBase>;
@@ -44,10 +45,11 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Document.PriceList', Class: DocumentPriceListServer },
   { type: 'Document.Settings', Class: DocumentSettingsServer },
   { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
+  { type: 'Document.WorkFlow', Class: DocumentWorkFlowServer },
 ];
 
 export async function createDocumentServer<T extends DocumentBaseServer>
-  (type: DocTypes, document: IFlatDocument, tx: MSSQL) {
+  (type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) {
   let result: T;
   const doc = RegisteredServerDocument.find(el => el.type === type);
   if (doc) {

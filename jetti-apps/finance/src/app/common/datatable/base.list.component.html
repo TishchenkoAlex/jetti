@@ -1,7 +1,7 @@
 <div [ngStyle]="{'display': showTree ? 'flex': 'block'}" [class]="'scroll-' + type" [id]="type">
 
   <div *ngIf="showTree" style="margin-right: 4px">
-    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [owner]="this"></j-tree-list>
+    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)"></j-tree-list>
   </div>
 
   <div style="display: flex; flex-direction: column; overflow-x: auto">
@@ -27,14 +27,19 @@
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
       [rows]="pageSize" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000"
       (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm" [metaKeySelection]="true"
-      [columns]="columns$ | async" class="noselect" [scrollHeight]="scrollHeight" [(selection)]="selection"
+      [columns]="columns" class="noselect" [scrollHeight]="(resizeObservable$ | async) || scrollHeight" [(selection)]="selection"
       (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
-      [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false">
-
+      [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand">
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+            <col>
+            <col *ngFor="let column of tbl.columns">
+        </colgroup>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th [ngStyle]="{'width': '30px', 'text-align': 'center'}"></th>
-          <th pReorderableColumn [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
+          <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
             [ngStyle]="column.style">
             {{column.label}}
             <p-sortIcon [field]="column.field"></p-sortIcon>
@@ -99,7 +104,7 @@
             <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
             <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
           </td>
-          <td *ngFor="let column of tbl.columns" [ngStyle]="column.style">
+          <td *ngFor="let column of tbl.columns" [ngStyle]="column.style" class="ui-resizable-column">
             <span [ngSwitch]="column.type" [id]="column.field">
               <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
               <span *ngSwitchCase="'datetime'"
@@ -123,14 +128,14 @@
     <p-toolbar>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary"
-          (click)="dataSource.refresh(id.id)" [disabled]="(lds.busy$ | async)"></button>
-        <button pButton type="button" icon="pi pi-fast-backward" (click)="selection = []; dataSource?.first()"
+          (click)="refresh(id.id)" [disabled]="(lds.busy$ | async)"></button>
+        <button pButton type="button" icon="pi pi-fast-backward" (click)="first()"
           [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
-        <button pButton type="button" icon="pi pi-step-backward" (click)="selection = []; dataSource?.prev()"
+        <button pButton type="button" icon="pi pi-step-backward" (click)="prev()"
           [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
-        <button pButton type="button" icon="pi pi-step-forward" (click)="selection = []; dataSource?.next()"
+        <button pButton type="button" icon="pi pi-step-forward" (click)="next()"
           [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
-        <button pButton type="button" icon="pi pi-fast-forward" (click)="selection = []; dataSource?.last()"
+        <button pButton type="button" icon="pi pi-fast-forward" (click)="last()"
           [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
       </div>
     </p-toolbar>

@@ -6,7 +6,7 @@ import { TypesBase } from './TypesBase';
 export class TypesObject extends TypesBase {
 
   QueryList() {
-    const select = RegisteredDocument.filter(d => d.type.startsWith('Catalog.') || d.type.startsWith('Documents.'))
+    const select = RegisteredDocument.filter(d => (d.type.startsWith('Catalog.') || d.type.startsWith('Document.')))
       .map(el => ({ type: el.type, description: (createDocument(el.type).Prop() as DocumentOptions).description }));
     return buildTypesQueryList(select);
   }

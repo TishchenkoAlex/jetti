@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { Observable, of, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
@@ -12,6 +12,7 @@ import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../
 import { ApiDataSource } from '../common/datatable/api.datasource.v2';
 import { calendarLocale, dateFormat } from '../primeNG.module';
 import { ApiService } from '../services/api.service';
+import { BaseTreeListComponent } from '../common/datatable/base.tree-list.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,9 +27,11 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   @Input() pageSize = 100;
   @Input() settings: FormListSettings = new FormListSettings();
   @Output() Select = new EventEmitter<ISuggest>();
+  @ViewChild(BaseTreeListComponent, { static: false }) tl: BaseTreeListComponent;
+
   doc: DocumentBase | undefined;
 
-  columns$: Observable<ColumnDef[]>;
+  columns: ColumnDef[] = [];
   selection: DocumentBase[] = [];
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
@@ -58,10 +61,10 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
         hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
         order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
         value: schema[field] && schema[field].value,
-        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align' : 'center' }
+        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align': 'center' }
       });
     });
-    this.columns$ = of(columns.filter(c => !c.hidden));
+    this.columns = [...columns.filter(c => !c.hidden)];
 
     this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     this.setSortOrder();
@@ -72,6 +75,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       map(rows => rows.find(r => r.id === this.id)),
       filter(row => row !== undefined)).subscribe(row => {
         this.selection = [row as DocumentBase];
+        if (this.tl) this.tl.setSelection(row.parent['id']);
       });
 
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
@@ -144,4 +148,5 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this.prepareDataSource();
     this.dataSource.sort();
   }
+
 }

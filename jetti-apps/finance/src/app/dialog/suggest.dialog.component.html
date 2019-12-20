@@ -1,14 +1,13 @@
 <div [ngStyle]="{'display': showTree ? 'flex': 'block'}" [class]="'scroll-' + type" [id]="type">
 
   <div *ngIf="showTree" style="margin-right: 4px;">
-    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [owner]="this" [showCommands]="false" [id]="id"
+    <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [showCommands]="false" [id]="selection"
     [scrollHeight]="'409px'"></j-tree-list>
   </div>
-
   <div style="display: flex; flex-direction: column; overflow-x: auto">
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
       sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection" [filterDelay]="500"
-      [metaKeySelection]="true" [columns]="columns$ | async" class="noselect" [scrollHeight]="'409px'"
+      [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'409px'"
       [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
       [lazyLoadOnInit]="false">
 
@@ -90,23 +89,4 @@
 
     </p-table>
   </div>
-</div>
-
-<div style="bottom: 8px; left: 8px; right: 8px; position: absolute">
-  <p-toolbar>
-    <div class="ui-toolbar-group-left">
-      <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-        [disabled]="selection?.length !== 1" (click)="open(selection[0])"></button>
-    </div>
-    <div class="ui-toolbar-group-right">
-      <button pButton type="button" icon="pi pi-fast-backward" (click)="selection = []; dataSource?.first()"
-        [disabled]="!dataSource?.continuation?.first"></button>
-      <button pButton type="button" icon="pi pi-step-backward" (click)="selection = []; dataSource?.prev()"
-        [disabled]="!dataSource?.continuation?.first"></button>
-      <button pButton type="button" icon="pi pi-step-forward" (click)="selection = []; dataSource?.next()"
-        [disabled]="!dataSource?.continuation?.last"></button>
-      <button pButton type="button" icon="pi pi-fast-forward" (click)="selection = []; dataSource?.last()"
-        [disabled]="!dataSource?.continuation?.last"></button>
-    </div>
-  </p-toolbar>
 </div>

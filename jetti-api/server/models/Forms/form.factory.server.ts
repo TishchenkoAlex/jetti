@@ -1,7 +1,5 @@
 import { FormBase } from './form';
 import { FormTypes } from './form.types';
-import FormPostServer from './Form.Post.server';
-import FormBatchServer from './Form.Batch.server';
 import { dateReviverUTC } from '../../fuctions/dateReviver';
 import PostAfterEchangeServer from './Form.PostAfterEchange.server';
 
@@ -24,7 +22,5 @@ export function createFormServer<T extends FormBaseServer>(init?: Partial<FormBa
 }
 
 const RegisteredServerForms = new Map<FormTypes, typeof FormBase>([
-  ['Form.Post', FormPostServer],
-  ['Form.Batch', FormBatchServer],
   ['Form.PostAfterEchange', PostAfterEchangeServer]
 ]);

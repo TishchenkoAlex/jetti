@@ -16,6 +16,7 @@ import { postDocument, insertDocument, updateDocument, unpostDocument } from './
 import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { User } from './user.settings';
+import { DocumentWorkFlowServer } from '../models/Documents/Document.WorkFlow.server';
 
 export const router = express.Router();
 
@@ -185,7 +186,7 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         }
         await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
-      } catch (err) { throw err;  }
+      } catch (err) { throw err; }
       finally { await lib.util.postMode(false, tx); }
     });
   } catch (err) { next(err); }
@@ -308,6 +309,24 @@ router.get('/formControlRef/:id', async (req: Request, res: Response, next: Next
     const sdb = SDB(req);
     await sdb.tx(async tx => {
       res.json(await lib.doc.formControlRef(req.params.id, tx));
+    });
+  } catch (err) { next(err); }
+});
+
+router.get('/startWorkFlow/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const sourse = await lib.doc.byId(req.params.id, tx);
+      if (sourse) {
+        if (!sourse.timestamp) throw new Error('source document not saved');
+        if (sourse['workflow']) throw new Error('workflow exists');
+        const serverDoc = await createDocumentServer<DocumentWorkFlowServer>('Document.WorkFlow', undefined, tx);
+        await serverDoc.baseOn!(sourse.id, tx);
+        await insertDocument(serverDoc, tx);
+        await postDocument(serverDoc, tx);
+        res.json(serverDoc);
+      }
     });
   } catch (err) { next(err); }
 });

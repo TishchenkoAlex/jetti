@@ -1,7 +1,5 @@
-import { FormPost } from './Form.Post';
 import { FormBase } from './form';
 import { FormTypes } from './form.types';
-import { FormBatch } from './Form.Batch';
 import { PostAfterEchange } from './Form.PostAfterEchange';
 
 export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
@@ -17,7 +15,5 @@ export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
 }
 
 export const RegisteredForms = new Map<FormTypes, typeof FormBase>([
-  ['Form.Post', FormPost],
-  ['Form.Batch', FormBatch],
   ['Form.PostAfterEchange', PostAfterEchange]
 ]);

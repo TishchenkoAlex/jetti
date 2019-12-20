@@ -8,5 +8,6 @@ export const CommonSubSystem: ISubSystem = {
     'Catalog.Company',
     'Catalog.Currency',
     'Document.ExchangeRates',
+    'Document.WorkFlow',
   ]
 };

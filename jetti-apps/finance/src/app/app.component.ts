@@ -45,30 +45,9 @@ export class AppComponent implements AfterViewInit {
 
     }
   }
+
   ngAfterViewInit() {
-    setTimeout(() => { this.layoutMenuScrollerViewChild.moveBar(); }, 100);
-  }
-
-  onLayoutClick() {
-    if (!this.topbarItemClick) {
-      this.activeTopbarItem = null;
-      this.topbarMenuActive = false;
-    }
-
-    if (!this.menuClick) {
-      if (this.isHorizontal() || this.isSlim()) {
-        this.resetMenu = true;
-      }
-
-      if (this.overlayMenuActive || this.staticMenuMobileActive) {
-        this.hideOverlayMenu();
-      }
-
-      this.menuHoverActive = false;
-    }
-
-    this.topbarItemClick = false;
-    this.menuClick = false;
+    setTimeout(() => this.layoutMenuScrollerViewChild.moveBar(), 100);
   }
 
   onMenuButtonClick(event) {
@@ -92,10 +71,7 @@ export class AppComponent implements AfterViewInit {
   onMenuClick($event) {
     this.menuClick = true;
     this.resetMenu = false;
-
-    if (!this.isHorizontal()) {
-      setTimeout(() => { this.layoutMenuScrollerViewChild.moveBar(); }, 450);
-    }
+    setTimeout(() => this.layoutMenuScrollerViewChild.moveBar(), 450);
   }
 
   onTopbarMenuButtonClick(event) {
@@ -146,14 +122,6 @@ export class AppComponent implements AfterViewInit {
     return this.layoutMode === MenuOrientation.OVERLAY;
   }
 
-  isHorizontal() {
-    return this.layoutMode === MenuOrientation.HORIZONTAL;
-  }
-
-  isSlim() {
-    return this.layoutMode === MenuOrientation.SLIM;
-  }
-
   changeToStaticMenu() {
     this.layoutMode = MenuOrientation.STATIC;
   }
@@ -161,14 +129,5 @@ export class AppComponent implements AfterViewInit {
   changeToOverlayMenu() {
     this.layoutMode = MenuOrientation.OVERLAY;
   }
-
-  changeToHorizontalMenu() {
-    this.layoutMode = MenuOrientation.HORIZONTAL;
-  }
-
-  changeToSlimMenu() {
-    this.layoutMode = MenuOrientation.SLIM;
-  }
-
 
 }

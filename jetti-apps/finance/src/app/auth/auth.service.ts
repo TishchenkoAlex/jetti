@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import * as jwt_decode from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, tap } from 'rxjs/operators';
 import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/common-types';
-import { getRoleObjects, RoleObject, RoleType } from '../../../../../jetti-api/server/models/Roles/Base';
 import { environment, OAuthSettings } /*  */ from '../../environments/environment';
 export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '' };
 
@@ -18,32 +16,27 @@ export class AuthService {
   userProfile$ = this._userProfile$.asObservable().pipe(filter((u: ILoginResponse) => !!u));
   isLoggedIn$ = this.userProfile$.pipe(map(p => p.account !== undefined));
   isLoggedOut$ = this.isLoggedIn$.pipe(map(isLoggedIn => !isLoggedIn));
-  isAdmin$ = this.userProfile$.pipe(filter(u => u.account!.roles.findIndex(r => r === 'Admin') >= 0), map(u => true));
 
-  url$ = this.userProfile$.pipe(
-    map(u => u.account && u.account.env && u.account.env.reportsUrl || ''),
-    filter(u => !!u),
-    map(u => this.sanitizer.bypassSecurityTrustResourceUrl(u)));
-
-  userRoles: RoleType[] = [];
-  userRoleObjects: RoleObject[] = [];
+  isAdmin$ = this.userProfile$.pipe(map(u => u.account.isAdmin));
+  userRoles$ = this.userProfile$.pipe(map(u => u.account.roles));
   get userProfile() { return this._userProfile$.value; }
 
   get token() { return localStorage.getItem('jetti_token') || ''; }
   set token(value) { localStorage.setItem('jetti_token', value); }
   get tokenPayload() { return jwt_decode(this.token); }
 
-  constructor(private router: Router, private http: HttpClient, private msalService: MsalService, public sanitizer: DomSanitizer) { }
+  constructor(private router: Router, private http: HttpClient, private msalService: MsalService) { }
 
-  public async login(email: string, password: string) {
+  public async login() {
     await this.msalService.loginPopup(OAuthSettings.scopes);
-    const user =  this.msalService.getUser().displayableId;
+    const user = this.msalService.getUser().displayableId;
     const acquireTokenSilentResult = await this.msalService.acquireTokenSilent(OAuthSettings.scopes);
 
     return this.http.post<ILoginResponse>(`${environment.auth}login`,
-      { email: user, password, token: acquireTokenSilentResult }).pipe(
-        tap(loginResponse => { if (loginResponse.account) { this.init(loginResponse); } }),
-        shareReplay());
+      { email: user, password: null, token: acquireTokenSilentResult }).pipe(
+        shareReplay(),
+        tap(loginResponse => this.init(loginResponse))
+      );
   }
 
   public logout() {
@@ -63,10 +56,7 @@ export class AuthService {
   private init(loginResponse: ILoginResponse) {
     if (loginResponse.token && loginResponse.account) {
       this.token = loginResponse.token;
-      this.userRoles = loginResponse.account.roles as RoleType[];
-      this.userRoleObjects = getRoleObjects(this.userRoles);
       this._userProfile$.next(loginResponse);
     }
   }
-
 }

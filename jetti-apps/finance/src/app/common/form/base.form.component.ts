@@ -81,15 +81,6 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       this.form.get('code')!.valueChanges,
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
-
-/*     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
-      const wsUrl = `${environment.socket}/${this.id}?token=${u.token}`;
-      const socket = IO(wsUrl, { transports: ['websocket'] });
-      socket.on('post', (data: any) => {
-        console.log(data);
-      });
-    }); */
-
   }
 
   showDescription() {
@@ -166,6 +157,14 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     this.module[method](this.form.getRawValue()).then(value => {
       this.form.patchValue(value || {}, patchOptionsNoEvents);
       this.form.markAsDirty();
+    });
+  }
+
+  startWorkFlow() {
+    this.ds.startWorkFlow(this.id).then(doc => {
+      this.form.patchValue({ workflow: { id: doc.id, type: doc.type, code: doc.code, value: doc.description } });
+      this.Save();
+      this.router.navigate([doc.type, doc.id]);
     });
   }
 

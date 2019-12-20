@@ -21,6 +21,7 @@ import { AuthService } from './auth/auth.service';
 import { MaterialModule } from './material.module';
 import { PrimeNGModule } from './primeNG.module';
 import { DynamicFormsModule } from './UI/dynamic.froms.module';
+import { UserFormsModule } from './UI/users.forms.module';
 
 export function getJwtToken(): string {
   return localStorage.getItem('access_token') || '';
@@ -43,6 +44,7 @@ export function getJwtToken(): string {
     MaterialModule,
     PrimeNGModule,
     DynamicFormsModule,
+    UserFormsModule,
     RoutingModule,
     MsalModule.forRoot(OAuthSettings),
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),

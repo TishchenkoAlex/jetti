@@ -66,6 +66,11 @@ export class ApiService {
     return this.http.get<DocumentBase>(query);
   }
 
+  startWorkFlow(id: Ref) {
+    const query = `${environment.api}startWorkFlow/${id}`;
+    return this.http.get<DocumentBase>(query);
+  }
+
   saveDoc(doc: DocumentBase): Observable<DocumentBase> {
     const apiDoc = mapToApi(doc);
     const query = `${environment.api}save`;

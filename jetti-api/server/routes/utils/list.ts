@@ -14,16 +14,14 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   let { QueryList, Props, Prop } = cs!;
 
   // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
-  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation]' : `${QueryList}`;
+  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] ' : `${QueryList}`;
 
   let row: DocumentBase | null = null;
   let query = '';
+  let tempTabe = '';
 
   if (params.id) {
     row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`));
-    if (Prop?.hierarchy === 'folders' && row?.parent) {
-      params.filter.push({left: 'parent', center: '=', right: row.parent});
-    }
   }
   if (!row && params.command !== 'last') params.command = 'first';
   const isFirstLast = params.command === 'last' || params.command === 'first';
@@ -45,7 +43,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   valueOrder.forEach(o => orderbyAfter += '"' + o.field + (o.order === 'asc' ? '" ASC, ' : '" DESC, '));
   orderbyAfter = orderbyAfter.slice(0, -2);
 
-  valueOrder = valueOrder.filter(el => el.value);
+  valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
 
   const filterBuilder = (filter: FormListFilter[]) => {
     let where = ' (1 = 1) ';
@@ -73,7 +71,9 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
             if (!f.right.id)
               where += ` AND "${f.left}" IS NULL `;
             else {
-              where += ` AND "${f.left}" IN (SELECT id FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}'))`;
+              if (tempTabe.indexOf(`[#${f.left}]`) < 0)
+                tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
+              where += ` AND "${f.left}" IN (SELECT id FROM [#${f.left}])`;
             }
             break;
           }
@@ -130,7 +130,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter && row) {
-    query = `
+    query = `${tempTabe}
     SELECT * FROM (${QueryList}) d WHERE id IN (
       SELECT id FROM (${queryBefore}) q1
       UNION ALL
@@ -138,10 +138,11 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     )
     ${orderbyAfter}`;
   } else {
+    const filter = filterBuilder(params.filter);
     if (params.command === 'last')
-      query = `SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filterBuilder(params.filter))} ${orderbyBefore}) d ${orderbyAfter}`;
+      query = `${tempTabe}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyBefore}) d ${orderbyAfter}`;
     else
-      query = `SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filterBuilder(params.filter))} ${orderbyAfter}`;
+      query = `${tempTabe}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyAfter}`;
   }
   if (process.env.NODE_ENV !== 'production') console.log(query);
   const data = await tx.manyOrNone<any>(query);

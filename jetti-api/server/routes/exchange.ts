@@ -52,3 +52,14 @@ router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response
   } catch (err) { next(err); }
 });
 
+router.post('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.json(200);
+  } catch (err) { next(err); }
+});
+
+router.patch('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.json(200);
+  } catch (err) { next(err); }
+});

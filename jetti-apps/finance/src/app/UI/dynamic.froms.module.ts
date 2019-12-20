@@ -26,8 +26,6 @@ import { MaterialModule } from './../material.module';
 import { CatalogListComponent } from './../UI/Catalog/calatog-list.component';
 import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
-import { BatchFormComponent } from './Forms/batch.form.component';
-import { SyncFormComponent } from './Forms/sync.form.component';
 import { DisableControlDirective } from '../common/directives/disabled-control';
 
 @NgModule({
@@ -45,9 +43,6 @@ import { DisableControlDirective } from '../common/directives/disabled-control';
     BaseDocListComponent,
     BaseDocFormComponent,
     BaseFormComponent,
-    SyncFormComponent,
-
-    BatchFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
     CatalogListComponent,
@@ -73,6 +68,39 @@ import { DisableControlDirective } from '../common/directives/disabled-control';
     PrimeNGModule,
   ],
   exports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    PipesModule,
+    PrimeNGModule,
+    HomeComponent,
+    TabControllerComponent,
+
+    DynamicComponentDirective,
+    DynamicComponent,
+    DynamicFormControlComponent,
+    AutocompleteComponent,
+
+    DisableControlDirective,
+
+    BaseDocListComponent,
+    BaseDocFormComponent,
+    BaseFormComponent,
+    BaseTreeListComponent,
+    BaseTreeListToolbarComponent,
+    CatalogListComponent,
+
+    TablePartsComponent,
+    SuggestDialogComponent,
+
+    RegisterMovementComponent,
+    RegisterAccumulationComponent,
+    RegisterAccumulationListComponent,
+    RegisterInfoComponent,
+
+    OperationFormComponent,
+    OperationListComponent,
   ],
   providers: [
     DynamicFormService,
@@ -85,8 +113,6 @@ import { DisableControlDirective } from '../common/directives/disabled-control';
     BaseDocListComponent,
     BaseDocFormComponent,
     BaseFormComponent,
-    BatchFormComponent,
-    SyncFormComponent,
     BaseTreeListComponent,
     BaseTreeListToolbarComponent,
     CatalogListComponent,
