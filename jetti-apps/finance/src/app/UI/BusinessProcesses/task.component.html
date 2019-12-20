@@ -1,0 +1,50 @@
+<div class="container-fluid">
+  <p-tabView (onChange)="handleTabChange($event)">
+    <p-tabPanel header="Реквизиты">
+      <!-- <span class="ui-float-label">
+                <input id="float-input" type="text" size="30" pInputText>
+                <label for="float-input">Username</label>
+            </span> -->
+    </p-tabPanel>
+    <p-tabPanel header="Согласующие">
+      <!-- <ng-template pTemplate="content"> -->
+      <p-table [value]="ProcessParticipants" [resizableColumns]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th *ngFor="let col of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;">
+              {{col.label}}
+              <!-- <span *ngIf="col.visible" title=""></span> -->
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ProcessParticipant>
+          <tr>
+            <!-- <td *ngFor="let col of ProcessParticipantsFields" [ngStyle]="{'background-color': ProcessParticipant.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
+            <td *ngFor="let col of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;"
+              [ngSwitch]="col.type">
+              <span *ngSwitchCase="'datetime'">
+                <span *ngIf="ProcessParticipant[col.name].getFullYear() > 2000">
+                  {{ProcessParticipant[col.name] | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
+              <span *ngSwitchCase="'number'">{{ProcessParticipant[col.name] | number:'1.0'}}</span>
+              <span *ngSwitchCase="'boolean'">
+                <i *ngIf="ProcessParticipant[col.name]" class="fa fa-check-square"></i>
+                <i *ngIf="!ProcessParticipant[col.name]" class="fa fa-square-o"></i>
+              </span>
+              <span *ngSwitchCase="'string'">{{ProcessParticipant[col.name]}}</span>
+              <span *ngSwitchDefault>{{ProcessParticipant[col.name].value}}</span>
+              <!-- <h1 *ngIf="col.visible" {{ProcessParticipant[col.name]}}></h1>                          -->
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <!-- </ng-template>    -->
+    </p-tabPanel>
+    <p-tabPanel header="Карта маршрута">
+      <ng-template pTemplate="content">
+        <img [src]="mapImgSrc">
+        <!-- <img src="http://localhost/JettiProcesses/hs/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=000000053"> -->
+      </ng-template>
+
+    </p-tabPanel>
+  </p-tabView>
+</div>

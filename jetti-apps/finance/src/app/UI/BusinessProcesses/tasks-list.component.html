@@ -1,0 +1,76 @@
+<div>
+  <div class="ui-inputgroup">
+    <p-button (click)="loadTasks()" label="Обновить" styleClass="ui-button-info"></p-button>
+    <div style="text-align: right" class="ui-g-offset-9">
+      <input type="text" pInputText size="50" placeholder="Строка поиска"
+        (input)="Tasklist.filterGlobal($event.target.value, 'contains')" style="width:auto">
+    </div>
+  </div>
+  <br>
+
+  <p-table #Tasklist [columns]="columns" [value]="Tasks$ | async" dataKey="TaskID" sortMode="multiple" dataKey="TaskID"
+    [resizableColumns]="true" [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision']">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 3em"></th>
+        <th *ngFor="let column of columns" [pSortableColumn]="column.field" pResizableColumn
+          style="text-align: center;">
+          {{column.header}}
+          <p-sortIcon [field]="column.field"></p-sortIcon>
+        </th>
+        <th style="width:25em">Действие</th>
+      </tr>
+
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-expanded="expanded">
+      <tr>
+        <td>
+          <a href="#" [pRowToggler]="rowData">
+            <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+          </a>
+        </td>
+        <td *ngFor="let column of columns" class="ui-resizable-column" style="text-align: center;">
+          {{rowData[column.field]}}
+        </td>
+        <td>
+          <div *ngIf="!rowData.CurrentTask" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
+            <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button"
+              class="ui-button-success" icon="pi pi-check" (click)="CompleteTask(rowData,0)" label="Утвердить"
+              style="offset: 5px;"></button>
+            <span style="width: 5px;"></span>
+            <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button"
+              class="ui-button-danger" icon="pi pi-times" (click)="rowData.CurrentTask = true" label="Отклонить"
+              style="offset: 5px;"></button>
+            <button *ngIf="rowData.CanModify.toString()==='true'" pButton type="button"
+              class="ui-button-info" icon="pi pi-pencil" (click)="rowData.CurrentTask = true" label="Доработать"
+              style="offset: 5px;"></button>
+          </div>
+          <div *ngIf="rowData.CurrentTask">
+            <div>
+              <button pButton type="button" icon="pi pi-check" class="ui-button-success" label = "OK"
+                (click)="CompleteTask(rowData,rowData.CanReject ? 1 : 2)"></button>
+                <span style="width: 5px;"></span>
+              <input type="text" pInputText
+                placeholder='{{rowData.CanReject ? "Причина отклонения" : "Причина доработки"}}'
+                [(ngModel)]="rowData.DecisionComment">
+                <span style="width: 5px;"></span>
+              <button pButton type="button" icon="pi pi-times" class="ui-button-danger"  label = "Отмена"
+                (click)="rowData.CurrentTask = false"></button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+      <tr>
+        <td [attr.colspan]="columnsLength + 2">
+          <div class="ui-g ui-fluid" style="padding:10px">
+            <bp-task [Task]="rowData"></bp-task>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
