@@ -2,12 +2,10 @@ import * as Queue from 'bull';
 import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
-import post from './post';
 import sync from './sync';
 import { RedisOptions } from 'ioredis';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
-  post: post,
   sync: sync
 };
 
