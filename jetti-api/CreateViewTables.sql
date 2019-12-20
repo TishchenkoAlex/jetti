@@ -260,9 +260,16 @@
         id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
         
       , [Catalog.Company.workflow] [workflow]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."FullName"') AS NVARCHAR(150)), '') [FullName]
       , [Catalog.Company.currency] [currency]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."prefix"') AS NVARCHAR(150)), '') [prefix]
       , [Catalog.Company.Intercompany] [Intercompany]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."AddressShipping"') AS NVARCHAR(150)), '') [AddressShipping]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."AddressBilling"') AS NVARCHAR(150)), '') [AddressBilling]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Phone"') AS NVARCHAR(150)), '') [Phone]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Code1"') AS NVARCHAR(150)), '') [Code1]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Code2"') AS NVARCHAR(150)), '') [Code2]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Code3"') AS NVARCHAR(150)), '') [Code3]
       , ISNULL(CAST(JSON_VALUE(doc, N'$."timeZone"') AS NVARCHAR(150)), '') [timeZone]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Company'
@@ -407,6 +414,7 @@
       , [Catalog.Contract.BusinessDirection] [BusinessDirection]
       , [Catalog.Contract.currency] [currency]
       , [Catalog.Contract.Manager] [Manager]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."isDefault"') AS BIT), 0) [isDefault]
     FROM dbo.[Documents]
     WHERE [type] = 'Catalog.Contract'
     GO

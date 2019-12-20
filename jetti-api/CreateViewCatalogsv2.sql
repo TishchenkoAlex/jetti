@@ -364,6 +364,7 @@
 
         ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
           CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."FullName"'), '') "FullName"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
@@ -373,6 +374,12 @@
 
         ISNULL("Intercompany".description, N'') "Intercompany.value", ISNULL("Intercompany".type, N'Catalog.Company') "Intercompany.type",
           CAST(JSON_VALUE(d.doc, N'$."Intercompany"') AS UNIQUEIDENTIFIER) "Intercompany.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."AddressShipping"'), '') "AddressShipping"
+, ISNULL(JSON_VALUE(d.doc, N'$."AddressBilling"'), '') "AddressBilling"
+, ISNULL(JSON_VALUE(d.doc, N'$."Phone"'), '') "Phone"
+, ISNULL(JSON_VALUE(d.doc, N'$."Code1"'), '') "Code1"
+, ISNULL(JSON_VALUE(d.doc, N'$."Code2"'), '') "Code2"
+, ISNULL(JSON_VALUE(d.doc, N'$."Code3"'), '') "Code3"
 , ISNULL(JSON_VALUE(d.doc, N'$."timeZone"'), '') "timeZone"
 
     
@@ -575,6 +582,7 @@
 
         ISNULL("Manager".description, N'') "Manager.value", ISNULL("Manager".type, N'Catalog.Manager') "Manager.type",
           CAST(JSON_VALUE(d.doc, N'$."Manager"') AS UNIQUEIDENTIFIER) "Manager.id"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."isDefault"') AS BIT), 0) "isDefault"
 
     
       , ISNULL(l5.description, d.description) [Contract.Level5]
