@@ -2647,16 +2647,56 @@
       GO
       
 
+<<<<<<< HEAD
+      DROP VIEW IF EXISTS dbo.[Document.CashRequest];
+      GO
+      CREATE OR ALTER VIEW dbo.[Document.CashRequest] WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "CashRequest", d.posted, d.deleted, d.isfolder, d.timestamp
+=======
       DROP VIEW IF EXISTS dbo.[Document.WorkFlow];
       GO
       CREATE OR ALTER VIEW dbo.[Document.WorkFlow] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "WorkFlow", d.posted, d.deleted, d.isfolder, d.timestamp
+>>>>>>> 16f383d5a48274bfee6f3200ca5d733f771d2020
       , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
       , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
       , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
 ,
 
+<<<<<<< HEAD
+        ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
+          CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
+,
+
+        ISNULL("CashFlow".description, N'') "CashFlow.value", ISNULL("CashFlow".type, N'Catalog.CashFlow') "CashFlow.type",
+          CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER) "CashFlow.id"
+,
+
+        ISNULL("Recipient".description, N'') "Recipient.value", ISNULL("Recipient".type, N'Catalog.Counterpartie') "Recipient.type",
+          CAST(JSON_VALUE(d.doc, N'$."Recipient"') AS UNIQUEIDENTIFIER) "Recipient.id"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."Amount"') AS NUMERIC(15,2)), 0) "Amount"
+,
+
+        ISNULL("Currency".description, N'') "Currency.value", ISNULL("Currency".type, N'Catalog.Currency') "Currency.type",
+          CAST(JSON_VALUE(d.doc, N'$."Currency"') AS UNIQUEIDENTIFIER) "Currency.id"
+,
+
+        ISNULL("OperationGroup".description, N'') "OperationGroup.value", ISNULL("OperationGroup".type, N'Catalog.Operation.Group') "OperationGroup.type",
+          CAST(JSON_VALUE(d.doc, N'$."OperationGroup"') AS UNIQUEIDENTIFIER) "OperationGroup.id"
+,
+
+        ISNULL("Operation".description, N'') "Operation.value", ISNULL("Operation".type, N'Catalog.Operation') "Operation.type",
+          CAST(JSON_VALUE(d.doc, N'$."Operation"') AS UNIQUEIDENTIFIER) "Operation.id"
+
+    
+      , ISNULL(l5.description, d.description) [CashRequest.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRequest.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [CashRequest.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [CashRequest.Level1]
+=======
         ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
           CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
@@ -2671,6 +2711,7 @@
       , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [WorkFlow.Level3]
       , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [WorkFlow.Level2]
       , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [WorkFlow.Level1]
+>>>>>>> 16f383d5a48274bfee6f3200ca5d733f771d2020
       FROM dbo.Documents d
         LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
         LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
@@ -2682,6 +2723,23 @@
       LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
       LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
       
+<<<<<<< HEAD
+      LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "CashFlow" ON "CashFlow".id = CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Recipient" ON "Recipient".id = CAST(JSON_VALUE(d.doc, N'$."Recipient"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Currency" ON "Currency".id = CAST(JSON_VALUE(d.doc, N'$."Currency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "OperationGroup" ON "OperationGroup".id = CAST(JSON_VALUE(d.doc, N'$."OperationGroup"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Operation" ON "Operation".id = CAST(JSON_VALUE(d.doc, N'$."Operation"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Document.CashRequest' 
+      GO
+      GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
+=======
       LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "Document" ON "Document".id = CAST(JSON_VALUE(d.doc, N'$."Document"') AS UNIQUEIDENTIFIER)
@@ -2689,6 +2747,7 @@
     WHERE d.[type] = 'Document.WorkFlow' 
       GO
       GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
+>>>>>>> 16f383d5a48274bfee6f3200ca5d733f771d2020
       GO
       CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
       SELECT
