@@ -52,6 +52,7 @@ import { CatalogCounterpartieBankAccount } from './Catalogs/Catalog.Counterparti
 import { CatalogContract } from './Catalogs/Catalog.Contract';
 import { CatalogBusinessDirection } from './Catalogs/Catalog.BusinessDirection';
 import { DocumentWorkFlow } from './Documents/Document.WokrFlow';
+import { DocumentCashRequest } from './Documents/Document.CashRequest';
 
 
 export interface INoSqlDocument {
@@ -157,5 +158,6 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Document.Settings', Class: DocumentSettings },
   { type: 'Document.UserSettings', Class: DocumentUserSettings },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlow },
+  { type: 'Document.CashRequest', Class: DocumentCashRequest },
 ];
 

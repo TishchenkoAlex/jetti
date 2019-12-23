@@ -19,6 +19,7 @@ export const FinanceSubSystem: ISubSystem = {
     'Catalog.BusinessDirection',
     'Catalog.Operation.Type',
     'Catalog.AcquiringTerminal',
+    'Document.CashRequest',
     'Catalog.Bank'
   ]
 };

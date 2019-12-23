@@ -15,6 +15,7 @@ import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.se
 import { MSSQL } from '../mssql';
 import { PostResult } from './post.interfaces';
 import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
+import { DocumentCashRequestServer } from './Documents/Document.CashRequest.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBase>;
@@ -45,6 +46,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Document.PriceList', Class: DocumentPriceListServer },
   { type: 'Document.Settings', Class: DocumentSettingsServer },
   { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
+  { type: 'Document.CashRequest', Class: DocumentCashRequestServer },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlowServer },
 ];
 

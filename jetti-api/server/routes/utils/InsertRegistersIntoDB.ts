@@ -42,6 +42,7 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
       VALUES ('${new Date(doc.date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',
     '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
-  query = query.replace(/\'undefined\'/g, 'NULL');
+  query = query.replace(/\'undefined\'/g, 'NULL').replace(/\'null\'/g, 'NULL');
+  console.log(query);
   if (query) { await tx.none(query); }
 }

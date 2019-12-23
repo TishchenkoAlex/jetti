@@ -4,4 +4,5 @@ export const CommonRoleObject: RoleObject[] = [
   { type: 'Document.Settings', read: true, write: true },
   { type: 'Document.UserSettings', read: true, write: true },
   { type: 'Document.WorkFlow', read: true, write: true },
+  { type: 'Form.BusinessProcessTasks', read: true, write: true },
 ];

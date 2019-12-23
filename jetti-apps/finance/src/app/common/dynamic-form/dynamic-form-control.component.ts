@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
@@ -13,6 +13,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   @Input() control: FormControlInfo;
   @Input() form: FormGroup;
   @Input() appendTo;
+  @Output() change = new EventEmitter();
   formControl: FormControl;
 
   valueChanges$: Subscription = Subscription.EMPTY;
@@ -35,9 +36,9 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
 
     this.dateTimeValue = this.formControl.value;
 
-    if (this.formControl && (this.control.onChange || this.control.onChangeServer))
-      this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {
-
+    this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {
+      this.change.emit(value);
+      if (this.formControl && (this.control.onChange || this.control.onChangeServer)) {
         if (this.control.onChange) {
           const funcBody = ((this.control.onChange.toString().match(/function[^{]+\{([\s\S]*)\}$/)) || [])[1]
             .replace(/\api\./g, 'await api.');
@@ -57,7 +58,8 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
               this.cd.markForCheck();
             });
         }
-      });
+      }
+    });
   }
 
   marginTop() {

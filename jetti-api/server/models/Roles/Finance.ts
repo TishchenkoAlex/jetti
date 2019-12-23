@@ -25,6 +25,7 @@ export const FinanceRoleObject: RoleObject[] = [
   { type: 'Form.Batch', read: true, write: true },
   { type: 'Form.PostAfterEchange', read: true, write: true },
   { type: 'Document.ExchangeRates', read: true, write: true },
+  { type: 'Document.CashRequest', read: true, write: true },
   { type: 'Catalog.TaxRates', read: true, write: true },
   { type: 'Catalog.GroupObjectsExploitation', read: true, write: true },
   { type: 'Catalog.ObjectsExploitation', read: true, write: true },

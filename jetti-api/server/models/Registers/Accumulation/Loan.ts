@@ -10,7 +10,7 @@ export class RegisterAccumulationLoan extends RegisterAccumulation {
   @Props({ type: 'Catalog.Loan', required: true, dimension: true })
   Loan: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
+  @Props({ type: 'Types.CounterpartieOrPerson', required: true, dimension: true })
   Counterpartie: Ref = null;
 
   @Props({ type: 'Catalog.CashFlow', required: true, dimension: true })
@@ -24,6 +24,12 @@ export class RegisterAccumulationLoan extends RegisterAccumulation {
 
   @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
+
+  @Props({ type: 'number', resource: true })
+  AmountToPay = 0;
+
+  @Props({ type: 'number', resource: true })
+  AmountIsPaid = 0;
 
   constructor (init: Partial<RegisterAccumulationLoan>) {
     super(init);

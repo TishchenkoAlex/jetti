@@ -10,6 +10,7 @@ export const AdminSubSystem: ISubSystem = {
     'Catalog.User',
     'Form.PostAfterEchange',
     'Document.UserSettings',
-    'Document.Settings'
+    'Document.Settings',
+    'Form.BusinessProcessTasks'
   ]
 };
