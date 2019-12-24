@@ -13,23 +13,24 @@ export class SQLGenegatorMetadata {
   static QueryTriggerRegisterAccumulation(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
+      if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}" \n`; }
       if (type === 'number') {
         return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1), 0) "${prop}"
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0), 0) "${prop}.In"
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1), 0) "${prop}.Out"
+        `;
       }
       if (type === 'date') { return `
-        , ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') "${prop}" \n`; }
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"\n`; }
       if (type === 'datetime') { return `
-        , ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') "${prop}" \n`; }
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"\n`; }
       return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"\n`;
 
     let insert = ''; let select = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -55,11 +56,11 @@ export class SQLGenegatorMetadata {
     BEGIN
       INSERT INTO [${type}] (DT, id, parent, date, document, company, kind, calculated, exchangeRate${insert})
         SELECT
-          DATEDIFF_BIG(MICROSECOND, '00010101', [date]) +
-            CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
-            ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
-          id, parent, CAST(date AS datetime) date, document, company, kind, calculated
-        , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS FLOAT) exchangeRate\n ${select}
+          --DATEDIFF_BIG(MICROSECOND, '00010101', [date]) +
+          --  CONVERT(BIGINT, CONVERT (VARBINARY(8), document, 1)) % 10000000 +
+          --  ROW_NUMBER() OVER (PARTITION BY [document] ORDER BY date ASC) DT,
+          0, id, parent, CAST(date AS datetime) date, document, company, kind, calculated
+        , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate\n ${select}
       FROM INSERTED WHERE type = N'${type}'
     END
     GO\n`;
@@ -69,23 +70,24 @@ export class SQLGenegatorMetadata {
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
+      if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}" \n`; }
       if (type === 'number') {
         return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"
+        `;
       }
       if (type === 'date') { return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"\n`; }
       if (type === 'datetime') { return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"\n`; }
       return `
-        , CAST(ISNULL(JSON_VALUE(data, '$.${prop}'), '') AS NVARCHAR(150)) "${prop}" \n`;
+        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"\n`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -111,13 +113,13 @@ export class SQLGenegatorMetadata {
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate\n ${select}
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate\n ${select}
       FROM dbo.[Accumulation] WHERE type = N'${type}';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     `;
@@ -177,23 +179,24 @@ export class SQLGenegatorMetadata {
   static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
+      if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}" \n`; }
       if (type === 'number') {
         return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"
+        `;
       }
       if (type === 'date') { return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"\n`; }
       if (type === 'datetime') { return `
-        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"\n`; }
       return `
-        , CAST(ISNULL(JSON_VALUE(data, '$.${prop}'), '') AS NVARCHAR(400)) "${prop}" \n`;
+        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"\n`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -224,7 +227,7 @@ export class SQLGenegatorMetadata {
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      date,company,${fields}document,kind,id
+      date,company,id
     )
     GO
     `;

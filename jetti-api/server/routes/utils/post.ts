@@ -1,16 +1,13 @@
 import { DocumentBase, Ref } from '../../models/document';
-import { INoSqlDocument, IFlatDocument, createDocument } from '../../models/documents.factory';
-import { RegisterAccumulation } from '../../models/Registers/Accumulation/RegisterAccumulation';
+import { INoSqlDocument } from '../../models/documents.factory';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
 import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
-import { AllDocTypes, DocTypes } from '../../models/documents.types';
-
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
-  const beforePost: (tx: MSSQL) => Promise<DocumentBase> = serverDoc['serverModule']['beforePost'];
+  const beforePost: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforePost'];
   if (typeof beforePost === 'function') await beforePost(tx);
   if (serverDoc.beforePost) await serverDoc.beforePost(tx);
 
@@ -19,13 +16,17 @@ export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
     await InsertRegistersIntoDB(serverDoc, Registers, tx);
   }
 
-  const afterPost: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterPost'];
+  const afterPost: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterPost'];
   if (typeof afterPost === 'function') await afterPost(tx);
   if (serverDoc.afterPost) await serverDoc.afterPost(tx);
 
 }
 
 export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+  const onUnPost: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['onUnPost'];
+  if (typeof onUnPost === 'function') await onUnPost(tx);
+  if (serverDoc.onUnPost) await serverDoc.onUnPost(tx);
+
   await tx.none(`
     DELETE FROM "Register.Account" WHERE document = '${serverDoc.id}';
     DELETE FROM "Register.Info" WHERE document = '${serverDoc.id}';
@@ -36,7 +37,7 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const id = serverDoc.id;
 
-  const beforeSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeSave'];
+  const beforeSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforeSave'];
   if (typeof beforeSave === 'function') await beforeSave(tx);
   if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
 
@@ -70,7 +71,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
       );
       SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
 
-  const afterSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterSave'];
+  const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
   if (typeof afterSave === 'function') await afterSave(tx);
   if (serverDoc.afterSave) await serverDoc.afterSave(tx);
 
@@ -81,7 +82,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const id = serverDoc.id;
 
-  const beforeSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeSave'];
+  const beforeSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforeSave'];
   if (typeof beforeSave === 'function') await beforeSave(tx);
   if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
 
@@ -120,7 +121,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
         WHERE Documents.id = i.id;
         SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
 
-  const afterSave: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterSave'];
+  const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
   if (typeof afterSave === 'function') await afterSave(tx);
   if (serverDoc.afterSave) await serverDoc.afterSave(tx);
 

@@ -14,6 +14,12 @@
         , SUM([AmountInAccounting]) [AmountInAccounting]
         , SUM([AmountInAccounting.In]) [AmountInAccounting.In]
         , SUM([AmountInAccounting.Out]) [AmountInAccounting.Out]
+        , SUM([AmountToPay]) [AmountToPay]
+        , SUM([AmountToPay.In]) [AmountToPay.In]
+        , SUM([AmountToPay.Out]) [AmountToPay.Out]
+        , SUM([AmountIsPaid]) [AmountIsPaid]
+        , SUM([AmountIsPaid.In]) [AmountIsPaid.In]
+        , SUM([AmountIsPaid.Out]) [AmountIsPaid.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.AccountablePersons]
       GROUP BY [company], [date], [currency], [Employee], [CashFlow]
@@ -38,6 +44,12 @@
         , SUM([AmountInAccounting]) [AmountInAccounting]
         , SUM([AmountInAccounting.In]) [AmountInAccounting.In]
         , SUM([AmountInAccounting.Out]) [AmountInAccounting.Out]
+        , SUM([AmountToPay]) [AmountToPay]
+        , SUM([AmountToPay.In]) [AmountToPay.In]
+        , SUM([AmountToPay.Out]) [AmountToPay.Out]
+        , SUM([AmountIsPaid]) [AmountIsPaid]
+        , SUM([AmountIsPaid.In]) [AmountIsPaid.In]
+        , SUM([AmountIsPaid.Out]) [AmountIsPaid.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.AP]
       GROUP BY [company], [date], [currency], [Supplier]
@@ -59,6 +71,12 @@
         , SUM([AmountInAccounting]) [AmountInAccounting]
         , SUM([AmountInAccounting.In]) [AmountInAccounting.In]
         , SUM([AmountInAccounting.Out]) [AmountInAccounting.Out]
+        , SUM([AmountToPay]) [AmountToPay]
+        , SUM([AmountToPay.In]) [AmountToPay.In]
+        , SUM([AmountToPay.Out]) [AmountToPay.Out]
+        , SUM([AmountIsPaid]) [AmountIsPaid]
+        , SUM([AmountIsPaid.In]) [AmountIsPaid.In]
+        , SUM([AmountIsPaid.Out]) [AmountIsPaid.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.AR]
       GROUP BY [company], [date], [currency], [Customer]
@@ -194,6 +212,12 @@
         , SUM([AmountInAccounting]) [AmountInAccounting]
         , SUM([AmountInAccounting.In]) [AmountInAccounting.In]
         , SUM([AmountInAccounting.Out]) [AmountInAccounting.Out]
+        , SUM([AmountToPay]) [AmountToPay]
+        , SUM([AmountToPay.In]) [AmountToPay.In]
+        , SUM([AmountToPay.Out]) [AmountToPay.Out]
+        , SUM([AmountIsPaid]) [AmountIsPaid]
+        , SUM([AmountIsPaid.In]) [AmountIsPaid.In]
+        , SUM([AmountIsPaid.Out]) [AmountIsPaid.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.Loan]
       GROUP BY [company], [date], [Loan], [Counterpartie], [CashFlow]
@@ -280,6 +304,24 @@
       ([company], [date] , [BusinessOperation], [currency], [Department])
       GO
       GRANT SELECT ON [dbo].[Register.Accumulation.Depreciation.Totals] TO jetti;
+      GO
+
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.Totals]
+      WITH SCHEMABINDING
+      AS
+        SELECT [company], [date], [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
+        
+        , SUM([Amount]) [Amount]
+        , SUM([Amount.In]) [Amount.In]
+        , SUM([Amount.Out]) [Amount.Out]
+	      , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.CashToPay]
+      GROUP BY [company], [date], [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.CashToPay.Totals] ON [dbo].[Register.Accumulation.CashToPay.Totals]
+      ([company], [date] , [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance])
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.CashToPay.Totals] TO jetti;
       GO
 
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.Totals]

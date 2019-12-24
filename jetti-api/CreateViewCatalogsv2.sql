@@ -2698,3 +2698,113 @@
         FROM dbo.[Documents] d
       GO
       
+
+      DROP VIEW IF EXISTS dbo.[Document.CashRequest];
+      GO
+      CREATE OR ALTER VIEW dbo.[Document.CashRequest] WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "CashRequest", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
+, ISNULL(JSON_VALUE(d.doc, N'$."Operation"'), '') "Operation"
+,
+
+        ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
+          CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
+,
+        IIF("CashRecipient".id IS NULL, JSON_VALUE(d.doc, N'$."CashRecipient".id'), "CashRecipient".id) "CashRecipient.id",
+        IIF("CashRecipient".id IS NULL, JSON_VALUE(d.doc, N'$."CashRecipient".value'), "CashRecipient".description) "CashRecipient.value",
+        IIF("CashRecipient".id IS NULL, JSON_VALUE(d.doc, N'$."CashRecipient".type'), "CashRecipient".type) "CashRecipient.type"
+,
+
+        ISNULL("Contract".description, N'') "Contract.value", ISNULL("Contract".type, N'Catalog.Contract') "Contract.type",
+          CAST(JSON_VALUE(d.doc, N'$."Contract"') AS UNIQUEIDENTIFIER) "Contract.id"
+,
+
+        ISNULL("CashFlow".description, N'') "CashFlow.value", ISNULL("CashFlow".type, N'Catalog.CashFlow') "CashFlow.type",
+          CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER) "CashFlow.id"
+,
+
+        ISNULL("Loan".description, N'') "Loan.value", ISNULL("Loan".type, N'Catalog.Loan') "Loan.type",
+          CAST(JSON_VALUE(d.doc, N'$."Loan"') AS UNIQUEIDENTIFIER) "Loan.id"
+,
+        IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".id'), "CashOrBank".id) "CashOrBank.id",
+        IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".value'), "CashOrBank".description) "CashOrBank.value",
+        IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".type'), "CashOrBank".type) "CashOrBank.type"
+, ISNULL(JSON_VALUE(d.doc, N'$."PayDay"'), '') "PayDay"
+, ISNULL(CAST(JSON_VALUE(d.doc, N'$."Amount"') AS NUMERIC(15,2)), 0) "Amount"
+,
+
+        ISNULL("сurrency".description, N'') "сurrency.value", ISNULL("сurrency".type, N'Catalog.Currency') "сurrency.type",
+          CAST(JSON_VALUE(d.doc, N'$."сurrency"') AS UNIQUEIDENTIFIER) "сurrency.id"
+,
+        IIF("ExpenseOrBalance".id IS NULL, JSON_VALUE(d.doc, N'$."ExpenseOrBalance".id'), "ExpenseOrBalance".id) "ExpenseOrBalance.id",
+        IIF("ExpenseOrBalance".id IS NULL, JSON_VALUE(d.doc, N'$."ExpenseOrBalance".value'), "ExpenseOrBalance".description) "ExpenseOrBalance.value",
+        IIF("ExpenseOrBalance".id IS NULL, JSON_VALUE(d.doc, N'$."ExpenseOrBalance".type'), "ExpenseOrBalance".type) "ExpenseOrBalance.type"
+,
+
+        ISNULL("ExpenseAnalytics".description, N'') "ExpenseAnalytics.value", ISNULL("ExpenseAnalytics".type, N'Catalog.Expense.Analytics') "ExpenseAnalytics.type",
+          CAST(JSON_VALUE(d.doc, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER) "ExpenseAnalytics.id"
+,
+
+        ISNULL("BalanceAnalytics".description, N'') "BalanceAnalytics.value", ISNULL("BalanceAnalytics".type, N'Catalog.Balance.Analytics') "BalanceAnalytics.type",
+          CAST(JSON_VALUE(d.doc, N'$."BalanceAnalytics"') AS UNIQUEIDENTIFIER) "BalanceAnalytics.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."workflowID"'), '') "workflowID"
+
+    
+      , ISNULL(l5.description, d.description) [CashRequest.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRequest.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [CashRequest.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [CashRequest.Level1]
+      FROM dbo.Documents d
+        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
+        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
+        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
+        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
+        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
+      
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "CashRecipient" ON "CashRecipient".id = CAST(JSON_VALUE(d.doc, N'$."CashRecipient"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Contract" ON "Contract".id = CAST(JSON_VALUE(d.doc, N'$."Contract"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "CashFlow" ON "CashFlow".id = CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Loan" ON "Loan".id = CAST(JSON_VALUE(d.doc, N'$."Loan"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "CashOrBank" ON "CashOrBank".id = CAST(JSON_VALUE(d.doc, N'$."CashOrBank"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "сurrency" ON "сurrency".id = CAST(JSON_VALUE(d.doc, N'$."сurrency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "ExpenseOrBalance" ON "ExpenseOrBalance".id = CAST(JSON_VALUE(d.doc, N'$."ExpenseOrBalance"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "ExpenseAnalytics" ON "ExpenseAnalytics".id = CAST(JSON_VALUE(d.doc, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "BalanceAnalytics" ON "BalanceAnalytics".id = CAST(JSON_VALUE(d.doc, N'$."BalanceAnalytics"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Document.CashRequest' 
+      GO
+      GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
+      SELECT
+	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
+	      d.id, d.date [date],
+	      d.description Presentation
+        FROM dbo.[Documents] d
+      GO
+      

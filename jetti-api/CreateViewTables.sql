@@ -1874,3 +1874,79 @@
     GO
     -------------------------
     
+    DROP VIEW IF EXISTS [dbo].[Document.CashRequest.v];
+    GO
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.workflow];
+    ALTER TABLE Documents ADD [Document.CashRequest.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Department];
+    ALTER TABLE Documents ADD [Document.CashRequest.Department] AS CAST(JSON_VALUE(doc, N'$."Department"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.CashRecipient];
+    ALTER TABLE Documents ADD [Document.CashRequest.CashRecipient] AS CAST(JSON_VALUE(doc, N'$."CashRecipient"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Contract];
+    ALTER TABLE Documents ADD [Document.CashRequest.Contract] AS CAST(JSON_VALUE(doc, N'$."Contract"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.CashFlow];
+    ALTER TABLE Documents ADD [Document.CashRequest.CashFlow] AS CAST(JSON_VALUE(doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.Loan];
+    ALTER TABLE Documents ADD [Document.CashRequest.Loan] AS CAST(JSON_VALUE(doc, N'$."Loan"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.CashOrBank];
+    ALTER TABLE Documents ADD [Document.CashRequest.CashOrBank] AS CAST(JSON_VALUE(doc, N'$."CashOrBank"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.сurrency];
+    ALTER TABLE Documents ADD [Document.CashRequest.сurrency] AS CAST(JSON_VALUE(doc, N'$."сurrency"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.ExpenseOrBalance];
+    ALTER TABLE Documents ADD [Document.CashRequest.ExpenseOrBalance] AS CAST(JSON_VALUE(doc, N'$."ExpenseOrBalance"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.ExpenseAnalytics];
+    ALTER TABLE Documents ADD [Document.CashRequest.ExpenseAnalytics] AS CAST(JSON_VALUE(doc, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER) PERSISTED;
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Document.CashRequest.BalanceAnalytics];
+    ALTER TABLE Documents ADD [Document.CashRequest.BalanceAnalytics] AS CAST(JSON_VALUE(doc, N'$."BalanceAnalytics"') AS UNIQUEIDENTIFIER) PERSISTED;;
+    GO
+    CREATE VIEW [dbo].[Document.CashRequest.v]
+    WITH SCHEMABINDING
+    AS
+      SELECT
+        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+        
+      , [Document.CashRequest.workflow] [workflow]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Status"') AS NVARCHAR(150)), '') [Status]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Operation"') AS NVARCHAR(150)), '') [Operation]
+      , [Document.CashRequest.Department] [Department]
+      , [Document.CashRequest.CashRecipient] [CashRecipient]
+      , [Document.CashRequest.Contract] [Contract]
+      , [Document.CashRequest.CashFlow] [CashFlow]
+      , [Document.CashRequest.Loan] [Loan]
+      , [Document.CashRequest.CashOrBank] [CashOrBank]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."PayDay"') AS NVARCHAR(150)), '') [PayDay]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."Amount"') AS MONEY), 0) [Amount]
+      , [Document.CashRequest.сurrency] [сurrency]
+      , [Document.CashRequest.ExpenseOrBalance] [ExpenseOrBalance]
+      , [Document.CashRequest.ExpenseAnalytics] [ExpenseAnalytics]
+      , [Document.CashRequest.BalanceAnalytics] [BalanceAnalytics]
+      , ISNULL(CAST(JSON_VALUE(doc, N'$."workflowID"') AS NVARCHAR(150)), '') [workflowID]
+    FROM dbo.[Documents]
+    WHERE [type] = 'Document.CashRequest'
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [Document.CashRequest.v.id] ON [dbo].[Document.CashRequest.v]([id],[type], [description]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.decription] ON [dbo].[Document.CashRequest.v]([description],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.code] ON [dbo].[Document.CashRequest.v]([code],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.company] ON [dbo].[Document.CashRequest.v]([company],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.parent] ON [dbo].[Document.CashRequest.v]([parent],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.date] ON [dbo].[Document.CashRequest.v]([date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.isfolder] ON [dbo].[Document.CashRequest.v]([isfolder],[id]);
+    
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.workflow] ON [dbo].[Document.CashRequest.v]([workflow], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Department] ON [dbo].[Document.CashRequest.v]([Department], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.CashRecipient] ON [dbo].[Document.CashRequest.v]([CashRecipient], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Contract] ON [dbo].[Document.CashRequest.v]([Contract], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.CashFlow] ON [dbo].[Document.CashRequest.v]([CashFlow], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.Loan] ON [dbo].[Document.CashRequest.v]([Loan], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.CashOrBank] ON [dbo].[Document.CashRequest.v]([CashOrBank], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.сurrency] ON [dbo].[Document.CashRequest.v]([сurrency], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.ExpenseOrBalance] ON [dbo].[Document.CashRequest.v]([ExpenseOrBalance], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.ExpenseAnalytics] ON [dbo].[Document.CashRequest.v]([ExpenseAnalytics], [id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.BalanceAnalytics] ON [dbo].[Document.CashRequest.v]([BalanceAnalytics], [id]);
+    GO
+    GRANT SELECT ON [dbo].[Document.CashRequest.v] TO JETTI;
+    GO
+    -------------------------
+    

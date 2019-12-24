@@ -13,27 +13,28 @@ import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
 import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
 import { MSSQL } from '../mssql';
-import { PostResult } from './post.interfaces';
 import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
 import { DocumentCashRequestServer } from './Documents/Document.CashRequest.server';
+import { PostResult } from './post.interfaces';
 
 export interface IServerDocument {
-  onCreate?(tx: MSSQL): Promise<DocumentBase>;
+  onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
 
-  beforeSave?(tx: MSSQL): Promise<DocumentBase>;
-  afterSave?(tx: MSSQL): Promise<DocumentBase>;
+  beforeSave?(tx: MSSQL): Promise<DocumentBaseServer>;
+  afterSave?(tx: MSSQL): Promise<DocumentBaseServer>;
 
-  beforePost?(tx: MSSQL): Promise<DocumentBase>;
+  beforePost?(tx: MSSQL): Promise<DocumentBaseServer>;
+  onUnPost?(tx: MSSQL): Promise<DocumentBaseServer>;
   onPost?(tx: MSSQL): Promise<PostResult>;
-  afterPost?(tx: MSSQL): Promise<DocumentBase>;
+  afterPost?(tx: MSSQL): Promise<DocumentBaseServer>;
 
-  beforeDelete?(tx: MSSQL): Promise<DocumentBase>;
-  afterDelete?(tx: MSSQL): Promise<DocumentBase>;
+  beforeDelete?(tx: MSSQL): Promise<DocumentBaseServer>;
+  afterDelete?(tx: MSSQL): Promise<DocumentBaseServer>;
 
   onValueChanged?(prop: string, value: any, tx: MSSQL): Promise<PatchValue | {} | { [key: string]: any }>;
   onCommand?(command: string, args: any, tx: MSSQL): Promise<any>;
 
-  baseOn?(id: Ref, tx: MSSQL): Promise<DocumentBase>;
+  baseOn?(id: Ref, tx: MSSQL): Promise<DocumentBaseServer>;
 }
 
 export type DocumentBaseServer = DocumentBase & IServerDocument;
@@ -105,7 +106,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         const func = new Function('tx', Operation.module);
         result['serverModule'] = func.bind(result, tx)() || {};
 
-        const onCreate: (tx: MSSQL) => Promise<void> = result['serverModule']['onCreate'];
+        const onCreate: (tx: MSSQL) => Promise<T> = result['serverModule']['onCreate'];
         if (typeof onCreate === 'function') await onCreate(tx);
       }
     }

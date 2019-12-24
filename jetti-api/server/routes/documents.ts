@@ -121,9 +121,11 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
 
       const serverDoc = await createDocumentServer(doc.type, doc, tx);
 
-      const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
-      if (typeof beforeDelete === 'function') await beforeDelete(tx);
-      if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
+      if (!doc.deleted) {
+        const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
+        if (typeof beforeDelete === 'function') await beforeDelete(tx);
+        if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
+      }
 
       serverDoc.deleted = !!!serverDoc.deleted;
       serverDoc.posted = false;
@@ -135,9 +137,11 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
         UPDATE "Documents" SET deleted = @p1, posted = 0 WHERE id = '${id}';
       `, [serverDoc.deleted]);
 
-      const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
-      if (typeof afterDelete === 'function') await afterDelete(tx);
-      if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
+      if (!doc.deleted) {
+        const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
+        if (typeof afterDelete === 'function') await afterDelete(tx);
+        if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
+      }
 
       const view = await buildViewModel(serverDoc, tx);
       res.json(view);

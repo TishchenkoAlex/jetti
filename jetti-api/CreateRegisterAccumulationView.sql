@@ -3,32 +3,40 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Employee"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Employee"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Employee"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Employee"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashFlow"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountToPay"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountToPay.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountToPay.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountIsPaid"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountIsPaid.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountIsPaid.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.AccountablePersons';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons] ON [dbo].[Register.Accumulation.AccountablePersons](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -36,36 +44,44 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."AO"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "AO"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."AO"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "AO"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Supplier"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Supplier"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Supplier"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Supplier"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.PayDay'), '1970-01-01T00:00:00.000Z') AS VARCHAR(20)) "PayDay" 
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATETIME, '1970-01-01', 102)) "PayDay"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountToPay"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountToPay.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountToPay.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountIsPaid"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountIsPaid.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountIsPaid.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.AP';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP] ON [dbo].[Register.Accumulation.AP](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -73,36 +89,44 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."AO"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "AO"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."AO"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "AO"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Customer"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Customer"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Customer"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Customer"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.PayDay'), '1970-01-01T00:00:00.000Z') AS VARCHAR(20)) "PayDay" 
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATETIME, '1970-01-01', 102)) "PayDay"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AR'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AR"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AR'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AR.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AR'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AR.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AR"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AR.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AR.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountToPay"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountToPay.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountToPay.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountIsPaid"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountIsPaid.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountIsPaid.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.AR';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR] ON [dbo].[Register.Accumulation.AR](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -110,34 +134,34 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BankAccount"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BankAccount"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BankAccount"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BankAccount"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashFlow"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Analytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Analytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Analytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Analytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Bank';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank] ON [dbo].[Register.Accumulation.Bank](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -145,24 +169,24 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Balance"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Balance"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Balance"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Balance"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Analytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Analytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Analytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Analytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Balance';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance] ON [dbo].[Register.Accumulation.Balance](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -170,34 +194,34 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashRegister"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashRegister"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashRegister"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashRegister"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashFlow"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Analytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Analytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Analytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Analytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Cash';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash] ON [dbo].[Register.Accumulation.Cash](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -205,34 +229,34 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Sender"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Sender"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Sender"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Sender"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Recipient"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Recipient"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Recipient"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Recipient"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashFlow"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Cash.Transit';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit] ON [dbo].[Register.Accumulation.Cash.Transit](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -240,48 +264,48 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."OperationType"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "OperationType"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."OperationType"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "OperationType"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Expense"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Expense"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Expense"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Expense"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."ExpenseAnalytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "ExpenseAnalytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "ExpenseAnalytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Income"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Income"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Income"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Income"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."IncomeAnalytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "IncomeAnalytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."IncomeAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "IncomeAnalytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BalanceIn"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BalanceIn"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BalanceIn"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BalanceIn"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BalanceInAnalytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BalanceInAnalytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BalanceInAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BalanceInAnalytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BalanceOut"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BalanceOut"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BalanceOut"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BalanceOut"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BalanceOutAnalytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BalanceOutAnalytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BalanceOutAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BalanceOutAnalytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Storehouse"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Storehouse"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Storehouse"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Storehouse"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."SKU"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "SKU"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."SKU"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "SKU"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."batch"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "batch"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."batch"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "batch"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Cost"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Cost.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Cost.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Qty"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Cost"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Cost.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Cost.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Qty"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Qty.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Qty.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Inventory';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -289,32 +313,40 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Loan"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Loan"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Loan"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Loan"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Counterpartie"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Counterpartie"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Counterpartie"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Counterpartie"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."CashFlow"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountToPay"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountToPay.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountToPay') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountToPay.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountIsPaid"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountIsPaid.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountIsPaid') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountIsPaid.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Loan';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan] ON [dbo].[Register.Accumulation.Loan](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -322,24 +354,24 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."PL"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "PL"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."PL"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "PL"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Analytics"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Analytics"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Analytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Analytics"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.PL';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL] ON [dbo].[Register.Accumulation.PL](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -347,56 +379,56 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Customer"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Customer"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Customer"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Customer"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Product"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Product"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Product"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Product"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Manager"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Manager"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Manager"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Manager"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."AO"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "AO"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."AO"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "AO"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Storehouse"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Storehouse"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Storehouse"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Storehouse"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Cost"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Cost.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Cost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Cost.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Qty"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Discount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Discount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Discount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Discount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Discount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Discount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Tax'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Tax"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Tax'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Tax.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Tax'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Tax.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInDoc'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInDoc"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInDoc'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInDoc.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInDoc'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInDoc.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAR'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAR"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAR'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAR.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAR'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAR.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Cost"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Cost.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Cost') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Cost.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Qty"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Qty.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Qty.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Discount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Discount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Discount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Discount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Discount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Discount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Tax') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Tax"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Tax') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Tax.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Tax') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Tax.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInDoc') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInDoc"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInDoc') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInDoc.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInDoc') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInDoc.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAR') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAR"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAR') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAR.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAR') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAR.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Sales';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales] ON [dbo].[Register.Accumulation.Sales](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     
@@ -404,34 +436,77 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, '$.BusinessOperation'), '') AS NVARCHAR(150)) "BusinessOperation" 
+        , ISNULL(JSON_VALUE(data, '$.BusinessOperation'), '') "BusinessOperation" 
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."OE"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "OE"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."OE"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "OE"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInBalance"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInBalance.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInBalance'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInBalance.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInBalance"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInBalance.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInBalance') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInBalance.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Depreciation';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation] ON [dbo].[Register.Accumulation.Depreciation](
-      date,company,id
+      date,company,calculated,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Accumulation.CashToPay]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
+ 
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Contract"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Contract"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
+
+        , ISNULL(JSON_VALUE(data, '$.OperationType'), '') "OperationType" 
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Loan"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Loan"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashOrBank"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashOrBank"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."CashRecipient"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashRecipient"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."ExpenseOrBalance"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "ExpenseOrBalance"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "ExpenseAnalytics"
+
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BalanceAnalytics"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BalanceAnalytics"
+
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATE, '1970-01-01', 102)) "PayDay"
+
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+      FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.CashToPay';
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay] ON [dbo].[Register.Accumulation.CashToPay](
+      date,company,calculated,id
     )
     GO
     
@@ -439,52 +514,52 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
-      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate
+      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
+      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate
  
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Scenario"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Scenario"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Scenario"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Scenario"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BudgetItem"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BudgetItem"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BudgetItem"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BudgetItem"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic1"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic1"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Anatitic1"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Anatitic1"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic2"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic2"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Anatitic2"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Anatitic2"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic3"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic3"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Anatitic3"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Anatitic3"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic4"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic4"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Anatitic4"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Anatitic4"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Anatitic5"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Anatitic5"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Anatitic5"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Anatitic5"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Amount"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Amount.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Amount'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Amount.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInScenatio"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInScenatio.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInScenatio'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInScenatio.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInCurrency"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInCurrency.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInCurrency'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInCurrency.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "AmountInAccounting"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "AmountInAccounting.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.AmountInAccounting'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "AmountInAccounting.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Qty"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Qty.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Qty'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Qty.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInScenatio') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInScenatio"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInScenatio') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInScenatio.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInScenatio') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInScenatio.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInCurrency') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInCurrency"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInCurrency') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInCurrency.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInCurrency') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInCurrency.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AmountInAccounting"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AmountInAccounting.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AmountInAccounting') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AmountInAccounting.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Qty"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Qty.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Qty') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Qty.Out"
+        
       FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.BudgetItemTurnover';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover] ON [dbo].[Register.Accumulation.BudgetItemTurnover](
-      date,company,id
+      date,company,calculated,id
     )
     GO
     

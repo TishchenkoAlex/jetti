@@ -4,23 +4,23 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Product"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Product"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Product"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Product"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."PriceType"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "PriceType"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."PriceType"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "PriceType"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Unit"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Unit"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Unit"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Unit"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Price'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Price"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Price'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Price.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Price'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Price.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Price') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Price"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Price') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Price.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Price') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Price.Out"
+        
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.PriceList';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.PriceList] ON [dbo].[Register.Info.PriceList](
-      date,company,[currency],[Product],[PriceType],[Unit],[Price],document,kind,id
+      date,company,id
     )
     GO
     
@@ -29,21 +29,21 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."currency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "currency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Rate'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Rate"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Rate'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Rate.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Rate'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Rate.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Mutiplicity'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Mutiplicity"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Mutiplicity'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Mutiplicity.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Mutiplicity'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Mutiplicity.Out" 
-
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Rate') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Rate"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Rate') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Rate.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Rate') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Rate.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Mutiplicity') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Mutiplicity"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Mutiplicity') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Mutiplicity.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Mutiplicity') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Mutiplicity.Out"
+        
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ExchangeRates';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.ExchangeRates] ON [dbo].[Register.Info.ExchangeRates](
-      date,company,[currency],[Rate],[Mutiplicity],document,kind,id
+      date,company,id
     )
     GO
     
@@ -52,15 +52,15 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."balanceCurrency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "balanceCurrency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."balanceCurrency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "balanceCurrency"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."accountingCurrency"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "accountingCurrency"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."accountingCurrency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "accountingCurrency"
 
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Settings';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.Settings] ON [dbo].[Register.Info.Settings](
-      date,company,[balanceCurrency],[accountingCurrency],document,kind,id
+      date,company,id
     )
     GO
     
@@ -69,29 +69,29 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."OE"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "OE"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."OE"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "OE"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.StartDate'), '1970-01-01T00:00:00.000Z') AS VARCHAR(20)) "StartDate" 
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.StartDate'),127), CONVERT(DATE, '1970-01-01', 102)) "StartDate"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Period'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "Period"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Period'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "Period.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.Period'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "Period.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.StartCost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "StartCost"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.StartCost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "StartCost.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.StartCost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "StartCost.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, N'$.EndCost'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "EndCost"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.EndCost'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "EndCost.In"
-        , CAST(ISNULL(JSON_VALUE(data, N'$.EndCost'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "EndCost.Out" 
-
-        , CAST(ISNULL(JSON_VALUE(data, '$.Method'), '') AS NVARCHAR(400)) "Method" 
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Period') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Period"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Period') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Period.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Period') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Period.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.StartCost') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "StartCost"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.StartCost') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "StartCost.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.StartCost') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "StartCost.Out"
+        
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.EndCost') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "EndCost"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.EndCost') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "EndCost.In"
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.EndCost') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "EndCost.Out"
+        
+        , ISNULL(JSON_VALUE(data, '$.Method'), '') "Method" 
 
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Depreciation';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.Depreciation] ON [dbo].[Register.Info.Depreciation](
-      date,company,[OE],[StartDate],[Period],[StartCost],[EndCost],[Method],document,kind,id
+      date,company,id
     )
     GO
     
@@ -100,13 +100,13 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, '$.user'), '') AS NVARCHAR(400)) "user" 
+        , ISNULL(JSON_VALUE(data, '$.user'), '') "user" 
 
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.RLS] ON [dbo].[Register.Info.RLS](
-      date,company,[user],document,kind,id
+      date,company,id
     )
     GO
     
@@ -115,17 +115,17 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."BudgetItem"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "BudgetItem"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."BudgetItem"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BudgetItem"
 
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Scenario"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Scenario"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Scenario"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Scenario"
 
-        , CAST(ISNULL(JSON_VALUE(data, '$.Rule'), '') AS NVARCHAR(400)) "Rule" 
+        , ISNULL(JSON_VALUE(data, '$.Rule'), '') "Rule" 
 
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.BudgetItemRule';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.BudgetItemRule] ON [dbo].[Register.Info.BudgetItemRule](
-      date,company,[BudgetItem],[Scenario],[Rule],document,kind,id
+      date,company,id
     )
     GO
     
@@ -134,13 +134,13 @@
     AS
     SELECT
       id, date, document, company, kind
-        , CAST(ISNULL(JSON_VALUE(data, N'$."Department"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "Department"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
 
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
 
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.DepartmentCompanyHistory] ON [dbo].[Register.Info.DepartmentCompanyHistory](
-      date,company,[Department],document,kind,id
+      date,company,id
     )
     GO
     
