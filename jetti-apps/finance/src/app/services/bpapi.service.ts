@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Task, ProcessParticipants } from 'src/app/UI/BusinessProcesses/task.object';
 import { environment } from '../../environments/environment';
 import { take } from 'rxjs/operators';
+import { DocumentTypes } from '../../../../../jetti-api/server/models/documents.types';
 
 @Injectable({ providedIn: 'root' })
 export class BPApi {
@@ -16,26 +17,18 @@ export class BPApi {
   }
 
   CompleteTask(TaskID: number, UserDecisionID: number, Comment?: string): string {
-    // const query = `${environment.api}BP/CompleteTask?`;
-    // // ?TaskID=${TaskID}&UserDecision=${UserDecisionID}&Comment=${Comment}`;
-    // const b = [
-    //   { key: 'TaskID', value: TaskID.toString() },
-    //   { key: 'UserDecisionID', value: UserDecisionID.toString() },
-    //   { key: 'Comment', value: Comment }
-    // ];
-    // let result = '';
-    // this.http.post<string>(query, b).pipe(take(1)).subscribe(errMessage => { result = errMessage; });
-    // return result;
-    // let query: any;
-    const query = `${environment.api}BP/CompleteTask?TaskID=${TaskID}&UserDecision=${UserDecisionID}&Comment=${Comment}`;
-    // query.stringByAddingPercentEncodingWithAllowedCharacters();
+    const query = `${environment.api}BP/CompleteTask`;
+    const body = {
+      'TaskID': TaskID,
+      'UserDecision': UserDecisionID.toString(),
+      'Comment': Comment,
+      'UserID': ''};
     let result = '';
-    this.http.get<string>(query).pipe(take(1)).subscribe(errMessage => { result = errMessage; });
+    this.http.post<string>(query, body).pipe(take(1)).subscribe(errMessage => { result = errMessage; });
     return result;
   }
 
   GetMapByProcessID(ProcessID): Observable<Blob> {
-    // return `${environment.api}/BP/GetMapByProcessID?ProcessID=${ProcessID}`;
     const query = `${environment.api}/BP/GetMapByProcessID?ProcessID=${ProcessID}`;
     return this.http.get<Blob>(query);
   }
@@ -45,8 +38,20 @@ export class BPApi {
     return this.http.get<ProcessParticipants>(query);
   }
 
-  StartProcess(BaseDocumentID) {
-    const query = `${environment.api}/BP/StartProcess?BaseDocumentID=${BaseDocumentID}`;
-    return this.http.get(query);
+  StartProcess(Base: any, BaseType: string): Observable<string> {
+    const query = `${environment.api}/BP/StartProcess`;
+    let body = {};
+    if (BaseType === 'Document.CashRequest') {
+      body = {
+        'SubdivisionID': Base.Department.id,
+        'Sum': Base.Amount,
+        'ItemID': Base.CashFlow.id,
+        'OperationTypeID': Base.Operation,
+        'AuthorID': Base.user.code,
+        'DocumentID': Base.id,
+        'Comment': Base.info
+      };
+    }
+    return this.http.post<string>(query, body);
   }
 }

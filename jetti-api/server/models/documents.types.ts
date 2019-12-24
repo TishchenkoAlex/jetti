@@ -55,7 +55,11 @@ export type DocumentTypes =
   'Document.PriceList' |
   'Document.Settings' |
   'Document.UserSettings' |
+  'Document.CashRequest' |
   'Document.WorkFlow';
+
+  export type ProcessTypes =
+  'BusinessProcess.CashRequestApproving';
 
 export type DocTypes =
   CatalogTypes |
@@ -84,11 +88,18 @@ export type ComplexTypes =
   'Types.Catalog' |
   'Types.Object' |
   'Types.UserOrGroup' |
+  'Types.CashOrBank' |
+  'Types.CashRecipient' |
+  'Types.CounterpartieOrPerson' |
   'Types.ExpenseOrBalance';
 
 export type IncomeExpenseTypes =
 'Catalog.Expense' |
 'Catalog.Income';
+
+export type CashOrBank =
+'Catalog.BankAccount' |
+'Catalog.CashRegister';
 
 export type IncomeExpenseAnalyticTypes =
 'Catalog.Expense.Analytics' |

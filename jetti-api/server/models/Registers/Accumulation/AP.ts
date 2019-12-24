@@ -31,6 +31,12 @@ export class RegisterAccumulationAP extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
+  @Props({ type: 'number', resource: true })
+  AmountToPay = 0;
+
+  @Props({ type: 'number', resource: true })
+  AmountIsPaid = 0;
+
   constructor (init: Partial<RegisterAccumulationAP>) {
     super(init);
     Object.assign(this, init);
