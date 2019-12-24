@@ -1234,5 +1234,6 @@
     GO
 
 
-      INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
+    INSERT INTO [Accumulation] ([id], [date], [type], [data], [document], [kind], [company], [parent], [calculated])
+	  SELECT [id], [date], [type], [data], [document], [kind], [company], [parent], [calculated] FROM [Accumulation.COPY];
     

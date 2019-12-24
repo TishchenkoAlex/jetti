@@ -98,26 +98,22 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
     let batchRows: BatchRow[] = [];
     for (const row of this.Items) {
 
-      batchRows = await lib.inventory.batchRows(this.date, this.company, this.Storehouse, row.SKU, row.Qty, batchRows, tx);
-      for (const batchRow of batchRows) {
 
         Registers.Accumulation.push(new RegisterAccumulationInventory({
           kind: false,
           Expense: ExpenseCOST,
           Storehouse: this.Storehouse,
-          batch: batchRow.batch,
-          SKU: batchRow.SKU,
-          Cost: batchRow.Cost,
-          Qty: batchRow.Qty
+          batch: null,
+          SKU: row.SKU,
+          Cost: 0,
+          Qty: row.Qty
         }));
-
-        totalCost += batchRow.Cost;
 
         // Account
         Registers.Account.push({
           debit: { account: acc90, subcounts: [] },
           kredit: { account: acc41, subcounts: [this.Storehouse, row.SKU], qty: row.Qty },
-          sum: batchRow.Cost,
+          sum: 0,
         });
 
         Registers.Accumulation.push(new RegisterAccumulationSales({
@@ -129,12 +125,12 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
           Manager: this.Manager,
           Storehouse: this.Storehouse,
           Qty: row.Qty,
-          Amount: row.Amount / exchangeRate * batchRow.rate,
-          AmountInAR: row.Amount * batchRow.rate,
-          AmountInDoc: row.Amount * batchRow.rate,
-          Cost: batchRow.Cost,
+          Amount: row.Amount / exchangeRate,
+          AmountInAR: row.Amount ,
+          AmountInDoc: row.Amount,
+          Cost: 0,
           Discount: 0,
-          Tax: row.Tax / exchangeRate * batchRow.rate,
+          Tax: row.Tax / exchangeRate,
           currency: this.currency
         }));
 
@@ -143,7 +139,7 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
           Department: this.Department,
           PL: IncomeSALES,
           Analytics: row.SKU,
-          Amount: row.Amount * batchRow.rate / exchangeRate,
+          Amount: row.Amount / exchangeRate,
         }));
 
         Registers.Accumulation.push(new RegisterAccumulationPL({
@@ -151,9 +147,8 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
           Department: this.Department,
           PL: ExpenseCOST,
           Analytics: row.SKU,
-          Amount: batchRow.Cost,
+          Amount: 0,
         }));
-      }
     }
 
     Registers.Accumulation.push(new RegisterAccumulationBalance({

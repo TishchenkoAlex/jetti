@@ -32,15 +32,15 @@
   <div *ngSwitchCase="'date'" [ngClass]="{'ui-float-label' : control.showLabel}">
     <input pInputText class="calendar" [value]="dateTimeValue | date: 'yyyy-MM-dd'" [required]="control.required" [readonly]="control.readOnly"
       autocomplete="off" (input)="parseDate($event.target.value)" (focus)="$event.target.select()" spellcheck="false" type="date"
-      [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }">
+      [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }" [disabled]="this.formControl?.disabled">
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
   <div *ngSwitchCase="'datetime'" [ngClass]="{'ui-float-label' : control.showLabel}">
     <input pInputText class="calendar" [value]="dateTimeValue | date:'yyyy-MM-ddTHH:mm:ss'" step="1" [required]="control.required"
       [readonly]="control.readOnly" autocomplete="off" (input)="parseDate($event.target.value)" (focus)="$event.target.select()"
-      spellcheck="false" type="datetime-local" [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }">
-    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+      spellcheck="false" type="datetime-local" [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }" [disabled]="this.formControl?.disabled">
+    <label *ngIf="control.showLabel" [for]="control.key" >{{control.label}}</label>
   </div>
 
   <div *ngSwitchCase="'boolean'" [style.marginTop]="control.showLabel ? '27px': ''">

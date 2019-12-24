@@ -48,4 +48,7 @@ export class DocumentOperation extends DocumentBase {
   @Props({ type: 'Types.Catalog', label: 'additional filed #3', style: { width: '270px' }, hiddenInForm: true })
   f3: Ref = null;
 
+  @Props({ type: 'Catalog.User', hiddenInList: false, order: 1000})
+  user: Ref = null;
+
 }

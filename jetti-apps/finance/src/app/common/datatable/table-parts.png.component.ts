@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import * as moment from 'moment';
 import { merge, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
@@ -56,8 +55,8 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     const control = this.getControl(index).get(field);
     if (!control) return null;
     const value = control.value;
-    if (type === 'datetime' && moment.isDate(value)) return moment(value).format('DD.MM.YYYY kk:mm:ss');
-    if (type === 'date' && moment.isDate(value)) return moment(value).format('DD.MM.YYYY');
+    if (type === 'datetime' && this.isDate(value)) return value;
+    if (type === 'date' && this.isDate(value)) return value;
     const result = value && (value.value || typeof value === 'object' ? value.value || '' : value || '');
     return result;
   }
@@ -113,6 +112,10 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
   calcTotals(field: string): number {
     return (this.formGroup.value as any[]).map(v => v[field]).reduce((a, b) => a + b, 0);
+  }
+
+  isDate(value) {
+    return value instanceof Date;
   }
 
   ngOnDestroy() {

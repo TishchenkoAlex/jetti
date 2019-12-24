@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
-import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue } from '../../../../../jetti-api/server/models/common-types';
+import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/models/document';
 import { AllDocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
@@ -198,5 +198,11 @@ export class ApiService {
   batchActual() {
     const query = `${environment.api}batch/actual`;
     return this.http.get<any[]>(query);
+  }
+
+  SubSystemsMenu() {
+    const query = `${environment.auth}subsystems/menu`;
+    // tslint:disable-next-line: deprecation
+    return this.http.get<MenuItem[]>(query);
   }
 }

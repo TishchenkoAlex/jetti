@@ -159,31 +159,6 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Catalog.SubSystem')
-    DROP INDEX IF EXISTS [Catalog.Documents] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Documents]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='Catalog.Documents')
-    DROP INDEX IF EXISTS [Catalog.Catalogs] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalogs]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='Catalog.Catalogs')
-    DROP INDEX IF EXISTS [Catalog.Forms] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Forms]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='Catalog.Forms')
-    DROP INDEX IF EXISTS [Catalog.Objects] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Objects]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='Catalog.Objects')
-    DROP INDEX IF EXISTS [Catalog.Subcount] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Subcount]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='Catalog.Subcount')
     DROP INDEX IF EXISTS [Catalog.Brand] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand]
     ON [dbo].[Documents]([description],[id],[parent])
@@ -226,36 +201,36 @@
     WHERE ([type]='Catalog.Bank')
     DROP INDEX IF EXISTS [Document.ExchangeRates] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.ExchangeRates')
     DROP INDEX IF EXISTS [Document.Invoice] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.Invoice')
     DROP INDEX IF EXISTS [Document.Operation] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.Operation')
     DROP INDEX IF EXISTS [Document.PriceList] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.PriceList')
     DROP INDEX IF EXISTS [Document.Settings] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.Settings')
     DROP INDEX IF EXISTS [Document.UserSettings] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.UserSettings')
     DROP INDEX IF EXISTS [Document.WorkFlow] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.WorkFlow')

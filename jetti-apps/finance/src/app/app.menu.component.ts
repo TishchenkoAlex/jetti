@@ -1,18 +1,17 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { getRoleObjects, RoleObject } from '../../../../jetti-api/server/models/Roles/Base';
-import { SubSystemsMenu } from '../../../../jetti-api/server/models/SubSystems/SubSystems';
+import { Observable, of, iif } from 'rxjs';
+import { switchMap, catchError, mergeMap } from 'rxjs/operators';
 import { AppComponent } from './app.component';
+import { ApiService } from './services/api.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-menu',
   template: `
     <ul app-submenu
-      [item]="model$ | async"
+      [item]="(model$ | async) || []"
       root="true"
       class="layout-menu layout-main-menu clearfix"
       [reset]="reset"
@@ -24,21 +23,25 @@ export class AppMenuComponent {
 
   @Input() reset: boolean;
 
-  model$: Observable<any[]>;
+  model$: Observable<MenuItem[]>;
 
-  constructor(public app: AppComponent, private cd: ChangeDetectorRef) {
+  constructor(public app: AppComponent, private cd: ChangeDetectorRef, private api: ApiService) {
     this.model$ = this.app.auth.userProfile$.pipe(
-      map(userProfile => this.buildMenu(getRoleObjects(['Admin']))));
+      mergeMap(acc =>
+        iif(() => acc.account === undefined,
+          of([]),
+          this.api.SubSystemsMenu()
+        )));
   }
 
-  private buildMenu(userRoleObjects: RoleObject[] | undefined) {
-    return [
-      { label: 'Dashboard', icon: 'fa fa-fw fa-home', routerLink: [''] },
-      ...SubSystemsMenu(userRoleObjects),
-      { label: 'Utils', icon: 'fa fa-fw fa-wrench', routerLink: ['/'] },
-      { label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/'] }
-    ];
-  }
+  /*   async private buildMenu() {
+      return [
+        { label: 'Dashboard', icon: 'fa fa-fw fa-home', routerLink: [''] },
+        ... await(this.api.SubSystemsMenu()),
+        { label: 'Utils', icon: 'fa fa-fw fa-wrench', routerLink: ['/'] },
+        { label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/'] }
+      ];
+    } */
 }
 
 @Component({

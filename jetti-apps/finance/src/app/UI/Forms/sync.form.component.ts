@@ -37,7 +37,6 @@ export class SyncFormComponent  {
 
   constructor(public router: Router, public route: ActivatedRoute, public media: MediaObserver,
     public cd: ChangeDetectorRef, public ds: DocService, private auth: AuthService, public tabStore: TabsStore) {
-
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 

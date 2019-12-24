@@ -20,10 +20,10 @@ import { DocumentWorkFlowServer } from '../models/Documents/Document.WorkFlow.se
 
 export const router = express.Router();
 
-export async function buildViewModel(ServerDoc: DocumentBase, tx: MSSQL) {
+export async function buildViewModel<T>(ServerDoc: DocumentBase, tx: MSSQL) {
   const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
   const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
-  return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
+  return await tx.oneOrNone<T>(viewModelQuery, [NoSqlDocument]);
 }
 
 // Select documents list for UI (grids/list etc)
@@ -98,7 +98,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
         default:
           break;
       }
-      model = (await buildViewModel(ServerDoc, sdb))!;
+      model = (await buildViewModel<DocumentBase>(ServerDoc, sdb))!;
     }
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);

@@ -5,7 +5,6 @@ import { Task, ProcessParticipants, FieldProp } from './task.object';
 
 @Component({
   templateUrl: 'task.component.html',
-  styles: ['task.component.css'],
   selector: 'bp-task'
 })
 export class TaskComponent implements OnInit {

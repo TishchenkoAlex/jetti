@@ -66,11 +66,78 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
+  static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
+      if (type === 'number') {
+        return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
+      }
+      if (type === 'date') { return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+      if (type === 'datetime') { return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+      return `
+        , CAST(ISNULL(JSON_VALUE(data, '$.${prop}'), '') AS NVARCHAR(150)) "${prop}" \n`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `
+        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
+
+    let insert = ''; let select = ''; let fields = '';
+    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+      fields += prop + ',';
+      const type: string = doc[prop].type || 'string';
+      insert += `
+        , "${prop}"`;
+      if (type === 'number') {
+        insert += `
+        , "${prop}.In"
+        , "${prop}.Out"`;
+      }
+
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+    CREATE OR ALTER VIEW [${type}]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, parent, date, document, company, kind, calculated
+      , CAST(ISNULL(JSON_VALUE(data, N'$.exchangeRate'), 1) AS DECIMAL(15, 10)) exchangeRate\n ${select}
+      FROM dbo.[Accumulation] WHERE type = N'${type}';
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
+      date,company,id
+    )
+    GO
+    `;
+    return query;
+  }
+
   static AlterTriggerRegisterAccumulation() {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
       const register = createRegisterAccumulation({ type: type.type });
       query += SQLGenegatorMetadata.QueryTriggerRegisterAccumulation(register.Props(), register.Prop().type.toString());
+    }
+    return query;
+  }
+
+  static CreateRegisterAccumulationView() {
+    let query = '';
+    for (const type of RegisteredRegisterAccumulation) {
+      const register = createRegisterAccumulation({ type: type.type });
+      query += SQLGenegatorMetadata.QueryRegisterAccumulationView(register.Props(), register.Prop().type.toString());
     }
     return query;
   }
@@ -105,6 +172,71 @@ export class SQLGenegatorMetadata {
       SELECT
         CAST(date AS datetime) date, document, company ${select}
       FROM INSERTED WHERE type = N'${type}'; \n\n`;
+    return query;
+  }
+  static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) "${prop}" \n`; }
+      if (type === 'number') {
+        return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 1, 0) "${prop}.In"
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), 0) AS MONEY) * IIF(kind = 1, 0, 1) "${prop}.Out" \n`;
+      }
+      if (type === 'date') { return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+      if (type === 'datetime') { return `
+        , CAST(ISNULL(JSON_VALUE(data, N'$.${prop}'), '${new Date('1970-01-01Z00:00:00:000').toJSON()}') AS VARCHAR(20)) "${prop}" \n`; }
+      return `
+        , CAST(ISNULL(JSON_VALUE(data, '$.${prop}'), '') AS NVARCHAR(400)) "${prop}" \n`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `
+        , CAST(ISNULL(JSON_VALUE(data, N'$."${prop}"'), '00000000-0000-0000-0000-000000000000') AS UNIQUEIDENTIFIER) "${prop}"\n`;
+
+    let insert = ''; let select = ''; let fields = '';
+    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+      fields += `[${prop}],`;
+      const type: string = doc[prop].type || 'string';
+      insert += `
+        , "${prop}"`;
+      if (type === 'number') {
+        insert += `
+        , "${prop}.In"
+        , "${prop}.Out"`;
+      }
+
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+    CREATE OR ALTER VIEW [${type}]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company, kind${select}
+      FROM dbo.[Register.Info] WHERE type = N'${type}';
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
+      date,company,${fields}document,kind,id
+    )
+    GO
+    `;
+    return query;
+  }
+
+  static CreateRegisterInfoView() {
+    let query = '';
+    for (const type of GetRegisterInfo()) {
+      const register = createRegisterInfo({ type: type.type });
+      query += SQLGenegatorMetadata.QueryRegisterIntoView(register.Props(), register.Prop().type.toString());
+    }
     return query;
   }
 
@@ -253,7 +385,8 @@ export class SQLGenegatorMetadata {
       GO
       ${this.AlterTriggerRegisterAccumulation()}
 
-      INSERT INTO [Accumulation] SELECT * FROM [Accumulation.COPY];
+    INSERT INTO [Accumulation] ([id], [date], [type], [data], [document], [kind], [company], [parent], [calculated])
+	  SELECT [id], [date], [type], [data], [document], [kind], [company], [parent], [calculated] FROM [Accumulation.COPY];
     `;
     return query;
   }
@@ -404,13 +537,22 @@ export class SQLGenegatorMetadata {
   static CreateDocumentIndexes() {
 
     let select = '';
-    for (const catalog of RegisteredDocument) {
+    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Catalog.') )) {
       const doc = createDocument(catalog.type);
+      if (doc['QueryList']) continue;
       select += `
     DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='${catalog.type}')`;
+    }
+    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Document.') )) {
+      select += `
+    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
     return select;

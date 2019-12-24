@@ -9,10 +9,9 @@ import { RegisterAccumulationTypes } from './models/Registers/Accumulation/facto
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminModeForPost, postDocument, unpostDocument, updateDocument } from './routes/utils/post';
+import { adminModeForPost, postDocument, unpostDocument, updateDocument, setPostedSate } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
-import { TASKS_POOL } from './sql.pool.tasks';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -27,8 +26,6 @@ export interface JTL {
     movementsByDoc: <T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) => Promise<T[]>,
     balance: (type: RegisterAccumulationTypes, date: Date, resource: string[],
       analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<{ [x: string]: number } | null>,
-    avgCost: (date: Date, analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<number | null>,
-    inventoryBalance: (date: Date, analytics: { [key: string]: Ref }, tx: MSSQL) => Promise<{ Cost: number, Qty: number } | null>,
   };
   doc: {
     byCode: (type: DocTypes, code: string, tx: MSSQL) => Promise<string | null>;
@@ -46,16 +43,11 @@ export interface JTL {
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
-  inventory: {
-    batchRows: (date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number,
-      BatchRows: any[], tx: MSSQL) => Promise<BatchRow[]>,
-    // batchReturn(retDoc: string, rows: BatchRow[], tx: MSSQL)
-  };
   util: {
     postMode: (mode: boolean, tx: MSSQL) => Promise<boolean>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
-    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) =>  Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
-    GUID: () =>  Promise<string>
+    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
+    GUID: () => Promise<string>
   };
 }
 
@@ -68,8 +60,6 @@ export const lib: JTL = {
   },
   register: {
     balance: registerBalance,
-    inventoryBalance,
-    avgCost,
     movementsByDoc
   },
   doc: {
@@ -86,10 +76,6 @@ export const lib: JTL = {
   info: {
     sliceLast,
     exchangeRate
-  },
-  inventory: {
-    batchRows,
-    // batchReturn
   },
   util: {
     postMode: adminModeForPost,
@@ -158,25 +144,6 @@ async function formControlRef(id: string, tx: MSSQL): Promise<RefValue | null> {
   return result;
 }
 
-async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
-  // const sdb = new MSSQL({ email: '', isAdmin: true, env: {}, description: '', roles: []}, TASKS_POOL);
-  await tx.none(`
-    EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
-}
-
-async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
-  const result = await tx.manyOrNone<{Storehouse: Ref, SKU: Ref, Cost: number}>(`
-    SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
-      SELECT Storehouse, SKU, SUM([Cost]) [Cost]
-      FROM [dbo].[Register.Accumulation.Inventory] r
-      WHERE date <= EOMONTH(@p1) AND company = @p2
-      GROUP BY Storehouse, SKU
-      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
-  return result;
-}
-
-
 async function debit(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
   const result = await tx.oneOrNone<{ result: number }>(`
     SELECT SUM(sum) result FROM "Register.Account"
@@ -230,36 +197,6 @@ async function registerBalance(type: RegisterAccumulationTypes, date = new Date(
   return (result ? result : {});
 }
 
-async function avgCost(date: Date, analytics: { [key: string]: Ref }, tx: MSSQL): Promise<number | null> {
-  const queryText = `
-  SELECT
-    SUM("Cost.In") / ISNULL(SUM("Qty.In"), 1) result
-  FROM "Register.Accumulation.Inventory"
-  WHERE (1=1)
-    AND kind = 1
-    AND date <= @p1
-    AND company = @p2
-    AND "SKU" = @p3
-    AND "Storehouse" = @p4`;
-  const result = await tx.oneOrNone<{ result: number }>(queryText, [date, analytics.company, analytics.SKU, analytics.Storehouse]);
-  return result ? result.result : null;
-}
-
-async function inventoryBalance(date: Date, analytics: { [key: string]: Ref }, tx: MSSQL): Promise<{ Cost: number, Qty: number } | null> {
-  const queryText = `
-  SELECT
-    SUM("Cost") "Cost", SUM("Qty") "Qty"
-    FROM "Register.Accumulation.Inventory"
-    WHERE (1=1)
-      AND date <= @p1
-      AND company = @p2
-      AND "SKU" = @p3
-      AND "Storehouse" = @p4`;
-  const result = await tx.oneOrNone<{ Cost: number, Qty: number, }>
-    (queryText, [date, analytics.company, analytics.SKU, analytics.Storehouse]);
-  return result ? { Cost: result.Cost, Qty: result.Qty } : null;
-}
-
 async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: MSSQL): Promise<number> {
 
   const queryText = `
@@ -292,17 +229,13 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
 }
 
 export async function postById(id: Ref, tx: MSSQL) {
-  const doc = (await lib.doc.byId(id, tx))!;
   try {
     await lib.util.postMode(true, tx);
-    const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-    if (doc && doc.deleted) return serverDoc;
-    if (doc.posted) await unpostDocument(serverDoc, tx);
-    serverDoc.posted = true;
+    const serverDoc = await setPostedSate(id, tx);
+    await unpostDocument(serverDoc, tx);
     await postDocument(serverDoc, tx);
-    if (!doc.posted)  await updateDocument(serverDoc, tx);
     return serverDoc;
-  } catch (err) { throw new Error(`Error on post by id document ${doc.description}, ${err}`); }
+  } catch (err) { throw new Error(`Error on post by document by id = '${id}', ${err}`); }
   finally { await lib.util.postMode(false, tx); }
 }
 
@@ -319,75 +252,29 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   } catch (err) { throw err; }
   finally { await lib.util.postMode(false, tx); }
 }
+
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
   SELECT * FROM Accumulation where type = '${type}' AND document = '${doc}'`;
   return await tx.manyOrNone<T>(queryText);
 }
 
-export async function batchRows(date: Date, company: Ref, Storehouse: Ref, SKU: Ref, Qty: number, BatchRows: BatchRow[], tx: MSSQL) {
+async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
+  // const sdb = new MSSQL({ email: '', isAdmin: true, env: {}, description: '', roles: []}, TASKS_POOL);
+  await tx.none(`
+    EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
+}
 
-  const ResultBatchRows: BatchRow[] = [];
-
-  const queryText = `
-    SELECT batch, Qty, Cost, b.date FROM (
-      SELECT
-        batch,
-        SUM("Qty") Qty,
-        SUM("Cost.In") / ISNULL(SUM("Qty.In"), 1) Cost
-      FROM (
-        SELECT
-        [batch],
-        [Cost.In],
-        [Qty],
-        [Qty.In]
-      FROM [Register.Accumulation.Inventory] r
-      WHERE (1=1)
-        AND [date] <= @p1
-        AND [company] = @p2
-        AND [SKU] = @p3
-        AND [Storehouse] = @p4
-
-      UNION ALL
-
-      SELECT
-        [batch],
-        -[Cost][Cost.In],
-        -[Qty] [Qty],
-        -[Qty] [Qty.In]
-      FROM OPENJSON(@p5) WITH (
-        [batch] UNIQUEIDENTIFIER,
-        [Storehouse] UNIQUEIDENTIFIER,
-        [SKU] UNIQUEIDENTIFIER,
-        [Qty] MONEY,
-        [Cost] MONEY
-      )
-      WHERE (1=1)
-        AND [SKU] = @p3
-        AND [Storehouse] = @p4
-      ) r
-    GROUP BY batch
-    HAVING SUM("Qty") > 0 ) s
-    LEFT JOIN Documents b ON b.id = s.batch
-    ORDER BY b.date, s.batch
-  `;
-  const queryResult = await tx.manyOrNone<{ batch: string, Qty: number, Cost: number }>
-    (queryText, [date, company, SKU, Storehouse, JSON.stringify(BatchRows)]);
-  let total = Qty;
-  for (const a of queryResult) {
-    if (total <= 0) break;
-    const q = Math.min(total, a.Qty);
-    const rate = q / Qty;
-    BatchRows.push({ batch: a.batch, Qty: q, Cost: a.Cost * q, Storehouse, SKU, rate });
-    ResultBatchRows.push({ batch: a.batch, Qty: q, Cost: a.Cost * q, Storehouse, SKU, rate });
-    total = total - q;
-  }
-  if (total > 0) {
-    BatchRows.push({ batch: null, Qty, Cost: 0, Storehouse, SKU, rate: 1 });
-    ResultBatchRows.push({ batch: null, Qty, Cost: 0, Storehouse, SKU, rate: 1 });
-  }
-
-  return ResultBatchRows;
+async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
+  const result = await tx.manyOrNone<{ Storehouse: Ref, SKU: Ref, Cost: number }>(`
+    SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
+      SELECT Storehouse, SKU, SUM([Cost]) [Cost]
+      FROM [dbo].[Register.Accumulation.Inventory] r
+      WHERE date <= EOMONTH(@p1) AND company = @p2
+      GROUP BY Storehouse, SKU
+      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+    LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
+  return result;
 }
 
 global['lib'] = lib;

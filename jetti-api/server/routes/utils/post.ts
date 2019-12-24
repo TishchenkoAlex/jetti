@@ -1,10 +1,11 @@
-import { DocumentBase } from '../../models/document';
-import { INoSqlDocument } from '../../models/documents.factory';
+import { DocumentBase, Ref } from '../../models/document';
+import { INoSqlDocument, IFlatDocument, createDocument } from '../../models/documents.factory';
 import { RegisterAccumulation } from '../../models/Registers/Accumulation/RegisterAccumulation';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
 import { MSSQL } from '../../mssql';
-import { DocumentBaseServer } from '../../models/documents.factory.server';
+import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
+import { AllDocTypes, DocTypes } from '../../models/documents.types';
 
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
@@ -124,6 +125,15 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   if (serverDoc.afterSave) await serverDoc.afterSave(tx);
 
   serverDoc.map(response);
+  return serverDoc;
+}
+
+export async function setPostedSate(id: Ref, tx: MSSQL) {
+  const doc = await tx.oneOrNone<INoSqlDocument>(`
+    UPDATE Documents SET posted = 1 WHERE id = @p1 and deleted = 0 and posted = 0;
+    SELECT * FROM Documents WHERE id = @p1`, [id]);
+  const flatDoc = lib.doc.flatDocument(doc!);
+  const serverDoc = createDocumentServer(flatDoc!.type, flatDoc!, tx);
   return serverDoc;
 }
 

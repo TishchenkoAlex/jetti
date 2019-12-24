@@ -105,11 +105,11 @@
 
 </form>
 
-<p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cd appendTo="body">
+<p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cdlg appendTo="body">
   <p-footer>
     <div cdkTrapFocus>
-      <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cd.accept()"></button>
-      <button type="button" pButton icon="fa fa-close" label="No" (click)="cd.reject()"></button>
+      <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cdlg.accept()"></button>
+      <button type="button" pButton icon="fa fa-close" label="No" (click)="cdlg.reject()"></button>
     </div>
   </p-footer>
 </p-confirmDialog>

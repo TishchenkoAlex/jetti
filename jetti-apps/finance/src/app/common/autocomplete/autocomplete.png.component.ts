@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, fo
 // tslint:disable-next-line:max-line-length
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
@@ -65,7 +64,6 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   private NO_EVENT = false;
   showDialog = false;
-  Moment = moment;
   filters = new FormListSettings();
   rootValueChanges$ = Subscription.EMPTY;
 
@@ -172,6 +170,10 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     if (date instanceof Date) this.formControl.setValue(date);
     else if (!date && this.required) this.formControl.setErrors({ 'invalid date': true });
     else if (!date && !this.required) this.formControl.setValue(date);
+  }
+
+  isDate(value) {
+    return value instanceof Date;
   }
 
   ngOnInit() {
