@@ -334,3 +334,28 @@ router.get('/startWorkFlow/:id', async (req: Request, res: Response, next: NextF
     });
   } catch (err) { next(err); }
 });
+
+router.post('/setApprovingStatus/:id/:Status', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      try {
+        const sourse = await lib.doc.byId(req.params.id, tx);
+        if (sourse) {
+          if (!sourse.timestamp) throw new Error('source document not saved');
+          sourse['Status'] = req.params.Status;
+          const serverDoc = await createDocumentServer(sourse.type as DocTypes, sourse, tx);
+          if (serverDoc.timestamp) {
+            await unpostDocument(serverDoc, tx);
+            await updateDocument(serverDoc, tx);
+          } else {
+            await insertDocument(serverDoc, tx);
+          }
+          await postDocument(serverDoc, tx);
+          res.json((await buildViewModel(serverDoc, tx)));
+        }
+      } catch (err) { throw err; }
+      finally { await lib.util.postMode(false, tx); }
+    });
+  } catch (err) { next(err); }
+});

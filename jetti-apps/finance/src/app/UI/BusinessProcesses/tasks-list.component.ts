@@ -68,12 +68,12 @@ export class TaskListComponent implements OnInit {
     this.columnsLength = this.columns.length;
   }
 
-  loadTasks(): void {
+  async loadTasks() {
     // this.Tasks = this.TaskService.GetTasks(20).pipe(take(1)).subscribe(Tasks => { this.Tasks = Tasks; });
      this.Tasks$ = this.TaskService.GetTasks(20);
   }
 
-  CompleteTask(task: Task, UserDecisionID: number): void {
+  async CompleteTask(task: Task, UserDecisionID: number): Promise<void> {
     if (UserDecisionID > 0 && !task.DecisionComment.trim()) {
       return;
     }
@@ -86,7 +86,7 @@ export class TaskListComponent implements OnInit {
       task.CanModify = false;
       task.CanReject = false;
       task.UserDecision = UserDecisionID === 0 ? 'Утвердить' : 'Отклонить';
-      this.loadTasks();
+      await this.loadTasks();
     // }
     // );
   }

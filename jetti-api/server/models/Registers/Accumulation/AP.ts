@@ -19,7 +19,7 @@ export class RegisterAccumulationAP extends RegisterAccumulation {
   @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
   Supplier: Ref = null;
 
-  @Props({ type: 'datetime' })
+  @Props({ type: 'date' })
   PayDay = new Date();
 
   @Props({ type: 'number', resource: true })
