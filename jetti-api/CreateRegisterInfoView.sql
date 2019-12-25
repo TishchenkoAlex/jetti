@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
     CREATE OR ALTER VIEW [Register.Info.PriceList]
     WITH SCHEMABINDING
@@ -120,4 +118,3 @@
     )
     GO
     
->>>>>>> d5c56fa94a25cc550f48ecaf82b6905bb311d19f

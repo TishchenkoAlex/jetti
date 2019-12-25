@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
     CREATE OR ALTER VIEW [Register.Accumulation.AccountablePersons]
     WITH SCHEMABINDING
@@ -44,7 +42,7 @@
         , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
         , ISNULL(CAST(JSON_VALUE(data, N'$."AO"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "AO"
         , ISNULL(CAST(JSON_VALUE(data, N'$."Supplier"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Supplier"
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATETIME, '1970-01-01', 102)) "PayDay"
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATE, '1970-01-01', 102)) "PayDay"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
@@ -79,7 +77,7 @@
         , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
         , ISNULL(CAST(JSON_VALUE(data, N'$."AO"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "AO"
         , ISNULL(CAST(JSON_VALUE(data, N'$."Customer"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Customer"
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATETIME, '1970-01-01', 102)) "PayDay"
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.PayDay'),127), CONVERT(DATE, '1970-01-01', 102)) "PayDay"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "AR"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "AR.In"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.AR') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "AR.Out"
@@ -252,6 +250,9 @@
         , ISNULL(CAST(JSON_VALUE(data, N'$."Loan"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Loan"
         , ISNULL(CAST(JSON_VALUE(data, N'$."Counterpartie"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Counterpartie"
         , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
+        , ISNULL(JSON_VALUE(data, '$.PaymentKind'), '') "PaymentKind" 
+
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "Amount"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "Amount.In"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "Amount.Out"
@@ -439,4 +440,3 @@
     )
     GO
     
->>>>>>> d5c56fa94a25cc550f48ecaf82b6905bb311d19f
