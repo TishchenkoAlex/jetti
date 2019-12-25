@@ -32,7 +32,7 @@ export class OperationFormComponent implements AfterViewInit, OnDestroy {
       const item: MenuItem = {
         icon: '',
         label: (await this.super.ds.api.byId<CatalogOperation>(o.Operation)).description,
-        command: () => this.super.baseOn(o.Operation)
+        command: () => this.super.baseOn(this.super.type, o.Operation)
       };
       this.form['metadata']['copyTo'].push(item);
     }
@@ -62,7 +62,7 @@ export class OperationFormComponent implements AfterViewInit, OnDestroy {
 
     this._subscription$.unsubscribe();
     this._subscription$ = this.Operation.valueChanges
-      .subscribe(v => this.update(v).then(() => this.super.cd.detectChanges()));
+      .subscribe(v => this.update(v).then(() => this.super.cd.markForCheck()));
   }
 
   update = async (value) => {
