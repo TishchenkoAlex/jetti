@@ -66,7 +66,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // tslint:disable-next-line: max-line-length
-    // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable(); 
+    // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable();
     // tslint:disable-next-line: max-line-length
     // this._workflowIDChanges$ = this.form.get('workflowID').valueChanges.subscribe(v => { this.form.get('Status').setValue('AWAITING'); });
 
