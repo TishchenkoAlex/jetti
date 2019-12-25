@@ -81,6 +81,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       CashRecipient: this.CashRecipient,
       Amount: this.Amount,
       PayDay: this.PayDay,
+      CashRequest: this.id,
       currency: сurrency,
       CashFlow: this.CashFlow,
       Contract: this.Contract,

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { merge, of as observableOf, Subscription } from 'rxjs';
+import { merge, of as observableOf, Subscription, throwError } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
@@ -51,8 +51,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   get copyTo() { return (<MenuItem[]>this.form['metadata']['copyTo']) || []; }
   get module() { return this.form['metadata']['clientModule'] || {}; }
   get getStatus() { return <string>this.form.get('Status').value; }
-  get readonlyMode() { return false; }
-    //  <string>this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return this.form.get('Status').value !== 'PREPARED'; }
 
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
@@ -67,8 +66,8 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // tslint:disable-next-line: max-line-length
-    this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable(); });
-    this._workflowIDChanges$ = this.form.get('workflowID').valueChanges.subscribe(v => { this.form.get('Status').setValue('AWAITING'); });
+    // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable(); console.log(this.form.get('Status').value); });
+    // this._workflowIDChanges$ = this.form.get('workflowID').valueChanges.subscribe(v => { this.form.get('Status').setValue('AWAITING'); });
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
@@ -77,8 +76,9 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
         this.form.markAsPristine();
       });
 
-    this.form.get('Operation').setValue('Оплата поставщику');
-    this.form.get('Status').setValue('PREPARED');
+    if (this.form.get('Status').value !== 'PREPARED') {this.form.disable(); }
+    // this.form.get('Operation').setValue('Оплата поставщику');
+    // this.form.get('Status').setValue('PREPARED');
 
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
@@ -115,7 +115,12 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // const pres = this.form.pristine;
     // if (!pres) { return; }
     // tslint:disable-next-line: max-line-length
-    this.bpApi.StartProcess(this.form.value, this.metadata.type).pipe(take(1)).subscribe(data => { this.form.get('workflowID').setValue(data); });
+    this.bpApi.StartProcess(this.form.value, this.metadata.type).pipe(take(1)).subscribe(data => {
+      this.form.get('workflowID').setValue(data);
+      this.form.get('Status').setValue('AWAITING');
+      this.form.disable();
+      this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
+    });
   }
 
   Goto() {

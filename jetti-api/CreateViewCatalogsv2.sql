@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
     CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
     SELECT
@@ -742,12 +740,23 @@
           CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
 ,
 
-        ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
-          CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
+        ISNULL("owner".description, N'') "owner.value", ISNULL("owner".type, N'Catalog.Counterpartie') "owner.type",
+          CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER) "owner.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."kind"'), '') "kind"
 ,
 
         ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type",
           CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"
+,
+
+        ISNULL("loanType".description, N'') "loanType.value", ISNULL("loanType".type, N'Catalog.LoanTypes') "loanType.type",
+          CAST(JSON_VALUE(d.doc, N'$."loanType"') AS UNIQUEIDENTIFIER) "loanType.id"
+,
+
+        ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type",
+          CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
+, ISNULL(JSON_VALUE(d.doc, N'$."PayDay"'), '') "PayDay"
+, ISNULL(JSON_VALUE(d.doc, N'$."CloseDay"'), '') "CloseDay"
 
     
       , ISNULL(l5.description, d.description) [Loan.Level5]
@@ -768,13 +777,53 @@
       
       LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
 
-      LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
+      LEFT JOIN dbo."Documents" "owner" ON "owner".id = CAST(JSON_VALUE(d.doc, N'$."owner"') AS UNIQUEIDENTIFIER)
 
       LEFT JOIN dbo."Documents" "currency" ON "currency".id = CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "loanType" ON "loanType".id = CAST(JSON_VALUE(d.doc, N'$."loanType"') AS UNIQUEIDENTIFIER)
+
+      LEFT JOIN dbo."Documents" "Department" ON "Department".id = CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER)
 
     WHERE d.[type] = 'Catalog.Loan' 
       GO
       GRANT SELECT ON dbo.[Catalog.Loan] TO jetti;
+      GO
+      
+
+      CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] WITH SCHEMABINDING AS
+        
+      SELECT d.id, d.type, d.date, d.code, d.description "LoanTypes", d.posted, d.deleted, d.isfolder, d.timestamp
+      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+,
+
+        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
+          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+
+    
+      , ISNULL(l5.description, d.description) [LoanTypes.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LoanTypes.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [LoanTypes.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [LoanTypes.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [LoanTypes.Level1]
+      FROM dbo.Documents d
+        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
+        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
+        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
+        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
+        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
+      
+      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+      
+      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+
+    WHERE d.[type] = 'Catalog.LoanTypes' 
+      GO
+      GRANT SELECT ON dbo.[Catalog.LoanTypes] TO jetti;
       GO
       
 
@@ -2165,4 +2214,3 @@
       GO
       
     
->>>>>>> d5c56fa94a25cc550f48ecaf82b6905bb311d19f

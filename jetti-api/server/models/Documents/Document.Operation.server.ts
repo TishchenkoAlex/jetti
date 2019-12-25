@@ -94,6 +94,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       switch (sourceDoc.type) {
         case 'Catalog.Counterpartie':
           break;
+        case 'Document.CashRequest':
+          break;
         case 'Catalog.Operation':
           this.Operation = (sourceDoc as CatalogOperation).id;
           this.Group = (sourceDoc as CatalogOperation).Group;

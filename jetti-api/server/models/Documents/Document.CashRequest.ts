@@ -10,7 +10,13 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   ],
   icon: 'fa fa-file-text-o',
   menu: 'Заявка на ДС',
-  prefix: 'CR-'
+  prefix: 'CR-',
+  copyTo: [
+    'Document.PriceList'
+  ],
+  relations: [
+    { name: 'Operations', type: 'Document.Operation', field: 'parent' }
+  ]
 })
 export class DocumentCashRequest extends DocumentBase {
 

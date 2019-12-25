@@ -53,6 +53,7 @@ import { CatalogContract } from './Catalogs/Catalog.Contract';
 import { CatalogBusinessDirection } from './Catalogs/Catalog.BusinessDirection';
 import { DocumentWorkFlow } from './Documents/Document.WokrFlow';
 import { DocumentCashRequest } from './Documents/Document.CashRequest';
+import { CatalogLoanTypes } from './Catalogs/Catalog.LoanTypes';
 
 
 export interface INoSqlDocument {
@@ -120,6 +121,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
   { type: 'Catalog.Income', Class: CatalogIncome },
   { type: 'Catalog.Loan', Class: CatalogLoan },
+  { type: 'Catalog.LoanTypes', Class: CatalogLoanTypes },
   { type: 'Catalog.Manager', Class: CatalogManager },
   { type: 'Catalog.Person', Class: CatalogPerson },
   { type: 'Catalog.PriceType', Class: CatalogPriceType },
