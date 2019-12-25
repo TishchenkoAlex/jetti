@@ -650,6 +650,7 @@
     GO
     -------------------------
     
+<<<<<<< HEAD
     DROP VIEW IF EXISTS [dbo].[Catalog.LoanTypes.v];
     GO
     
@@ -681,6 +682,8 @@
     GO
     -------------------------
     
+=======
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP VIEW IF EXISTS [dbo].[Catalog.Manager.v];
     GO
     
@@ -1622,6 +1625,40 @@
     GO
     -------------------------
     
+<<<<<<< HEAD
+=======
+    DROP VIEW IF EXISTS [dbo].[Catalog.LoanTypes.v];
+    GO
+    
+    ALTER TABLE Documents DROP COLUMN IF EXISTS [Catalog.LoanTypes.workflow];
+    ALTER TABLE Documents ADD [Catalog.LoanTypes.workflow] AS CAST(JSON_VALUE(doc, N'$."workflow"') AS UNIQUEIDENTIFIER) PERSISTED;;
+    GO
+    CREATE VIEW [dbo].[Catalog.LoanTypes.v]
+    WITH SCHEMABINDING
+    AS
+      SELECT
+        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+        
+      , [Catalog.LoanTypes.workflow] [workflow]
+    FROM dbo.[Documents]
+    WHERE [type] = 'Catalog.LoanTypes'
+    GO
+
+    CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanTypes.v.id] ON [dbo].[Catalog.LoanTypes.v]([id],[type], [description]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.decription] ON [dbo].[Catalog.LoanTypes.v]([description],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.code] ON [dbo].[Catalog.LoanTypes.v]([code],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.company] ON [dbo].[Catalog.LoanTypes.v]([company],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.parent] ON [dbo].[Catalog.LoanTypes.v]([parent],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.date] ON [dbo].[Catalog.LoanTypes.v]([date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.isfolder] ON [dbo].[Catalog.LoanTypes.v]([isfolder],[id]);
+    
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.workflow] ON [dbo].[Catalog.LoanTypes.v]([workflow], [id]);
+    GO
+    GRANT SELECT ON [dbo].[Catalog.LoanTypes.v] TO JETTI;
+    GO
+    -------------------------
+    
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP VIEW IF EXISTS [dbo].[Document.ExchangeRates.v];
     GO
     

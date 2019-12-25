@@ -309,17 +309,28 @@
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.Totals]
       WITH SCHEMABINDING
       AS
+<<<<<<< HEAD
         SELECT [company], [date], [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
+=======
+        SELECT [company], [date], [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
         
         , SUM([Amount]) [Amount]
         , SUM([Amount.In]) [Amount.In]
         , SUM([Amount.Out]) [Amount.Out]
 	      , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.CashToPay]
+<<<<<<< HEAD
       GROUP BY [company], [date], [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
       GO
       CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.CashToPay.Totals] ON [dbo].[Register.Accumulation.CashToPay.Totals]
       ([company], [date] , [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance])
+=======
+      GROUP BY [company], [date], [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [ciRegister.Accumulation.CashToPay.Totals] ON [dbo].[Register.Accumulation.CashToPay.Totals]
+      ([company], [date] , [currency], [CashFlow], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance])
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
       GO
       GRANT SELECT ON [dbo].[Register.Accumulation.CashToPay.Totals] TO jetti;
       GO

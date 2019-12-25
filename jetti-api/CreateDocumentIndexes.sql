@@ -84,11 +84,14 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Catalog.Loan')
+<<<<<<< HEAD
     DROP INDEX IF EXISTS [Catalog.LoanTypes] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes]
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Catalog.LoanTypes')
+=======
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP INDEX IF EXISTS [Catalog.Manager] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager]
     ON [dbo].[Documents]([description],[id],[parent])
@@ -204,6 +207,14 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Catalog.Bank')
+<<<<<<< HEAD
+=======
+    DROP INDEX IF EXISTS [Catalog.LoanTypes] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='Catalog.LoanTypes')
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP INDEX IF EXISTS [Document.ExchangeRates] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates]
     ON [dbo].[Documents]([date],[id],[parent])

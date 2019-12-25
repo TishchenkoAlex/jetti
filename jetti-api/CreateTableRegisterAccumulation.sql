@@ -543,8 +543,11 @@
 
         , "CashFlow" UNIQUEIDENTIFIER NOT NULL 
 
+<<<<<<< HEAD
         , "CashRequest" UNIQUEIDENTIFIER NOT NULL 
 
+=======
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
         , "Contract" UNIQUEIDENTIFIER NOT NULL 
 
         , "Department" UNIQUEIDENTIFIER NOT NULL 
@@ -1309,7 +1312,10 @@
       INSERT INTO [Register.Accumulation.CashToPay] (DT, id, parent, date, document, company, kind, calculated, exchangeRate
         , "currency"
         , "CashFlow"
+<<<<<<< HEAD
         , "CashRequest"
+=======
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
         , "Contract"
         , "Department"
         , "OperationType"
@@ -1334,8 +1340,11 @@
 
         , ISNULL(CAST(JSON_VALUE(data, N'$."CashFlow"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashFlow"
 
+<<<<<<< HEAD
         , ISNULL(CAST(JSON_VALUE(data, N'$."CashRequest"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "CashRequest"
 
+=======
+>>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
         , ISNULL(CAST(JSON_VALUE(data, N'$."Contract"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Contract"
 
         , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
