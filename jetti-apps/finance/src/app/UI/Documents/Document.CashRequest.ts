@@ -68,6 +68,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: max-line-length
     // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable(); console.log(this.form.get('Status').value); });
     // this._workflowIDChanges$ = this.form.get('workflowID').valueChanges.subscribe(v => { this.form.get('Status').setValue('AWAITING'); });
+
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
