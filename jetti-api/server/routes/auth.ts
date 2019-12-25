@@ -77,46 +77,47 @@ router.post('/refresh', authHTTP, async (req, res, next) => {
 });
 
 const RolesQuery = `
-DROP TABLE IF EXISTS #UserOrGroup;
-SELECT @p1 id INTO #UserOrGroup
-UNION ALL
-SELECT id FROM Documents WITH(NOLOCK)
-CROSS APPLY OPENJSON (doc, N'$.Users')
-WITH
-(
-	[UsersGroup.User] UNIQUEIDENTIFIER N'$.User'
-) AS Users
-WHERE (1=1) AND
-	type = 'Catalog.UsersGroup' AND
-	[UsersGroup.User] = @p1;
+  DROP TABLE IF EXISTS #UserOrGroup;
+  SELECT @p1 id INTO #UserOrGroup
+  UNION ALL
+  SELECT id FROM Documents WITH(NOLOCK)
+  CROSS APPLY OPENJSON (doc, N'$.Users')
+  WITH
+  (
+    [UsersGroup.User] UNIQUEIDENTIFIER N'$.User'
+  ) AS Users
+  WHERE (1=1) AND
+    type = 'Catalog.UsersGroup' AND
+    [UsersGroup.User] = @p1;
 
-DROP TABLE IF EXISTS #Roles;
-SELECT [Role] INTO #Roles FROM Documents WITH(NOLOCK)
-CROSS APPLY OPENJSON (doc, N'$.RoleList')
-WITH
-(
-	[Role] UNIQUEIDENTIFIER N'$.Role'
-) AS Roles
-INNER JOIN #UserOrGroup ON #UserOrGroup.id = CAST(JSON_VALUE(doc, N'$.UserOrGroup') AS UNIQUEIDENTIFIER)
-WHERE (1=1) AND
-	type = 'Document.UserSettings';
+  DROP TABLE IF EXISTS #Roles;
+  SELECT [Role] INTO #Roles FROM Documents WITH(NOLOCK)
+  CROSS APPLY OPENJSON (doc, N'$.RoleList')
+  WITH
+  (
+    [Role] UNIQUEIDENTIFIER N'$.Role'
+  ) AS Roles
+  INNER JOIN #UserOrGroup ON #UserOrGroup.id = CAST(JSON_VALUE(doc, N'$.UserOrGroup') AS UNIQUEIDENTIFIER)
+  WHERE (1=1) AND
+    type = 'Document.UserSettings';
 
-DROP TABLE IF EXISTS #Subsystems;
-SELECT SubSystem INTO #Subsystems FROM Documents r WITH(NOLOCK)
-CROSS APPLY OPENJSON (doc, N'$.Subsystems')
-WITH
-(
-	SubSystem  UNIQUEIDENTIFIER N'$.SubSystem'
-) AS Subsystems
-WHERE (1=1) AND
-	type = 'Catalog.Role' AND
-	id IN (SELECT [Role] FROM #Roles);
+  DROP TABLE IF EXISTS #Subsystems;
+  SELECT SubSystem INTO #Subsystems FROM Documents r WITH(NOLOCK)
+  CROSS APPLY OPENJSON (doc, N'$.Subsystems')
+  WITH
+  (
+    SubSystem  UNIQUEIDENTIFIER N'$.SubSystem'
+  ) AS Subsystems
+  WHERE (1=1) AND
+    type = 'Catalog.Role' AND
+    id IN (SELECT [Role] FROM #Roles);
 
-SELECT * FROM Documents r WITH(NOLOCK)
-WHERE (1=1) AND
-	type = 'Catalog.SubSystem' AND posted = 1 AND
+  SELECT * FROM Documents r WITH(NOLOCK)
+  WHERE (1=1) AND
+    type = 'Catalog.SubSystem' AND posted = 1 AND
 	(id IN (SELECT SubSystem FROM #Subsystems) OR @p2 = 1);
 `;
+
 interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }
 router.get('/subsystems', authHTTP, async (req, res, next) => {
   try {

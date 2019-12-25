@@ -14,8 +14,6 @@ router.get('/BP/GetUserTasksByMail', async (req: Request, res: Response, next: N
     // return res.json(email);
     const instance = axios.create({ baseURL: 'http://35.204.78.79' });
     const query = `/JettiProcesses/hs/Query/pwd/GetUserTasksByMail?UserMail=${email}&CountOfCompleted=${req.query.CountOfCompleted}`;
-    // console.log(req);
-    console.log(query);
     return res.json((await instance.get(query)).data);
 
   } catch (err) { next(err); }
@@ -26,7 +24,6 @@ router.post('/BP/CompleteTask', async (req: Request, res: Response, next: NextFu
     const instance = axios.create({ baseURL: 'http://35.204.78.79' });
     const query = `/JettiProcesses/hs/Tasks/pwd/CompleteTask`;
     req.body.UserID = User(req).email;
-    console.log(query);
     return res.json((await instance.post(query, req.body)).data);
 
   } catch (err) { next(err); }
@@ -36,8 +33,6 @@ router.get('/BP/GetUsersByProcessID', async (req: Request, res: Response, next: 
   try {
     const instance = axios.create({ baseURL: 'http://35.204.78.79' });
     const query = `/JettiProcesses/hs/Processes/pwd/GetUsersByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
-    // console.log(req);
-    console.log(query);
     return res.json((await instance.get(query)).data);
 
   } catch (err) { next(err); }
@@ -47,8 +42,6 @@ router.get('/BP/GetMapByProcessID', async (req: Request, res: Response, next: Ne
   try {
     const instance = axios.create({ baseURL: 'http://35.204.78.79' });
     const query = `/JettiProcesses/hs/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
-    // console.log(req);
-    console.log(query);
     return (await instance.get(query)).data;
 
   } catch (err) { next(err); }
@@ -60,8 +53,6 @@ router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFu
   try {
     const instance = axios.create({ baseURL: 'http://35.204.78.79' });
     const query = `/JettiProcesses/hs/Processes/pwd/StartProcess/CashApplication`;
-    // console.log(req.body);
-    console.log(query);
     return res.json((await instance.post(query, req.body)).data);
 
   } catch (err) { next(err); }

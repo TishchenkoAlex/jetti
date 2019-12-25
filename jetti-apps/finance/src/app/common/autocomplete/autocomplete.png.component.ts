@@ -5,14 +5,12 @@ import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
-import { take, distinct, share, shareReplay } from 'rxjs/operators';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -30,7 +28,7 @@ function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => AutocompleteComponent), multi: true, },
   ]
 })
-export class AutocompleteComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
+export class AutocompleteComponent implements ControlValueAccessor, Validator, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   @Input() readOnly = false;
@@ -123,7 +121,11 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   handleReset = (event: Event) => this.value = this.EMPTY;
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
-  handleSearch = (event: Event) => this.showDialog = true;
+  handleSearch = (event: Event) => {
+    if (!this.isTypeValue) this.filters = this.calcFilters(); else this.filters = new FormListSettings();
+    this.showDialog = true;
+  }
+
   select = () => setTimeout(() => {
     if (this.input && this.input.inputEL && this.input.inputEL.nativeElement) {
       this.input.inputEL.nativeElement.select();
@@ -174,12 +176,6 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   isDate(value) {
     return value instanceof Date;
-  }
-
-  ngOnInit() {
-    if (this.formControl && this.formControl.root)
-      this.rootValueChanges$ = this.formControl.root.valueChanges.subscribe(data => this.filters = this.calcFilters(data));
-    this.filters = this.calcFilters();
   }
 
   ngOnDestroy() {

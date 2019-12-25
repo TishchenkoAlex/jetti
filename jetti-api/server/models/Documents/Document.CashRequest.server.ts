@@ -17,14 +17,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
     switch (prop) {
       case 'company':
-        console.log(prop);
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (!company) { return {}; }
         const currency = await lib.doc.formControlRef(company.currency!, tx);
-        console.log(currency);
         return { currency };
       case 'CashFlow':
-        console.log(prop);
         return {};
       default:
         return {};

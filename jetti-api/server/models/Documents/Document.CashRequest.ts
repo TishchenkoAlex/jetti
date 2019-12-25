@@ -67,10 +67,10 @@ export class DocumentCashRequest extends DocumentBase {
   Loan: Ref = null;
 
   @Props({ type: 'Types.CashOrBank',
-  // owner: [
-    // { dependsOn: 'company', filterBy: 'company' },
-    // { dependsOn: 'сurrency', filterBy: 'currency' }
-  // ]
+  owner: [
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'сurrency', filterBy: 'currency' }
+  ]
 })
   CashOrBank: Ref = null;
 

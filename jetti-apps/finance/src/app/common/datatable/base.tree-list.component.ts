@@ -102,7 +102,6 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   delete = () => this.ds.delete(this.selection.data.id);
 
   onDragEnd(event) {
-    // console.log('drop', event);
   }
 
   onNodeSelect(event) {
