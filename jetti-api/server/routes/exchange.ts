@@ -3,7 +3,8 @@ import * as jwt from 'jsonwebtoken';
 import { JTW_KEY } from '../env/environment';
 import { IJWTPayload } from '../models/common-types';
 import { authHTTP } from './middleware/check-auth';
-import { User } from './user.settings';
+import { MSSQL } from '../mssql';
+import { TASKS_POOL } from '../sql.pool.tasks';
 
 export const router = Router();
 
@@ -47,19 +48,30 @@ router.post('/v1.0/hello', authHTTP, async (req: Request, res: Response, next: N
 
 router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // const user = User(req);
+    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc])
+      VALUES (N'Invoice', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
     return res.json(200);
   } catch (err) { next(err); }
 });
 
 router.post('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc])
+      VALUES (N'Employee', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
     return res.json(200);
   } catch (err) { next(err); }
 });
 
 router.patch('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc])
+      VALUES (N'Employee', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
     return res.json(200);
   } catch (err) { next(err); }
 });

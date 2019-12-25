@@ -650,7 +650,6 @@
     GO
     -------------------------
     
-<<<<<<< HEAD
     DROP VIEW IF EXISTS [dbo].[Catalog.LoanTypes.v];
     GO
     
@@ -682,8 +681,6 @@
     GO
     -------------------------
     
-=======
->>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP VIEW IF EXISTS [dbo].[Catalog.Manager.v];
     GO
     
@@ -1625,8 +1622,6 @@
     GO
     -------------------------
     
-<<<<<<< HEAD
-=======
     DROP VIEW IF EXISTS [dbo].[Catalog.LoanTypes.v];
     GO
     
@@ -1658,7 +1653,6 @@
     GO
     -------------------------
     
->>>>>>> d85d7d8b22bbb388ad5136ea7772689c5ee84621
     DROP VIEW IF EXISTS [dbo].[Document.ExchangeRates.v];
     GO
     
