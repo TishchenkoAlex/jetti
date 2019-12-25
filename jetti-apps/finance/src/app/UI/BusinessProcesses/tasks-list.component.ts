@@ -79,13 +79,13 @@ export class TaskListComponent implements OnInit {
     }
     let res = this.TaskService.CompleteTask(task.TaskID, UserDecisionID, task.DecisionComment);
     // .pipe(take(1)).subscribe(res => {
-      // task.CurrentTask = false;
-      // task.DecisionComment = '';
-      // task.Completed = true;
-      // task.CanApprove = false;
-      // task.CanModify = false;
-      // task.CanReject = false;
-      // task.UserDecision = UserDecisionID === 0 ? 'Утвердить' : 'Отклонить';
+      task.CurrentTask = false;
+      task.DecisionComment = '';
+      task.Completed = true;
+      task.CanApprove = false;
+      task.CanModify = false;
+      task.CanReject = false;
+      task.UserDecision = UserDecisionID === 0 ? 'Утвердить' : 'Отклонить';
       this.loadTasks();
     // }
     // );
