@@ -15,7 +15,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.Company', required: true, onChangeServer: true , style: { width: '250px' }})
   company: Ref = null;
 
-  @Props({ type: 'date', hiddenInForm: false })
+  @Props({ type: 'date', hiddenInForm: false,  hiddenInList: false, hidden: false, order: 1 })
   date = new Date();
 
   @Props({ type: 'Catalog.Counterpartie', required: true })
@@ -39,9 +39,9 @@ export class CatalogLoan extends DocumentBase {
   Department: Ref = null;
 
   @Props({ type: 'date' })
-  PayDay = new Date();
+  PayDay: Date | null = null;
 
   @Props({ type: 'date' })
-  CloseDay = new Date();
+  CloseDay: Date | null = null;
 
 }
