@@ -15,9 +15,9 @@ import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
 import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
 import { LoadingService } from '../loading.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
-import * as IO from 'socket.io-client';
-import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/auth/auth.service';
+import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
+import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +27,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 export class BaseDocFormComponent implements OnInit, OnDestroy {
 
   @Input() id = this.route.snapshot.params.id as string;
-  @Input() type = this.route.snapshot.params.type as string;
+  @Input() type = this.route.snapshot.params.type as DocTypes;
   @Input() form = this.route.snapshot.data.detail as FormGroup;
   @ViewChildren(CdkTrapFocus) cdkTrapFocus: QueryList<CdkTrapFocus>;
 
@@ -81,6 +81,8 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       this.form.get('code')!.valueChanges,
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+
+    this.initCopyTo();
   }
 
   showDescription() {
@@ -141,9 +143,17 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     throw new Error('Print not implemented!');
   }
 
-  baseOn(id: Ref) {
-    this.router.navigate([this.type, v1()],
-      { queryParams: { base: this.id, Operation: id } });
+  baseOn(type: DocTypes, Operation?: Ref) {
+    this.router.navigate([type, v1()],
+      { queryParams: { base: this.id, Operation } });
+  }
+
+  private initCopyTo() {
+    const prop = createDocument(this.type).Prop() as DocumentOptions;
+    (prop.copyTo || []).map(el => {
+      const { description, icon } = createDocument(el).Prop() as DocumentOptions;
+      this.copyTo.push({ label: description, icon, command: (event) => this.baseOn(el) });
+    });
   }
 
   commandOnSever(method: string) {
