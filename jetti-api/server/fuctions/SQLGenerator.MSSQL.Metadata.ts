@@ -70,24 +70,24 @@ export class SQLGenegatorMetadata {
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}" \n`; }
+      if (type === 'boolean') { return `
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}"`; }
       if (type === 'number') {
         return `
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
         , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"
-        `;
+        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"`;
       }
       if (type === 'date') { return `
-        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"\n`; }
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"`; }
       if (type === 'datetime') { return `
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"\n`; }
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`; }
       return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"\n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -114,10 +114,11 @@ export class SQLGenegatorMetadata {
     AS
     SELECT
       id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
-      , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate\n ${select}
+        , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate${select}
       FROM dbo.[Accumulation] WHERE type = N'${type}';
     GO
-
+    GRANT SELECT,DELETE ON [${type}] TO JETTI;
+    GO
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
       date,company,calculated,id
     )
@@ -179,24 +180,22 @@ export class SQLGenegatorMetadata {
   static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}" \n`; }
+      if (type === 'boolean') { return `
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}"`; }
       if (type === 'number') {
         return `
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"
-        `;
+        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY), 0) "${prop}"`;
       }
       if (type === 'date') { return `
-        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"\n`; }
+        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"`; }
       if (type === 'datetime') { return `
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"\n`; }
+        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`; }
       return `
-        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
+        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"\n`;
+        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -222,10 +221,11 @@ export class SQLGenegatorMetadata {
     WITH SCHEMABINDING
     AS
     SELECT
-      id, date, document, company, kind${select}
+      id, date, document, company${select}
       FROM dbo.[Register.Info] WHERE type = N'${type}';
     GO
-
+    GRANT SELECT,DELETE ON [${type}] TO JETTI;
+    GO
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
       date,company,id
     )
@@ -489,6 +489,7 @@ export class SQLGenegatorMetadata {
     let query = '';
     for (const catalog of RegisteredDocument) {
       const doc = createDocument(catalog.type);
+      if (doc['QueryList']) continue;
       let select = SQLGenegator.QueryList(doc.Props(), doc.type);
       const type = (doc.Prop() as DocumentOptions).type.split('.');
       let name = '';
@@ -508,22 +509,26 @@ export class SQLGenegatorMetadata {
       `).replace('d.description,', `d.description "${name}",`);
 
       query += `\n
-      DROP VIEW IF EXISTS dbo.[${catalog.type}];
-      GO
       CREATE OR ALTER VIEW dbo.[${catalog.type}] WITH SCHEMABINDING AS
         ${select}
       GO
       GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       `;
     }
+    query = `
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
+    SELECT
+      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
+      d.id, d.date [date],
+      d.description Presentation
+      FROM dbo.[Documents] d
+    GO
+    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
+    GO
+
+    ${query}
+    `;
     return query;
   }
 

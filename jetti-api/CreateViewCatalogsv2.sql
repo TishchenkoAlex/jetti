@@ -1,7 +1,16 @@
 
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
+    SELECT
+      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
+      d.id, d.date [date],
+      d.description Presentation
+      FROM dbo.[Documents] d
+    GO
+    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
+    GO
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Account];
-      GO
+    
+
       CREATE OR ALTER VIEW dbo.[Catalog.Account] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Account", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -39,17 +48,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Account] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Balance];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Balance] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Balance", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -86,17 +86,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Balance] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Balance.Analytics];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "BalanceAnalytics", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -131,17 +122,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Balance.Analytics] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.BankAccount];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.BankAccount] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "BankAccount", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -195,17 +177,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.BankAccount] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.CashFlow];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.CashFlow] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "CashFlow", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -240,17 +213,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.CashFlow] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.CashRegister];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.CashRegister] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "CashRegister", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -298,17 +262,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.CashRegister] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Currency];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Currency] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Currency", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -343,17 +298,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Currency] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Company];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Company] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Company", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -409,17 +355,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Company] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Counterpartie];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Counterpartie", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -471,17 +408,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Counterpartie.BankAccount];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "CounterpartieBankAccount", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -541,17 +469,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Contract];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Contract] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Contract", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -615,17 +534,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Contract] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.BusinessDirection];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "BusinessDirection", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -660,17 +570,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.BusinessDirection] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Department];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Department] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Department", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -705,17 +606,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Expense];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Expense] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Expense", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -756,17 +648,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Expense] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Expense.Analytics];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "ExpenseAnalytics", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -801,17 +684,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Expense.Analytics] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Income];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Income] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Income", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -852,17 +726,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Income] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Loan];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Loan] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Loan", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -909,17 +774,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Loan] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Manager];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Manager] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Manager", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -957,17 +813,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Manager] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Person];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Person] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Person", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1002,17 +849,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Person] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.PriceType];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.PriceType] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "PriceType", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1054,17 +892,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.PriceType] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Product];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Product] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Product", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1124,17 +953,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Product] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.ProductCategory];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "ProductCategory", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1169,17 +989,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.ProductKind];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.ProductKind] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "ProductKind", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1215,17 +1026,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.ProductKind] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Storehouse];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Storehouse] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Storehouse", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1266,17 +1068,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Storehouse] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Operation];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Operation] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Operation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1319,17 +1112,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Operation] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Operation.Group];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "OperationGroup", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1365,17 +1149,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Operation.Group] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Operation.Type];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "OperationType", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1410,17 +1185,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Unit];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Unit] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Unit", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1455,17 +1221,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.User];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.User] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "User", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1501,17 +1258,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.User] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.UsersGroup];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "UsersGroup", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1546,17 +1294,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.UsersGroup] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Role];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Role] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Role", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1591,17 +1330,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Role] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.SubSystem];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.SubSystem] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "SubSystem", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1637,242 +1367,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.SubSystem] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Documents];
-      GO
-      CREATE OR ALTER VIEW dbo.[Catalog.Documents] WITH SCHEMABINDING AS
-        
-      SELECT d.id, d.type, d.date, d.code, d.description "Documents", d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-,
-
-        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
-          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
-
-    
-      , ISNULL(l5.description, d.description) [Documents.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Documents.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Documents.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Documents.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Documents.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      
-      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
-
-    WHERE d.[type] = 'Catalog.Documents' 
-      GO
-      GRANT SELECT ON dbo.[Catalog.Documents] TO jetti;
-      GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
-      
-
-      DROP VIEW IF EXISTS dbo.[Catalog.Catalogs];
-      GO
-      CREATE OR ALTER VIEW dbo.[Catalog.Catalogs] WITH SCHEMABINDING AS
-        
-      SELECT d.id, d.type, d.date, d.code, d.description "Catalogs", d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-,
-
-        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
-          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
-
-    
-      , ISNULL(l5.description, d.description) [Catalogs.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Catalogs.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Catalogs.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Catalogs.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Catalogs.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      
-      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
-
-    WHERE d.[type] = 'Catalog.Catalogs' 
-      GO
-      GRANT SELECT ON dbo.[Catalog.Catalogs] TO jetti;
-      GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
-      
-
-      DROP VIEW IF EXISTS dbo.[Catalog.Forms];
-      GO
-      CREATE OR ALTER VIEW dbo.[Catalog.Forms] WITH SCHEMABINDING AS
-        
-      SELECT d.id, d.type, d.date, d.code, d.description "Forms", d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-,
-
-        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
-          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
-
-    
-      , ISNULL(l5.description, d.description) [Forms.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Forms.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Forms.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Forms.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Forms.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      
-      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
-
-    WHERE d.[type] = 'Catalog.Forms' 
-      GO
-      GRANT SELECT ON dbo.[Catalog.Forms] TO jetti;
-      GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
-      
-
-      DROP VIEW IF EXISTS dbo.[Catalog.Objects];
-      GO
-      CREATE OR ALTER VIEW dbo.[Catalog.Objects] WITH SCHEMABINDING AS
-        
-      SELECT d.id, d.type, d.date, d.code, d.description "Objects", d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-,
-
-        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
-          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
-
-    
-      , ISNULL(l5.description, d.description) [Objects.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Objects.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Objects.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Objects.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Objects.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      
-      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
-
-    WHERE d.[type] = 'Catalog.Objects' 
-      GO
-      GRANT SELECT ON dbo.[Catalog.Objects] TO jetti;
-      GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
-      
-
-      DROP VIEW IF EXISTS dbo.[Catalog.Subcount];
-      GO
-      CREATE OR ALTER VIEW dbo.[Catalog.Subcount] WITH SCHEMABINDING AS
-        
-      SELECT d.id, d.type, d.date, d.code, d.description "Subcount", d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-,
-
-        ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type",
-          CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
-
-    
-      , ISNULL(l5.description, d.description) [Subcount.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Subcount.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Subcount.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Subcount.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Subcount.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      
-      LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
-
-    WHERE d.[type] = 'Catalog.Subcount' 
-      GO
-      GRANT SELECT ON dbo.[Catalog.Subcount] TO jetti;
-      GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
-      
-
-      DROP VIEW IF EXISTS dbo.[Catalog.Brand];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Brand] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Brand", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1907,17 +1403,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Brand] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.GroupObjectsExploitation];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "GroupObjectsExploitation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1953,17 +1440,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.ObjectsExploitation];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "ObjectsExploitation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2005,17 +1483,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.ObjectsExploitation] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Catalog];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Catalog] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Catalog", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2056,17 +1525,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Catalog] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.BudgetItem];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "BudgetItem", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2101,17 +1561,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Scenario];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Scenario] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Scenario", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2152,17 +1603,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Scenario] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.AcquiringTerminal];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "AcquiringTerminal", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2216,17 +1658,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.AcquiringTerminal] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Catalog.Bank];
-      GO
       CREATE OR ALTER VIEW dbo.[Catalog.Bank] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Bank", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2266,17 +1699,8 @@
       GO
       GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.ExchangeRates];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "ExchangeRates", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2311,17 +1735,8 @@
       GO
       GRANT SELECT ON dbo.[Document.ExchangeRates] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.Invoice];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.Invoice] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Invoice", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2390,17 +1805,8 @@
       GO
       GRANT SELECT ON dbo.[Document.Invoice] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.Operation];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.Operation] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Operation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2472,17 +1878,8 @@
       GO
       GRANT SELECT ON dbo.[Document.Operation] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.PriceList];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.PriceList] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "PriceList", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2524,17 +1921,8 @@
       GO
       GRANT SELECT ON dbo.[Document.PriceList] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.Settings];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.Settings] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "Settings", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2581,17 +1969,8 @@
       GO
       GRANT SELECT ON dbo.[Document.Settings] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.UserSettings];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.UserSettings] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "UserSettings", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2638,17 +2017,8 @@
       GO
       GRANT SELECT ON dbo.[Document.UserSettings] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.WorkFlow];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.WorkFlow] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "WorkFlow", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2690,17 +2060,8 @@
       GO
       GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
 
-      DROP VIEW IF EXISTS dbo.[Document.CashRequest];
-      GO
       CREATE OR ALTER VIEW dbo.[Document.CashRequest] WITH SCHEMABINDING AS
         
       SELECT d.id, d.type, d.date, d.code, d.description "CashRequest", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -2800,11 +2161,5 @@
       GO
       GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
       GO
-      CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-      SELECT
-	      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-	      d.id, d.date [date],
-	      d.description Presentation
-        FROM dbo.[Documents] d
-      GO
       
+    
