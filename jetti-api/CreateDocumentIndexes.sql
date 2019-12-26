@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
     DROP INDEX IF EXISTS [Catalog.Account] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account]
@@ -251,4 +249,3 @@
     ON [dbo].[Documents]([date],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Document.CashRequest')
->>>>>>> 2f0661e947a6fd2f34331e1357e9e1d9a91c5e49

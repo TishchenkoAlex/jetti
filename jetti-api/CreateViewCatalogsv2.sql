@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
     CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
     SELECT
@@ -1880,4 +1878,3 @@
       GO
       
     
->>>>>>> 2f0661e947a6fd2f34331e1357e9e1d9a91c5e49
