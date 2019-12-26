@@ -53,7 +53,7 @@ app.get('*', (req: Request, res: Response) => {
 
 app.use(errorHandler);
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  console.log(err.message);
+  console.error(err.message);
   const status = err && (err as any).status ? (err as any).status : 500;
   res.status(status).send(err.message);
 }
@@ -67,29 +67,12 @@ const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-let script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTotals();
-fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.CreateTableRegisterAccumulation();
-fs.writeFile('CreateTableRegisterAccumulation.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.AlterTriggerRegisterAccumulation();
-fs.writeFile('AlterTriggerRegisterAccumulation.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.CreateTableRegisterInfo();
-fs.writeFile('CreateTableRegisterInfo.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.AlterTriggerRegisterInfo();
-fs.writeFile('AlterTriggerRegisterInfo.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.CreateViewCatalogsv2();
-fs.writeFile('CreateViewCatalogsv2.sql', script, (err) => {});
-
-script = SQLGenegatorMetadata.CreateViewTables();
-fs.writeFile('CreateViewTables.sql', script, (err) => {});
-
+let script = '';
 script = SQLGenegatorMetadata.CreateDocumentIndexes();
 fs.writeFile('CreateDocumentIndexes.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.CreateViewCatalogs();
+fs.writeFile('CreateViewCatalogsv2.sql', script, (err) => {});
 
 script = SQLGenegatorMetadata.CreateRegisterAccumulationView();
 fs.writeFile('CreateRegisterAccumulationView.sql', script, (err) => {});

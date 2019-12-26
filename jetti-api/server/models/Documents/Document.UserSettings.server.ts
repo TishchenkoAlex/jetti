@@ -67,7 +67,6 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
         }));
         await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
           [user.code, row.company, this.id]);
-        console.log();
       }
     }
 

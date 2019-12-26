@@ -310,7 +310,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   next() {
-    console.log(this.filters);
     this.listen();
     this.dataSource.next();
   }

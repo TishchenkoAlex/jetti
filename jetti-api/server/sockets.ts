@@ -12,5 +12,5 @@ export function userSocketsEmit(user: IJWTPayload | null, event: string, payload
         if (socket.connected && socket.handshake.query.user === user.email) socket.emit(event, payload);
       });
     }*/
-  } catch (err) { console.log('socket err', err); }
+  } catch (err) { console.error('socket err', err); }
 }

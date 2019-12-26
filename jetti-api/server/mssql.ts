@@ -99,11 +99,11 @@ export class MSSQL {
       await func(new MSSQL(this.user, this.GLOBAL_POOL, transaction));
       await transaction.commit();
     } catch (err) {
-      console.log('SQL: error', err);
+      console.error('SQL: error', err);
       try {
         await transaction.rollback();
       } catch {
-        console.log('SQL: ROLLBACK error', err);
+        console.error('SQL: ROLLBACK error', err);
       }
       throw new Error(err);
     }

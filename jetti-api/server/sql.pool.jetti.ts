@@ -7,4 +7,4 @@ JETTI_POOL.connect()
   .catch(err => console.log('connection error', err));
 
 
-JETTI_POOL.on('error', (err: sql.ConnectionError) => console.log(err));
+JETTI_POOL.on('error', (err: sql.ConnectionError) => console.error(err));

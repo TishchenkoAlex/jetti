@@ -48,7 +48,7 @@ JQueue.process(1, job => {
 });
 
 JQueue.on('error', err => {
-  console.log('queue error', err.message);
+  console.error('queue error', err.message);
 });
 
 JQueue.on('active', (job, jobPromise) => {

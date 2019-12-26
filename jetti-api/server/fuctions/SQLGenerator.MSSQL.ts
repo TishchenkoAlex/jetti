@@ -259,28 +259,31 @@ export class SQLGenegator {
   static QueryList(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"\n`;
-      if (type === 'number') return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS NUMERIC(15,2)), 0) "${prop}"\n`;
-      return `, ISNULL(JSON_VALUE(d.doc, N'$."${prop}"'), '') "${prop}"\n`;
+      if (type === 'boolean') return `
+        , ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"`;
+      if (type === 'number') return `
+        , ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS NUMERIC(15,2)), 0) "${prop}"`;
+      return `
+        , ISNULL(JSON_VALUE(d.doc, N'$."${prop}"'), '') "${prop}"`;
     };
 
     const complexProperty = (prop: string, type: string) =>
-      type.startsWith('Types.') ? `,
-        IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".id'), "${prop}".id) "${prop}.id",
-        IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".value'), "${prop}".description) "${prop}.value",
-        IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".type'), "${prop}".type) "${prop}.type"\n` : `,
-
-        ISNULL("${prop}".description, N'') "${prop}.value", ISNULL("${prop}".type, N'${type}') "${prop}.type",
-          CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}.id"\n`;
+      type.startsWith('Types.') ? `
+        , IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".id'), "${prop}".id) "${prop}.id"
+        , IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".value'), "${prop}".description) "${prop}.value"
+        , IIF("${prop}".id IS NULL, JSON_VALUE(d.doc, N'$."${prop}".type'), "${prop}".type) "${prop}.type"` : `
+        , ISNULL("${prop}".description, N'') "${prop}.value", ISNULL("${prop}".type, N'${type}') "${prop}.type"
+        , CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER) "${prop}.id"`;
 
     const addLeftJoin = (prop: string, type: string) => `
-      LEFT JOIN dbo."Documents" "${prop}" ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
+        LEFT JOIN dbo."Documents" "${prop}" ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)`;
 
     let query = `
-      SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"\n`;
+      SELECT
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
 
     let LeftJoin = '';
 
@@ -295,12 +298,11 @@ export class SQLGenegator {
     }
 
     query += `
-    FROM dbo."Documents" d
-      LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
-      ${LeftJoin}
-    WHERE d.[type] = '${type}' `;
+      FROM dbo."Documents" d
+        LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+        LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+        LEFT JOIN dbo."Documents" "company" ON "company".id = d.company${LeftJoin}
+      WHERE d.[type] = '${type}' `;
 
     return query;
   }
@@ -354,68 +356,6 @@ export class SQLGenegator {
 
     return query;
   }
-
-  static QueryListView(doc: { [x: string]: any }, type: string) {
-
-    const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') return `
-      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS BIT), 0) [${prop}]`;
-      if (type === 'number') return `
-      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS MONEY), 0) [${prop}]`;
-      return `
-      , ISNULL(CAST(JSON_VALUE(doc, N'$."${prop}"') AS NVARCHAR(150)), '') [${prop}]`;
-    };
-
-    let fields = '';
-
-    let index = ''; let vColumns = '';
-    for (const prop in excludeProps(doc)) {
-      const _type = doc[prop].type || 'string';
-      if (_type.includes('.')) {
-        index += `
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.${prop}] ON [dbo].[${type}.v]([${prop}], [id]);`;
-        vColumns += `
-    ALTER TABLE Documents DROP COLUMN IF EXISTS [${type}.${prop}];
-    ALTER TABLE Documents ADD [${type}.${prop}] AS CAST(JSON_VALUE(doc, N'$."${prop}"') AS UNIQUEIDENTIFIER) PERSISTED;`;
-        fields += `
-      , [${type}.${prop}] [${prop}]`;
-      } else if (_type !== 'table') {
-        fields += simleProperty(prop, _type);
-      }
-    }
-
-    const query = `
-    DROP VIEW IF EXISTS [dbo].[${type}.v];
-    GO
-    ${vColumns};
-    GO
-    CREATE VIEW [dbo].[${type}.v]
-    WITH SCHEMABINDING
-    AS
-      SELECT
-        id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
-        ${fields}
-    FROM dbo.[Documents]
-    WHERE [type] = '${type}'
-    GO
-
-    CREATE UNIQUE CLUSTERED INDEX [${type}.v.id] ON [dbo].[${type}.v]([id],[type], [description]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.decription] ON [dbo].[${type}.v]([description],[id]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [dbo].[${type}.v]([code],[id]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [dbo].[${type}.v]([company],[id]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [dbo].[${type}.v]([parent],[id]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [dbo].[${type}.v]([date],[id]);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.isfolder] ON [dbo].[${type}.v]([isfolder],[id]);
-    ${index}
-    GO
-    GRANT SELECT ON [dbo].[${type}.v] TO JETTI;
-    GO
-    -------------------------
-    `;
-
-    return query;
-  }
-
 
   static QueryRegisterAccumulatioList(doc: { [x: string]: any }, type: string) {
 
@@ -517,7 +457,7 @@ export class SQLGenegator {
     }
 
     const query = `
-      SELECT r.date, r."kind",
+      SELECT r.date,
       "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
       ${select}
       FROM "Register.Info" r
@@ -577,7 +517,7 @@ export function excludeRegisterAccumulatioProps(doc) {
 }
 
 export function excludeRegisterInfoProps(doc) {
-  const { kind, date, type, company, data, document, ...newObject } = doc;
+  const { date, type, company, data, document, ...newObject } = doc;
   return newObject;
 }
 
