@@ -189,9 +189,9 @@ export class ApiService {
     return this.http.get<ITree[]>(query);
   }
 
-  execute(type: FormTypes, doc: FormBase) {
+  execute(type: FormTypes, method: string, doc: FormBase) {
     const apiDoc = mapToApi(doc as any);
-    const query = `${environment.api}form/${type}/execute`;
+    const query = `${environment.api}form/${type}/${method}`;
     return this.http.post<FormBase>(query, apiDoc);
   }
 

@@ -76,7 +76,7 @@ export class SyncFormComponent  {
 
   async Execute(): Promise<any> {
     this.data = [];
-    this.ds.api.execute('Form.PostAfterEchange', this.model).pipe(take(1))
+    this.ds.api.execute('Form.PostAfterEchange', 'Execute', this.model).pipe(take(1))
       .subscribe(data => {
         // this.form.patchValue(data);
       });
