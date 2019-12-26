@@ -18,7 +18,7 @@
     </div>
     <div class="ui-toolbar-group-right">
       <button pButton type="button" id="StartProcess" label="Start process" class="ui-button-danger"
-        *ngIf="!readonlyMode && !isNew" (click)="StartProcess()"
+        *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
         [disabled]="!form.valid || (lds.busy$ | async)"></button>
     </div>
     <div class="ui-toolbar-group-right">
@@ -73,7 +73,7 @@
     </div>
 
     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-      <j-control [control]="vk['workflowID']" [form]="form"></j-control>
+      <j-control [control]="vk['workflowID']" disabled = true [form]="form"></j-control>
       <j-control [control]="vk['user']" [form]="form"></j-control>
     </div>
     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
@@ -104,10 +104,11 @@
   <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="model"></j-register-accumulation-list>
 </p-panel>
 
-<p-panel [toggleable]="true" [collapsed]="true" header="Agreement"
-  *ngIf="form.value.workflowID !== undefined && form.value.workflowID !== ''">
+<p-panel [toggleable]="true" [collapsed]="true" header="Agreement" *ngIf="form.value.workflowID !== undefined && form.value.workflowID !== ''">
   <bp-task [ProcessID]="form.value.workflowID"></bp-task>
 </p-panel>
+
+<!--  -->
 
 <p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cd appendTo="body">
   <p-footer>

@@ -54,4 +54,14 @@ export class BPApi {
     }
     return this.http.post<string>(query, body);
   }
+
+  CashRequestDesktop(): Observable<any[]> {
+    const query = `${environment.api}/CashRequestDesktop`;
+    return this.http.get<any[]>(query);
+  }
+
+  CashRequestCreateBaseOn(baseOn: string[]): Observable<any[]> {
+    const query = `${environment.api}/CashRequestCreateBaseOn`;
+    return this.http.post<any[]>(query, baseOn);
+  }
 }

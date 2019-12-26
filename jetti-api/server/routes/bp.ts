@@ -66,3 +66,33 @@ router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFu
 
   } catch (err) { next(err); }
 });
+
+router.get('/CashRequestDesktop', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const query = `SELECT r.*,
+    Company.Company [company_name],
+    CashRequest.description [CashRequest_name],
+    [CashOrBank].description [CashOrBank_name],
+    [CashRecipient].description [CashRecipient_name],
+    [currency].description [currency_name],
+    'false' [Selected]
+    FROM
+    (select  [company], [CashRequest],[CashOrBank], [CashRecipient], [currency],
+    -SUM(Amount) [Amount],
+    -SUM(Amount) [AmountToPay]
+    FROM [dbo].[Register.Accumulation.CashToPay] r WITH (NOEXPAND)
+    GROUP BY [company], [CashRequest],[CashOrBank], [CashRecipient], [currency]
+    HAVING SUM(Amount) < 0) r
+    LEFT JOIN [Catalog.Company] Company ON Company.id =r.[company]
+    LEFT JOIN Documents CashRequest ON CashRequest.id =r.[CashRequest]
+    LEFT JOIN Documents [CashOrBank] ON [CashOrBank].id =r.[CashOrBank]
+    LEFT JOIN Documents [CashRecipient] ON [CashRecipient].id =r.[CashRecipient]
+    LEFT JOIN Documents [currency] ON [currency].id =r.[currency]`;
+
+    const result = await sdb.manyOrNone(query);
+    console.log(result);
+    return res.json(result);
+
+  } catch (err) { next(err); }
+});

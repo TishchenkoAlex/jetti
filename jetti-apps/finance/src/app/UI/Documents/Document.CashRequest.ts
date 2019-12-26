@@ -57,8 +57,8 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
-  private _StatusChanges$: Subscription = Subscription.EMPTY;
-  private _workflowIDChanges$: Subscription = Subscription.EMPTY;
+  // private _StatusChanges$: Subscription = Subscription.EMPTY;
+  // private _workflowIDChanges$: Subscription = Subscription.EMPTY;
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore,
@@ -77,9 +77,13 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
         this.form.markAsPristine();
       });
 
-    if (this.form.get('Status').value !== 'PREPARED') {this.form.disable(); }
-    // this.form.get('Operation').setValue('Оплата поставщику');
-    // this.form.get('Status').setValue('PREPARED');
+    if (this.isNew) {
+      this.form.get('Status').setValue('PREPARED');
+      this.form.get('workflowID').setValue('');
+      this.form.get('Operation').setValue('Оплата поставщику');
+    }
+
+    if (this.form.get('Status').value !== 'PREPARED') { this.form.disable(); }
 
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
@@ -119,6 +123,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     this.bpApi.StartProcess(this.form.value, this.metadata.type).pipe(take(1)).subscribe(data => {
       this.form.get('workflowID').setValue(data);
       this.form.get('Status').setValue('AWAITING');
+      this.Post();
       this.form.disable();
       this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
@@ -197,8 +202,6 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     this._descriptionSubscription$.unsubscribe();
     this._saveCloseSubscription$.unsubscribe();
     this._postSubscription$.unsubscribe();
-    this._workflowIDChanges$.unsubscribe();
-    this._StatusChanges$.unsubscribe();
   }
 
 }

@@ -7,12 +7,14 @@ import { OperationListComponent } from './Operation/operation.list.component';
 import { SyncFormComponent } from './Forms/sync.form.component';
 import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
+import { CashRequestDesktopComponent } from './Forms/CashRequestDesktop.form.component';
 
 const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<any> } } = {
   'home': { formComponent: HomeComponent, listComponent: HomeComponent },
   'Document.Operation': { formComponent: OperationFormComponent, listComponent: OperationListComponent },
   'Form.PostAfterEchange': { formComponent: SyncFormComponent, listComponent: SyncFormComponent },
   'Form.BusinessProcessTasks': { formComponent: TaskListComponent, listComponent: TaskListComponent },
+  'Form.CashRequestDesktop': { formComponent: CashRequestDesktopComponent, listComponent: CashRequestDesktopComponent },
   'Document.CashRequest': { formComponent: DocumentCashRequestComponent, listComponent: BaseDocListComponent },
   // add user's defined component for list- or doc-Form here
 };

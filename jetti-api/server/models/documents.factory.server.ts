@@ -113,7 +113,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   }
   // protect against mutate
   result.Props = () => Props;
-
+  Object.keys(Props).forEach(p => result[p] = result[p]);
   if (result.isDoc) result.description =
     calculateDescription((result.Prop() as DocumentOptions).description, result.date, result.code, Grop && Grop.value as string || '');
   return result;
