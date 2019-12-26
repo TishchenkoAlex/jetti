@@ -71,7 +71,7 @@ let script = '';
 script = SQLGenegatorMetadata.CreateDocumentIndexes();
 fs.writeFile('CreateDocumentIndexes.sql', script, (err) => {});
 
-script = SQLGenegatorMetadata.CreateViewCatalogsv2();
+script = SQLGenegatorMetadata.CreateViewCatalogs();
 fs.writeFile('CreateViewCatalogsv2.sql', script, (err) => {});
 
 script = SQLGenegatorMetadata.CreateRegisterAccumulationView();
