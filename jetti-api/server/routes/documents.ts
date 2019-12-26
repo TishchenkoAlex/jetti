@@ -74,6 +74,8 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
       switch (command) {
         case 'new':
           // init default values from metadata
+          const schema = ServerDoc.Props();
+          Object.keys(schema).filter(p => schema[p].value !== undefined).forEach(p => ServerDoc[p] = schema[p].value);
           addIncomeParamsIntoDoc(params, ServerDoc);
           if (userID) ServerDoc.user = userID;
           if (ServerDoc.onCreate) { await ServerDoc.onCreate(sdb); }
