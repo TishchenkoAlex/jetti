@@ -101,6 +101,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
           label: c.label, type: c.type, required: !!c.required, change: c.change, order: (c.order || 0) + 103,
           [c.parameter]: c.tableDef ? JSON.parse(c.tableDef) : null, ...JSON.parse(c.Props ? c.Props : '{}')
         });
+        if (result[c.parameter] === undefined) result[c.parameter] = Props[c.parameter].value;
       });
       if (Operation && Operation.module) {
         const func = new Function('tx', Operation.module);
