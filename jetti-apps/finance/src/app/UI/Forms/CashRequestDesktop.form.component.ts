@@ -30,7 +30,7 @@ import { CashRequestDesktop } from '../../../../../../jetti-api/server/models/Fo
             color: #ffffff !important;
         }
     `
-    ]
+  ]
 })
 
 export class CashRequestDesktopComponent {
@@ -105,23 +105,23 @@ export class CashRequestDesktopComponent {
   async Create() {
     const model = this.model as any;
     model['CashRequests'] = this.selectedRows.map(e => (
-      {CashRequest: {code: '', id: e.CashRequest, type: 'Document.CasheRequest', value: '' }}
-      ));
-    this.ds.api.execute('Form.CashRequestDesktop', 'Create', model).pipe(take(1)).subscribe(d => {console.log(d); });
+      { CashRequest: { code: '', id: e.CashRequest, type: 'Document.CasheRequest', value: '' } }
+    ));
+    this.ds.api.execute('Form.CashRequestDesktop', 'Create', model).pipe(take(1)).subscribe(d => { console.log(d); });
   }
 
   onEditableChanged(column, event, index, rowData) {
 
-    if (rowData.AmountToPay > rowData.Amount) { rowData.AmountToPay = rowData.Amount; }
+    if (rowData.AmountToPay > rowData.Amount) { rowData = { ...rowData, AmountToPay: rowData.Amount }; }
     if (rowData.AmountToPay < 0) { rowData.AmountToPay = 0; }
     if (rowData.AmountToPay > 0 && this.selectedRows.indexOf(rowData) === -1) {
-      this.selectedRows.push(rowData);
+      this.selectedRows = [this.selectedRows, rowData];
     }
     if (rowData.AmountToPay === 0 && this.selectedRows.indexOf(rowData) !== -1) {
-      this.selectedRows.splice(this.selectedRows.indexOf(rowData));
+      this.selectedRows = this.selectedRows.splice(this.selectedRows.indexOf(rowData));
     }
     let sumToPay = 0;
-    this.selectedRows.forEach(e => {sumToPay += Number(e.AmountToPay); });
+    this.selectedRows.forEach(e => { sumToPay += Number(e.AmountToPay); });
     console.log(sumToPay);
   }
 

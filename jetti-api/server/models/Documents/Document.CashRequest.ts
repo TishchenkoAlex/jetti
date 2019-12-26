@@ -12,7 +12,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'Заявка на ДС',
   prefix: 'CR-',
   copyTo: [
-    'Document.PriceList'
+    'Document.Operation'
   ],
   relations: [
     { name: 'Operations', type: 'Document.Operation', field: 'parent' }

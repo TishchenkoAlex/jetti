@@ -18,6 +18,8 @@ import { LoadingService } from 'src/app/common/loading.service';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
 import { BPApi } from 'src/app/services/bpapi.service';
 import { TaskComponent } from 'src/app/UI/BusinessProcesses/task.component';
+import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
+import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 @Component({
   selector: 'doc-CashRequest',
@@ -51,7 +53,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   get copyTo() { return (<MenuItem[]>this.form['metadata']['copyTo']) || []; }
   get module() { return this.form['metadata']['clientModule'] || {}; }
   get getStatus() { return <string>this.form.get('Status').value; }
-  get readonlyMode() { return this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return false;  return this.form.get('Status').value !== 'PREPARED'; }
 
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
@@ -84,8 +86,8 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('Operation').setValue('Оплата поставщику');
     }
 
-    if (this.form.get('Status').value !== 'PREPARED') { this.form.disable(); }
-
+    // if (this.form.get('Status').value !== 'PREPARED') { this.form.disable(); }
+    this.initCopyTo();
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
@@ -98,6 +100,20 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('code')!.valueChanges,
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+  }
+
+
+  baseOn(type: DocTypes, Operation?: Ref) {
+    this.router.navigate([type, v1()],
+      { queryParams: { base: this.id, Operation } });
+  }
+
+  private initCopyTo() {
+    const prop = createDocument(this.type as any).Prop() as DocumentOptions;
+    (prop.copyTo || []).map(el => {
+      const { description, icon } = createDocument(el).Prop() as DocumentOptions;
+      this.copyTo.push({ label: description, icon, command: (event) => this.baseOn(el) });
+    });
   }
 
   showDescription() {
@@ -125,7 +141,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('workflowID').setValue(data);
       this.form.get('Status').setValue('AWAITING');
       this.Post();
-      this.form.disable();
+      // this.form.disable();
       this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
   }
@@ -169,11 +185,6 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
 
   Print = () => {
     throw new Error('Print not implemented!');
-  }
-
-  baseOn(id: Ref) {
-    this.router.navigate([this.type, v1()],
-      { queryParams: { base: this.id, Operation: id } });
   }
 
   commandOnSever(method: string) {

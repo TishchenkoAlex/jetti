@@ -28,9 +28,11 @@ export default class CashRequestDesktopServer extends CashRequestDesktop impleme
       // 68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9 - С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
       OperationObject.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9';
       const OperationObjectServer = await createDocumentServer('Document.Operation', OperationObject, sdbq);
-      // await OperationObjectServer.baseOn!(cashRequest.CashRequest, sdbq);
-      // await insertDocument(OperationObjectServer, sdbq);
-      // await postDocument(OperationObjectServer, sdbq);
+      await OperationObjectServer.baseOn!(cashRequest.CashRequest, sdbq);
+      const code = await lib.doc.docPrefix(OperationObject.type, sdbq);
+      OperationObjectServer.code = code;
+      await insertDocument(OperationObjectServer, sdbq);
+      await postDocument(OperationObjectServer, sdbq);
       console.log(OperationObjectServer);
     }
   }

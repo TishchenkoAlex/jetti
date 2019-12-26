@@ -50,7 +50,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
 
     const cashOrBank = await lib.doc.byId(this.CashOrBank, tx);
-    const сurrency = cashOrBank ?  (<CatalogBankAccount>cashOrBank).currency : this.сurrency;
+    const сurrency = cashOrBank ? (<CatalogBankAccount>cashOrBank).currency : this.сurrency;
     // const exchangeRate = await lib.info.exchangeRate(this.date, this.company, сurrency, tx) || 1;
 
     switch (this.Operation) {
@@ -72,24 +72,26 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         break;
     }
 
-     // CashToPay
-    Registers.Accumulation.push(new RegisterAccumulationCashToPay({
-      kind: false,
-      CashRecipient: this.CashRecipient,
-      Amount: this.Amount,
-      PayDay: this.PayDay,
-      CashRequest: this.id,
-      currency: сurrency,
-      CashFlow: this.CashFlow,
-      Contract: this.Contract,
-      CashOrBank: this.CashOrBank,
-      Loan: this.Loan,
-      OperationType: this.Operation,
-      Department: this.Department,
-      ExpenseAnalytics: this.ExpenseAnalytics,
-      ExpenseOrBalance: this.ExpenseOrBalance,
-      BalanceAnalytics: this.BalanceAnalytics
-    }));
+    if (this.Status === 'APPROVED') {
+      // CashToPay
+      Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+        kind: false,
+        CashRecipient: this.CashRecipient,
+        Amount: this.Amount,
+        PayDay: this.PayDay,
+        CashRequest: this.id,
+        currency: сurrency,
+        CashFlow: this.CashFlow,
+        Contract: this.Contract,
+        CashOrBank: this.CashOrBank,
+        Loan: this.Loan,
+        OperationType: this.Operation,
+        Department: this.Department,
+        ExpenseAnalytics: this.ExpenseAnalytics,
+        ExpenseOrBalance: this.ExpenseOrBalance,
+        BalanceAnalytics: this.BalanceAnalytics
+      }));
+    }
 
     return Registers;
   }
