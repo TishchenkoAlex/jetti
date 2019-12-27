@@ -53,14 +53,13 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   get copyTo() { return (<MenuItem[]>this.form['metadata']['copyTo']) || []; }
   get module() { return this.form['metadata']['clientModule'] || {}; }
   get getStatus() { return <string>this.form.get('Status').value; }
-  get readonlyMode() { return false;  return this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return false; return this.form.get('Status').value !== 'PREPARED'; }
 
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
-  // private _StatusChanges$: Subscription = Subscription.EMPTY;
-  // private _workflowIDChanges$: Subscription = Subscription.EMPTY;
+  private _OperationChanges$: Subscription = Subscription.EMPTY;
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore,
@@ -70,7 +69,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: max-line-length
     // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable();
     // tslint:disable-next-line: max-line-length
-    // this._workflowIDChanges$ = this.form.get('workflowID').valueChanges.subscribe(v => { this.form.get('Status').setValue('AWAITING'); });
+    this._OperationChanges$ = this.form.get('Operation').valueChanges.subscribe(v => { this.onOperationChanges() });
 
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
@@ -132,6 +131,63 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   unPost() { this.ds.unpost(this.model); }
   PostClose() { const doc = this.model; this.ds.post(doc, true); }
   Copy() { return this.router.navigate([this.model.type, v1().toUpperCase()], { queryParams: { copy: this.id } }); }
+
+  onOperationChanges() {
+
+    const operation = this.form.get('Operation').value;
+
+    // 'Оплата поставщику',
+    // 'Перечисление налогов и взносов',
+    // 'Оплата ДС в другую организацию',
+    // 'Выдача ДС подотчетнику',
+    // 'Оплата по кредитам и займам полученным',
+    // 'Прочий расход ДС',
+    // 'Выдача займа контрагенту',
+    // 'Возврат оплаты клиенту'
+
+    this.vk['CashOrBank'].required = operation === 'Оплата ДС в другую организацию';
+    this.vk['CashOrBankIn'].required = operation === 'Оплата ДС в другую организацию';
+    this.vk['PaymentKind'].required = operation === 'Оплата по кредитам и займам полученным';
+    this.vk['BalanceAnalytics'].required = operation === 'Перечисление налогов и взносов';
+
+    this.vk['CashRecipient'].required =
+      `Оплата поставщику
+      Перечисление налогов и взносов
+      Оплата ДС в другую организацию
+      Выдача ДС подотчетнику
+      Оплата по кредитам и займам полученным
+      Выдача займа контрагенту
+      Возврат оплаты клиенту`.indexOf(operation) !== -1;
+
+    this.vk['Contract'].required =
+      `Оплата поставщику
+      Возврат оплаты клиенту`.indexOf(operation) !== -1;
+
+    this.vk['ExpenseOrBalance'].required =
+      `Перечисление налогов и взносов
+      Прочий расход ДС`.indexOf(operation) !== -1;
+
+    this.vk['Loan'].required =
+      `Оплата по кредитам и займам полученным
+      Выдача займа контрагенту`.indexOf(operation) !== -1;
+
+    this.form.markAsTouched();
+  }
+
+  onCashKindChange(event) {
+
+    let CashKindType = '';
+    if (event === 'BANK') {
+      CashKindType = 'Catalog.BankAccount';
+    } else {
+      CashKindType = 'Catalog.CashRegister';
+    }
+
+    this.form.get('CashOrBank').setValue(
+      { id: null, code: null, type: CashKindType, value: null },
+      { onlySelf: false, emitEvent: false }
+    );
+  }
 
   StartProcess() {
     // const pres = this.form.pristine;

@@ -34,6 +34,15 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true })
   currency: Ref = null;
 
+  @Props({
+    type: 'Catalog.Counterpartie.BankAccount',
+    owner: [
+      { dependsOn: 'owner', filterBy: 'owner' },
+      { dependsOn: 'сurrency', filterBy: 'currency' }
+    ]
+  })
+  BankAccount: Ref = null;
+
   @Props({ type: 'Catalog.Manager', required: false })
   Manager: Ref = null;
 

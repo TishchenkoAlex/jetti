@@ -6,6 +6,7 @@ import { Task } from './task.object';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { FilterUtils } from 'primeng/components/utils/filterutils';
 import { Observable } from 'rxjs';
+import { DocService } from 'src/app/common/doc.service';
 
 @Component({
   templateUrl: 'tasks-list.component.html',
@@ -31,7 +32,8 @@ export class TaskListComponent implements OnInit {
   columns: { field: string, header: string, style: string }[];
   UserDecisions: SelectItem[];
   columnsLength: number;
-  constructor(public TaskService: BPApi) {
+
+  constructor(public TaskService: BPApi, public ds: DocService) {
 
   }
 
