@@ -174,6 +174,21 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     this.form.markAsTouched();
   }
 
+  onCashKindChange(event) {
+
+    let CashKindType = '';
+    if (event === 'BANK') {
+      CashKindType = 'Catalog.BankAccount';
+    } else {
+      CashKindType = 'Catalog.CashRegister';
+    }
+
+    this.form.get('CashOrBank').setValue(
+      { id: null, code: null, type: CashKindType, value: null },
+      { onlySelf: false, emitEvent: false }
+    );
+  }
+
   StartProcess() {
     // const pres = this.form.pristine;
     // if (!pres) { return; }

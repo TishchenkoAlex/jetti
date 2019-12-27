@@ -60,6 +60,15 @@ export class DocumentCashRequest extends DocumentBase {
   })
   PaymentKind = 'BODY';
 
+  @Props({
+    type: 'enum', required: true,  value: [
+      'CASH',
+      'BANK',
+      'ANY'
+    ]
+  })
+  CashKind = 'ANY';
+
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
@@ -95,6 +104,15 @@ export class DocumentCashRequest extends DocumentBase {
   CashOrBank: Ref = null;
 
   @Props({
+    type: 'Catalog.Counterpartie.BankAccount',
+    owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'owner' },
+      { dependsOn: 'сurrency', filterBy: 'currency' }
+    ]
+  })
+  CashRecipientBankAccount: Ref = null;
+
+  @Props({
     type: 'Types.CashOrBank',
     owner: [
       { dependsOn: 'сurrency', filterBy: 'currency' }
@@ -105,7 +123,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'date' })
   PayDay = new Date();
 
-  @Props({ type: 'number', required: true })
+  @Props({ type: 'number', required: true, style: { width: '50px' } })
   Amount = 0;
 
   @Props({ type: 'Catalog.Currency', required: true })
