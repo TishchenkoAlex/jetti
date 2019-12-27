@@ -1,4 +1,5 @@
 
+    
     CREATE OR ALTER VIEW [Register.Accumulation.AccountablePersons]
     WITH SCHEMABINDING
     AS
@@ -439,5 +440,8 @@
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover] ON [dbo].[Register.Accumulation.BudgetItemTurnover](
       date,company,calculated,id
     )
+    GO
+    
+    CREATE UNIQUE NONCLUSTERED INDEX [id.Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory]([id])
     GO
     
