@@ -80,7 +80,7 @@ class CopyTo {
   @Props({ type: 'javascript', label: 'script', hiddenInList: true })
   script = '';
 
-  @Props({ type: 'javascript', label: 'script', hiddenInList: true })
+  @Props({ type: 'javascript', label: 'method', hiddenInList: true })
   method = '';
 }
 

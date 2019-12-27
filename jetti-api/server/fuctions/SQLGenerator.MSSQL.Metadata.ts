@@ -76,6 +76,11 @@ export class SQLGenegatorMetadata {
       const register = createRegisterAccumulation({ type: type.type });
       query += SQLGenegatorMetadata.QueryRegisterAccumulationView(register.Props(), register.Prop().type.toString());
     }
+    query = `
+    ${query}
+    CREATE UNIQUE NONCLUSTERED INDEX [id.Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory]([id])
+    GO
+    `;
     return query;
   }
 
@@ -219,7 +224,7 @@ export class SQLGenegatorMetadata {
       `).replace('d.description,', `d.description "${name}",`);
 
       query += `\n
-      CREATE OR ALTER VIEW dbo.[${catalog.type}] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
         ${select}
       GO
       GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
@@ -227,7 +232,7 @@ export class SQLGenegatorMetadata {
       `;
     }
     query = `
-    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
       d.id, d.date [date],

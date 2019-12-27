@@ -1,5 +1,5 @@
 
-    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] WITH SCHEMABINDING AS
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
       d.id, d.date [date],
@@ -11,7 +11,7 @@
 
     
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Account] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Account] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Account", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -46,7 +46,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Balance] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Balance] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Balance", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -80,7 +80,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "BalanceAnalytics", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -112,7 +112,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.BankAccount] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.BankAccount] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "BankAccount", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -154,7 +154,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.CashFlow] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.CashFlow] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "CashFlow", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -186,7 +186,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.CashRegister] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.CashRegister] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "CashRegister", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -225,7 +225,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Currency] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Currency] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Currency", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -257,7 +257,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Company] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Company] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Company", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -304,7 +304,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Counterpartie", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -350,7 +350,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "CounterpartieBankAccount", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -395,7 +395,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Contract] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Contract] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Contract", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -444,7 +444,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "BusinessDirection", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -476,7 +476,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Department] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Department] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Department", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -508,7 +508,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Expense] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Expense] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Expense", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -543,7 +543,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "ExpenseAnalytics", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -575,7 +575,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Income] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Income] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Income", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -610,7 +610,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Loan] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Loan] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Loan", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -657,7 +657,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "LoanTypes", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -689,7 +689,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Manager] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Manager] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Manager", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -724,7 +724,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Person] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Person] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Person", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -756,7 +756,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.PriceType] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.PriceType] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "PriceType", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -792,7 +792,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Product] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Product] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Product", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -837,7 +837,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "ProductCategory", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -869,7 +869,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.ProductKind] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.ProductKind] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "ProductKind", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -902,7 +902,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Storehouse] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Storehouse] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Storehouse", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -937,7 +937,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Operation] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Operation] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Operation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -974,7 +974,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "OperationGroup", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1007,7 +1007,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "OperationType", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1039,7 +1039,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Unit] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Unit] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Unit", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1071,7 +1071,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.User] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.User] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "User", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1104,7 +1104,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "UsersGroup", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1136,7 +1136,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Role] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Role] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Role", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1168,7 +1168,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.SubSystem] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.SubSystem] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "SubSystem", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1201,7 +1201,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Brand] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Brand] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Brand", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1233,7 +1233,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "GroupObjectsExploitation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1266,7 +1266,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "ObjectsExploitation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1302,7 +1302,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Catalog] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Catalog] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Catalog", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1340,7 +1340,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "BudgetItem", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1372,7 +1372,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Scenario] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Scenario] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Scenario", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1407,7 +1407,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "AcquiringTerminal", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1449,7 +1449,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.Bank] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Bank] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Bank", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1486,7 +1486,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "LoanTypes", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1518,7 +1518,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "ExchangeRates", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1550,7 +1550,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.Invoice] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.Invoice] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Invoice", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1601,7 +1601,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.Operation] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.Operation] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Operation", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1655,7 +1655,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.PriceList] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.PriceList] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "PriceList", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1691,7 +1691,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.Settings] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.Settings] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "Settings", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1729,7 +1729,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.UserSettings] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.UserSettings] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "UserSettings", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1771,7 +1771,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.WorkFlow] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.WorkFlow] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "WorkFlow", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1808,7 +1808,7 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Document.CashRequest] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Document.CashRequest] AS
         
       SELECT
         d.id, d.type, d.date, d.code, d.description "CashRequest", d.posted, d.deleted, d.isfolder, d.timestamp
@@ -1875,6 +1875,45 @@
       WHERE d.[type] = 'Document.CashRequest' 
       GO
       GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
+      GO
+      
+
+      CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "CashRequestRegistry", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type"
+        , CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+        , ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
+        , ISNULL("CashFlow".description, N'') "CashFlow.value", ISNULL("CashFlow".type, N'Catalog.CashFlow') "CashFlow.type"
+        , CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER) "CashFlow.id"
+        , ISNULL("BusinessDirection".description, N'') "BusinessDirection.value", ISNULL("BusinessDirection".type, N'Catalog.BusinessDirection') "BusinessDirection.type"
+        , CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER) "BusinessDirection.id"
+      
+      , ISNULL(l5.description, d.description) [CashRequestRegistry.Level5]
+      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequestRegistry.Level4]
+      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRequestRegistry.Level3]
+      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [CashRequestRegistry.Level2]
+      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [CashRequestRegistry.Level1]
+      FROM dbo.Documents d
+        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
+        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
+        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
+        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
+        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo."Documents" "parent" ON "parent".id = d."parent"
+        LEFT JOIN dbo."Documents" "user" ON "user".id = d."user"
+        LEFT JOIN dbo."Documents" "company" ON "company".id = d.company
+        LEFT JOIN dbo."Documents" "workflow" ON "workflow".id = CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER)
+        LEFT JOIN dbo."Documents" "CashFlow" ON "CashFlow".id = CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER)
+        LEFT JOIN dbo."Documents" "BusinessDirection" ON "BusinessDirection".id = CAST(JSON_VALUE(d.doc, N'$."BusinessDirection"') AS UNIQUEIDENTIFIER)
+      WHERE d.[type] = 'Document.CashRequestRegistry' 
+      GO
+      GRANT SELECT ON dbo.[Document.CashRequestRegistry] TO jetti;
       GO
       
     
