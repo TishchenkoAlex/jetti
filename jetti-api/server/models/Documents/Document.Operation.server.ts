@@ -8,6 +8,7 @@ import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
 import { DocumentCashRequestServer } from './Document.CashRequest.server';
+import { createDocument } from '../documents.factory';
 
 export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
@@ -69,8 +70,10 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
   }
 
   async baseOn(source: string, tx: MSSQL) {
+
     const rawDoc = await lib.doc.byId(source, tx);
     if (!rawDoc) return this;
+
     const sourceDoc = await createDocumentServer(rawDoc.type, rawDoc, tx);
 
     if (sourceDoc instanceof DocumentOperationServer) {
@@ -110,7 +113,6 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
   }
 
   async CashRequestbaseOn(sourceDoc: DocumentCashRequestServer, tx: MSSQL) {
-    
     this.company = sourceDoc.company;
     this.currency = sourceDoc.сurrency;
     this['CashFlow'] = sourceDoc.CashFlow;
@@ -120,7 +122,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this['Contract'] = sourceDoc.Contract;
     this.info = `На основании ${sourceDoc.description}`;
 
-    const BankAccountSupplier = await tx.oneOrNone<{ id: string }>( `SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${sourceDoc.CashRecipient}'`);
+    const BankAccountSupplier = await tx.oneOrNone<{ id: string }>(`
+      SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${sourceDoc.CashRecipient}'`);
 
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
@@ -129,29 +132,30 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
 
         const CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx))!;
         if (CashOrBank.type === 'Catalog.CashRegister') {
-          this.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; //касса
+          this.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; // касса
           this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
           this['CashRegister'] = CashOrBank.id;
           this.f1 = this['CashRegister'];
           this.f2 = this['Supplier'];
           this.f3 = this['CashFlow'];
         } else {
-          this.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9'; //С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
+          this.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9'; // С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
           this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
           this['BankAccountSupplier'] = BankAccountSupplier?.id;
           this['BankAccount'] = CashOrBank.id;
           this.f1 = this['BankAccount'];
           this.f2 = this['Supplier'];
           this.f3 = this['CashFlow'];
+
         }
         break;
       case 'Перечисление налогов и взносов':
       default:
         break;
     }
-
+    const Props = (await (createDocumentServer(this.type, this, tx))).Props();
+    this.Props = () => Props;
   }
-
 }
 
 // Operation = 'Оплата поставщику';
