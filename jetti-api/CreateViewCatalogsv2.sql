@@ -1819,6 +1819,7 @@
         , CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
         , ISNULL(JSON_VALUE(d.doc, N'$."Status"'), '') "Status"
         , ISNULL(JSON_VALUE(d.doc, N'$."Operation"'), '') "Operation"
+        , ISNULL(JSON_VALUE(d.doc, N'$."PaymentKind"'), '') "PaymentKind"
         , ISNULL("Department".description, N'') "Department.value", ISNULL("Department".type, N'Catalog.Department') "Department.type"
         , CAST(JSON_VALUE(d.doc, N'$."Department"') AS UNIQUEIDENTIFIER) "Department.id"
         , IIF("CashRecipient".id IS NULL, JSON_VALUE(d.doc, N'$."CashRecipient".id'), "CashRecipient".id) "CashRecipient.id"
@@ -1833,6 +1834,9 @@
         , IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".id'), "CashOrBank".id) "CashOrBank.id"
         , IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".value'), "CashOrBank".description) "CashOrBank.value"
         , IIF("CashOrBank".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBank".type'), "CashOrBank".type) "CashOrBank.type"
+        , IIF("CashOrBankIn".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBankIn".id'), "CashOrBankIn".id) "CashOrBankIn.id"
+        , IIF("CashOrBankIn".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBankIn".value'), "CashOrBankIn".description) "CashOrBankIn.value"
+        , IIF("CashOrBankIn".id IS NULL, JSON_VALUE(d.doc, N'$."CashOrBankIn".type'), "CashOrBankIn".type) "CashOrBankIn.type"
         , ISNULL(JSON_VALUE(d.doc, N'$."PayDay"'), '') "PayDay"
         , ISNULL(CAST(JSON_VALUE(d.doc, N'$."Amount"') AS NUMERIC(15,2)), 0) "Amount"
         , ISNULL("сurrency".description, N'') "сurrency.value", ISNULL("сurrency".type, N'Catalog.Currency') "сurrency.type"
@@ -1868,6 +1872,7 @@
         LEFT JOIN dbo."Documents" "CashFlow" ON "CashFlow".id = CAST(JSON_VALUE(d.doc, N'$."CashFlow"') AS UNIQUEIDENTIFIER)
         LEFT JOIN dbo."Documents" "Loan" ON "Loan".id = CAST(JSON_VALUE(d.doc, N'$."Loan"') AS UNIQUEIDENTIFIER)
         LEFT JOIN dbo."Documents" "CashOrBank" ON "CashOrBank".id = CAST(JSON_VALUE(d.doc, N'$."CashOrBank"') AS UNIQUEIDENTIFIER)
+        LEFT JOIN dbo."Documents" "CashOrBankIn" ON "CashOrBankIn".id = CAST(JSON_VALUE(d.doc, N'$."CashOrBankIn"') AS UNIQUEIDENTIFIER)
         LEFT JOIN dbo."Documents" "сurrency" ON "сurrency".id = CAST(JSON_VALUE(d.doc, N'$."сurrency"') AS UNIQUEIDENTIFIER)
         LEFT JOIN dbo."Documents" "ExpenseOrBalance" ON "ExpenseOrBalance".id = CAST(JSON_VALUE(d.doc, N'$."ExpenseOrBalance"') AS UNIQUEIDENTIFIER)
         LEFT JOIN dbo."Documents" "ExpenseAnalytics" ON "ExpenseAnalytics".id = CAST(JSON_VALUE(d.doc, N'$."ExpenseAnalytics"') AS UNIQUEIDENTIFIER)

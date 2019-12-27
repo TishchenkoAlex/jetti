@@ -43,13 +43,22 @@ export class DocumentCashRequest extends DocumentBase {
       'Оплата ДС в другую организацию',
       'Выдача ДС подотчетнику',
       'Оплата по кредитам и займам полученным',
-      'Выплата по ведомости',
       'Прочий расход ДС',
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту'
-      ]
+    ]
   })
   Operation = 'Оплата поставщику';
+
+  @Props({
+    type: 'enum', value: [
+      'BODY',
+      'PERCENT',
+      'SHARE',
+      'CUSTOM1'
+    ]
+  })
+  PaymentKind = 'BODY';
 
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
@@ -57,22 +66,41 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Types.CashRecipient', required: true })
   CashRecipient: Ref = null;
 
-  @Props({ type: 'Catalog.Contract', owner: [{ dependsOn: 'CashRecipient', filterBy: 'owner' }] })
+  @Props({
+    type: 'Catalog.Contract', required: true, owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'owner' },
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
   Contract: Ref = null;
 
   @Props({ type: 'Catalog.CashFlow', required: true })
   CashFlow: Ref = null;
 
-  @Props({ type: 'Catalog.Loan'})
+  @Props({
+    type: 'Catalog.Loan', owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'owner' },
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
   Loan: Ref = null;
 
-  @Props({ type: 'Types.CashOrBank',
-  owner: [
+  @Props({
+    type: 'Types.CashOrBank',
+    owner: [
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'сurrency', filterBy: 'currency' }
-  ]
-})
+    ]
+  })
   CashOrBank: Ref = null;
+
+  @Props({
+    type: 'Types.CashOrBank',
+    owner: [
+      { dependsOn: 'сurrency', filterBy: 'currency' }
+    ]
+  })
+  CashOrBankIn: Ref = null;
 
   @Props({ type: 'date' })
   PayDay = new Date();
@@ -83,7 +111,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true })
   сurrency: Ref = null;
 
-  @Props({ type: 'Types.ExpenseOrBalance'})
+  @Props({ type: 'Types.ExpenseOrBalance' })
   ExpenseOrBalance: Ref = null;
 
   @Props({ type: 'Catalog.Expense.Analytics' })

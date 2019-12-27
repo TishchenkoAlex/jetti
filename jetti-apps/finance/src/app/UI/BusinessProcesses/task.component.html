@@ -17,22 +17,22 @@
             </th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-ProcessParticipant>
+        <ng-template pTemplate="body" let-rowData>
           <tr>
-            <!-- <td *ngFor="let col of ProcessParticipantsFields" [ngStyle]="{'background-color': ProcessParticipant.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
+            <!-- <td *ngFor="let col of rowDatasFields" [ngStyle]="{'background-color': rowData.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
             <td *ngFor="let col of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;"
-              [ngSwitch]="col.type">
-              <span *ngSwitchCase="'datetime'">
-                <span *ngIf="ProcessParticipant[col.name].getFullYear() > 2000">
-                  {{ProcessParticipant[col.name] | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
-              <span *ngSwitchCase="'number'">{{ProcessParticipant[col.name] | number:'1.0'}}</span>
+              [ngSwitch]="col.type" >
+              <span *ngSwitchCase="'date'">
+                <span *ngIf="rowData[col.name].getFullYear() > 2000">
+                  {{rowData[col.name] | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
+              <span *ngSwitchCase="'number'">{{rowData[col.name] | number:'1.0'}}</span>
               <span *ngSwitchCase="'boolean'">
-                <i *ngIf="ProcessParticipant[col.name]" class="fa fa-check-square"></i>
-                <i *ngIf="!ProcessParticipant[col.name]" class="fa fa-square-o"></i>
+                <i *ngIf="rowData[col.name]" class="fa fa-check-square"></i>
+                <i *ngIf="!rowData[col.name]" class="fa fa-square-o"></i>
               </span>
-              <span *ngSwitchCase="'string'">{{ProcessParticipant[col.name]}}</span>
-              <span *ngSwitchDefault>{{ProcessParticipant[col.name].value}}</span>
-              <!-- <h1 *ngIf="col.visible" {{ProcessParticipant[col.name]}}></h1>                          -->
+              <span *ngSwitchCase="'string'">{{rowData[col.name]}}</span>
+              <span *ngSwitchDefault>{{rowData[col.name]}}</span>
+              <!-- <h1 *ngIf="col.visible" {{rowData[col.name]}}></h1>                          -->
             </td>
           </tr>
         </ng-template>
