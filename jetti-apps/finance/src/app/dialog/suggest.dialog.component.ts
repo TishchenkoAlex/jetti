@@ -58,7 +58,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   constructor(private api: ApiService, public ds: DocService, public lds: LoadingService,
-    public route: ActivatedRoute, public router: Router,) { }
+    public route: ActivatedRoute, public router: Router) { }
 
   ngOnInit() {
     const columns: ColumnDef[] = [];
@@ -97,6 +97,19 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
       .subscribe(event => this._update(event.col, event.event, event.center));
 
+    this._docSubscription$ = merge(...[
+      this.ds.delete$]).pipe(
+        filter(doc => doc && doc.type === this.type))
+      .subscribe(doc => {
+        const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
+        if (exist) {
+          this.dataSource.refresh(exist.id);
+          this.sid = { id: exist.id };
+        } else {
+          this.dataSource.goto(doc.id);
+          this.sid = { id: doc.id };
+        }
+      });
   }
 
   private setFilters() {
@@ -146,11 +159,6 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this.Select.emit(selection);
   }
 
-  ngOnDestroy() {
-    this._debonceSubscription$.unsubscribe();
-    this.debonce$.complete();
-  }
-
   parentChange(event) {
     this.id = null;
     this.filters['parent'] = {
@@ -178,27 +186,29 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this.Close.emit();
     const id = v1().toUpperCase();
     this.router.navigate([this.type, id],
-      { queryParams: { new: id, ...this.buildFiltersParamQuery(), uuid: this.uuid} });
+      { queryParams: { new: id, ...this.buildFiltersParamQuery(), uuid: this.uuid } });
   }
 
   copy() {
     this.Close.emit();
     this.router.navigate([this.selection[0].type, v1().toUpperCase()],
-      { queryParams: { copy: this.selection[0].id , uuid: this.uuid} });
-  }
-
-  copyTo(type: DocTypes) {
-    this.router.navigate([type, v1().toUpperCase()],
-      { queryParams: { base: this.selection[0].id } });
+      { queryParams: { copy: this.selection[0].id, uuid: this.uuid } });
   }
 
   open() {
     this.Close.emit();
     this.router.navigate([this.selection[0].type, this.selection[0].id],
-      { queryParams: { uuid: this.uuid} });
+      { queryParams: { uuid: this.uuid } });
   }
 
   delete() {
     this.selection.forEach(el => this.ds.delete(el.id));
   }
+
+  ngOnDestroy() {
+    this._debonceSubscription$.unsubscribe();
+    this.debonce$.complete();
+    this._docSubscription$.unsubscribe();
+  }
+
 }
