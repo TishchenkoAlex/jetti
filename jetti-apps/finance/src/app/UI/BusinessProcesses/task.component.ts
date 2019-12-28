@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { BPApi } from 'src/app/services/bpapi.service';
 import { Task, ProcessParticipants, FieldProp } from './task.object';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   templateUrl: 'task.component.html',
@@ -29,10 +30,10 @@ export class TaskComponent implements OnInit {
   }
 
   loadMap() {
-    this.mapImgSrc = `http://35.204.78.79/JettiProcesses/hs/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=${this.getProcessID}`;
+    this.mapImgSrc = `${environment.BPAPI}/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=${this.getProcessID}`;
   }
 
-  public loadProcessParticipants() {
+  async loadProcessParticipants() {
     this.ProcessParticipantsFields = ProcessParticipants.getFields();
     this._ProcessParticipants$ = this.bpAPI.GetParticipantsByProcessID(this.getProcessID);
   }

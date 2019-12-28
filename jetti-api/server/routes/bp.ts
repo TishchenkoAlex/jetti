@@ -4,46 +4,41 @@ import { NextFunction, Request, Response } from 'express';
 import { SDB } from './middleware/db-sessions';
 import { User } from './user.settings';
 import axios from 'axios';
+import { bpApiHost } from '../env/environment';
 
 export const router = express.Router();
 
 router.get('/BP/GetUserTasksByMail', async (req: Request, res: Response, next: NextFunction) => {
   try {
-
     const email = User(req).email;
-    // return res.json(email);
-    const instance = axios.create({ baseURL: 'http://35.204.78.79' });
-    const query = `/JettiProcesses/hs/Query/pwd/GetUserTasksByMail?UserMail=${email}&CountOfCompleted=${req.query.CountOfCompleted}`;
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Query/pwd/GetUserTasksByMail?UserMail=${email}&CountOfCompleted=${req.query.CountOfCompleted}`;
     return res.json((await instance.get(query)).data);
-
   } catch (err) { next(err); }
 });
 
 router.post('/BP/CompleteTask', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const instance = axios.create({ baseURL: 'http://35.204.78.79' });
-    const query = `/JettiProcesses/hs/Tasks/pwd/CompleteTask`;
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Tasks/pwd/CompleteTask`;
     req.body.UserID = User(req).email;
     return res.json((await instance.post(query, req.body)).data);
-
   } catch (err) { next(err); }
 });
 
 router.get('/BP/GetUsersByProcessID', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const instance = axios.create({ baseURL: 'http://35.204.78.79' });
-    const query = `/JettiProcesses/hs/Processes/pwd/GetUsersByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/GetUsersByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
     return res.json((await instance.get(query)).data);
-
   } catch (err) { next(err); }
 });
 
 router.get('/BP/GetMapByProcessID', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const instance = axios.create({ baseURL: 'http://35.204.78.79' });
-    const query = `/JettiProcesses/hs/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/GetMapByProcessID/CashApplication?ProcessID=${req.query.ProcessID}`;
     return (await instance.get(query)).data;
-
   } catch (err) { next(err); }
 });
 
@@ -51,10 +46,9 @@ router.get('/BP/GetMapByProcessID', async (req: Request, res: Response, next: Ne
 
 router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const instance = axios.create({ baseURL: 'http://35.204.78.79' });
-    const query = `/JettiProcesses/hs/Processes/pwd/StartProcess/CashApplication`;
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/StartProcess/CashApplication`;
     return res.json((await instance.post(query, req.body)).data);
-
   } catch (err) { next(err); }
 });
 
@@ -80,9 +74,7 @@ router.get('/CashRequestDesktop', async (req: Request, res: Response, next: Next
     LEFT JOIN Documents [CashOrBank] ON [CashOrBank].id =r.[CashOrBank]
     LEFT JOIN Documents [CashRecipient] ON [CashRecipient].id =r.[CashRecipient]
     LEFT JOIN Documents [currency] ON [currency].id =r.[currency]`;
-
     const result = await sdb.manyOrNone(query);
     return res.json(result);
-
   } catch (err) { next(err); }
 });
