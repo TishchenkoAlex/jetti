@@ -56,6 +56,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
+  private uuid = this.route.snapshot.queryParams.uuid;
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore) { }
@@ -183,6 +184,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     this._descriptionSubscription$.unsubscribe();
     this._saveCloseSubscription$.unsubscribe();
     this._postSubscription$.unsubscribe();
+    this.ds.showDialog(this.uuid, this.model);
   }
 
 }

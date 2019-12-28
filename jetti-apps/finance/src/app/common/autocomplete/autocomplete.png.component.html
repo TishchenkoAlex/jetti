@@ -86,13 +86,13 @@
   <p-header>
     {{this.placeholder}}
   </p-header>
-  <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [settings]="filters" (Select)="searchComplete($event)">
+  <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
   </j-suggest-list>
   <p-footer>
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-          [disabled]="sl.selection?.length !== 1" (click)="sl.open(sl.selection[0])"></button>
+          [disabled]="sl.selection?.length !== 1" (click)="sl.select(sl.selection[0])"></button>
       </div>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"
