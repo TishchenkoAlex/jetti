@@ -21,6 +21,9 @@ export class RegisterInfoCounterpartiePriceList extends RegisterInfo {
   @Props({ type: 'Catalog.Company', required: true, unique: true, order: 2 })
   company: Ref = null;
 
+  @Props({ type: 'Catalog.Product', required: true, dimension: true })
+  Product: Ref = null;
+
   @Props({ type: 'number', resource: true })
   Price = 0;
 
