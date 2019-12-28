@@ -2,9 +2,9 @@ import * as Queue from 'bull';
 import { ColumnDef } from './column';
 import { DocumentOptions, Ref } from './document';
 import { AllDocTypes, AllTypes } from './documents.types';
-import { RoleType } from './Roles/Base';
 import { FormListFilter, FormListOrder, FormListSettings } from './user.settings';
 
+export interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }
 
 export interface DocListRequestBody {
   id: string; type: AllDocTypes; command: string; count: number; offset: number;
@@ -76,7 +76,7 @@ export interface IJWTPayload {
   email: string;
   description: string;
   isAdmin: boolean;
-  roles: RoleType[];
+  roles: any[];
   env: { [x: string]: string };
 }
 

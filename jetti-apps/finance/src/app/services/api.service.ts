@@ -9,7 +9,6 @@ import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/
 import { AllDocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
 import { RegisterInfo } from '../../../../../jetti-api/server/models/Registers/Info/RegisterInfo';
-import { getRoleObjects, RoleType } from '../../../../../jetti-api/server/models/Roles/Base';
 import { FormListFilter, FormListOrder, FormListSettings, UserDefaultsSettings } from '../../../../../jetti-api/server/models/user.settings';
 import { environment } from '../../environments/environment';
 import { IComplexObject } from '../common/dynamic-form/dynamic-form-base';
@@ -148,13 +147,6 @@ export class ApiService {
     return (this.http.get<any[]>(query));
   }
 
-  getUserRoles() {
-    const query = `${environment.api}user/roles`;
-    return this.http.get<RoleType[]>(query).pipe(
-      map(data => ({ roles: data as RoleType[] || [], Objects: getRoleObjects(data) }))
-    );
-  }
-
   valueChanges(doc: DocumentBase, property: string, value: string) {
     const apiDoc = mapToApi(doc);
     const query = `${environment.api}valueChanges/${doc.type}/${property}`;
@@ -202,7 +194,6 @@ export class ApiService {
 
   SubSystemsMenu() {
     const query = `${environment.auth}subsystems/menu`;
-    // tslint:disable-next-line: deprecation
     return this.http.get<MenuItem[]>(query);
   }
 }

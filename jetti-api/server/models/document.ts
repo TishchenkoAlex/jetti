@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
-import { RegisterAccumulationTypes } from './Registers/Accumulation/factory';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
 export interface ICommand { command: string; label: string; color?: string; icon: string; }
