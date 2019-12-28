@@ -75,7 +75,6 @@ router.get('/CashRequestDesktop', async (req: Request, res: Response, next: Next
     LEFT JOIN Documents [CashRecipient] ON [CashRecipient].id =r.[CashRecipient]
     LEFT JOIN Documents [currency] ON [currency].id =r.[currency]`;
     const result = await sdb.manyOrNone(query);
-    console.log(result);
     return res.json(result);
   } catch (err) { next(err); }
 });

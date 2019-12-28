@@ -54,6 +54,7 @@ import { CatalogBusinessDirection } from './Catalogs/Catalog.BusinessDirection';
 import { DocumentWorkFlow } from './Documents/Document.WokrFlow';
 import { DocumentCashRequest } from './Documents/Document.CashRequest';
 import { CatalogLoanTypes } from './Catalogs/Catalog.LoanTypes';
+import { DocumentCashRequestRegistry } from './Documents/Document.CashRequestRegistry';
 
 
 export interface INoSqlDocument {
@@ -162,5 +163,6 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Document.UserSettings', Class: DocumentUserSettings },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlow },
   { type: 'Document.CashRequest', Class: DocumentCashRequest },
+  { type: 'Document.CashRequestRegistry', Class: DocumentCashRequestRegistry },
 ];
 

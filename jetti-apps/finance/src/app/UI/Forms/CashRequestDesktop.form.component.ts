@@ -107,7 +107,7 @@ export class CashRequestDesktopComponent {
     model['CashRequests'] = this.selectedRows.map(e => (
       { CashRequest: { code: '', id: e.CashRequest, type: 'Document.CasheRequest', value: '' } }
     ));
-    this.ds.api.execute('Form.CashRequestDesktop', 'Create', model).pipe(take(1)).subscribe(d => { console.log(d); });
+    this.ds.api.execute('Form.CashRequestDesktop', 'Create', model).pipe(take(1)).subscribe(d => {  });
   }
 
   onEditableChanged(column, event, index, rowData) {
@@ -122,19 +122,15 @@ export class CashRequestDesktopComponent {
     }
     let sumToPay = 0;
     this.selectedRows.forEach(e => { sumToPay += Number(e.AmountToPay); });
-    console.log(sumToPay);
   }
 
   onRowEditInit(rowData) {
-    console.log(rowData);
   }
 
   onRowEditSave(rowData) {
-    console.log(rowData);
   }
 
   onRowEditCancel(rowData, index: number) {
-    console.log(rowData);
   }
 
 }

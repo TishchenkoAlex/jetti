@@ -57,7 +57,8 @@ export type DocumentTypes =
   'Document.Settings' |
   'Document.UserSettings' |
   'Document.CashRequest' |
-  'Document.WorkFlow';
+  'Document.WorkFlow' |
+  'Document.CashRequestRegistry';
 
   export type ProcessTypes =
   'BusinessProcess.CashRequestApproving';

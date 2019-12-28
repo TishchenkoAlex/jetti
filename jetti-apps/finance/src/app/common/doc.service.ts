@@ -38,6 +38,9 @@ export class DocService {
   private readonly _do$ = new Subject<DocumentBase>();
   do$ = this._do$.asObservable();
 
+  private readonly _showDialog$ = new Subject<{uuid: string, doc: DocumentBase}>();
+  showDialog$ = this._showDialog$.asObservable();
+
   private readonly _workflow$ = new Subject<DocumentBase>();
   workflow$ = this._workflow$.asObservable();
 
@@ -89,6 +92,10 @@ export class DocService {
 
   openSnackBar(severity: string, summary: string, detail: string) {
     this.messageService.add({ severity, summary, detail, key: '1' });
+  }
+
+  showDialog(uuid: string, doc: DocumentBase) {
+    this._showDialog$.next({uuid, doc});
   }
 
 }

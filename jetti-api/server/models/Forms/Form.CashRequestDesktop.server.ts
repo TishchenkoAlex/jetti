@@ -33,7 +33,6 @@ export default class CashRequestDesktopServer extends CashRequestDesktop impleme
       OperationObjectServer.code = code;
       await insertDocument(OperationObjectServer, sdbq);
       await postDocument(OperationObjectServer, sdbq);
-      console.log(OperationObjectServer);
     }
   }
 }
