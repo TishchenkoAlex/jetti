@@ -289,6 +289,7 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
 
       const docModule: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule'][command];
       if (typeof docModule === 'function') await docModule(args);
+      if (serverDoc.onCommand) serverDoc.onCommand(command, args, tx);
 
       const view = await buildViewModel(serverDoc, tx);
       res.json(view);

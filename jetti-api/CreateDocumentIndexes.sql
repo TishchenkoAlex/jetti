@@ -164,6 +164,11 @@
     ON [dbo].[Documents]([description],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='Catalog.SubSystem')
+    DROP INDEX IF EXISTS [Catalog.JobTitle] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='Catalog.JobTitle')
     DROP INDEX IF EXISTS [Catalog.Brand] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand]
     ON [dbo].[Documents]([description],[id],[parent])

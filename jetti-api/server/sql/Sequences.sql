@@ -54,3 +54,6 @@ CREATE SEQUENCE [dbo].[Sq.Catalog.AcquiringTerminal] START WITH 0
 GO
 GRANT UPDATE ON [dbo].[Sq.Catalog.AcquiringTerminal] TO [jetti];
 GO
+CREATE SEQUENCE [dbo].[Sq.Catalog.JobTitle] START WITH 0
+GO
+GRANT UPDATE ON [dbo].[Sq.Catalog.JobTitle] TO [jetti];

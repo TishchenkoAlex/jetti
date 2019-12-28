@@ -84,6 +84,18 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
 
     this.initCopyTo();
+
+    if (this.form['metadata']['commands'] instanceof Array) {
+      const commands = [...this.form['metadata']['commands']];
+      this.form['metadata']['commands'] = [];
+      for (const command of commands) {
+        const item: MenuItem = {
+          label: command.label, icon: command.icon,
+          command: () => this.commandOnSever(command.command)
+        };
+        this.form['metadata']['commands'].push(item);
+      }
+    }
   }
 
   showDescription() {
@@ -160,7 +172,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   commandOnSever(method: string) {
     this.ds.api.onCommand(this.form.value, method, {}).then(value => {
       this.form.patchValue(value || {}, patchOptionsNoEvents);
-      this.form.markAsDirty();
+      this.cd.markForCheck();
     });
   }
 

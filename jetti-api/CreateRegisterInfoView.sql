@@ -118,3 +118,22 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.CounterpartiePriceList]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , ISNULL(JSON_VALUE(data, '$.Scenario'), '') "Scenario"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Counterpartie"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Counterpartie"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."Product"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Product"
+        , ISNULL(CAST(JSON_VALUE(data, N'$.Price') AS MONEY), 0) "Price"
+        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.CounterpartiePriceList';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.CounterpartiePriceList] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.CounterpartiePriceList] ON [dbo].[Register.Info.CounterpartiePriceList](
+      date,company,id
+    )
+    GO
+    
