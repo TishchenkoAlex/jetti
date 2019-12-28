@@ -36,8 +36,8 @@ export default async function (job: Queue.Job) {
       while (offset < count) {
         for (let i = 0; i < 50; i++) {
           if (!docs[offset]) break;
-            const q = lib.doc.postById(docs[offset].id, sdbq);
-            TaskList.push(q);
+          const q = lib.doc.postById(docs[offset].id, sdbq);
+          TaskList.push(q);
           offset = offset + 1;
         }
         await Promise.all(TaskList);
