@@ -1,4 +1,5 @@
 const domain = 'https://sm.jetti-app.com';
+const BPAPI = 'https://bp.x100-group.com/JettiProcesses/hs';
 
 export const environment = {
   production: true,
@@ -7,6 +8,7 @@ export const environment = {
   socket: domain,
   host: domain,
   path: '',
+  BPAPI
 };
 
 export const OAuthSettings = {
