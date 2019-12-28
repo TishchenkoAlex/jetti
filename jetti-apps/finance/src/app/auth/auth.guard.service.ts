@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
-import { RoleObject, RoleType } from '../../../../../jetti-api/server/models/Roles/Base';
 import { AuthService } from '../auth/auth.service';
 import { ApiService } from './../services/api.service';
 
