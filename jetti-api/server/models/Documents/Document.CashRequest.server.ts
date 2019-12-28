@@ -11,6 +11,9 @@ import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToP
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogCurrency } from '../Catalogs/Catalog.Currency';
 import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
+import { CatalogContract } from '../Catalogs/Catalog.Contract';
+import { RefValue } from '../common-types';
+import { CatalogCounterpartieBankAccount } from '../Catalogs/Catalog.Counterpartie.BankAccount';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -23,6 +26,28 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         return { currency };
       case 'CashFlow':
         return {};
+      case 'CashRecipient':
+        const emptyContract: RefValue = { code: '', id: '', type: 'Catalog.Contract', value: '' };
+        if (!value.id) { return { Contract: emptyContract }; }
+        const query = `
+          SELECT TOP 1 id
+          FROM dbo.[Catalog.Contract]
+          WHERE
+          [owner.id] = '${value.id}'
+          and [currency.id] = '${this.сurrency}'
+          and [company.id] = '${this.company}'
+          ORDER BY isDefault desc`;
+        const contractId = await tx.oneOrNone<{ id: string }>(query);
+        if (!contractId) { return { Contract: emptyContract }; }
+        const Contract = await lib.doc.formControlRef(contractId!.id, tx);
+        return { Contract };
+      case 'Contract':
+        const emptyCatalogContract: RefValue = { code: '', id: '', type: 'Catalog.Counterpartie.BankAccount', value: '' };
+        const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
+        if (!CatalogContractObject) { return { CashRecipientBankAccount: emptyCatalogContract }; }
+        const CashRecipientBankAccount = await lib.doc.formControlRef(CatalogContractObject.BankAccount, tx);
+        if (!CashRecipientBankAccount) { return { CashRecipientBankAccount: emptyCatalogContract }; }
+        return { CashRecipientBankAccount };
       default:
         return {};
     }

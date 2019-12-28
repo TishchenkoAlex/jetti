@@ -31,7 +31,7 @@ export interface JTL {
     byCode: (type: DocTypes, code: string, tx: MSSQL) => Promise<string | null>;
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
-    formControlRef: (id: string, tx: MSSQL) => Promise<RefValue | null>;
+    formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
@@ -138,7 +138,7 @@ async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
   return '';
 }
 
-async function formControlRef(id: string, tx: MSSQL): Promise<RefValue | null> {
+async function formControlRef(id: Ref, tx: MSSQL): Promise<RefValue | null> {
   const result = await tx.oneOrNone<RefValue>(`
     SELECT "id", "code", "description" as "value", "type" FROM "Documents" WHERE id = '${id}'`);
   return result;

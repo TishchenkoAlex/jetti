@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BPApi } from 'src/app/services/bpapi.service';
-import { Task, ProcessParticipants, FieldProp } from './task.object';
+import { ITask, ProcessParticipants, IFieldProp } from './task.object';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class TaskComponent implements OnInit {
 
-  @Input() Task: Task;
+  @Input() Task: ITask;
   @Input() ProcessID: string;
 
   get showProp() { return false; }
@@ -19,12 +19,12 @@ export class TaskComponent implements OnInit {
   }
 
   mapImgSrc = '';
-  ProcessParticipantsFields: FieldProp[];
+  ProcessParticipantsFields: IFieldProp[];
   _ProcessParticipants$: Observable<ProcessParticipants>;
 
   ngOnInit() {
     this.loadProcessParticipants();
-  }
+    }
 
   constructor(public bpAPI: BPApi) {
   }

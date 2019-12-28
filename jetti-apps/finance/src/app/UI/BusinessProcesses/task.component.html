@@ -11,28 +11,28 @@
       <p-table  [value]="_ProcessParticipants$ | async" [resizableColumns]="true">
         <ng-template pTemplate="header">
           <tr>
-            <th *ngFor="let col of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;">
-              {{col.label}}
-              <!-- <span *ngIf="col.visible" title=""></span> -->
+            <th *ngFor="let column of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;" [ngStyle] = "column.style">
+              {{column.label}}
+              <!-- <span *ngIf="column.visible" title=""></span> -->
             </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData>
           <tr>
-            <!-- <td *ngFor="let col of rowDatasFields" [ngStyle]="{'background-color': rowData.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
-            <td *ngFor="let col of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;"
-              [ngSwitch]="col.type" >
+            <!-- <td *ngFor="let column of rowDatasFields" [ngStyle]="{'background-columnor': rowData.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
+            <td *ngFor="let column of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;"
+              [ngSwitch]="column.type" [ngStyle] = "column.style">
               <span *ngSwitchCase="'date'">
                 <span >
-                  {{rowData[col.name] | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
-              <span *ngSwitchCase="'number'">{{rowData[col.name] | number:'1.0'}}</span>
+                  {{rowData[column.name]  || ''  | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
+              <span *ngSwitchCase="'number'">{{rowData[column.name] | number:'1.0'}}</span>
               <span *ngSwitchCase="'boolean'">
-                <i *ngIf="rowData[col.name]" class="fa fa-check-square"></i>
-                <i *ngIf="!rowData[col.name]" class="fa fa-square-o"></i>
+                <i *ngIf="rowData[column.name]" class="fa fa-check-square"></i>
+                <i *ngIf="!rowData[column.name]" class="fa fa-square-o"></i>
               </span>
-              <span *ngSwitchCase="'string'">{{rowData[col.name]}}</span>
-              <span *ngSwitchDefault>{{rowData[col.name]}}</span>
-              <!-- <h1 *ngIf="col.visible" {{rowData[col.name]}}></h1>                          -->
+              <span *ngSwitchCase="'string'">{{rowData[column.name]  || '' }}</span>
+              <span *ngSwitchDefault>{{rowData[column.name]}}</span>
+              <!-- <h1 *ngIf="column.visible" {{rowData[column.name]}}></h1>                          -->
             </td>
           </tr>
         </ng-template>

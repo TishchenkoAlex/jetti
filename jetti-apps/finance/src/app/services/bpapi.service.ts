@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Task, ProcessParticipants } from 'src/app/UI/BusinessProcesses/task.object';
+import { ITask, ProcessParticipants, ITaskCompleteResult } from 'src/app/UI/BusinessProcesses/task.object';
 import { environment } from '../../environments/environment';
 import { take } from 'rxjs/operators';
 import { DocumentTypes } from '../../../../../jetti-api/server/models/documents.types';
@@ -11,21 +11,19 @@ export class BPApi {
 
   constructor(private http: HttpClient) { }
 
-  GetTasks(CountOfCompleted: number): Observable<Task[]> {
+  GetTasks(CountOfCompleted: number): Observable<ITask[]> {
     const query = `${environment.api}/BP/GetUserTasksByMail?CountOfCompleted=${CountOfCompleted}`;
-    return this.http.get<Task[]>(query);
+    return this.http.get<ITask[]>(query);
   }
 
-  CompleteTask(TaskID: number, UserDecisionID: number, Comment?: string): string {
+  CompleteTask(TaskID: number, UserDecisionID: number, Comment?: string): Observable<ITaskCompleteResult> {
     const query = `${environment.api}BP/CompleteTask`;
     const body = {
       'TaskID': TaskID,
       'UserDecision': UserDecisionID.toString(),
       'Comment': Comment,
       'UserID': ''};
-    let result = '';
-    this.http.post<string>(query, body).pipe(take(1)).subscribe(errMessage => { result = errMessage; });
-    return result;
+    return this.http.post<ITaskCompleteResult>(query, body);
   }
 
   GetMapByProcessID(ProcessID): Observable<Blob> {
@@ -49,7 +47,8 @@ export class BPApi {
         'OperationTypeID': Base.Operation,
         'AuthorID': Base.user.code,
         'DocumentID': Base.id,
-        'Comment': Base.info
+        'Comment': Base.info,
+        'BaseType': BaseType
       };
     }
     return this.http.post<string>(query, body);

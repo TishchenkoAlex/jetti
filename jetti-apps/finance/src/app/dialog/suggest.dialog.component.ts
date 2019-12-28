@@ -50,7 +50,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   showTree = false;
-  showTreeButton = true;
+  showTreeButton = false;
   dataSource: ApiDataSource;
 
   private _docSubscription$: Subscription = Subscription.EMPTY;
@@ -78,9 +78,10 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       });
     });
     this.columns = [...columns.filter(c => !c.hidden)];
-
-    this.showTree = (this.doc.Prop() as DocumentOptions).hierarchy === 'folders';
-    this.showTreeButton = this.showTree;
+    if (this.doc) {
+      this.showTree = (this.doc.Prop() as DocumentOptions).hierarchy === 'folders';
+      this.showTreeButton = this.showTree;
+    }
 
     this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     this.setSortOrder();

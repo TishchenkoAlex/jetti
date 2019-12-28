@@ -1,40 +1,18 @@
-export interface FieldProp {
+export interface IFieldProp {
   name: string;
   label: string;
   visible: boolean;
-  style: string;
+  style: {};
   type: string;
 }
 
-export class ProcessParticipants {
-
-  Согласующий = '';
+export interface ITaskCompleteResult {
   Completed: boolean;
-  Роль = '';
-  ШагСогласования: number;
-  ДатаВыполнения: Date;
-  Комментарий = '';
-  Решение = '';
-  ПроцессНомер;
-  ЗадачаДата: Date;
-  ЗадачаНомер: number;
-  Current: boolean;
-  КонтрольныйСрок: Date;
-  ПросроченоЧасов: number;
-
-  public static getFields(): FieldProp[] {
-    return [{ name: 'ШагСогласования', label: 'Шаг', visible: true, style: 'width: 2em;', type: 'number' },
-    { name: 'Согласующий', label: 'Согласующий', visible: true, style: 'width: 10em;', type: 'string' },
-    { name: 'Роль', label: 'Роль', visible: true, style: 'width: 10em;', type: 'string' },
-    { name: 'ДатаВыполнения', label: 'Выполнена', visible: true, style: 'width: 10em;', type: 'date' },
-    { name: 'Решение', label: 'Решение', visible: true, style: 'width: 8em;', type: 'string' },
-    { name: 'КонтрольныйСрок', label: 'Срок', visible: true, style: 'width: 8em;', type: 'date' },
-    { name: 'ПросроченоЧасов', label: 'Просрочено, ч', visible: true, style: 'width: 3em;', type: 'number' },
-    { name: 'Комментарий', label: 'Комментарий', visible: true, style: 'width: 20em;', type: 'string' }];
-  }
+  TaskID: number;
+  ErrorMessage: string;
 }
 
-export interface Task {
+export interface ITask {
 
   TaskName: string;
   TaskID: number;
@@ -56,5 +34,34 @@ export interface Task {
   CurrentTask: boolean;
   Detailed: boolean;
   BaseDocumentID: string;
+  baseType: string;
+  baseId: string;
+}
 
+export class ProcessParticipants {
+
+  Согласующий = '';
+  Completed: boolean;
+  Роль = '';
+  ШагСогласования: number;
+  ДатаВыполнения: Date;
+  Комментарий = '';
+  Решение = '';
+  ПроцессНомер;
+  ЗадачаДата: Date;
+  ЗадачаНомер: number;
+  Current: boolean;
+  КонтрольныйСрок: Date;
+  ПросроченоЧасов: number;
+
+  public static getFields(): IFieldProp[] {
+    return [{ name: 'ШагСогласования', label: 'Шаг', visible: true, style: { 'width' : '5em'} , type: 'number' },
+    { name: 'Согласующий', label: 'Согласующий', visible: true, style: { 'width' : '15em'} , type: 'string' },
+    { name: 'Роль', label: 'Роль', visible: true, style: { 'width' : '12em'}, type: 'string' },
+    { name: 'ДатаВыполнения', label: 'Выполнена', visible: true, style: { 'width' : '10em'}, type: 'date' },
+    { name: 'Решение', label: 'Решение', visible: true, style: { 'width' : '8em'}, type: 'string' },
+    { name: 'КонтрольныйСрок', label: 'Срок', visible: true, style: { 'width' : '10em'}, type: 'date' },
+    { name: 'ПросроченоЧасов', label: 'Просрочено, ч', visible: true, style: { 'width' : '5em'}, type: 'number' },
+    { name: 'Комментарий', label: 'Комментарий', visible: true, style: { 'width' : '15em'}, type: 'string' }];
+  }
 }

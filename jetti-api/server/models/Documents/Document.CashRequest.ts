@@ -72,11 +72,11 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'Types.CashRecipient', required: true })
+  @Props({ type: 'Types.CashRecipient', required: true, onChangeServer: true })
   CashRecipient: Ref = null;
 
   @Props({
-    type: 'Catalog.Contract', required: true, owner: [
+    type: 'Catalog.Contract', required: true, onChangeServer: true, owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'currency', filterBy: 'currency' }]
