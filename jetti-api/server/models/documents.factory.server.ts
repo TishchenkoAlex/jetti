@@ -16,6 +16,7 @@ import { MSSQL } from '../mssql';
 import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
 import { DocumentCashRequestServer } from './Documents/Document.CashRequest.server';
 import { PostResult } from './post.interfaces';
+import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequestRegistry.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -49,6 +50,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
   { type: 'Document.CashRequest', Class: DocumentCashRequestServer },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlowServer },
+  { type: 'Document.CashRequestRegistry', Class: DocumentCashRequestRegistryServer }
 ];
 
 export async function createDocumentServer<T extends DocumentBaseServer>

@@ -55,6 +55,7 @@ import { DocumentWorkFlow } from './Documents/Document.WokrFlow';
 import { DocumentCashRequest } from './Documents/Document.CashRequest';
 import { CatalogLoanTypes } from './Catalogs/Catalog.LoanTypes';
 import { DocumentCashRequestRegistry } from './Documents/Document.CashRequestRegistry';
+import { CatalogJobTitle } from './Catalogs/Catalog.JobTitle';
 
 
 export interface INoSqlDocument {
@@ -138,6 +139,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.UsersGroup', Class: CatalogUsersGroup },
   { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
+  { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },

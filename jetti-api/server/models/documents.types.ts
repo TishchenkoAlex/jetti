@@ -45,7 +45,8 @@ export type CatalogTypes =
   'Catalog.Counterpartie.BankAccount' |
   'Catalog.Contract' |
   'Catalog.LoanTypes' |
-  'Catalog.BusinessDirection'
+  'Catalog.BusinessDirection' |
+  'Catalog.JobTitle'
   ;
 
 export type DocumentTypes =
