@@ -59,7 +59,12 @@ export class OperationFormComponent implements AfterViewInit {
       this.form['metadata']['commands'].push(item);
     }
 
-    this.Operation.valueChanges.pipe(take(1)).subscribe(async v => await this.update(v));
+    this.Operation.valueChanges.pipe(take(1)).subscribe(async v => {
+      await this.update(v);
+      this.super.initForm(this.form);
+      this.super.form = this.form;
+      setTimeout(() => this.super.cd.detectChanges());
+    });
   }
 
   update = async (value) => {
