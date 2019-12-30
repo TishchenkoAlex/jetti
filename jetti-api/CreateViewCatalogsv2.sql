@@ -266,6 +266,7 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL("workflow".description, N'') "workflow.value", ISNULL("workflow".type, N'Document.WorkFlow') "workflow.type"
         , CAST(JSON_VALUE(d.doc, N'$."workflow"') AS UNIQUEIDENTIFIER) "workflow.id"
+        , ISNULL(JSON_VALUE(d.doc, N'$."kind"'), '') "kind"
         , ISNULL(JSON_VALUE(d.doc, N'$."FullName"'), '') "FullName"
         , ISNULL("currency".description, N'') "currency.value", ISNULL("currency".type, N'Catalog.Currency') "currency.type"
         , CAST(JSON_VALUE(d.doc, N'$."currency"') AS UNIQUEIDENTIFIER) "currency.id"

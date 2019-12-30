@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BPApi } from 'src/app/services/bpapi.service';
 import { take, debounceTime } from 'rxjs/operators';
 import { SelectItem, SortMeta } from 'primeng/api';
@@ -16,6 +16,7 @@ import { ITask } from './task.object';
 @Component({
   templateUrl: 'tasks-list.component.html',
   selector: 'bp-tasks-list',
+  // changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('rowExpansionTrigger', [
       state('void', style({
@@ -41,12 +42,12 @@ export class TaskListComponent implements OnInit {
   columnsLength: number;
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
+  TaskComp = false;
 
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
-  constructor(public TaskService: BPApi, public ds: DocService, public router: Router) {
-
+  constructor(public TaskService: BPApi, public ds: DocService, public router: Router, public cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -122,7 +123,7 @@ export class TaskListComponent implements OnInit {
     this.Tasks$ = this.TaskService.GetTasks(20);
   }
 
-  async CompleteTask(task: ITask, UserDecisionID: number) {
+  CompleteTask(task: ITask, UserDecisionID: number) {
     if (UserDecisionID > 0 && !task.DecisionComment) {
       this.ds.openSnackBar('error', 'Задача не выполнена', `Укажите причину ${UserDecisionID === 1 ? ' отклонения ' : ' доработки'}`);
       return;
@@ -133,19 +134,18 @@ export class TaskListComponent implements OnInit {
         if (res.ErrorMessage) {
           this.ds.openSnackBar('error', 'Ошибка выполнения задачи', res.ErrorMessage);
         } else {
-          this.ds.openSnackBar('success', 'Задача выполнена', `${task.TaskName} №${task.TaskID} выполнена!`);
-          this.Tasks$.subscribe(r => { console.log(r); });
           task.DecisionComment = '';
           task.Completed = true;
           task.CanApprove = false;
           task.CanModify = false;
           task.CanReject = false;
           task.UserDecision = UserDecisionID === 0 ? 'Утвердить' : UserDecisionID === 1 ? 'Отклонить' : 'Доработать';
+          this.ds.openSnackBar('success', 'Задача выполнена', `${task.TaskName} №${task.TaskID} выполнена!`);
+          this.cd.detectChanges();
         }
       });
     } catch (error) {
       this.ds.openSnackBar('error', 'Ошибка выполнения задачи', error);
     }
-
   }
 }

@@ -22,6 +22,7 @@ export class BPApi {
       'TaskID': TaskID,
       'UserDecision': UserDecisionID.toString(),
       'Comment': Comment,
+      // 'dev': true, //задача не выполняется (для разработки)
       'UserID': ''};
     return this.http.post<ITaskCompleteResult>(query, body);
   }

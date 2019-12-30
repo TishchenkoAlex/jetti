@@ -27,7 +27,7 @@
         </th>
         <th style="width:25em">Действие</th>
       </tr>
-      <tr >
+      <!-- <tr >
       <th></th>
       <th *ngFor="let column of Tasklist.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
       class="ui-fluid ui-column-filter">
@@ -68,7 +68,7 @@
       </div>
     </th>
     <th></th>
-  </tr >
+  </tr > -->
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns" let-expanded="expanded">
       <tr (dblclick)="open(rowData)">
