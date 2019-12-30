@@ -155,7 +155,7 @@ export class DocumentCashRequest extends DocumentBase {
  })
   PayDay = new Date();
 
-  @Props({ type: 'number', label: 'Сумма', required: true,  order: 4, style: { width: '100px', align: 'right' } })
+  @Props({ type: 'number', label: 'Сумма', required: true,  order: 4, style: { width: '100px', textAlign: 'right' } })
   Amount = 0;
 
   @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })

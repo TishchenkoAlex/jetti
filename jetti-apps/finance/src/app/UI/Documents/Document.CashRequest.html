@@ -47,13 +47,13 @@
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
         <j-control [control]="vk['CashKind']" [form]="form" (change) = 'onCashKindChange($event)'></j-control>
         <j-control [control]="vk['Amount']" [form]="form"></j-control>
+        <j-control [control]="vk['сurrency']" [form]="form"></j-control>
         <j-control [control]="vk['PayDay']" [form]="form"></j-control>
-        <j-control *ngIf="form.value.CashKind !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
       </div>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
         <j-control [control]="vk['company']" [form]="form"></j-control>
-        <j-control [control]="vk['сurrency']" [form]="form"></j-control>
+         <j-control *ngIf="form.value.CashKind !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
         <j-control [control]="vk['CashFlow']" [form]="form"></j-control>
       </div>
 
