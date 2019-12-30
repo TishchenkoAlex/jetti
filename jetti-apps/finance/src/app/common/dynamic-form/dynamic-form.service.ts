@@ -164,6 +164,7 @@ export class DynamicFormService {
       map(response => {
         const form = getFormGroup(response.schema, response.model, docID !== 'new');
         form['metadata'] = response.metadata;
+        form['schema'] = response.schema;
         return form;
       }));
   }

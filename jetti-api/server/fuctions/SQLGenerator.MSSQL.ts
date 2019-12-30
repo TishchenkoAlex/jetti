@@ -256,7 +256,7 @@ export class SQLGenegator {
     return query;
   }
 
-  static QueryList(doc: { [x: string]: any }, type: string) {
+  static QueryListHierarchy(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') return `
@@ -307,31 +307,27 @@ export class SQLGenegator {
     return query;
   }
 
-  static QueryList2(doc: { [x: string]: any }, type: string) {
+  static QueryList(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') return `, d."${prop}" "${prop}"\n`;
-      if (type === 'number') return `, d."${prop}" "${prop}"\n`;
-      return `, d."${prop}" "${prop}"\n`;
+      return `
+        , d.[${prop}] [${prop}]`;
     };
 
-    const complexProperty = (prop: string, type: string) => `,
-        "${prop}".id "${prop}.id",
-        ISNULL("${prop}".description, N'') "${prop}.value",
-        ISNULL("${prop}".type, N'${type}') "${prop}.type"
-      `;
+    const complexProperty = (prop: string, type: string) => `
+        , ISNULL([${prop}.v].description, '') [${prop}.value], d.[${prop}] [${prop}.id], [${prop}.v].type [${prop}.type]`;
 
     const addLeftJoin = (prop: string, type: string) =>
       type.startsWith('Types.') ? `
-        LEFT JOIN dbo."Documents" "${prop}" ON "${prop}".id = d."${prop}"\n` : `
-        LEFT JOIN dbo."${type}.v" "${prop}" ON "${prop}".id = d."${prop}"\n`;
+        LEFT JOIN dbo.[Documents] [${prop}.v] ON [${prop}.v].id = d.[${prop}]` : `
+        LEFT JOIN dbo.[${type}.v] [${prop}.v] WITH (NOEXPAND) ON [${prop}.v].id = d.[${prop}]`;
 
     let query = `
-      SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
-      , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-      , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-      , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-    `;
+      SELECT
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
+        ${type.startsWith('Catalog.') ? `, ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"` : ``}
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
 
     let LeftJoin = '';
 
@@ -346,12 +342,44 @@ export class SQLGenegator {
     }
 
     query += `
-    FROM dbo."${type}.v" d
-      LEFT JOIN dbo."${type}.v" "parent" ON "parent".id = d."parent"
-      LEFT JOIN dbo."Catalog.User.v" "user" ON "user".id = d."user"
-      LEFT JOIN dbo."Catalog.Company.v" "company" ON "company".id = d.company
-      ${LeftJoin}
-    WHERE (1 = 1)
+      FROM [${type}.v] d WITH (NOEXPAND)
+        ${type.startsWith('Catalog.') ? `LEFT JOIN [${type}.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]` : ``}
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company${LeftJoin}
+    `;
+
+    return query;
+  }
+
+  static QueryListRaw(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') return `
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."${prop}"')), 0) [${prop}]`;
+      if (type === 'number') return `
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."${prop}"')), 0) [${prop}]`;
+      if (type === 'date') return `
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.${prop}'),127) [${prop}]`;
+      if (type === 'datetime') return `
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.${prop}'),127) [${prop}]`;
+      if (type.includes('.')) return `
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."${prop}"')) [${prop}]`;
+      return `
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."${prop}"')), '') [${prop}]`;
+    };
+
+    let query = ``;
+    for (const prop in excludeProps(doc)) {
+      const type = doc[prop].type || 'string';
+      if (type !== 'table') {
+        query += simleProperty(prop, type);
+      }
+    }
+
+    query = `
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]${query}
+      FROM dbo.[Documents]
+      WHERE [type] = '${type}'
     `;
 
     return query;
@@ -360,16 +388,23 @@ export class SQLGenegator {
   static QueryRegisterAccumulatioList(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(r.data, N'$.${prop}'), 0) "${prop}"\n`; }
-      if (type === 'number') { return `, CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY) "${prop}"\n`; }
-      return `, JSON_VALUE(r.data, N'$.${prop}') "${prop}"\n`;
+      if (type === 'boolean') return `
+        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(r.data, N'$.${prop}')), 0) [${prop}]`;
+      if (type === 'number') return `
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(r.data, N'$.${prop}')), 0) [${prop}]`;
+      if (type === 'date') return `
+        , TRY_CONVERT(DATE, JSON_VALUE(r.data, N'$.${prop}'),127) [${prop}]`;
+      if (type === 'datetime') return `
+        , TRY_CONVERT(DATETIME, JSON_VALUE(r.data, N'$.${prop}'),127) [${prop}]`;
+      return `
+        , JSON_VALUE(r.data, N'$.${prop}') "${prop}"`;
     };
 
-    const complexProperty = (prop: string, type: string) =>
-      `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
+    const complexProperty = (prop: string, type: string) => `
+        , [${prop}].id [${prop}.id], [${prop}].description [${prop}.value], '${type}' [${prop}.type], [${prop}].code [${prop}.code]`;
 
-    const addLeftJoin = (prop: string, type: string) =>
-      ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = JSON_VALUE(r.data, N'$.${prop}')\n`;
+    const addLeftJoin = (prop: string, type: string) => `
+      LEFT JOIN dbo.[Documents] [${prop}] ON [${prop}].id = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(r.data, N'$.${prop}'))`;
 
     let LeftJoin = ''; let select = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -384,28 +419,31 @@ export class SQLGenegator {
 
     const query = `
       SELECT r.id, r.parent, r.date, r."kind", r.calculated,
-      "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
+        "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
       ${select}
-      FROM "Accumulation" r
-        LEFT JOIN "Documents" company ON company.id = r.company AND "company".type = 'Catalog.Company'
+      FROM dbo.[Accumulation] r
+        LEFT JOIN dbo.[Documents] company ON company.id = r.company
         ${LeftJoin}
-      WHERE r.type = '${type}'\n`;
+      WHERE r.type = '${type}' `;
     return query;
   }
 
   static QueryRegisterAccumulatioList2(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(r."${prop}", 0) "${prop}"\n`; }
-      if (type === 'number') { return `, CAST(r."${prop}" AS MONEY) * IIF(kind = 1, 1, -1) "${prop}"\n`; }
-      return `, r."${prop}" "${prop}"\n`;
+      if (type === 'boolean') return `
+        , ISNULL(TRY_CONVERT(BIT, r.[${prop}]), 0) [${prop}]`;
+      if (type === 'number') return `
+        , ISNULL(TRY_CONVERT(MONEY, r.[${prop}]), 0) * IIF(kind = 1, 1, -1) [${prop}]`;
+      return `
+        , r.[${prop}] [${prop}]`;
     };
 
     const complexProperty = (prop: string, type: string) =>
-      `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
+      `, [${prop}].id [${prop}.id], [${prop}].description [${prop}.value], '${type}' [${prop}.type], [${prop}].code [${prop}.code]`;
 
-    const addLeftJoin = (prop: string, type: string) =>
-      ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = r."${prop}"\n`;
+    const addLeftJoin = (prop: string, type: string) => `
+        LEFT JOIN dbo.[Documents] [${prop}] ON [${prop}].id = r.[${prop}]`;
 
     let LeftJoin = ''; let select = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -423,7 +461,7 @@ export class SQLGenegator {
       "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
       ${select}
       FROM "${type}" r
-        LEFT JOIN "Documents" company ON company.id = r.company AND "company".type = 'Catalog.Company'
+        LEFT JOIN [Documents] company ON company.id = r.company
         ${LeftJoin} WHERE (1 = 1)
                                                                                     \n`;
     return query;
@@ -432,18 +470,23 @@ export class SQLGenegator {
   static QueryRegisterInfoList(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `, ISNULL(JSON_VALUE(r.data, N'$.${prop}'), 0) "${prop}"\n`; }
-      if (type === 'number') { return `, CAST(JSON_VALUE(r.data, N'$.${prop}') AS MONEY) "${prop}"\n`; }
-      return `, JSON_VALUE(r.data, N'$.${prop}') "${prop}"\n`;
+      if (type === 'boolean') return `
+        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(r.data, N'$.${prop}')), 0) [${prop}]`;
+      if (type === 'number') return `
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(r.data, N'$.${prop}')), 0) [${prop}]`;
+      if (type === 'date') return `
+        , TRY_CONVERT(DATE, JSON_VALUE(r.data, N'$.${prop}'),127) [${prop}]`;
+      if (type === 'datetime') return `
+        , TRY_CONVERT(DATETIME, JSON_VALUE(r.data, N'$.${prop}'),127) [${prop}]`;
+      return `
+        , JSON_VALUE(r.data, N'$.${prop}') [${prop}]`;
     };
 
-    const complexProperty = (prop: string, type: string) =>
-      `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
+    const complexProperty = (prop: string, type: string) => `
+        , [${prop}].id [${prop}.id], [${prop}].description [${prop}.value], '${type}' [${prop}.type], [${prop}].code [${prop}.code]`;
 
-    const addLeftJoin = (prop: string, type: string) =>
-      type.startsWith('Types.') ?
-        ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = JSON_VALUE(r.data, N'$.${prop}')\n` :
-        ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = JSON_VALUE(r.data, N'$.${prop}') AND "${prop}".type = '${type}'\n`;
+    const addLeftJoin = (prop: string, type: string) => `
+      LEFT JOIN dbo.[Documents] [${prop}] ON [${prop}].id = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(r.data, N'$.${prop}'))`;
 
     let LeftJoin = ''; let select = '';
     for (const prop in excludeRegisterInfoProps(doc)) {
@@ -460,10 +503,10 @@ export class SQLGenegator {
       SELECT r.date,
       "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
       ${select}
-      FROM "Register.Info" r
-        LEFT JOIN "Documents" company ON company.id = r.company AND "company".type = 'Catalog.Company'
+      FROM [Register.Info] r
+        LEFT JOIN [Documents] company ON company.id = r.company
         ${LeftJoin}
-      WHERE r.type = '${type}'\n`;
+      WHERE r.type = '${type}' `;
     return query;
   }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { MenuItem } from 'primeng/components/common/menuitem';
@@ -19,8 +19,7 @@ import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
-
-const WH = 278;
+import { Table } from './table';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,11 +38,13 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
   resizeObservable$: Observable<string>;
 
-  scrollHeight = `${(window.innerHeight - WH)}px`;
+  scrollHeight = ``;
 
-  @Input() pageSize = Math.round((window.innerHeight - WH) / 28);
+  @Input() pageSize;
   @Input() type: DocTypes;
   @Input() settings: FormListSettings;
+  @ViewChild('tbl', { static: true }) tbl: Table;
+
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   get id() { return { id: this.selection && this.selection.length ? this.selection[0].id : '', posted: true }; }
@@ -80,13 +81,18 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.showTree = (Doc.Prop() as DocumentOptions).hierarchy === 'folders';
     this.showTreeButton = this.showTree;
 
+    const scrollHeight = () => {
+      return window.innerHeight - this.tbl.el.nativeElement.offsetTop - 115;
+    };
+
+    this.scrollHeight = `${scrollHeight()}px`;
+    this.dataSource.pageSize = Math.round(scrollHeight() / 28);
     this.resizeObservable$ = fromEvent(window, 'resize')
       .pipe(debounceTime(500), map(evt => {
-        const h = window.innerHeight - WH;
-        this.dataSource.pageSize = Math.round(h / 28);
+        this.dataSource.pageSize = Math.round((scrollHeight() + 42) / 28);
         const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
         this.dataSource.refresh(id);
-        return `${h}px`;
+        return `${scrollHeight() + 21}px`;
       }));
 
     this.setSortOrder();

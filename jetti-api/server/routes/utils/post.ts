@@ -28,10 +28,10 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   if (serverDoc.onUnPost) await serverDoc.onUnPost(tx);
 
   await tx.none(`
-    DELETE FROM "Register.Account" WHERE document = '${serverDoc.id}';
-    DELETE FROM "Register.Info" WHERE document = '${serverDoc.id}';
-    DELETE FROM "Accumulation" WHERE document = '${serverDoc.id}';
-  `);
+    DELETE FROM "Register.Account" WHERE document = @p1 and date = @p2;
+    DELETE FROM "Register.Info" WHERE document = @p1 and date = @p2;;
+    DELETE FROM "Accumulation" WHERE document = @p1 and date = @p2;;
+  `, [serverDoc.id, serverDoc.date]);
 }
 
 export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
@@ -131,8 +131,8 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
 export async function setPostedSate(id: Ref, tx: MSSQL) {
   const doc = await tx.oneOrNone<INoSqlDocument>(`
-    UPDATE Documents SET posted = 1 WHERE id = @p1 and deleted = 0 and posted = 0;
-    SELECT * FROM Documents WHERE id = @p1`, [id]);
+    UPDATE Documents SET posted = 1 WHERE id = @p1 and deleted = @p2 and posted = @p3;
+    SELECT * FROM Documents WHERE id = @p1`, [id, 0, 0]);
   const flatDoc = lib.doc.flatDocument(doc!);
   const serverDoc = createDocumentServer(flatDoc!.type, flatDoc!, tx);
   return serverDoc;

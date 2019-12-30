@@ -80,7 +80,7 @@ const RolesQuery = `
   DROP TABLE IF EXISTS #UserOrGroup;
   SELECT @p1 id INTO #UserOrGroup
   UNION ALL
-  SELECT id FROM Documents WITH(NOLOCK)
+  SELECT id FROM Documents
   CROSS APPLY OPENJSON (doc, N'$.Users')
   WITH
   (
@@ -91,7 +91,7 @@ const RolesQuery = `
     [UsersGroup.User] = @p1;
 
   DROP TABLE IF EXISTS #Roles;
-  SELECT [Role] INTO #Roles FROM Documents WITH(NOLOCK)
+  SELECT [Role] INTO #Roles FROM Documents
   CROSS APPLY OPENJSON (doc, N'$.RoleList')
   WITH
   (
@@ -102,7 +102,7 @@ const RolesQuery = `
     type = 'Document.UserSettings';
 
   DROP TABLE IF EXISTS #Subsystems;
-  SELECT SubSystem INTO #Subsystems FROM Documents r WITH(NOLOCK)
+  SELECT SubSystem INTO #Subsystems FROM Documents r
   CROSS APPLY OPENJSON (doc, N'$.Subsystems')
   WITH
   (
@@ -112,7 +112,7 @@ const RolesQuery = `
     type = 'Catalog.Role' AND
     id IN (SELECT [Role] FROM #Roles);
 
-  SELECT * FROM Documents r WITH(NOLOCK)
+  SELECT * FROM Documents r
   WHERE (1=1) AND
     type = 'Catalog.SubSystem' AND posted = 1 AND
 	(id IN (SELECT SubSystem FROM #Subsystems) OR @p2 = 1);

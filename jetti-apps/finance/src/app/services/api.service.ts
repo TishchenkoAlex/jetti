@@ -49,9 +49,9 @@ export class ApiService {
     return this.http.post<IViewModel>(query, { type, id, ...params }, { params });
   }
 
-  getSuggests(docType: string, filter: string, storageType: StorageType): Observable<ISuggest[]> {
-    const query = `${environment.api}suggest/${docType}?filter=${filter}&storageType=${storageType}`;
-    return this.http.get<ISuggest[]>(query);
+  getSuggests(docType: string, filter: string, filters: FormListFilter[]): Observable<ISuggest[]> {
+    const query = `${environment.api}suggest/${docType}?filter=${filter}`;
+    return this.http.post<ISuggest[]>(query, {filters });
   }
 
   postDoc(doc: DocumentBase): Observable<DocumentBase> {

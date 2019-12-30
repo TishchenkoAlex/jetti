@@ -20,7 +20,6 @@ import { router as suggests } from './routes/suggest';
 import { router as tasks } from './routes/tasks';
 import { router as userSettings } from './routes/user.settings';
 import { router as form } from './routes/form';
-import { router as utils } from './routes/utils';
 import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
@@ -38,7 +37,6 @@ const api = `/api`;
 app.use(api, authHTTP, jettiDB, documents);
 app.use(api, authHTTP, jettiDB, userSettings);
 app.use(api, authHTTP, jettiDB, suggests);
-app.use(api, authHTTP, jettiDB, utils);
 app.use(api, authHTTP, jettiDB, registers);
 app.use(api, authHTTP, tasksDB, tasks);
 app.use(api, authHTTP, tasksDB, form);
@@ -68,16 +66,17 @@ HTTP.listen(port, () => console.log(`API running on port:${port}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 let script = '';
-script = SQLGenegatorMetadata.CreateDocumentIndexes();
-fs.writeFile('CreateDocumentIndexes.sql', script, (err) => {});
+
+script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
+fs.writeFile('CreateViewCatalogsIndex.sql', script, (err) => {});
 
 script = SQLGenegatorMetadata.CreateViewCatalogs();
-fs.writeFile('CreateViewCatalogsv2.sql', script, (err) => {});
+fs.writeFile('CreateViewCatalogs.sql', script, (err) => {});
 
-script = SQLGenegatorMetadata.CreateRegisterAccumulationView();
-fs.writeFile('CreateRegisterAccumulationView.sql', script, (err) => {});
+script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => {});
 
-script = SQLGenegatorMetadata.CreateRegisterInfoView();
-fs.writeFile('CreateRegisterInfoView.sql', script, (err) => {});
+script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
+fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => {});
 
 

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, fo
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
@@ -108,6 +108,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     this.value = obj;
     this.suggest.markAsDirty({ onlySelf: true });
     this.cd.markForCheck();
+
   }
   // end of implementation ControlValueAccessor interface
 
@@ -133,7 +134,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
 
   getSuggests(text: string) {
-    this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.storageType);
+    if (this.isTypeValue) {  this.Suggests$ = of([]); this.value = this.EMPTY; return; }
+    this.filters = this.calcFilters();
+    this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.filters.filter);
   }
 
   handleReset = (event: Event) => this.value = this.EMPTY;
