@@ -241,7 +241,7 @@ export class SQLGenegator {
           [posted] BIT,
           [deleted] BIT,
           [isfolder] BIT,
-          [info] NVARCHAR(4000),
+          [info] NVARCHAR(MAX),
           [timestamp] DATETIME2(0),
           [company] UNIQUEIDENTIFIER,
           [user] UNIQUEIDENTIFIER,
@@ -325,7 +325,7 @@ export class SQLGenegator {
     let query = `
       SELECT
         d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
-        ${type.startsWith('Catalog.') ? `, ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"` : ``}
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
 
@@ -343,7 +343,7 @@ export class SQLGenegator {
 
     query += `
       FROM [${type}.v] d WITH (NOEXPAND)
-        ${type.startsWith('Catalog.') ? `LEFT JOIN [${type}.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]` : ``}
+        LEFT JOIN [${type}.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company${LeftJoin}
     `;
@@ -509,7 +509,6 @@ export class SQLGenegator {
       WHERE r.type = '${type}' `;
     return query;
   }
-
 }
 
 export function buildTypesQueryList(select: { type: string; description: string; }[]) {

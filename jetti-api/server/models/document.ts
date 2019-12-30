@@ -30,6 +30,8 @@ export interface PropOptions {
   storageType?: StorageType;
 }
 
+export interface Relation { name: string; type: DocTypes; field: string; }
+
 export interface DocumentOptions {
   type: DocTypes;
   description: string;
@@ -41,7 +43,7 @@ export interface DocumentOptions {
   presentation?: 'code' | 'description';
   hierarchy?: 'folders' | 'elements';
   copyTo?: DocTypes[];
-  relations?: { name: string, type: DocTypes, field: string }[];
+  relations?: Relation[];
 }
 
 export type Ref = string | null;

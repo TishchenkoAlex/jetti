@@ -1,18 +1,18 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { merge, of as observableOf, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
 import { calculateDescription } from '../../../../../../jetti-api/server/models/common-types';
-import { DocumentBase, DocumentOptions, Ref } from '../../../../../../jetti-api/server/models/document';
+import { DocumentBase, DocumentOptions, Ref, Relation } from '../../../../../../jetti-api/server/models/document';
 import { DocService } from '../../common/doc.service';
 import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
-import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
+import { patchOptionsNoEvents, getFormGroup, DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { LoadingService } from '../loading.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -31,26 +31,26 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   @Input() form = this.route.snapshot.data.detail as FormGroup;
   @ViewChildren(CdkTrapFocus) cdkTrapFocus: QueryList<CdkTrapFocus>;
 
-  get model() { return this.form.getRawValue() as DocumentBase; }
-
-  isDoc = this.type.startsWith('Document.');
   isCopy = this.route.snapshot.queryParams.command === 'copy';
-  get docDescription() { return <string>this.form['metadata'].description; }
-  get metadata() { return <DocumentOptions>this.form['metadata']; }
-  get relations() { return this.form['metadata'].relations || []; }
-  get v() { return <FormControlInfo[]>this.form['orderedControls']; }
-  get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
-  get viewModel() { return this.form.getRawValue(); }
-  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.type === 'table'); }
-  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.type === 'table'); }
-  get description() { return <FormControl>this.form.get('description'); }
-  get isPosted() { return <boolean>!!this.form.get('posted')!.value; }
-  get isDeleted() { return <boolean>!!this.form.get('deleted')!.value; }
-  get isNew() { return !this.form.get('timestamp')!.value; }
-  get isFolder() { return (!!this.form.get('isfolder')!.value); }
-  get commands() { return (<MenuItem[]>this.form['metadata']['commands']) || []; }
-  get copyTo() { return (<MenuItem[]>this.form['metadata']['copyTo']) || []; }
-  get module() { return this.form['metadata']['clientModule'] || {}; }
+  isDoc = this.type.startsWith('Document.');
+
+  model: DocumentBase;
+  docDescription: string;
+  metadata: DocumentOptions;
+  relations: Relation[];
+  v: FormControlInfo[];
+  vk: { [key: string]: FormControlInfo };
+  hasTables: boolean;
+  tables: FormControlInfo[];
+  description: FormControl;
+  isPosted: boolean;
+  isDeleted: boolean;
+  isNew: boolean;
+  isFolder: boolean;
+  commands: MenuItem[];
+  copyTo: MenuItem[];
+  module: any;
+  schema: { [key: string]: any };
 
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
@@ -58,10 +58,12 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   private _postSubscription$: Subscription = Subscription.EMPTY;
   private uuid = this.route.snapshot.queryParams.uuid;
 
-  constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
-    public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore) { }
+  constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
+    public cd: ChangeDetectorRef, public ds: DocService, public location: Location,
+    public tabStore: TabsStore, private dss: DynamicFormService) { }
 
   ngOnInit() {
+
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
@@ -83,19 +85,49 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
 
-    this.initCopyTo();
+    this.initForm(this.form);
+  }
 
-    if (this.form['metadata']['commands'] instanceof Array) {
-      const commands = [...this.form['metadata']['commands']];
-      this.form['metadata']['commands'] = [];
+  initForm(form: FormGroup) {
+    this.model = form.getRawValue() as DocumentBase;
+    this.docDescription = form['metadata'].description as string;
+    this.relations = [...<Relation[]>form['metadata'].relations];
+    this.v = [...<FormControlInfo[]>form['orderedControls']];
+    this.vk = { ...<{ [key: string]: FormControlInfo }>form['byKeyControls'] };
+    this.hasTables = !!(<FormControlInfo[]>form['orderedControls']).find(t => t.type === 'table');
+    this.tables = [...(<FormControlInfo[]>form['orderedControls']).filter(t => t.type === 'table')];
+    this.description = <FormControl>form.get('description');
+    this.isPosted = <boolean>!!form.get('posted')!.value;
+    this.isDeleted = <boolean>!!form.get('deleted')!.value;
+    this.isNew = !form.get('timestamp')!.value;
+    this.isFolder = (!!form.get('isfolder')!.value);
+
+    this.copyTo = [];
+    [...(form['metadata']['copyTo'] || [])].map(el => {
+      const { description, icon } = createDocument(el).Prop() as DocumentOptions;
+      this.copyTo.push({ label: description, icon, command: (event) => this.baseOn(el) });
+    });
+
+    this.module = form['metadata']['clientModule'] || {};
+    this.schema = { ...form['schema'] };
+    if (form['metadata']['commands'] instanceof Array) {
+      const commands = [...form['metadata']['commands']];
+      form['metadata']['commands'] = [];
       for (const command of commands) {
         const item: MenuItem = {
           label: command.label, icon: command.icon,
           command: () => this.commandOnSever(command.command)
         };
-        this.form['metadata']['commands'].push(item);
+        this.commands.push(item);
       }
     }
+  }
+
+  Refresh() {
+    this.dss.getViewModel$(this.type, this.model.id).pipe(take(1)).subscribe(formGroup => {
+      this.initForm(formGroup);
+      this.form = formGroup;
+    });
   }
 
   showDescription() {
@@ -113,7 +145,10 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   Post() { const doc = this.model; this.ds.post(doc); }
   unPost() { this.ds.unpost(this.model); }
   PostClose() { const doc = this.model; this.ds.post(doc, true); }
-  Copy() { return this.router.navigate([this.model.type, v1().toUpperCase()], { queryParams: { copy: this.id } }); }
+  Copy() {
+    return this.router.navigate(
+      [this.model.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
+  }
 
   Goto() {
     return this.router.navigate([this.model.type],
@@ -161,18 +196,9 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       { queryParams: { base: this.id, Operation } });
   }
 
-  private initCopyTo() {
-    const prop = createDocument(this.type).Prop() as DocumentOptions;
-    (prop.copyTo || []).map(el => {
-      const { description, icon } = createDocument(el).Prop() as DocumentOptions;
-      this.copyTo.push({ label: description, icon, command: (event) => this.baseOn(el) });
-    });
-  }
-
   commandOnSever(method: string) {
     this.ds.api.onCommand(this.form.value, method, {}).then(value => {
-      this.form.patchValue(value || {}, patchOptionsNoEvents);
-      this.cd.markForCheck();
+      this.initForm(getFormGroup(this.schema, value, true));
     });
   }
 

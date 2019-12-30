@@ -13,7 +13,7 @@ import { FormListFilter, FormListOrder, FormListSettings, UserDefaultsSettings }
 import { environment } from '../../environments/environment';
 import { IComplexObject } from '../common/dynamic-form/dynamic-form-base';
 import { LoadingService } from '../common/loading.service';
-import { mapToApi } from '../common/mapping/document.mapping';
+import { viewModelToFlatDocument } from '../common/mapping/document.mapping';
 import { FormTypes } from '../../../../../jetti-api/server/models/Forms/form.types';
 import { FormBase } from '../../../../../jetti-api/server/models/Forms/form';
 
@@ -55,7 +55,7 @@ export class ApiService {
   }
 
   postDoc(doc: DocumentBase): Observable<DocumentBase> {
-    const apiDoc = mapToApi(doc);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}post`;
     return (this.http.post<DocumentBase>(query, apiDoc));
   }
@@ -71,13 +71,13 @@ export class ApiService {
   }
 
   saveDoc(doc: DocumentBase): Observable<DocumentBase> {
-    const apiDoc = mapToApi(doc);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}save`;
     return (this.http.post<DocumentBase>(query, apiDoc));
   }
 
   savePostDoc(doc: DocumentBase): Observable<DocumentBase> {
-    const apiDoc = mapToApi(doc);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}savepost`;
     return (this.http.post<DocumentBase>(query, apiDoc));
   }
@@ -148,14 +148,14 @@ export class ApiService {
   }
 
   valueChanges(doc: DocumentBase, property: string, value: string) {
-    const apiDoc = mapToApi(doc);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}valueChanges/${doc.type}/${property}`;
     const callConfig = { doc: apiDoc, value: value };
     return this.http.post<PatchValue>(query, callConfig).toPromise();
   }
 
   onCommand(doc: DocumentBase, command: string, args: { [x: string]: any }) {
-    const apiDoc = mapToApi(doc);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}command/${doc.type}/${command}`;
     const callConfig = { doc: apiDoc, args: args };
     return this.http.post<PatchValue>(query, callConfig).toPromise();
@@ -182,7 +182,7 @@ export class ApiService {
   }
 
   execute(type: FormTypes, method: string, doc: FormBase) {
-    const apiDoc = mapToApi(doc as any);
+    const apiDoc = viewModelToFlatDocument(doc as any);
     const query = `${environment.api}form/${type}/${method}`;
     return this.http.post<FormBase>(query, apiDoc);
   }

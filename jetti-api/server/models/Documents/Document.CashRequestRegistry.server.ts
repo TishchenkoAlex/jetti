@@ -2,6 +2,7 @@ import { PostResult } from '../post.interfaces';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
 import { DocumentCashRequestRegistry, CashRequest } from './Document.CashRequestRegistry';
+import { buildViewModel } from '../../routes/documents';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -31,11 +32,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
           company: this.company,
         });
         this.Amount = 1;
-        return {
-          ...this
-        };
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 
