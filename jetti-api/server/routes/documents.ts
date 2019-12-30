@@ -131,11 +131,11 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       serverDoc.posted = false;
 
       const deleted = await tx.none(`
-        DELETE FROM "Register.Account" WHERE document = '${id}';
-        DELETE FROM "Register.Info" WHERE document = '${id}';
-        DELETE FROM "Accumulation" WHERE document = '${id}';
-        UPDATE "Documents" SET deleted = @p1, posted = 0 WHERE id = '${id}';
-      `, [serverDoc.deleted]);
+        DELETE FROM "Register.Account" WHERE document = @p1;
+        DELETE FROM "Register.Info" WHERE document = @p1;
+        DELETE FROM "Accumulation" WHERE document = @p1;
+        UPDATE "Documents" SET deleted = @p2, posted = @p3 WHERE id = @p1;
+      `, [id, serverDoc.deleted, 0]);
 
       if (!doc.deleted) {
         const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];

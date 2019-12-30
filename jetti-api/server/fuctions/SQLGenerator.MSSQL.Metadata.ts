@@ -13,24 +13,30 @@ export class SQLGenegatorMetadata {
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `
-        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}"`; }
+      if (type === 'boolean') {
+        return `
+        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
+      }
       if (type === 'number') {
         return `
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
-        , ISNULL(CAST(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"`;
+        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
+        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
+        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"`;
       }
-      if (type === 'date') { return `
-        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"`; }
-      if (type === 'datetime') { return `
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`; }
+      if (type === 'date') {
+        return `
+        , ISNULL(TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATE, '1970-01-01', 102)) "${prop}"`;
+      }
+      if (type === 'datetime') {
+        return `
+        , ISNULL(TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`;
+      }
       return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"`;
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')), '00000000-0000-0000-0000-000000000000') "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -57,20 +63,20 @@ export class SQLGenegatorMetadata {
     AS
     SELECT
       id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
-        , ISNULL(CAST(JSON_VALUE(data, N'$.exchangeRate') AS NUMERIC(15,10)), 1) exchangeRate${select}
+        , ISNULL(TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')), 1) exchangeRate${select}
       FROM dbo.[Accumulation] WHERE type = N'${type}';
     GO
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      date,company,calculated,id
-    )
+      company,date,calculated,id
+    ) --ON [ps_ByMonth]([date])
     GO
     `;
     return query;
   }
 
-  static CreateRegisterAccumulationView() {
+  static CreateRegisterAccumulationViewIndex() {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
       const register = createRegisterAccumulation({ type: type.type });
@@ -80,6 +86,8 @@ export class SQLGenegatorMetadata {
     ${query}
     CREATE UNIQUE NONCLUSTERED INDEX [id.Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory]([id])
     GO
+    EXEC [rpt].[CreateIndexReportHelper]
+    GO
     `;
     return query;
   }
@@ -87,22 +95,28 @@ export class SQLGenegatorMetadata {
   static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') { return `
-        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS BIT), 0) "${prop}"`; }
+      if (type === 'boolean') {
+        return `
+        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
+      }
       if (type === 'number') {
         return `
-        , ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY), 0) "${prop}"`;
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
       }
-      if (type === 'date') { return `
-        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATE, '1970-01-01', 102)) "${prop}"`; }
-      if (type === 'datetime') { return `
-        , ISNULL(CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`; }
+      if (type === 'date') {
+        return `
+        , ISNULL(TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATE, '1970-01-01', 102)) "${prop}"`;
+      }
+      if (type === 'datetime') {
+        return `
+        , ISNULL(TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`;
+      }
       return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(CAST(JSON_VALUE(data, N'$."${prop}"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "${prop}"`;
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')), '00000000-0000-0000-0000-000000000000') "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -141,13 +155,139 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
-  static CreateRegisterInfoView() {
+  static CreateRegisterInfoViewIndex() {
     let query = '';
     for (const type of GetRegisterInfo()) {
       const register = createRegisterInfo({ type: type.type });
       query += SQLGenegatorMetadata.QueryRegisterIntoView(register.Props(), register.Prop().type.toString());
     }
     return query;
+  }
+
+  static CreateViewCatalogs() {
+
+    let query = '';
+    for (const catalog of RegisteredDocument) {
+      const doc = createDocument(catalog.type);
+      if (doc['QueryList']) continue;
+      const Props = doc.Props();
+      const type = (doc.Prop() as DocumentOptions).type;
+      let select = SQLGenegator.QueryList(Props, doc.type);
+      const typeSplit = type.split('.');
+      let name = '';
+      for (let i = 1; i < typeSplit.length; i++) name += typeSplit[i];
+      select = select.replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `
+        , ISNULL(l5.description, d.description) [${name}.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [${name}.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [${name}.Level1]
+      FROM [${type}.v] d WITH (NOEXPAND)
+        LEFT JOIN [${type}.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [${type}.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [${type}.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [${type}.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [${type}.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      `).replace('d.description,', `d.description "${name}",`);
+
+      query += `\n
+      CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
+        ${select}
+      GO
+      GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
+      GO
+      `;
+    }
+    query = `
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
+    SELECT
+      'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
+      d.id, d.date [date],
+      d.description Presentation
+      FROM dbo.[Documents] d
+    GO
+    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
+    GO
+
+    ${query}
+    `;
+    return query;
+  }
+
+  static CreateViewCatalogsIndex() {
+
+    let query = `
+      DROP SECURITY POLICY [rls].[companyAccessPolicy]
+      GO`;
+    let PREDICATE = '';
+    for (const catalog of RegisteredDocument) {
+      const doc = createDocument(catalog.type);
+      if (doc['QueryList']) continue;
+      const select = SQLGenegator.QueryListRaw(doc.Props(), doc.type);
+
+      PREDICATE += `
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v],`;
+
+      query += `
+      CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select}
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
+      ${doc.type.startsWith('Document.') ? `
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id) INCLUDE([company]);`}
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code] ON [${catalog.type}.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.user] ON [${catalog.type}.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;
+      GO
+      --------------------------------------------------------------------------------------
+      `;
+    }
+
+    query = `
+      ${query}
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [Document.Operation.v]([Group],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
+
+
+      CREATE SECURITY POLICY [rls].[companyAccessPolicy] ${PREDICATE}
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty]
+      WITH (STATE = ON, SCHEMABINDING = ON)
+      GO`;
+    return query;
+  }
+
+  static CreateDocumentIndexes() {
+
+    let select = '';
+    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Catalog.'))) {
+      const doc = createDocument(catalog.type);
+      if (doc['QueryList']) continue;
+      select += `
+    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    ON [dbo].[Documents]([description],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='${catalog.type}')`;
+    }
+    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Document.'))) {
+      select += `
+    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    ON [dbo].[Documents]([date],[id],[parent])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    WHERE ([type]='${catalog.type}')`;
+    }
+    return select;
   }
 
   static CreateTableRegisterAccumulationTotals() {
@@ -199,75 +339,4 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
-  static CreateViewCatalogs() {
-
-    let query = '';
-    for (const catalog of RegisteredDocument) {
-      const doc = createDocument(catalog.type);
-      if (doc['QueryList']) continue;
-      let select = SQLGenegator.QueryList(doc.Props(), doc.type);
-      const type = (doc.Prop() as DocumentOptions).type.split('.');
-      let name = '';
-      for (let i = 1; i < type.length; i++) name += type[i];
-      select = select.replace('FROM dbo\.\"Documents\" d', `
-      , ISNULL(l5.description, d.description) [${name}.Level5]
-      , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
-      , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
-      , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [${name}.Level2]
-      , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [${name}.Level1]
-      FROM dbo.Documents d
-        LEFT JOIN  dbo.Documents l5 ON (l5.id = d.parent)
-        LEFT JOIN  dbo.Documents l4 ON (l4.id = l5.parent)
-        LEFT JOIN  dbo.Documents l3 ON (l3.id = l4.parent)
-        LEFT JOIN  dbo.Documents l2 ON (l2.id = l3.parent)
-        LEFT JOIN  dbo.Documents l1 ON (l1.id = l2.parent)
-      `).replace('d.description,', `d.description "${name}",`);
-
-      query += `\n
-      CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
-        ${select}
-      GO
-      GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
-      GO
-      `;
-    }
-    query = `
-    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-    SELECT
-      'https://x100-jetti.web.app/' + d.type + '/' + CAST(d.id as varchar(36)) as link,
-      d.id, d.date [date],
-      d.description Presentation
-      FROM dbo.[Documents] d
-    GO
-    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
-    GO
-
-    ${query}
-    `;
-    return query;
-  }
-
-  static CreateDocumentIndexes() {
-
-    let select = '';
-    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Catalog.') )) {
-      const doc = createDocument(catalog.type);
-      if (doc['QueryList']) continue;
-      select += `
-    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
-    ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='${catalog.type}')`;
-    }
-    for (const catalog of RegisteredDocument.filter(d => d.type.includes('Document.') )) {
-      select += `
-    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
-    ON [dbo].[Documents]([date],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='${catalog.type}')`;
-    }
-    return select;
-  }
 }

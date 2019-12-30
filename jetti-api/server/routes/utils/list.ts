@@ -4,6 +4,7 @@ import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
+import e = require('express');
 
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
@@ -12,9 +13,8 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   const cs = configSchema.get(params.type);
   let { QueryList, Props, Prop } = cs!;
-
-  // списк операций Document.Operation оптимизирован денормализацией отдельной таблицы (без LEFT JOIN's всегда быстрее)
-  QueryList = params.type === 'Document.Operation' ? 'SELECT * FROM [Documents.Operation] ' : `${QueryList}`;
+  const isHierarchy = Prop?.hierarchy === 'folders';
+  if (isHierarchy) QueryList = QueryList + ' WHERE d.isfolder = 0 ';
 
   let row: DocumentBase | null = null;
   let query = '';
@@ -71,9 +71,13 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
             if (!f.right.id)
               where += ` AND "${f.left}" IS NULL `;
             else {
-              if (tempTabe.indexOf(`[#${f.left}]`) < 0)
-                tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
-              where += ` AND "${f.left}" IN (SELECT id FROM [#${f.left}])`;
+              if (f.left === 'parent.id') {
+                where += ` AND "${f.left}" = '${f.right.id}'`;
+              } else {
+                if (tempTabe.indexOf(`[#${f.left}]`) < 0)
+                  tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
+                where += ` AND "${f.left}" IN (SELECT id FROM [#${f.left}])`;
+              }
             }
             break;
           }

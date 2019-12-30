@@ -134,7 +134,7 @@ export class TaskListComponent implements OnInit {
           this.ds.openSnackBar('error', 'Ошибка выполнения задачи', res.ErrorMessage);
         } else {
           this.ds.openSnackBar('success', 'Задача выполнена', `${task.TaskName} №${task.TaskID} выполнена!`);
-          this.Tasks$.subscribe(r => { console.log(r); });
+          this.Tasks$.subscribe(r => {  });
           task.DecisionComment = '';
           task.Completed = true;
           task.CanApprove = false;

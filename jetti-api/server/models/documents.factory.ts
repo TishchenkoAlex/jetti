@@ -155,7 +155,6 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Scenario', Class: CatalogScenario },
   { type: 'Catalog.AcquiringTerminal', Class: CatalogAcquiringTerminal },
   { type: 'Catalog.Bank', Class: CatalogBank },
-  { type: 'Catalog.LoanTypes', Class: CatalogLoanTypes },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

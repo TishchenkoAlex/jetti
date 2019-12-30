@@ -46,7 +46,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
       SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
         SELECT @p1 id
         UNION ALL
-        SELECT [UsersGroup.User] id FROM Documents WITH(NOLOCK)
+        SELECT [UsersGroup.User] id FROM Documents
         CROSS APPLY OPENJSON (doc, N'$.Users')
         WITH
         (

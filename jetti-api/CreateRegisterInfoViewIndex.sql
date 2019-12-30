@@ -4,11 +4,11 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Product"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Product"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."PriceType"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "PriceType"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Unit"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Unit"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.Price') AS MONEY), 0) "Price"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')), '00000000-0000-0000-0000-000000000000') "currency"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')), '00000000-0000-0000-0000-000000000000') "Product"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')), '00000000-0000-0000-0000-000000000000') "PriceType"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')), '00000000-0000-0000-0000-000000000000') "Unit"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')), 0) "Price"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.PriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.PriceList] TO JETTI;
@@ -23,9 +23,9 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.Rate') AS MONEY), 0) "Rate"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.Mutiplicity') AS MONEY), 0) "Mutiplicity"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')), '00000000-0000-0000-0000-000000000000') "currency"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Rate')), 0) "Rate"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Mutiplicity')), 0) "Mutiplicity"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ExchangeRates';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ExchangeRates] TO JETTI;
@@ -40,8 +40,8 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."balanceCurrency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "balanceCurrency"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."accountingCurrency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "accountingCurrency"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."balanceCurrency"')), '00000000-0000-0000-0000-000000000000') "balanceCurrency"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."accountingCurrency"')), '00000000-0000-0000-0000-000000000000') "accountingCurrency"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Settings';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Settings] TO JETTI;
@@ -56,11 +56,11 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."OE"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "OE"
-        , ISNULL(CONVERT(DATE,JSON_VALUE(data, N'$.StartDate'),127), CONVERT(DATE, '1970-01-01', 102)) "StartDate"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.Period') AS MONEY), 0) "Period"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.StartCost') AS MONEY), 0) "StartCost"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.EndCost') AS MONEY), 0) "EndCost"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OE"')), '00000000-0000-0000-0000-000000000000') "OE"
+        , ISNULL(TRY_CONVERT(DATE,JSON_VALUE(data, N'$.StartDate'),127), TRY_CONVERT(DATE, '1970-01-01', 102)) "StartDate"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Period')), 0) "Period"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.StartCost')), 0) "StartCost"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.EndCost')), 0) "EndCost"
         , ISNULL(JSON_VALUE(data, '$.Method'), '') "Method"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Depreciation';
     GO
@@ -91,8 +91,8 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."BudgetItem"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "BudgetItem"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Scenario"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Scenario"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BudgetItem"')), '00000000-0000-0000-0000-000000000000') "BudgetItem"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Scenario"')), '00000000-0000-0000-0000-000000000000') "Scenario"
         , ISNULL(JSON_VALUE(data, '$.Rule'), '') "Rule"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.BudgetItemRule';
     GO
@@ -108,7 +108,7 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Department"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Department"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')), '00000000-0000-0000-0000-000000000000') "Department"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.DepartmentCompanyHistory] TO JETTI;
@@ -124,10 +124,10 @@
     SELECT
       id, date, document, company
         , ISNULL(JSON_VALUE(data, '$.Scenario'), '') "Scenario"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Counterpartie"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Counterpartie"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."Product"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "Product"
-        , ISNULL(CAST(JSON_VALUE(data, N'$.Price') AS MONEY), 0) "Price"
-        , ISNULL(CAST(JSON_VALUE(data, N'$."currency"') AS UNIQUEIDENTIFIER), '00000000-0000-0000-0000-000000000000') "currency"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')), '00000000-0000-0000-0000-000000000000') "Counterpartie"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')), '00000000-0000-0000-0000-000000000000') "Product"
+        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')), 0) "Price"
+        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')), '00000000-0000-0000-0000-000000000000') "currency"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CounterpartiePriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CounterpartiePriceList] TO JETTI;

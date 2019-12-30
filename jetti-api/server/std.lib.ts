@@ -92,19 +92,19 @@ async function GUID(): Promise<string> {
 
 async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
   const result = await tx.oneOrNone<any>(`
-    SELECT id result FROM "Documents" WHERE type = 'Catalog.Account' AND code = @p1`, [code]);
+    SELECT id result FROM [Catalog.Account.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 
 async function byCode(type: string, code: string, tx: MSSQL): Promise<string | null> {
-  const result = await tx.oneOrNone<any>(`SELECT id result FROM "Documents" WHERE type = @p1 AND code = @p2`, [type, code]);
+  const result = await tx.oneOrNone<any>(`SELECT id result FROM [${type}.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 
 async function byId(id: string, tx: MSSQL): Promise<IFlatDocument | null> {
   if (!id) return null;
   const result = await tx.oneOrNone<INoSqlDocument | null>(`
-  SELECT * FROM "Documents" WHERE id = '${id}'`);
+  SELECT * FROM "Documents" WHERE id = @p1`, [id]);
   if (result) return flatDocument(result); else return null;
 }
 
@@ -140,7 +140,7 @@ async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
 
 async function formControlRef(id: Ref, tx: MSSQL): Promise<RefValue | null> {
   const result = await tx.oneOrNone<RefValue>(`
-    SELECT "id", "code", "description" as "value", "type" FROM "Documents" WHERE id = '${id}'`);
+    SELECT "id", "code", "description" as "value", "type" FROM "Documents" WHERE id = @p1`, [id]);
   return result;
 }
 
@@ -221,10 +221,10 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
     SELECT TOP 1 * FROM [Register.Info.${type}]
     WHERE (1=1)
       AND date <= @p1
-      AND company = '${company}'
+      AND company = @p2
       ${where}
     ORDER BY date DESC`;
-  const result = await tx.oneOrNone<T>(queryText, [date]);
+  const result = await tx.oneOrNone<T>(queryText, [date, company]);
   return result;
 }
 
@@ -255,8 +255,8 @@ export async function unPostById(id: Ref, tx: MSSQL) {
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
-  SELECT * FROM Accumulation where type = '${type}' AND document = '${doc}'`;
-  return await tx.manyOrNone<T>(queryText);
+  SELECT * FROM [Accumulation] WHERE type = @p1 AND document = @p2`;
+  return await tx.manyOrNone<T>(queryText, [type, doc]);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {

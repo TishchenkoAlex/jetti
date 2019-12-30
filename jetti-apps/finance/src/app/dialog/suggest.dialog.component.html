@@ -4,7 +4,7 @@
     <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [showCommands]="false" [id]="selection"
       [scrollHeight]="'409px'"></j-tree-list>
   </div>
-  <div>
+  <div style="display: flex; flex-direction: column;">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
@@ -19,10 +19,10 @@
           (click)="showTree = !showTree" [disabled]="(lds.busy$ | async)" *ngIf="showTreeButton"></button>
       </div>
     </p-toolbar>
-    <div style="display: flex; flex-direction: column; overflow-x: auto">
+    <div>
       <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
         sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection"
-        [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'409px'"
+        [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'415px'"
         [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
         [lazyLoadOnInit]="false">
 

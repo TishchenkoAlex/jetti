@@ -1,6 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { Subscription } from 'rxjs';
 import { CatalogOperation } from '../../../../../../jetti-api/server/models/Catalogs/Catalog.Operation';
 import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
@@ -8,20 +7,20 @@ import { DocumentOperation } from '../../../../../../jetti-api/server/models/Doc
 import { FormControlInfo } from '../../common/dynamic-form/dynamic-form-base';
 import { getFormGroup } from '../../common/dynamic-form/dynamic-form.service';
 import { BaseDocFormComponent } from '../../common/form/base.form.component';
+import { take } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.Default,
   template: `
   <j-form></j-form>`
 })
-export class OperationFormComponent implements AfterViewInit, OnDestroy {
-  private _subscription$: Subscription = Subscription.EMPTY;
+export class OperationFormComponent implements AfterViewInit {
 
   get form() { return this.super.form; }
   set form(value) { this.super.form = value; }
   get Operation() { return this.form.get('Operation')!; }
 
-  @ViewChild(BaseDocFormComponent, {static: false}) super: BaseDocFormComponent;
+  @ViewChild(BaseDocFormComponent, { static: false }) super: BaseDocFormComponent;
 
   async ngAfterViewInit() {
     this.form['metadata']['copyTo'] = [];
@@ -60,9 +59,7 @@ export class OperationFormComponent implements AfterViewInit, OnDestroy {
       this.form['metadata']['commands'].push(item);
     }
 
-    this._subscription$.unsubscribe();
-    this._subscription$ = this.Operation.valueChanges
-      .subscribe(v => this.update(v).then(() => this.super.cd.markForCheck()));
+    this.Operation.valueChanges.pipe(take(1)).subscribe(async v => await this.update(v));
   }
 
   update = async (value) => {
@@ -99,14 +96,10 @@ export class OperationFormComponent implements AfterViewInit, OnDestroy {
     const Prop = doc.Prop() as DocumentOptions;
     this.form['metadata'] = { ...Prop };
 
-    this.super.cd.markForCheck();
-    this.ngAfterViewInit();
+    await this.ngAfterViewInit();
   }
 
   Close = () => this.super.Close();
   focus = () => this.super.focus();
 
-  ngOnDestroy() {
-    this._subscription$.unsubscribe();
-  }
 }

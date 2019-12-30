@@ -3,29 +3,31 @@ import { NextFunction, Request, Response } from 'express';
 import { ISuggest } from '../models/common-types';
 import { SDB } from './middleware/db-sessions';
 import { StorageType } from '../models/document';
+import { FormListFilter } from '../models/user.settings';
 
 export const router = express.Router();
 
-router.get('/suggest/:type', async (req: Request, res: Response, next: NextFunction) => {
-  const sdb = SDB(req);
-  const type = req.params.type as string;
-  const filter = req.query.filter as string;
-  const storageType = req.query.storageType as StorageType;
+router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const type = req.params.type as string;
+    const filter = req.query.filter as string;
+    const filters = req.body.filters as FormListFilter[];
 
-  let storageTypeFilter = '(1 = 1)';
-  if (storageType === 'folders') storageTypeFilter = 'isfolder = 1';
-  else if (storageType === 'items') storageTypeFilter = 'isfolder = 0';
+    let filterQuery = `(1 = 1)`;
+    filters.forEach(f => {
+      const value = f.right.id ? f.right.id : f.right;
+      filterQuery += `
+    AND [${f.left}] = N'${value}'`;
+    });
 
-  const query = `
+    const query = `
     SELECT top 10 id as id, description as value, code as code, type as type, isfolder
-    FROM "Documents" WHERE type = N'${type}' AND ${storageTypeFilter}
+    FROM [${type}.v] WITH (NOEXPAND) WHERE ${filterQuery}
     AND (description LIKE @p1 OR code LIKE @p1)
     ORDER BY type, description, code`;
 
-  try {
-    await sdb.tx(async tx => {
-      const data = await tx.manyOrNone<ISuggest>(query, ['%' + filter + '%']);
-      res.json(data);
-    });
+    const data = await sdb.manyOrNone<ISuggest>(query, ['%' + filter + '%']);
+    res.json(data);
   } catch (err) { next(err); }
 });

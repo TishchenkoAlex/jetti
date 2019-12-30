@@ -57,7 +57,7 @@
     <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
       <p-autoComplete #ac [formControl]="suggest" [suggestions]="Suggests$ | async" [required]="required"
         [readonly]="readOnly" autocomplete="off" (completeMethod)="getSuggests($event.query)" field="value"
-        (onSelect)="this.value = this.suggest.value" [inputStyle]="inputStyle" (onClear)="handleReset($event)"
+        (onSelect)="this.value = this.suggest.value" [inputStyle]="inputStyle"
         dataKey="id" (onFocus)="this.focus.emit($event)" (onBlur)="onBlur($event)" [autoHighlight]="true"
         spellcheck="false" appendTo="body" [disableControl]="disabled">
         <ng-template let-data pTemplate="item">
@@ -81,7 +81,7 @@
 </form>
 
 <p-dialog *ngIf="showDialog" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
-  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '550px', width: '900px'}" [appendTo]="appendTo">
+  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '600px', width: '900px'}" [appendTo]="appendTo">
 
   <p-header>
     {{this.placeholder}}
