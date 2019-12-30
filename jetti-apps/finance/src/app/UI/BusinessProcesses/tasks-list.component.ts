@@ -71,17 +71,17 @@ export class TaskListComponent implements OnInit {
 
   fillColums(): void {
     this.columns = [
-      { field: 'TaskID', header: 'Задача №', type: 'number', style: { 'text-align': 'center', 'width': '5em' } },
+      { field: 'TaskID', header: 'Задача №', type: 'string', style: { 'text-align': 'center', 'width': '5em' } },
       { field: 'TaskDate', header: 'Дата', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
       { field: 'TaskName', header: 'Задача', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
       // {field: 'ProcessID', header: 'Процесс №'},
       { field: 'Subdivision', header: 'Подразделение', type: 'string', style: { 'text-align': 'center', 'width': '12em' } },
       { field: 'ItemName', header: 'Статья ДДС', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
-      { field: 'Summ', header: 'Сумма', type: 'number', style: { 'text-align': 'center', 'width': '5em' } },
+      { field: 'Summ', header: 'Сумма', type: 'number', style: { 'text-align': 'right', 'width': '8em' } },
       // { field: 'AutorName', header: 'Автор', type: 'string', style: {'text-align': 'center', 'width' : '15em'} },
       { field: 'UserDecision', header: 'Решение', type: 'string', style: { 'text-align': 'center', 'width': '8em' } },
       { field: 'ControlDate', header: 'Cрок', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
-      { field: 'HoursRemaining', header: 'Остаток, ч', type: 'number', style: { 'text-align': 'center', 'width': '5em' } },
+      { field: 'HoursRemaining', header: 'Остаток, ч', type: 'string', style: { 'text-align': 'center', 'width': '5em' } },
       { field: 'Comment', header: 'Комментарий', type: 'string', style: { 'text-align': 'center', 'width': '12em' } }
     ];
     this.columnsLength = this.columns.length;

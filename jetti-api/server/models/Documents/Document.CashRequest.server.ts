@@ -22,8 +22,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'company':
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (!company) { return {}; }
-        const currency = await lib.doc.formControlRef(company.currency!, tx);
-        return { currency };
+        const сurrency = await lib.doc.formControlRef(company.currency!, tx);
+        return { сurrency };
       case 'CashFlow':
         return {};
       case 'CashRecipient':
@@ -44,7 +44,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'Contract':
         const emptyCatalogContract: RefValue = { code: '', id: '', type: 'Catalog.Counterpartie.BankAccount', value: '' };
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
-        if (!CatalogContractObject) { return { CashRecipientBankAccount: emptyCatalogContract }; }
+        if (!CatalogContractObject || !CatalogContractObject.BankAccount) { return { CashRecipientBankAccount: emptyCatalogContract }; }
         const CashRecipientBankAccount = await lib.doc.formControlRef(CatalogContractObject.BankAccount, tx);
         if (!CashRecipientBankAccount) { return { CashRecipientBankAccount: emptyCatalogContract }; }
         return { CashRecipientBankAccount };
@@ -100,21 +100,22 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     if (this.Status === 'APPROVED') {
       // CashToPay
       Registers.Accumulation.push(new RegisterAccumulationCashToPay({
-        kind: false,
+        kind: true,
         CashRecipient: this.CashRecipient,
         Amount: this.Amount,
+        date: this.PayDay,
         PayDay: this.PayDay,
         CashRequest: this.id,
         currency: сurrency,
         CashFlow: this.CashFlow,
-        Contract: this.Contract,
-        CashOrBank: this.CashOrBank,
-        Loan: this.Loan,
+        // Contract: this.Contract,
+        // CashOrBank: this.CashOrBank,
+        // Loan: this.Loan,
         OperationType: this.Operation,
-        Department: this.Department,
-        ExpenseAnalytics: this.ExpenseAnalytics,
-        ExpenseOrBalance: this.ExpenseOrBalance,
-        BalanceAnalytics: this.BalanceAnalytics
+        // Department: this.Department,
+        // ExpenseAnalytics: this.ExpenseAnalytics,
+        // ExpenseOrBalance: this.ExpenseOrBalance,
+        // BalanceAnalytics: this.BalanceAnalytics
       }));
     }
 

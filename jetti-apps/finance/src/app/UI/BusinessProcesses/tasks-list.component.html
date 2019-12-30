@@ -82,7 +82,7 @@
           <span *ngSwitchCase="'date'">
             <span>
               {{rowData[column.field]  || ''  | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
-          <span *ngSwitchCase="'number'">{{rowData[column.field] | number:'1.0'}}</span>
+          <span style="text-align: right;" *ngSwitchCase="'number'">{{rowData[column.field] | number:'1.2-4'}}</span>
           <span *ngSwitchCase="'boolean'">
             <i *ngIf="rowData[column.field]" class="fa fa-check-square"></i>
             <i *ngIf="!rowData[column.field]" class="fa fa-square-o"></i>

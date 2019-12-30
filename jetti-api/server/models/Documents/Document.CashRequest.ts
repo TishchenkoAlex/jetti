@@ -9,7 +9,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { user: 'Catalog.User' },
   ],
   icon: 'fa fa-file-text-o',
-  menu: 'Заявка на ДС',
+  menu: 'Заявки на ДС',
   prefix: 'CR-',
   copyTo: [
     'Document.Operation'
@@ -20,14 +20,23 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
 })
 export class DocumentCashRequest extends DocumentBase {
 
-  @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
+  @Props({ type: 'datetime', label: 'Дата', order: 1 })
+  date = new Date();
+
+  @Props({ type: 'string', label: 'Номер', required: true, order: 2, style: { width: '135px' } })
+  code = '';
+
+  @Props({ type: 'string', label: 'Комментарий', hiddenInList: true, order: -1, controlType: 'textarea' })
+  info = '';
+
+  @Props({ type: 'Types.Document', label: 'Основание', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.User', hiddenInList: false, order: -1 })
+  @Props({ type: 'Catalog.User', label: 'Автор', hiddenInList: false, order: 21 })
   user: Ref = null;
 
   @Props({
-    type: 'enum', required: true, value: [
+    type: 'enum', required: true, style: { width: '100px' }, order: 7, label: 'Статус', value: [
       'PREPARED',
       'AWAITING',
       'APPROVED',
@@ -37,7 +46,7 @@ export class DocumentCashRequest extends DocumentBase {
   Status = 'PREPARED';
 
   @Props({
-    type: 'enum', required: true, value: [
+    type: 'enum', required: true, order: 8, label: 'Вид операции', value: [
       'Оплата поставщику',
       'Перечисление налогов и взносов',
       'Оплата ДС в другую организацию',
@@ -50,8 +59,11 @@ export class DocumentCashRequest extends DocumentBase {
   })
   Operation = 'Оплата поставщику';
 
+  @Props({ type: 'Catalog.Company', order: 3, label: 'Организация', required: true, onChangeServer: true , style: { width: '250px' }})
+  company: Ref = null;
+
   @Props({
-    type: 'enum', value: [
+    type: 'enum', hiddenInList: true, label: 'Вид платежа', value: [
       'BODY',
       'PERCENT',
       'SHARE',
@@ -61,7 +73,9 @@ export class DocumentCashRequest extends DocumentBase {
   PaymentKind = 'BODY';
 
   @Props({
-    type: 'enum', required: true,  value: [
+    type: 'enum', required: true, style: { width: '140px' },
+    label: 'Тип платежа',
+    value: [
       'CASH',
       'BANK',
       'ANY'
@@ -69,25 +83,37 @@ export class DocumentCashRequest extends DocumentBase {
   })
   CashKind = 'ANY';
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
   Department: Ref = null;
 
-  @Props({ type: 'Types.CashRecipient', required: true, onChangeServer: true })
+  @Props({ type: 'Types.CashRecipient',
+  required: true,
+  onChangeServer: true,
+  label: 'Получатель',
+ })
   CashRecipient: Ref = null;
 
   @Props({
-    type: 'Catalog.Contract', required: true, onChangeServer: true, owner: [
+    type: 'Catalog.Contract',
+    hiddenInList: true,
+    required: true,
+    onChangeServer: true,
+    label: 'Договор',
+    owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'currency', filterBy: 'currency' }]
   })
   Contract: Ref = null;
 
-  @Props({ type: 'Catalog.CashFlow', required: true })
+  @Props({ type: 'Catalog.CashFlow', label: 'Статья ДДС', required: true })
   CashFlow: Ref = null;
 
   @Props({
-    type: 'Catalog.Loan', owner: [
+    type: 'Catalog.Loan',
+     hiddenInList: true,
+     label: 'Договор кредита/займа',
+     owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'currency', filterBy: 'currency' }]
@@ -96,6 +122,7 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'Types.CashOrBank',
+    label: 'Источник',
     owner: [
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'сurrency', filterBy: 'currency' }
@@ -105,6 +132,7 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'Catalog.Counterpartie.BankAccount',
+    label: 'Счет получателя',
     owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },
       { dependsOn: 'сurrency', filterBy: 'currency' }
@@ -113,31 +141,35 @@ export class DocumentCashRequest extends DocumentBase {
   CashRecipientBankAccount: Ref = null;
 
   @Props({
-    type: 'Types.CashOrBank',
+    type: 'Types.CashOrBank', hiddenInList: true,
+    label: 'Касса/банк получателя',
     owner: [
       { dependsOn: 'сurrency', filterBy: 'currency' }
     ]
   })
   CashOrBankIn: Ref = null;
 
-  @Props({ type: 'date' })
+  @Props({ type: 'date',
+  hiddenInList: true,
+  label: 'Дата платежа'
+ })
   PayDay = new Date();
 
-  @Props({ type: 'number', required: true, style: { width: '50px' } })
+  @Props({ type: 'number', label: 'Сумма', required: true,  order: 4, style: { width: '100px', align: 'right' } })
   Amount = 0;
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })
   сurrency: Ref = null;
 
-  @Props({ type: 'Types.ExpenseOrBalance' })
+  @Props({ type: 'Types.ExpenseOrBalance', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseOrBalance: Ref = null;
 
-  @Props({ type: 'Catalog.Expense.Analytics' })
+  @Props({ type: 'Catalog.Expense.Analytics', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseAnalytics: Ref = null;
 
-  @Props({ type: 'Catalog.Balance.Analytics' })
+  @Props({ type: 'Catalog.Balance.Analytics', label: 'Бизнес-процесс №', hiddenInList: true })
   BalanceAnalytics: Ref = null;
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
 }

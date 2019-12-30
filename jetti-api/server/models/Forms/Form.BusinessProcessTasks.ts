@@ -3,9 +3,9 @@ import { Props, Ref } from '../document';
 
 @JForm({
   type: 'Form.BusinessProcessTasks',
-  description: 'Business process tasks list',
+  description: 'Мои задачи',
   icon: 'fa fa-money',
-  menu: 'Tasks list',
+  menu: 'Список задач',
 })
 export class FormBusinessProcessTasks extends FormBase {
 
