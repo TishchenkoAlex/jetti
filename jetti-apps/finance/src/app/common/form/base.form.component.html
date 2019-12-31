@@ -100,7 +100,7 @@
     <div *ngFor="let r of relations">
       <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
         <j-list *ngIf="!relation.collapsed" [type]="r.type" [pageSize]=10
-          [settings]="{order: [], filter: [{left: r.field, center: '=', right: {id: model.id, type: model.type, value: model.description}}]}">
+          [settings]="{order: [], filter: [{left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
         </j-list>
       </p-panel>
     </div>
