@@ -158,7 +158,7 @@ export class ApiService {
     const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}command/${doc.type}/${command}`;
     const callConfig = { doc: apiDoc, args: args };
-    return this.http.post<PatchValue>(query, callConfig).toPromise();
+    return this.http.post<{[x: string]: any}>(query, callConfig).toPromise();
   }
 
   jobAdd(data: any, opts?: any) {

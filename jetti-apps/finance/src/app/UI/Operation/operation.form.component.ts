@@ -17,7 +17,6 @@ import { take } from 'rxjs/operators';
 export class OperationFormComponent implements AfterViewInit {
 
   get form() { return this.super.form; }
-  set form(value) { this.super.form = value; }
   get Operation() { return this.form.get('Operation')!; }
 
   @ViewChild(BaseDocFormComponent, { static: false }) super: BaseDocFormComponent;
@@ -61,14 +60,13 @@ export class OperationFormComponent implements AfterViewInit {
 
     this.Operation.valueChanges.pipe(take(1)).subscribe(async v => {
       await this.update(v);
-      this.super.initForm(this.form);
       this.super.form = this.form;
       setTimeout(() => this.super.cd.detectChanges());
     });
   }
 
   update = async (value) => {
-    const oldValue = Object.assign({}, this.super.model);
+    const oldValue = Object.assign({}, this.super.viewModel);
 
     const Operation = value.id ? await this.super.ds.api.byId(value.id) : { doc: { Parameters: [] } };
     const view = {};

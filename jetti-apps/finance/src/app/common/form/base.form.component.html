@@ -1,4 +1,4 @@
-<form novalidate [formGroup]="form" cdkTrapFocus>
+<form novalidate [formGroup]="Form" cdkTrapFocus>
   <p-panel #mp [header]="description?.value?.concat(isPosted ? ', [posted]' : ', [unposted]')" [toggleable]="true">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
@@ -92,8 +92,8 @@
   </p-panel>
 
   <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #accumulation *ngIf="isDoc && isPosted">
-    <j-register-movement *ngIf="!accumulation.collapsed" [doc]="model"></j-register-movement>
-    <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="model"></j-register-accumulation-list>
+    <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
+    <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-accumulation-list>
   </p-panel>
 
   <div *ngIf="isFolder === false">

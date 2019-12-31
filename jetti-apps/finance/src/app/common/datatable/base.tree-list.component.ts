@@ -42,7 +42,7 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
         return this.api.tree(this.type).pipe(
           map(tree => <TreeNode[]>[{
             label: '(All)',
-            data: { id: undefined, description: '(All)' },
+            data: { id: undefined, description: '(All)', type: this.type, value: null, code: null},
             expanded: true,
             expandedIcon: 'fa fa-folder-open',
             collapsedIcon: 'fa fa-folder',
@@ -74,7 +74,7 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
     return tree.filter(el => el.parent === parent).map(el => {
       return <TreeNode>{
         label: el.description,
-        data: { id: el.id, description: el.description },
+        data: { id: el.id, description: el.description, type: this.type, value: el.description, code: null },
         expanded: true,
         expandedIcon: 'fa fa-folder-open',
         collapsedIcon: 'fa fa-folder',

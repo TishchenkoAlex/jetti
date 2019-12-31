@@ -72,7 +72,7 @@
       <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind"
         (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="disabled"></button>
       <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen"
-        [disabled]="!value?.value || disabled" (click)="handleOpen($event)" [tabIndex]=-1></button>
+        (click)="handleOpen($event)" [tabIndex]=-1></button>
       <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear"
         (click)="handleReset($event)" [tabIndex]=-1 [disabled]="disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
@@ -86,13 +86,19 @@
   <p-header>
     {{this.placeholder}}
   </p-header>
-  <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
+  <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
+    [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
   </j-suggest-list>
   <p-footer>
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-          [disabled]="sl.selection?.length !== 1" (click)="sl.select(sl.selection[0])"></button>
+          [disabled]="storageType === 'all' ? 
+            !(sl.tl?.selection || sl.selection[0]) : 
+            !sl.selection[0]" 
+          (click)="storageType === 'all' ? 
+            searchComplete(sl.tl?.selection?.data || sl.selection[0]) : 
+            searchComplete(sl.selection[0])"></button>
       </div>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"

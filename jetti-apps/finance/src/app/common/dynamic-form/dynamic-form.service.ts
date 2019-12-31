@@ -7,7 +7,7 @@ import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
 import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl } from './dynamic-form-base';
-import { StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { StorageType, DocumentOptions, PropOptions } from '../../../../../../jetti-api/server/models/document';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
@@ -184,7 +184,8 @@ export class DynamicFormService {
 
   getViewModel(type: string, schema: { [x: string]: any; }, model: { [x: string]: any; }) {
     const form = getFormGroup(schema, model, true);
-    form['metadata'] = createDocument(type as DocTypes).Prop() as DocumentOptions;
+    const doc = createDocument(type as DocTypes);
+    form['metadata'] = doc.Prop() as DocumentOptions;
     return form;
   }
 }

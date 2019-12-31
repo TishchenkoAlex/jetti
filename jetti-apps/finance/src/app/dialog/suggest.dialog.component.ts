@@ -5,7 +5,7 @@ import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
-import { DocumentBase, DocumentOptions } from '../../../../../jetti-api/server/models/document';
+import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { createDocument } from '../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -29,6 +29,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   @Input() type: DocTypes;
   @Input() id: string;
   @Input() uuid: string;
+  @Input() storageType: StorageType;
   @Input() pageSize = 100;
   @Input() settings: FormListSettings = new FormListSettings();
   @Output() Select = new EventEmitter<ISuggest>();
@@ -161,6 +162,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   }
 
   parentChange(event) {
+    this.selection = [];
     this.id = null;
     this.filters['parent'] = {
       matchMode: '=',
