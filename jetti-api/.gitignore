@@ -46,5 +46,6 @@ testem.log
 .DS_Store
 Thumbs.db
 .env
+/.env
 /.firebase
 package-lock.json
