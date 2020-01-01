@@ -67,7 +67,6 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     try { this.doc = createDocument(this.type); } catch { }
     const schema = this.doc ? this.doc.Props() : {};
     const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
-    const hierarchy = this.doc ? (this.doc.Prop() as DocumentOptions).hierarchy : 'elements';
     [...data, ...dimensions].forEach(el => {
       const field = Object.keys(el)[0]; const type = el[field];
       columns.push({

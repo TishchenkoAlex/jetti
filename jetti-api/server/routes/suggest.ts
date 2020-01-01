@@ -15,7 +15,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
     const filters = req.body.filters as FormListFilter[];
 
     let filterQuery = `(1 = 1)`;
-    filters.forEach(f => {
+    filters.filter(e => e.right !== undefined).forEach(f => {
       const value = f.right.id ? f.right.id : f.right;
       filterQuery += `
     AND [${f.left}] = N'${value}'`;

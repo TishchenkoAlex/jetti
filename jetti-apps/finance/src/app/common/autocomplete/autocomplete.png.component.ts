@@ -173,7 +173,8 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
       }
     }
     if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
-    if (this.storageType === 'items') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
+    if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
+    if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
     if (this.type.startsWith('Document.')) {
       const doc = this.formControl && this.formControl.root.value;
       if (doc && doc.company.id) {

@@ -43,6 +43,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         Operation = createDocument<DocumentCashRequest>('Document.Operation');
       }
       const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
+      if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
       await OperationServer.baseOn!(row.CashRequest, tx);
       OperationServer['Amount'] = row.Amount;
       if (row.LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);

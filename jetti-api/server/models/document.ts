@@ -5,7 +5,7 @@ import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
 export interface ICommand { command: string; label: string; color?: string; icon: string; }
-export type StorageType = 'folders' | 'items' | 'all';
+export type StorageType = 'folders' | 'elements' | 'all';
 
 export interface PropOptions {
   type: AllTypes | AllTypes[];
@@ -132,6 +132,10 @@ export class DocumentBase {
     this.targetProp(proto, 'date').hidden = proto.isCatalog;
     this.targetProp(proto, 'date').required = proto.isDoc;
     this.targetProp(proto, 'company').required = proto.isCatalog !== true;
+    const p = this.Prop() as DocumentOptions;
+    if (p && p.hierarchy === 'folders') this.targetProp(proto, 'parent').storageType = 'folders';
+    else if (p && p.hierarchy === 'elements') this.targetProp(proto, 'parent').storageType = 'elements';
+    else this.targetProp(proto, 'parent').storageType = 'elements';
 
     const result: { [x: string]: PropOptions } = {};
     for (const prop of Object.keys(proto)) {

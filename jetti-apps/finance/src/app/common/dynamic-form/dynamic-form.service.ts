@@ -69,7 +69,7 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const owner = prop['owner'] || null;
       const onChange = prop['onChange'];
       const onChangeServer = !!prop['onChangeServer'];
-      const storageType = prop['storageType'] as StorageType || 'items';
+      const storageType = prop['storageType'] as StorageType || 'elements';
       let value = prop['value'];
       let newControl: FormControlInfo;
       const controlOptions: IFormControlInfo = {

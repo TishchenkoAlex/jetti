@@ -80,6 +80,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this.showTree = (Doc.Prop() as DocumentOptions).hierarchy === 'folders';
     this.showTreeButton = this.showTree;
+    if (this.showTree) this.settings.filter.push({left: 'isfolder', center: '=', right: false});
 
     const scrollHeight = () => {
       return window.innerHeight - this.tbl.el.nativeElement.offsetTop - 115;

@@ -158,7 +158,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       reject: this.focus.bind(this),
       key: this.id
     });
-    this.cd.detectChanges();
+    this.cd.markForCheck();
   }
 
   focus() {
@@ -177,7 +177,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
 
   commandOnSever(method: string) {
     console.log(this.Form.value);
-    this.ds.api.onCommand(this.Form.value, method, {}).then(value => {
+    this.ds.api.onCommand(this.Form.getRawValue(), method, {}).then(value => {
       console.log(value);
       const form = this.dss.getViewModel(this.type, this.Form['schema'], value);
       this.form = form;

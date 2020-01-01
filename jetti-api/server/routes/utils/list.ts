@@ -13,8 +13,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   const cs = configSchema.get(params.type);
   let { QueryList, Props, Prop } = cs!;
-  const isHierarchy = Prop?.hierarchy === 'folders';
-  if (isHierarchy) QueryList = QueryList + ' WHERE d.isfolder = 0 ';
 
   let row: DocumentBase | null = null;
   let query = '';
