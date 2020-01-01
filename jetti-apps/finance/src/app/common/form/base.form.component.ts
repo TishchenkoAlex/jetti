@@ -49,14 +49,17 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   get isNew() { return !this.Form.get('timestamp').value; }
   get isFolder() { return !!this.Form.get('isfolder').value; }
   get commands() {
-    return (this.metadata['commands'] as any[] || []).map(c =>
-      <MenuItem>({
+    return (this.metadata['commands'] as any[] || []).map(c => {
+      if (c && typeof c.command === 'function') return c;
+      return (<MenuItem>{
         label: c.label, icon: c.icon,
         command: () => this.commandOnSever(c.command)
-      }));
+      });
+    });
   }
   get copyTo() {
     return (this.metadata['copyTo'] as any[] || []).map(c => {
+      if (c && typeof c.command === 'function') return c;
       const { description, icon } = createDocument(c).Prop() as DocumentOptions;
       return (<MenuItem>{ label: description, icon, command: (event) => this.baseOn(c) });
     });
@@ -173,7 +176,9 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   }
 
   commandOnSever(method: string) {
+    console.log(this.Form.value);
     this.ds.api.onCommand(this.Form.value, method, {}).then(value => {
+      console.log(value);
       const form = this.dss.getViewModel(this.type, this.Form['schema'], value);
       this.form = form;
       setTimeout(() => this.cd.detectChanges());

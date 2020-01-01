@@ -131,9 +131,9 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       serverDoc.posted = false;
 
       const deleted = await tx.none(`
-        ELETE FROM "Register.Account" WHERE document = @p1 and date = @p2;
-        DELETE FROM "Register.Info" WHERE document = @p1 and date = @p2;
-        DELETE FROM "Accumulation" WHERE document = @p1 and date = @p2;
+        DELETE FROM "Register.Account" WHERE document = @p1;
+        DELETE FROM "Register.Info" WHERE document = @p1;
+        DELETE FROM "Accumulation" WHERE document = @p1;
         UPDATE "Documents" SET deleted = @p3, posted = @p4 WHERE id = @p1;
       `, [id, serverDoc.date, serverDoc.deleted, 0]);
 

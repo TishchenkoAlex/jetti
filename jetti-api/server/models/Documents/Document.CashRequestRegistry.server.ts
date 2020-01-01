@@ -1,8 +1,13 @@
 import { PostResult } from '../post.interfaces';
 import { MSSQL } from '../../mssql';
-import { IServerDocument } from '../documents.factory.server';
+import { IServerDocument, createDocumentServer } from '../documents.factory.server';
 import { DocumentCashRequestRegistry, CashRequest } from './Document.CashRequestRegistry';
-import { buildViewModel } from '../../routes/documents';
+import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
+import { lib } from '../../std.lib';
+import { DocumentCashRequest } from './Document.CashRequest';
+import e = require('express');
+import { createDocument } from '../documents.factory';
+import { insertDocument, updateDocument } from '../../routes/utils/post';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -20,9 +25,33 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       case 'Fill':
         await this.Fill(tx);
         return this;
+      case 'Create':
+        await this.Create(tx);
+        return this;
       default:
         return this;
     }
+  }
+
+  private async Create(tx: MSSQL) {
+    if (this.Status !== 'APPROVED') throw new Error(`document!`);
+    for (const row of this.CashRequests.filter(c => (c.Amount > 0))) {
+      let Operation: DocumentCashRequest | null;
+      if (row.LinkedDocument) {
+        Operation = await lib.doc.byIdT<DocumentCashRequest>(row.LinkedDocument, tx);
+      } else {
+        Operation = createDocument<DocumentCashRequest>('Document.Operation');
+      }
+      const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
+      await OperationServer.baseOn!(row.CashRequest, tx);
+      OperationServer['Amount'] = row.Amount;
+      if (row.LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+      await lib.doc.postById(OperationServer.id, tx);
+      row.LinkedDocument = OperationServer.id;
+    }
+    // this.Post(true, tx);
+    await updateDocument(this, tx);
+    await lib.doc.postById(this.id, tx);
   }
 
   private async Fill(tx: MSSQL) {
@@ -42,10 +71,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         AND Balance.[currency] = @p3
       GROUP BY
         Balance.[currency], Balance.[CashRequest]
+      HAVING SUM(Balance.[Amount]) > 0
       SELECT
         CRT.[CashRequest] AS CashRequest
        , CAST(DocCR.[Amount] AS MONEY) AS CashRequestAmount
-       , CAST(CRT.[AmountBalance] - DocCR.[Amount] AS MONEY) AS AmountPaid
+       , -(CAST(CRT.[AmountBalance] - DocCR.[Amount] AS MONEY)) AS AmountPaid
        , CRT.[AmountBalance] AS AmountBalance
        , CAST(0 AS MONEY) AS AmountRequest
        , DATEDIFF(DAY, GETDATE(), DocCR.[PayDay]) AS Delayed
@@ -86,8 +116,28 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
-    for (const row of this.CashRequests) {
+
+    if (this.Status === 'REJECTED') return Registers;
+
+    for (const row of this.CashRequests
+        .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {
+      if ((row.AmountRequest > row.AmountBalance) ||
+        (row.Amount > row.AmountBalance)) {
+        throw new Error('field [AmountRequest] or [Amount] is out of [AmountBalance]!');
+      }
+      const CashRequestObject = (await lib.doc.byIdT<DocumentCashRequest>(row.CashRequest, tx))!;
+      Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+        kind: false,
+        CashRecipient: row.CashRecipient,
+        Amount: ['PREPARED', 'AWAITING'].indexOf(this.Status) > -1 ? row.AmountRequest : row.Amount,
+        PayDay: CashRequestObject.PayDay,
+        CashRequest: row.CashRequest,
+        currency: this.сurrency,
+        CashFlow: this.CashFlow,
+        OperationType: CashRequestObject.Operation,
+      }));
     }
+    Registers.Accumulation = Registers.Accumulation.filter((r: RegisterAccumulationCashToPay) => r.Amount > 0);
     return Registers;
   }
 

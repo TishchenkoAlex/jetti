@@ -7,14 +7,20 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'Реестр оплат',
   prefix: 'CRR-',
   commands: [
-    { command: 'Fill', icon: 'pi pi-plus', label: 'Заполнить' }
+    { command: 'Fill', icon: 'pi pi-plus', label: 'Заполнить' },
+    { command: 'Create', icon: 'pi pi-plus', label: 'Создать документы' }
   ],
 })
 export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
+  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'],
+  onChange: function (doc: DocumentCashRequestRegistry, value) {
+    if (doc.Status  === 'APPROVED') {
+      return { Amount: 1 };
+    }
+  } })
   Status = 'PREPARED';
 
   @Props({ type: 'Catalog.CashFlow', storageType: 'all' })
@@ -48,19 +54,25 @@ export class CashRequest {
   @Props({ type: 'number', label: 'Cash request amount', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
   CashRequestAmount = 0;
 
-  @Props({ type: 'number', label: 'Paid amount', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  @Props({ type: 'number', label: 'Paid/ToPay amount', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
   AmountPaid = 0;
 
   @Props({ type: 'number', label: 'Amount balance', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
   AmountBalance = 0;
 
-  @Props({ type: 'number', label: 'Amount request', readOnly: false, style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  @Props({ type: 'number', label: 'Amount request', readOnly: false,
+    style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1 })
   AmountRequest = 0;
 
   @Props({ type: 'number', label: '#AP', readOnly: true, style: { width: '60px', textAlign: 'center' } })
   Delayed = 0;
 
-  @Props({ type: 'number', label: 'Amount', required: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  @Props({ type: 'number', label: 'Amount', required: true,
+    style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1,
+    onChange: function (doc: CashRequest, value) {
+      return { Confirm: value > 0 ? true : false};
+    } },
+    )
   Amount = 0;
 
   @Props({ type: 'boolean', label: 'Cnfrm', style: { width: '50px', textAlign: 'center' } })
@@ -80,7 +92,7 @@ export class CashRequest {
     { dependsOn: 'currency', filterBy: 'currency' }], required: true })
   CashRecipientBankAccount: Ref = null;
 
-  @Props({ type: 'number', label: '#BA', readOnly: true, style: { width: '100px', textAlign: 'right' } })
+  @Props({ type: 'number', label: '#BA', readOnly: true, style: { width: '40px', textAlign: 'right' } })
   CountOfBankAccountCashRecipient = 0;
 
   @Props({ type: 'Types.Document', label: 'Linked document', readOnly: true })
