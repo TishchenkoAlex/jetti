@@ -23,7 +23,8 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
 
     const query = `
     SELECT top 10 id as id, description as value, code as code, type as type, isfolder
-    FROM [${type}.v] WITH (NOEXPAND) WHERE ${filterQuery}
+    FROM [${type}.v] WITH (NOEXPAND)
+    WHERE ${filterQuery}
     AND (description LIKE @p1 OR code LIKE @p1)
     ORDER BY type, description, code`;
 

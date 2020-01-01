@@ -66,7 +66,7 @@ router.get('/CashRequestDesktop', async (req: Request, res: Response, next: Next
     (select  [company], [CashRequest],[CashOrBank], [CashRecipient], [currency],
     -SUM(Amount) [Amount],
     -SUM(Amount) [AmountToPay]
-    FROM [dbo].[Register.Accumulation.CashToPay] r WITH (NOEXPAND)
+    FROM [dbo].[Register.Accumulation.CashToPay] r -- WITH (NOEXPAND)
     GROUP BY [company], [CashRequest],[CashOrBank], [CashRecipient], [currency]
     HAVING SUM(Amount) < 0) r
     LEFT JOIN [Catalog.Company] Company ON Company.id =r.[company]

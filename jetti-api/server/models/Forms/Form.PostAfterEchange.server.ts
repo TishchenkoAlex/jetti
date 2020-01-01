@@ -20,7 +20,8 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
         ${this.rePost ? `` : ` AND posted = 0 `} AND deleted = 0 and type LIKE 'Document.%' AND
         [ExchangeBase] IS NOT NULL AND
         company IS NOT NULL AND
-        ( company IN (SELECT id FROM [Catalog.Company.v] WITH (NOEXPAND) WHERE parent = @p1) OR company = @p1)
+        ( company IN (SELECT id FROM [Catalog.Company.v] WITH (NOEXPAND)
+        WHERE parent = @p1) OR company = @p1)
       GROUP BY company
       HAVING COUNT(*) >0
       ORDER BY 2 DESC`;

@@ -201,7 +201,7 @@ async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: 
 
   const queryText = `
     SELECT TOP 1 CAST([Rate] AS FLOAT) / CASE WHEN [Mutiplicity] > 0 THEN [Mutiplicity] ELSE 1 END result
-    FROM [Register.Info.ExchangeRates]
+    FROM [Register.Info.ExchangeRates] WITH (NOEXPAND)
     WHERE (1=1)
       AND date <= @p1
       AND company = @p2
@@ -218,7 +218,7 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   let where = ''; for (const el of Object.keys(analytics)) { where += addWhere(el); }
 
   const queryText = `
-    SELECT TOP 1 * FROM [Register.Info.${type}]
+    SELECT TOP 1 * FROM [Register.Info.${type}] WITH (NOEXPAND)
     WHERE (1=1)
       AND date <= @p1
       AND company = @p2
@@ -267,13 +267,13 @@ async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
 
 async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
   const result = await tx.manyOrNone<{ Storehouse: Ref, SKU: Ref, Cost: number }>(`
-    SELECT q.*, JSON_VALUE(d.doc, N'$."Department"') Department FROM (
+    SELECT q.*, Storehouse.Department Department FROM (
       SELECT Storehouse, SKU, SUM([Cost]) [Cost]
       FROM [dbo].[Register.Accumulation.Inventory] r
       WHERE date <= EOMONTH(@p1) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN Documents d ON d.id = q.Storehouse`, [date, company]);
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 

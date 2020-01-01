@@ -15,28 +15,28 @@ export class SQLGenegatorMetadata {
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') {
         return `
-        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}') "${prop}"`;
       }
       if (type === 'number') {
         return `
-        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) AS MONEY), 0) "${prop}"
-        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, 0) AS MONEY), 0) "${prop}.In"
-        , ISNULL(CAST(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 0, 1) AS MONEY), 0) "${prop}.Out"`;
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) "${prop}"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1,  null) "${prop}.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, null,  1) "${prop}.Out"`;
       }
       if (type === 'date') {
         return `
-        , ISNULL(TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATE, '1970-01-01', 102)) "${prop}"`;
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
       }
       if (type === 'datetime') {
         return `
-        , ISNULL(TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`;
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
       }
       return `
-        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}" \n`;
+        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.${prop}')) "${prop}" \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')), '00000000-0000-0000-0000-000000000000') "${prop}"`;
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -58,19 +58,22 @@ export class SQLGenegatorMetadata {
     }
 
     const query = `
+    RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
+    GO
     CREATE OR ALTER VIEW [${type}]
     WITH SCHEMABINDING
     AS
     SELECT
-      id, ISNULL(parent, '00000000-0000-0000-0000-000000000000') parent, date, document, company, kind, calculated
-        , ISNULL(TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')), 1) exchangeRate${select}
+      id, parent, date, document, company, kind, calculated
+        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate${select}
       FROM dbo.[Accumulation] WHERE type = N'${type}';
     GO
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      company,date,calculated,id
-    ) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](company,date,calculated,id)
+      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      GO
+    RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
     `;
     return query;
@@ -84,8 +87,6 @@ export class SQLGenegatorMetadata {
     }
     query = `
     ${query}
-    CREATE UNIQUE NONCLUSTERED INDEX [id.Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory]([id])
-    GO
     EXEC [rpt].[CreateIndexReportHelper]
     GO
     `;
@@ -97,26 +98,26 @@ export class SQLGenegatorMetadata {
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') {
         return `
-        , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
       }
       if (type === 'number') {
         return `
-        , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')), 0) "${prop}"`;
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
       }
       if (type === 'date') {
         return `
-        , ISNULL(TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATE, '1970-01-01', 102)) "${prop}"`;
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
       }
       if (type === 'datetime') {
         return `
-        , ISNULL(TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127), TRY_CONVERT(DATETIME, '1970-01-01', 102)) "${prop}"`;
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
       }
       return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')), '00000000-0000-0000-0000-000000000000') "${prop}"`;
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -148,7 +149,7 @@ export class SQLGenegatorMetadata {
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      date,company,id
+      company,date,id
     )
     GO
     `;
