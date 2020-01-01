@@ -90,7 +90,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
         this.Form.markAsPristine();
-        this.Close();
+        this.close();
       });
 
     this._descriptionSubscription$ = merge(...[
@@ -105,7 +105,6 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
       this.form = formGroup;
       setTimeout(() => this.cd.detectChanges());
-
     });
   }
 
@@ -138,17 +137,12 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
     const tab = this.tabStore.state.tabs.find(t => t.docID === this.id);
     if (tab) {
       this.tabStore.close(tab);
-      const parentTab = this.tabStore.state.tabs.find(t => t.docType === this.type && !t.docID);
-      if (parentTab) {
-        this.router.navigate([parentTab.docType, parentTab.docID]);
-      } else {
-        const returnTab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
-        this.router.navigate([returnTab.docType, returnTab.docID]);
-      }
+      const returnTab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
+      this.router.navigate([returnTab.docType, returnTab.docID]);
     }
   }
 
-  Close() {
+  close() {
     if (this.Form.pristine) { this._close(); return; }
     this.ds.confirmationService.confirm({
       header: 'Discard changes and close?',
@@ -158,7 +152,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
       reject: this.focus.bind(this),
       key: this.id
     });
-    this.cd.markForCheck();
+    this.cd.detectChanges();
   }
 
   focus() {

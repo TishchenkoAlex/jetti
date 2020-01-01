@@ -102,7 +102,7 @@ export class OperationFormComponent implements AfterViewInit {
     await this.ngAfterViewInit();
   }
 
-  Close = () => this.super.Close();
+  close = () => this.super.close();
   focus = () => this.super.focus();
 
 }

@@ -93,8 +93,8 @@ export class TabControllerComponent {
     (event.originalEvent as Event).stopImmediatePropagation();
     const tab = this.tabStore.state.tabs[event.index];
     const component = this.components.find(e => e.id === tab.docID && e.type === tab.docType);
-    if (component && component.componentRef.instance.Close) {
-      component.componentRef.instance.Close();
+    if (component && component.componentRef.instance.close) {
+      component.componentRef.instance.close();
     } else {
       this.tabStore.close(tab);
       const returnTab = this.tabStore.state.tabs[this.tabStore.state.selectedIndex];
