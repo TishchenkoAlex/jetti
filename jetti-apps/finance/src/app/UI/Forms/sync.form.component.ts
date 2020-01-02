@@ -29,8 +29,8 @@ export class SyncFormComponent  {
   get docDescription() { return <string>this.form['metadata'].description; }
   get v() { return <FormControlInfo[]>this.form['orderedControls']; }
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
-  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.type === 'table'); }
-  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.type === 'table'); }
+  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.controlType === 'table'); }
+  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
   get description() { return <FormControl>this.form.get('description'); }
 
   data = [];

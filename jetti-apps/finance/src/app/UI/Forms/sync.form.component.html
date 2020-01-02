@@ -14,15 +14,15 @@
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
         *ngFor="let i of [0,3,6,9,12,15]">
         <div fxFlex>
-          <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].type !== 'table' && v[i+0].controlType !== 'script'"
+          <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
             [control]="v[i+0]" [form]="form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].type !== 'table' && v[i+1].controlType !== 'script'"
+          <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
             [control]="v[i+1]" [form]="form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].type !== 'table' && v[i+2].controlType !== 'script'"
+          <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
             [control]="v[i+2]" [form]="form"></j-control>
         </div>
       </div>

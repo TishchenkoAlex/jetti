@@ -42,8 +42,8 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   get v() { return <FormControlInfo[]>this.form['orderedControls']; }
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
   get viewModel() { return this.form.getRawValue(); }
-  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.type === 'table'); }
-  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.type === 'table'); }
+  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.controlType === 'table'); }
+  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
   get description() { return <FormControl>this.form.get('description'); }
   get isPosted() { return <boolean>!!this.form.get('posted')!.value; }
   get isDeleted() { return <boolean>!!this.form.get('deleted')!.value; }
@@ -69,7 +69,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: max-line-length
     // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable();
     // tslint:disable-next-line: max-line-length
-    this._OperationChanges$ = this.form.get('Operation').valueChanges.subscribe(v => { this.onOperationChanges() });
+    this._OperationChanges$ = this.form.get('Operation').valueChanges.subscribe(v => { this.onOperationChanges(); });
 
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))

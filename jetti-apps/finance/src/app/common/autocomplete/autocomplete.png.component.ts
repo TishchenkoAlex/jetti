@@ -14,6 +14,7 @@ import { createDocument } from '../../../../../../jetti-api/server/models/docume
 import { v1 } from 'uuid';
 import { DocService } from '../doc.service';
 import { filter } from 'rxjs/operators';
+import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -46,7 +47,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   @Input() showFind = true;
   @Input() showClear = true;
   @Input() showLabel = true;
-  @Input() type = '';
+  @Input() type: AllTypes;
   @Input() inputStyle: { [x: string]: any };
   @Input() checkValue = true;
   @Input() openButton = true;

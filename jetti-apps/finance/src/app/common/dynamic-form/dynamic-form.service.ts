@@ -6,10 +6,10 @@ import { createForm } from '../../../../../../jetti-api/server/models/Forms/form
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
-import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl } from './dynamic-form-base';
-import { StorageType, DocumentOptions, PropOptions } from '../../../../../../jetti-api/server/models/document';
+import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes } from './dynamic-form-base';
+import { StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { DocTypes, AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 export function cloneFormGroup(formGroup: FormGroup): FormGroup {
   const newFormGroup = new FormGroup({});
@@ -58,8 +58,8 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const hidden = !!prop['hidden'];
       const order = hidden ? -1 : prop['order'] * 1 || 999;
       const label: string = prop['label'] || key.toString();
-      const type: string = prop['type'] || 'string';
-      const controlType: string = prop['controlType'] || prop['type'] || 'string';
+      const type = prop['type'] || 'string' as AllTypes;
+      const controlType = prop['controlType'] || prop['type'] || 'string' as ControlTypes;
       const required = !!prop['required'];
       const readOnly = !!prop['readOnly'];
       const disabled = !!prop['disabled'];
@@ -70,10 +70,13 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const onChange = prop['onChange'];
       const onChangeServer = !!prop['onChangeServer'];
       const storageType = prop['storageType'] as StorageType || 'elements';
+      const headerStyle = prop['headerStyle'];
+      const showLabel = prop['showLabel'] || true;
+      const valuesOptions = prop['valuesOptions'] || [];
       let value = prop['value'];
       let newControl: FormControlInfo;
       const controlOptions: IFormControlInfo = {
-        key, label, type: controlType, required, readOnly,
+        key, label, type: controlType, required, readOnly, headerStyle, showLabel, valuesOptions, controlType,
         hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType
       };
       switch (controlType) {
@@ -102,8 +105,11 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
           newControl = new TextareaFormControl(controlOptions);
           break;
         case 'enum':
-            newControl = new EnumFormControl(controlOptions);
-            break;
+          newControl = new EnumFormControl(controlOptions);
+          break;
+        case 'link':
+          newControl = new EnumFormControl(controlOptions);
+          break;
         default:
           if (type.includes('.')) {
             controlOptions.type = controlType; // здесь нужен тип ссылки
@@ -144,8 +150,8 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
   formGroup['schema'] = schema;
 
   controls = [
-    ...controls.filter(el => el.order > 0 && el.type !== 'table' && !(el.key === 'f1' || el.key === 'f2' || el.key === 'f3')),
-    ...controls.filter(el => el.order > 0 && el.type === 'table' && !(el.key === 'f1' || el.key === 'f2' || el.key === 'f3')),
+    ...controls.filter(el => el.order > 0 && el.controlType !== 'table' && !(el.key === 'f1' || el.key === 'f2' || el.key === 'f3')),
+    ...controls.filter(el => el.order > 0 && el.controlType === 'table' && !(el.key === 'f1' || el.key === 'f2' || el.key === 'f3')),
     ...controls.filter(el => el.order <= 0 && !(el.key === 'f1' || el.key === 'f2' || el.key === 'f3'))
   ];
   const byKeyControls: { [s: string]: FormControlInfo } = {};
@@ -175,7 +181,7 @@ export class DynamicFormService {
   }
 
   getFormView$(type: FormTypes) {
-    const form = createForm({type: type});
+    const form = createForm({ type: type });
     const view = form.Props();
     const result = getFormGroup(view, {}, false);
     result['metadata'] = form.Prop();

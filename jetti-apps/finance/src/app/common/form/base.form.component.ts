@@ -41,7 +41,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   get relations() { return (this.Form['metadata'].relations || []) as Relation[]; }
   get v() { return <FormControlInfo[]>this.Form['orderedControls']; }
   get vk() { return <{ [key: string]: FormControlInfo }>this.Form['byKeyControls']; }
-  get tables() { return (<FormControlInfo[]>this.Form['orderedControls']).filter(t => t.type === 'table'); }
+  get tables() { return (<FormControlInfo[]>this.Form['orderedControls']).filter(t => t.controlType === 'table'); }
   get hasTables() { return this.tables.length > 0; }
   get description() { return <FormControl>this.Form.get('description'); }
   get isPosted() { return <boolean>!!this.Form.get('posted').value; }

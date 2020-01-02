@@ -83,7 +83,8 @@ export type PrimitiveTypes =
   'json' |
   'javascript'|
   'textarea' |
-  'enum';
+  'enum' |
+  'link';
 
 export type ComplexTypes =
   'Types.Document' |

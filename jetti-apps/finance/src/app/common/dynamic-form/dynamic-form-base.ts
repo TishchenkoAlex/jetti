@@ -1,11 +1,14 @@
 import { StorageType } from '../../../../../../jetti-api/server/models/document';
+import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
 
-export type ControlTypes = 'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'table' | 'enum';
+export type ControlTypes =
+  'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'table' |
+  'enum' | 'link' | 'textarea' | 'autocomplete' | 'script';
 
 export interface IFormControlInfo {
-  type: string;
+  type: AllTypes;
   key: string;
   label: string;
   required: boolean;
@@ -21,10 +24,14 @@ export interface IFormControlInfo {
   onChangeServer?: boolean;
   value: any;
   storageType: StorageType;
+  controlType: ControlTypes;
+  headerStyle: { [key: string]: any };
+  showLabel: boolean;
+  valuesOptions: { label: string, value: string | null }[];
 }
 
 export class FormControlInfo {
-  type: string;
+  type: AllTypes;
   key: string;
   label: string;
   required: boolean;
@@ -32,18 +39,18 @@ export class FormControlInfo {
   hidden: boolean;
   disabled?: boolean;
   order: number;
-  controlType: string;
   style: { [key: string]: any };
-  headerStyle: { [key: string]: any };
   owner?: OwnerRef[];
   totals: number;
-  showLabel: boolean;
-  storageType: StorageType;
-  value: any;
-  valuesOptions: { label: string, value: string | null }[];
   change: string;
   onChange?: ((doc: any, value: any) => Promise<any>) | string;
   onChangeServer?: boolean;
+  value: any;
+  storageType: StorageType;
+  controlType: ControlTypes;
+  headerStyle: { [key: string]: any };
+  showLabel: boolean;
+  valuesOptions: { label: string, value: string | null }[];
 
   constructor(options: IFormControlInfo) {
     this.type = options.type;
@@ -71,21 +78,31 @@ export class FormControlInfo {
 }
 
 export class TextboxFormControl extends FormControlInfo {
-  controlType = 'string';
-  type = 'string';
   constructor(options: IFormControlInfo) {
     super(options);
+    this.type = 'string';
+    this.controlType = 'string';
+    if (options.style) this.style = options.style;
+    if (this.value === undefined) this.value = '';
+  }
+}
+
+export class LinkFormControl extends FormControlInfo {
+  constructor(options: IFormControlInfo) {
+    super(options);
+    this.type = 'string';
+    this.controlType = 'link';
     if (options.style) this.style = options.style;
     if (this.value === undefined) this.value = '';
   }
 }
 
 export class EnumFormControl extends FormControlInfo {
-  value = '';
-  controlType = 'enum';
-  type = 'string';
   constructor(options: IFormControlInfo) {
     super(options);
+    this.controlType = 'enum';
+    this.type = 'string';
+    this.value = '';
     if (options.style) this.style = options.style;
     this.valuesOptions = [
       { label: '', value: null },
@@ -96,85 +113,87 @@ export class EnumFormControl extends FormControlInfo {
 }
 
 export class TextareaFormControl extends FormControlInfo {
-  controlType = 'textarea';
-  type = 'string';
-  style = { 'min-width': '100%' };
   constructor(options: IFormControlInfo) {
     super(options);
+    this.type = 'string';
+    this.controlType = 'textarea';
+    this.style = { 'min-width': '100%' };
     if (options.style) this.style = options.style;
     if (this.value === undefined) this.value = '';
   }
 }
 
 export class BooleanFormControl extends FormControlInfo {
-  controlType = 'boolean';
-  type = 'boolean';
-  style = { 'min-width': '24px', 'max-width': '24px', 'width': '90px', 'text-align': 'center', 'margin-top': '26px' };
   constructor(options: IFormControlInfo) {
     super(options);
+    this.controlType = 'boolean';
+    this.type = 'boolean';
+    this.style = { 'min-width': '24px', 'max-width': '24px', 'width': '90px', 'text-align': 'center', 'margin-top': '26px' };
     if (options.style) this.style = options.style;
     if (this.value === undefined) this.value = false;
   }
 }
 
 export class DateFormControl extends FormControlInfo {
-  controlType = 'date';
-  type = 'date';
-  style = { 'min-width': '130px', 'max-width': '130px', 'width': '130px' };
   constructor(options: IFormControlInfo) {
     super(options);
+    this.type = 'date';
+    this.controlType = 'date';
+    this.style = { 'min-width': '130px', 'max-width': '130px', 'width': '130px' };
     if (options.style) this.style = options.style;
   }
 }
 
 export class DateTimeFormControl extends FormControlInfo {
-  controlType = 'datetime';
-  type = 'datetime';
-  style = { 'min-width': '195px', 'max-width': '195px', 'width': '195px' };
   constructor(options: IFormControlInfo) {
     super(options);
+    this.controlType = 'datetime';
+    this.type = 'datetime';
+    this.style = { 'min-width': '195px', 'max-width': '195px', 'width': '195px' };
     if (options.style) this.style = options.style;
   }
 }
 
 export class NumberFormControl extends FormControlInfo {
-  controlType = 'number';
-  type = 'number';
-  style = { 'min-width': '100px', 'max-width': '100px', 'width': '100px', 'text-align': 'right' };
   constructor(options: IFormControlInfo) {
     super(options);
+    this.controlType = 'number';
+    this.type = 'number';
+    this.style = { 'min-width': '100px', 'max-width': '100px', 'width': '100px', 'text-align': 'right' };
     if (options.style) this.style = options.style;
     if (this.value === undefined) this.value = 0;
   }
 }
 
 export interface IComplexObject {
-  id: string | null; value: string | null; code: string | null; type: string | null; data?: any | null;
+  id: string | null; value: string | null; code: string | null; type: AllTypes | null; data?: any | null;
 }
 
 export class AutocompleteFormControl extends FormControlInfo {
-  controlType = 'autocomplete';
-  style = { 'width': '250px', 'min-width': '250px', 'max-width': '250px' };
-  value: IComplexObject = { id: null, code: null, type: this.type, value: null };
+  value: IComplexObject;
   constructor(options: IFormControlInfo) {
     super(options);
+    this.controlType = 'autocomplete';
+    this.style = { 'width': '250px', 'min-width': '250px', 'max-width': '250px' };
     if (options.style) this.style = options.style;
+    this.value = { id: null, code: null, type: this.type, value: null };
   }
 }
 
 export class TableDynamicControl extends FormControlInfo {
-  controlType = 'table';
-  type = 'table';
   controls: FormControlInfo[] = [];
+  constructor(options: IFormControlInfo) {
+    super(options);
+    this.controlType = 'table';
+  }
 }
 
 export class ScriptFormControl extends FormControlInfo {
-  controlType = 'script';
-  type = 'javascipt';
-  style = { 'width': '600px', 'min-width': '600px', 'max-width': '600px' };
-
   constructor(options: IFormControlInfo) {
     super(options);
+    this.type = 'javascript';
+    this.style = { 'width': '600px', 'min-width': '600px', 'max-width': '600px' };
+    this.controlType = 'script';
     if (options.style) this.style = options.style;
     if (options.type) this.type = options.type;
     if (this.value === undefined) this.value = '';
