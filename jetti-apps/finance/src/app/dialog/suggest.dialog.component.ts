@@ -115,7 +115,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
   private setFilters() {
     this.settings.filter
-      .filter(c => !!c.right)
+      .filter(c => !(c.right === null || c.right === undefined))
       .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
   }
 

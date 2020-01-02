@@ -101,7 +101,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
 
   }
 
-  Refresh() {
+  refresh() {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
       this.form = formGroup;
       setTimeout(() => this.cd.detectChanges());
@@ -119,16 +119,16 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   }
 
   Save() { this.showDescription(); this.ds.save(this.viewModel); }
-  Delete() { this.ds.delete(this.viewModel.id); }
-  Post() { const doc = this.viewModel; this.ds.post(doc); }
+  delete() { this.ds.delete(this.viewModel.id); }
+  post() { const doc = this.viewModel; this.ds.post(doc); }
   unPost() { this.ds.unpost(this.viewModel); }
-  PostClose() { const doc = this.viewModel; this.ds.post(doc, true); }
-  Copy() {
+  postClose() { const doc = this.viewModel; this.ds.post(doc, true); }
+  copy() {
     return this.router.navigate(
       [this.viewModel.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
   }
 
-  Goto() {
+  goto() {
     return this.router.navigate([this.viewModel.type],
       { queryParams: { goto: this.id, posted: this.viewModel.posted }, replaceUrl: true });
   }
@@ -170,9 +170,7 @@ export class BaseDocFormComponent implements OnInit, OnDestroy {
   }
 
   commandOnSever(method: string) {
-    console.log(this.Form.value);
     this.ds.api.onCommand(this.Form.getRawValue(), method, {}).then(value => {
-      console.log(value);
       const form = this.dss.getViewModel(this.type, this.Form['schema'], value);
       this.form = form;
       setTimeout(() => this.cd.detectChanges());

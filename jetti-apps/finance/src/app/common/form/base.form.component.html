@@ -3,19 +3,19 @@
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Post&Close"
-          class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="PostClose()"
+          class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
           *ngIf="!isDeleted"></button>
         <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="Post()" *ngIf="!isDeleted && isDoc"></button>
+          [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()" *ngIf="!isDeleted && isDoc"></button>
         <button pButton type="button" id="unPost" icon="fa fa-square-o" class="ui-button-secondary"
           [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
           *ngIf="!isDeleted && isPosted && isDoc"></button>
         <button pButton type="button" id="Save" icon="fa fa-floppy-o" class="ui-button-secondary"
           [disabled]="!form.valid || (lds.busy$ | async)" (click)="Save()" *ngIf="!isPosted || !isDoc"></button>
         <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="Copy()" *ngIf="!isDeleted && !isNew"></button>
+          [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
         <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger" *ngIf="!isNew"
-          (click)="Delete()" [disabled]="(lds.busy$ | async)"></button>
+          (click)="delete()" [disabled]="(lds.busy$ | async)"></button>
       </div>
       <div class="ui-toolbar-group-right">
         <p-splitButton *ngIf="copyTo?.length" [model]="copyTo" styleClass="ui-button-secondary" label="base on">
@@ -24,12 +24,12 @@
         </p-splitButton>
         <!--         <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
         [disabled]="(lds.busy$ | async)"></button> -->
-        <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="Goto()"
+        <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="goto()"
           [disabled]="(lds.busy$ | async)"></button>
         <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
           [disabled]="(lds.busy$ | async)"></button>
         <button *ngIf="isPosted" pButton type="button" icon="pi pi-refresh" class="ui-button-secondary"
-          [disabled]="(lds.busy$ | async)" (click)="Refresh()"></button>
+          [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
       </div>
     </p-toolbar>
 
