@@ -8,7 +8,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   prefix: 'CRR-',
   commands: [
     { command: 'Fill', icon: 'pi pi-plus', label: 'Заполнить' },
-    { command: 'Create', icon: 'pi pi-plus', label: 'Создать документы' }
+    { command: 'Create', icon: 'pi pi-plus', label: 'Создать документы' },
+    { command: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст' }
   ],
 })
 export class DocumentCashRequestRegistry extends DocumentBase {

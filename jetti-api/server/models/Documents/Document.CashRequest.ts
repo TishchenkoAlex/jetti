@@ -29,6 +29,9 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'string', label: 'Комментарий', hiddenInList: true, order: -1, controlType: 'textarea' })
   info = '';
 
+  // @Props({ type: 'string', label: 'Назначение платежа', hiddenInList: true, order: -1, controlType: 'textarea'})
+  // paymantInfo = '';
+
   @Props({ type: 'Types.Document', label: 'Основание', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
@@ -172,4 +175,5 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
+
 }

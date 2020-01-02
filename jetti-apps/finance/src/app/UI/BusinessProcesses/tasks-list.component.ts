@@ -1,14 +1,11 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { BPApi } from 'src/app/services/bpapi.service';
-import { take, debounceTime } from 'rxjs/operators';
-import { SelectItem, SortMeta } from 'primeng/api';
+import { take } from 'rxjs/operators';
+import { SelectItem } from 'primeng/api';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { FilterUtils } from 'primeng/components/utils/filterutils';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DocService } from 'src/app/common/doc.service';
-import { FilterMetadata } from 'primeng/components/common/filtermetadata';
-import { FormListSettings, FormListFilter, FormListOrder } from '../../../../../../jetti-api/server/models/user.settings';
-import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
 import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
 import { Router } from '@angular/router';
 import { ITask } from './task.object';
@@ -34,18 +31,11 @@ import { ITask } from './task.object';
 export class TaskListComponent implements OnInit {
   locale = calendarLocale; dateFormat = dateFormat;
 
-  settings = new FormListSettings();
-  Tasks: {};
   Tasks$: Observable<ITask[]>;
   columns: { field: string, header: string, type: string, style: {} }[];
   UserDecisions: SelectItem[];
   columnsLength: number;
-  filters: { [s: string]: FilterMetadata } = {};
-  multiSortMeta: SortMeta[] = [];
   TaskComp = false;
-
-  private _debonceSubscription$: Subscription = Subscription.EMPTY;
-  private debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   constructor(public TaskService: BPApi, public ds: DocService, public router: Router, public cd: ChangeDetectorRef) {
   }
@@ -53,10 +43,6 @@ export class TaskListComponent implements OnInit {
   ngOnInit() {
     this.loadTasks();
     this.fillColums();
-    this.setFilters();
-
-    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(1000))
-      .subscribe(event => this._update(event.col, event.event, event.center));
 
     FilterUtils['custom'] = (value, filter): boolean => {
       if (filter === undefined || filter === null || filter.trim() === '') {
@@ -87,36 +73,8 @@ export class TaskListComponent implements OnInit {
     this.columnsLength = this.columns.length;
   }
 
-  update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
-    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
-      if (typeof event !== 'boolean') event = null;
-    }
-    this.debonce$.next({ col, event, center });
-  }
-
-  private _update(col: ColumnDef | undefined, event, center) {
-    if (!col) return;
-    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
-    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.prepareDataSource(this.multiSortMeta);
-  }
-
-  prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
-    const order = multiSortMeta
-      .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
-    const Filter = Object.keys(this.filters)
-      .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
-    this.settings = { filter: Filter, order };
-  }
-
   open(task: ITask) {
     this.router.navigate([task.baseType, task.baseId]);
-  }
-
-  private setFilters() {
-    this.settings.filter
-      .filter(c => !(c.right == null || c.right === undefined))
-      .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
   }
 
   async loadTasks() {
