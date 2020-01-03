@@ -8,6 +8,8 @@ import { DocumentCashRequest } from './Document.CashRequest';
 import e = require('express');
 import { createDocument } from '../documents.factory';
 import { insertDocument, updateDocument } from '../../routes/utils/post';
+import { BankStatementUnloader } from '../../fuctions/bankStatementUnloader';
+import { DB_NAME } from '../../env/environment';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -28,13 +30,16 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       case 'Create':
         await this.Create(tx);
         return this;
+      case 'UnloadToText':
+        await this.UnloadToText(tx);
+        return this;
       default:
         return this;
     }
   }
 
   private async Create(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`document!`);
+    if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
     for (const row of this.CashRequests.filter(c => (c.Amount > 0))) {
       let Operation: DocumentCashRequest | null;
       if (row.LinkedDocument) {
@@ -55,10 +60,18 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     await lib.doc.postById(this.id, tx);
   }
 
+  private async UnloadToText(tx: MSSQL) {
+    if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
+    const CashRequests = this.CashRequests.filter(c => (c.LinkedDocument!)).map(c => (c.LinkedDocument));
+    this.info = await BankStatementUnloader.getBankStatementAsString(CashRequests, tx);
+    await updateDocument(this, tx);
+    await lib.doc.postById(this.id, tx);
+  }
+
   private async Fill(tx: MSSQL) {
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
     this.CashRequests = [];
-    const query = `
+    let query = `
       SELECT
         Balance.[currency] AS сurrency,
         Balance.[CashRequest] AS CashRequest,
@@ -93,6 +106,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       LEFT JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest]
       ORDER BY Delayed, AmountBalance DESC;`;
 
+    query = query.replace('[sm]', `[${DB_NAME}]`);
+
     const CashRequests = await tx.manyOrNone<CashRequest>(query, [this.company, this.CashFlow, this.сurrency]);
     for (const row of CashRequests) {
       this.CashRequests.push({
@@ -121,7 +136,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status === 'REJECTED') return Registers;
 
     for (const row of this.CashRequests
-        .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {
+      .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {
       if ((row.AmountRequest > row.AmountBalance) ||
         (row.Amount > row.AmountBalance)) {
         throw new Error('field [AmountRequest] or [Amount] is out of [AmountBalance]!');

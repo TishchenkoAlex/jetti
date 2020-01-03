@@ -1,20 +1,23 @@
-<div>
-  <div class="ui-inputgroup">
-    <p-button (click)="loadTasks()" label="Обновить" styleClass="ui-button-info"></p-button>
-    <div style="text-align: right" class="ui-g-offset-9">
-      <input type="text" pInputText size="50" placeholder="Строка поиска"
+<div style="display: flex; flex-direction: column; overflow-x: auto">
+  <ng-content></ng-content>
+
+  <p-toolbar>
+    <div class="ui-toolbar-group-left">
+      <button pButton type="button" (click)="loadTasks()" label="Обновить" styleClass="ui-button-info"></button>
+    </div>
+    <div class="ui-toolbar-group-right">
+      <input type="text" placeholder="Строка поиска"
         (input)="Tasklist.filterGlobal($event.target.value, 'contains')" style="width:auto">
     </div>
-  </div>
-  <br>
+  </p-toolbar>
 
   <p-table #Tasklist [columns]="columns" [value]="Tasks$ | async" dataKey="TaskID" sortMode="multiple" dataKey="TaskID"
     [resizableColumns]="true" [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision']">
     <ng-template pTemplate="colgroup" let-columns>
       <colgroup>
-          <col>
-          <col *ngFor="let column of Tasklist.columns">
-          <col>
+        <col>
+        <col *ngFor="let column of Tasklist.columns">
+        <col>
       </colgroup>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
@@ -27,48 +30,6 @@
         </th>
         <th style="width:25em">Действие</th>
       </tr>
-      <!-- <tr >
-      <th></th>
-      <th *ngFor="let column of Tasklist.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
-      class="ui-fluid ui-column-filter">
-      <div *ngSwitchCase="'boolean'">
-        <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
-          (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
-      </div>
-      <div *ngSwitchCase="'number'">
-        <input [ngModel]="filters[column.field]?.value" pInputText type="numeric"
-          (ngModelChange)="update(column, $event, '>=')">
-      </div>
-      <div *ngSwitchCase="'date'">
-        <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
-          readonlyInput="true" [appendTo]="'body'" [locale]="locale" (ngModelChange)="update(column, $event, '=')"
-          [dateFormat]="dateFormat" [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
-        </p-calendar>
-      </div>
-      <div *ngSwitchCase="'date'">
-        <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
-          readonlyInput="true" [appendTo]="'body'" [locale]="locale" (ngModelChange)="update(column, $event, '=')"
-          [dateFormat]="dateFormat" [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
-        </p-calendar>
-      </div>
-      <div *ngSwitchCase="'string'">
-        <input [ngModel]="filters[column.field]?.value" pInputText
-          (ngModelChange)="update(column, $event, 'like')">
-      </div>
-      <div *ngSwitchCase="'enum'">
-        <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value" (ngModelChange)="update(column, $event, 'like')"
-          [showClear]="true" appendTo="body"></p-dropdown>
-      </div>
-      <div *ngSwitchDefault>
-        <j-autocomplete-png [checkValue]="false"
-          [type]="filters[column.field]?.value?.type || column.type || 'string'"
-          [ngModel]="filters[column.field]?.value" [showOpen]="false" [showFind]="true" [showClear]="true"
-          (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
-        </j-autocomplete-png>
-      </div>
-    </th>
-    <th></th>
-  </tr > -->
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns" let-expanded="expanded">
       <tr (dblclick)="open(rowData)">
