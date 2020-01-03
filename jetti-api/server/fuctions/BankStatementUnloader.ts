@@ -54,9 +54,9 @@ export class BankStatementUnloader {
     WHERE Obj.[id] in (@p1)
     order by BAComp.[code], Obj.[date] ;`;
 
-    const DocIds = docsID.map(el => "'" + el + "'").join(',');
+    const DocIds = docsID.map(el => '\'' + el + '\'').join(',');
     query = query.replace('@p1', DocIds).replace('@p1', DocIds);
-    //.replace('@p1', DocIds);
+    // .replace('@p1', DocIds);
     // query = query.replace(/[sm-i]\./g, `[sm-i]`)
 
     return await tx.manyOrNone<[{ key: string, value }]>(query, [docsID]);
@@ -77,7 +77,7 @@ export class BankStatementUnloader {
     for (const row of CashRequestsData) {
       for (const prop of Object.keys(row)) {
         if (prop.search('_ig') === -1) {
-          result += `${spliter}${prop}=${prop === 'Номер' ? this.getShortDocNumber(row[prop]) : row[prop]}`
+          result += `${spliter}${prop}=${prop === 'Номер' ? this.getShortDocNumber(row[prop]) : row[prop]}`;
         }
       }
       result += spliter + 'КонецДокумента';
@@ -100,7 +100,7 @@ export class BankStatementUnloader {
 
   private static getShortDocNumber(docNumber: string): string {
     if (docNumber.split('-').length === 2) {
-      let docNumberArr = docNumber.split('-');
+      const docNumberArr = docNumber.split('-');
       return Number(docNumberArr[1]).toString();
     }
     return docNumber;
