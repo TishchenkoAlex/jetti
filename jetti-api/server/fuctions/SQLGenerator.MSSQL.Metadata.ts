@@ -64,7 +64,7 @@ export class SQLGenegatorMetadata {
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate${select}
       FROM dbo.[Accumulation] WHERE type = N'${type}';
     GO
@@ -337,6 +337,120 @@ export class SQLGenegatorMetadata {
       GO`;
     }
 
+    return query;
+  }
+
+  static RegisterAccumulationClusteredTable(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') {
+        return `
+        , [${prop}] BIT N'$.${prop}'`;
+      }
+      if (type === 'number') {
+        return `
+        , [${prop}] MONEY N'$.${prop}'`;
+      }
+      if (type === 'date') {
+        return `
+        , [${prop}] DATE N'$.${prop}'`;
+      }
+      if (type === 'datetime') {
+        return `
+        , [${prop}] DATETIME N'$.${prop}'`;
+      }
+      return `
+        , [${prop}] NVARCHAR(250) N'$.${prop}'`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `
+        , [${prop}] UNIQUEIDENTIFIER N'$.${prop}'`;
+
+    let insert = ''; let select = ''; let fields = '';
+    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+      const type: string = doc[prop].type || 'string';
+      if (type === 'number') fields += `
+      , d.[${prop}] * IIF(r.kind = 1, 1, -1) [${prop}], d.[${prop}] * IIF(r.kind = 1, 1, null) [${prop}.In], d.[${prop}] * IIF(r.kind = 1, null, 1) [${prop}.Out]`;
+      else fields += ', ' + prop;
+
+      insert += `
+        , "${prop}"`;
+      if (type === 'number') {
+        insert += `
+        , "${prop}.In"
+        , "${prop}.Out"`;
+      }
+
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+    RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [${type}];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate${fields}
+    INTO [${type}]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
+    ) AS d
+    WHERE r.type = N'${type}';
+    GO
+
+    CREATE OR ALTER TRIGGER [${type}.Insert] ON [Accumulation] AFTER INSERT
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      INSERT INTO [${type}]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate${fields}
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
+        ) AS d
+        WHERE r.type = N'${type}';
+    END
+    GO
+
+    CREATE OR ALTER TRIGGER [${type}.Delete] ON [Accumulation] AFTER DELETE
+    AS
+    BEGIN
+	    SET NOCOUNT ON;
+      --DELETE r FROM [${type}] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'${type}');
+      DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
+    GO
+
+    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] WITH (MAXDOP=4);
+
+    RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
+    GO
+    `;
+    return query;
+  }
+
+  static RegisterAccumulationClusteredTables() {
+    let query = '';
+    for (const type of RegisteredRegisterAccumulation) {
+      const register = createRegisterAccumulation({ type: type.type });
+      query += SQLGenegatorMetadata.RegisterAccumulationClusteredTable(register.Props(), register.Prop().type.toString());
+    }
+    query = `
+    ${query}
+    `;
     return query;
   }
 
