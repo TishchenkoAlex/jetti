@@ -1,12 +1,11 @@
-import { DB_NAME } from "../env/environment";
-import { MSSQL } from "../mssql";
+import { MSSQL } from '../mssql';
 
 export class BankStatementUnloader {
 
   private static async getCashRequestsData(docsID: string[], tx: MSSQL) {
 
     let query = `
-    SELECT 
+    SELECT
       N'Платежное поручение' as N'СекцияДокумент'
       ,Obj.[code] as N'Номер'
       ,FORMAT (Obj.[date], 'dd.MM.yyyy')  as N'Дата'
@@ -38,34 +37,34 @@ export class BankStatementUnloader {
       ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig'
       ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig'
       ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig'
-    FROM [sm].[dbo].[Documents] as Obj
+    FROM [dbo].[Documents] as Obj
       LEFT JOIN (
         SELECT
           MAX(docs.[date]) as ed,
           MIN(docs.[date]) as bd
-        FROM [sm].[dbo].[Documents] as docs
+        FROM [dbo].[Documents] as docs
         WHERE docs.[id] in (@p1)) as Dates on 1=1
-    LEFT JOIN [sm].[dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
-    LEFT JOIN [sm].[dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
-    LEFT JOIN [sm].[dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
-    LEFT JOIN [sm].[dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on JSON_VALUE(BASupp.doc, '$.owner') = Supp.id and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
-    LEFT JOIN [sm].[dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
+    LEFT JOIN [dbo].[Documents] as BASupp on JSON_VALUE(BASupp.doc, '$.owner') = Supp.id and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1)
     order by BAComp.[code], Obj.[date] ;`;
 
-    const DocIds =  docsID.map(el => "'" + el + "'").join(',');
-    query = query.replace('[sm-i]',`[${DB_NAME}]`).replace('@p1',DocIds).replace('@p1', DocIds);
-    //.replace('@p1', DocIds);
+    const DocIds =  docsID.map(el => '\'' + el + '\'').join(',');
+    query = query.replace('@p1', DocIds).replace('@p1', DocIds);
+    // .replace('@p1', DocIds);
     // query = query.replace(/[sm-i]\./g, `[sm-i]`)
 
     return await tx.manyOrNone<[{ key: string, value }]>(query, [docsID]);
 
-  } 
+  }
 
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
 
-    const CashRequestsData = await this.getCashRequestsData(docsID, tx)
+    const CashRequestsData = await this.getCashRequestsData(docsID, tx);
 
     if (!CashRequestsData.length) {
       return '';
@@ -74,10 +73,10 @@ export class BankStatementUnloader {
     let result = '';
     const spliter = '\n';
 
-    for (const row of CashRequestsData) { 
+    for (const row of CashRequestsData) {
       for (const prop of Object.keys(row)) {
-        if (prop.search('_ig')===-1) {
-          result += `${ spliter }${ prop }=${ row[prop] }`
+        if (prop.search('_ig') === -1) {
+          result += `${ spliter }${ prop }=${ row[prop] }`;
         }
       }
       result += spliter + 'КонецДокумента';
@@ -97,5 +96,5 @@ export class BankStatementUnloader {
 
     return '1CClientBankExchange\n' + headFields.map(el => `${el.key}=${el.value}`).join(spliter) + result + '\nКонецФайла';
   }
-    
+
 }
