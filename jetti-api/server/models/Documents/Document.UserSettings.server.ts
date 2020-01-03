@@ -1,17 +1,16 @@
 import { lib } from '../../std.lib';
-import { CatalogUser } from '../Catalogs/Catalog.User';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
-import { DocumentUserSettings, CompanyItems } from './Document.UserSettings';
+import { DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
-import { Ref } from '../document';
 
 export class DocumentUserSettingsServer extends DocumentUserSettings implements IServerDocument {
 
   async AddDescendantsCompany(tx: MSSQL) {
     if (!this.company) throw new Error(`Empty company!`);
-    const companyItems = await tx.manyOrNone<CompanyItems>(`SELECT id company FROM dbo.[Descendants](@p1, '')`, [this.company]);
+    const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
+    const companyItems = await tx.manyOrNone<{company: string}>(query, [this.company]);
     for (const CompanyItem of companyItems) {
       if (this.CompanyList.filter(ci => (ci.company === CompanyItem.company)).length === 0) {
         this.CompanyList.push(CompanyItem);
