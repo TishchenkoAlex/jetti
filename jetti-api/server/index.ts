@@ -80,3 +80,6 @@ script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
 fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => {});
 
 
+script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
+fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => {});
+

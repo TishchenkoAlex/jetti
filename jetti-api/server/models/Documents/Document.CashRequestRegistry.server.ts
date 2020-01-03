@@ -5,11 +5,9 @@ import { DocumentCashRequestRegistry, CashRequest } from './Document.CashRequest
 import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
 import { lib } from '../../std.lib';
 import { DocumentCashRequest } from './Document.CashRequest';
-import e = require('express');
 import { createDocument } from '../documents.factory';
 import { insertDocument, updateDocument } from '../../routes/utils/post';
-import { BankStatementUnloader } from '../../fuctions/bankStatementUnloader';
-import { DB_NAME } from '../../env/environment';
+import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -71,7 +69,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   private async Fill(tx: MSSQL) {
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
     this.CashRequests = [];
-    let query = `
+    const query = `
       SELECT
         Balance.[currency] AS сurrency,
         Balance.[CashRequest] AS CashRequest,

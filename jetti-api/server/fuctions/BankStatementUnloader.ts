@@ -1,12 +1,11 @@
-import { DB_NAME } from "../env/environment";
-import { MSSQL } from "../mssql";
+import { MSSQL } from '../mssql';
 
 export class BankStatementUnloader {
 
   private static async getCashRequestsData(docsID: string[], tx: MSSQL) {
 
     let query = `
-    SELECT 
+    SELECT
       N'Платежное поручение' as N'СекцияДокумент'
       ,Obj.[code] as N'Номер'
       ,FORMAT (Obj.[date], 'dd.MM.yyyy')  as N'Дата'
@@ -55,9 +54,15 @@ export class BankStatementUnloader {
     WHERE Obj.[id] in (@p1)
     order by BAComp.[code], Obj.[date] ;`;
 
+<<<<<<< HEAD
     const DocIds = docsID.map(el => "'" + el + "'").join(',');
     query = query.replace('@p1', DocIds).replace('@p1', DocIds);
     //.replace('@p1', DocIds);
+=======
+    const DocIds =  docsID.map(el => '\'' + el + '\'').join(',');
+    query = query.replace('@p1', DocIds).replace('@p1', DocIds);
+    // .replace('@p1', DocIds);
+>>>>>>> 5d912a4c8dfd9d438f9543bb2e675c459d6646bb
     // query = query.replace(/[sm-i]\./g, `[sm-i]`)
 
     return await tx.manyOrNone<[{ key: string, value }]>(query, [docsID]);
@@ -66,7 +71,7 @@ export class BankStatementUnloader {
 
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
 
-    const CashRequestsData = await this.getCashRequestsData(docsID, tx)
+    const CashRequestsData = await this.getCashRequestsData(docsID, tx);
 
     if (!CashRequestsData.length) {
       return '';
@@ -78,7 +83,11 @@ export class BankStatementUnloader {
     for (const row of CashRequestsData) {
       for (const prop of Object.keys(row)) {
         if (prop.search('_ig') === -1) {
+<<<<<<< HEAD
           result += `${spliter}${prop}=${prop === 'Номер' ? this.getShortDocNumber(row[prop]) : row[prop]}`
+=======
+          result += `${ spliter }${ prop }=${ row[prop] }`;
+>>>>>>> 5d912a4c8dfd9d438f9543bb2e675c459d6646bb
         }
       }
       result += spliter + 'КонецДокумента';
@@ -99,6 +108,7 @@ export class BankStatementUnloader {
     return '1CClientBankExchange\n' + headFields.map(el => `${el.key}=${el.value}`).join(spliter) + result + '\nКонецФайла';
   }
 
+<<<<<<< HEAD
   private static getShortDocNumber(docNumber: string): string {
     if (docNumber.split('-').length === 2) {
       let docNumberArr = docNumber.split('-');
@@ -108,3 +118,6 @@ export class BankStatementUnloader {
   }
 
 }
+=======
+}
+>>>>>>> 5d912a4c8dfd9d438f9543bb2e675c459d6646bb

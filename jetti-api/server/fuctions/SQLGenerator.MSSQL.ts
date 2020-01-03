@@ -519,9 +519,9 @@ export function buildTypesQueryList(select: { type: string; description: string;
       '${row.type}' "type",
       '${row.type}' "code",
       N'${row.description}' "description",
-      1 posted,
-      0 deleted,
-      0 isfolder,
+      CAST(1 AS BIT) posted,
+      CAST(0 AS BIT) deleted,
+      CAST(0 AS BIT) isfolder,
       NULL parent
       UNION ALL\n`;
   }
@@ -538,9 +538,9 @@ export function buildSubcountQueryList(select: { type: string; description: stri
         'Catalog.Subcount' "type",
         '${row.type}' "code",
         N'${row.description}' "description",
-        1 posted,
-        0 deleted,
-        0 isfolder,
+        CAST(1 AS BIT) posted,
+        CAST(0 AS BIT) deleted,
+        CAST(0 AS BIT) isfolder,
         NULL parent
       UNION ALL\n`;
   }

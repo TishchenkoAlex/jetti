@@ -6,7 +6,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) "Employee"
@@ -42,7 +42,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
@@ -80,7 +80,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
@@ -118,7 +118,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) "BankAccount"
@@ -149,7 +149,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) "Balance"
@@ -173,7 +173,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRegister"')) "CashRegister"
@@ -204,7 +204,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Sender"')) "Sender"
@@ -235,7 +235,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Expense"')) "Expense"
@@ -272,7 +272,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) "Loan"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
@@ -311,7 +311,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) "PL"
@@ -335,7 +335,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
@@ -381,7 +381,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.BusinessOperation')) "BusinessOperation" 
 
@@ -413,7 +413,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"')) "CashFlow"
@@ -448,7 +448,7 @@
     WITH SCHEMABINDING
     AS
     SELECT
-      id, parent, date, document, company, kind, calculated
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Scenario"')) "Scenario"
