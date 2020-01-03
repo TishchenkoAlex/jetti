@@ -28,6 +28,7 @@ export class BankStatementUnloader {
       ,BankSupp.description as N'ПолучательБанк1'
       ,JSON_VALUE(BankSupp.doc, '$.Address') as N'ПолучательБанк2'
       ,BankSupp.[code] as N'ПолучательБИК'
+      ,JSON_VALUE(BankSupp.doc, '$.KorrAccount') as N'ПолучательКорсчет'
       ,'01' as N'ВидОплаты'
       ,JSON_VALUE(Supp.doc, '$.Code2') as N'ПолучательКПП'
       ,5 as N'Очередность'
@@ -38,30 +39,30 @@ export class BankStatementUnloader {
       ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig'
       ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig'
       ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig'
-    FROM [sm].[dbo].[Documents] as Obj
+    FROM [dbo].[Documents] as Obj
       LEFT JOIN (
         SELECT
           MAX(docs.[date]) as ed,
           MIN(docs.[date]) as bd
-        FROM [sm].[dbo].[Documents] as docs
+        FROM [dbo].[Documents] as docs
         WHERE docs.[id] in (@p1)) as Dates on 1=1
-    LEFT JOIN [sm].[dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
-    LEFT JOIN [sm].[dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
-    LEFT JOIN [sm].[dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
-    LEFT JOIN [sm].[dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on JSON_VALUE(BASupp.doc, '$.owner') = Supp.id and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
-    LEFT JOIN [sm].[dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
+    LEFT JOIN [dbo].[Documents] as BASupp on JSON_VALUE(BASupp.doc, '$.owner') = Supp.id and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1)
     order by BAComp.[code], Obj.[date] ;`;
 
-    const DocIds =  docsID.map(el => "'" + el + "'").join(',');
-    query = query.replace('[sm-i]',`[${DB_NAME}]`).replace('@p1',DocIds).replace('@p1', DocIds);
+    const DocIds = docsID.map(el => "'" + el + "'").join(',');
+    query = query.replace('@p1', DocIds).replace('@p1', DocIds);
     //.replace('@p1', DocIds);
     // query = query.replace(/[sm-i]\./g, `[sm-i]`)
 
     return await tx.manyOrNone<[{ key: string, value }]>(query, [docsID]);
 
-  } 
+  }
 
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
 
@@ -74,28 +75,36 @@ export class BankStatementUnloader {
     let result = '';
     const spliter = '\n';
 
-    for (const row of CashRequestsData) { 
+    for (const row of CashRequestsData) {
       for (const prop of Object.keys(row)) {
-        if (prop.search('_ig')===-1) {
-          result += `${ spliter }${ prop }=${ row[prop] }`
+        if (prop.search('_ig') === -1) {
+          result += `${spliter}${prop}=${prop === 'Номер' ? this.getShortDocNumber(row[prop]) : row[prop]}`
         }
       }
       result += spliter + 'КонецДокумента';
     }
 
     const headFields = [
-    { key: 'ВерсияФормата', value: '1.02' },
-    { key: 'Кодировка', value: 'Windows' },
-    { key: 'Отправитель', value: '1С:ERP Управление предприятием 2' },
-    { key: 'Получатель', value: '' },
-    { key: 'ДатаСоздания', value: CashRequestsData[0]['ДатаСоздания_ig'] },
-    { key: 'ВремяСоздания', value: CashRequestsData[0]['ВремяСоздания_ig'] },
-    { key: 'ДатаНачала', value: CashRequestsData[0]['ДатаНачала_ig'] },
-    { key: 'ДатаКонца', value: CashRequestsData[0]['ДатаКонца_ig'] },
-    { key: 'РасчСчет', value:  CashRequestsData[0]['ПлательщикСчет'] },
-    { key: 'Документ', value: 'Платежное поручение' }];
+      { key: 'ВерсияФормата', value: '1.02' },
+      { key: 'Кодировка', value: 'Windows' },
+      { key: 'Отправитель', value: '1С:ERP Управление предприятием 2' },
+      { key: 'Получатель', value: '' },
+      { key: 'ДатаСоздания', value: CashRequestsData[0]['ДатаСоздания_ig'] },
+      { key: 'ВремяСоздания', value: CashRequestsData[0]['ВремяСоздания_ig'] },
+      { key: 'ДатаНачала', value: CashRequestsData[0]['ДатаНачала_ig'] },
+      { key: 'ДатаКонца', value: CashRequestsData[0]['ДатаКонца_ig'] },
+      { key: 'РасчСчет', value: CashRequestsData[0]['ПлательщикСчет'] },
+      { key: 'Документ', value: 'Платежное поручение' }];
 
     return '1CClientBankExchange\n' + headFields.map(el => `${el.key}=${el.value}`).join(spliter) + result + '\nКонецФайла';
   }
-    
+
+  private static getShortDocNumber(docNumber: string): string {
+    if (docNumber.split('-').length === 2) {
+      let docNumberArr = docNumber.split('-');
+      return Number(docNumberArr[1]).toString();
+    }
+    return docNumber;
+  }
+
 }

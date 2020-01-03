@@ -77,7 +77,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         Balance.[CashRequest] AS CashRequest,
         SUM(Balance.[Amount]) AS AmountBalance
       INTO #CashRequestBalance
-      FROM [sm].[dbo].[Register.Accumulation.CashToPay] AS Balance -- WITH (NOEXPAND)
+      FROM [dbo].[Register.Accumulation.CashToPay] AS Balance -- WITH (NOEXPAND)
       WHERE (1 = 1)
         AND (Balance.[company]  IN (SELECT id FROM dbo.[Descendants](@p1, '')) OR @p1 IS NULL)
         AND (Balance.[CashFlow] IN (SELECT id FROM dbo.[Descendants](@p2, '')) OR @p2 IS NULL)
@@ -106,15 +106,13 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       LEFT JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest]
       ORDER BY Delayed, AmountBalance DESC;`;
 
-    query = query.replace('[sm]', `[${DB_NAME}]`);
-
     const CashRequests = await tx.manyOrNone<CashRequest>(query, [this.company, this.CashFlow, this.сurrency]);
     for (const row of CashRequests) {
       this.CashRequests.push({
         Amount: row.Amount,
         AmountBalance: row.AmountBalance,
         AmountPaid: row.AmountPaid,
-        AmountRequest: row.AmountRequest,
+        AmountRequest: row.AmountBalance,
         BankAccount: row.BankAccount,
         CashRecipient: row.CashRecipient,
         CashRequest: row.CashRequest,

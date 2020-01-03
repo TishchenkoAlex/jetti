@@ -5,7 +5,10 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'User settings',
   icon: 'fa fa-file-text-o',
   menu: 'User settings',
-  prefix: 'USET-'
+  prefix: 'USET-',
+  commands: [
+    { command: 'AddDescendantsCompany', icon: 'pi pi-plus', label: 'Добавить починенные компании' }
+  ],
 })
 export class DocumentUserSettings extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
@@ -60,7 +63,7 @@ class RoleItems {
   Role: Ref = null;
 }
 
-class CompanyItems {
+export class CompanyItems {
   @Props({ type: 'Catalog.Company', required: true, style: { width: '100%' }})
   company: Ref = null;
 }

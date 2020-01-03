@@ -2,11 +2,22 @@ import { lib } from '../../std.lib';
 import { CatalogUser } from '../Catalogs/Catalog.User';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
-import { DocumentUserSettings } from './Document.UserSettings';
+import { DocumentUserSettings, CompanyItems } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
+import { Ref } from '../document';
 
 export class DocumentUserSettingsServer extends DocumentUserSettings implements IServerDocument {
+
+  async AddDescendantsCompany(tx: MSSQL) {
+    if (!this.company) throw new Error(`Empty company!`);
+    const companyItems = await tx.manyOrNone<CompanyItems>(`SELECT id company FROM dbo.[Descendants](@p1, '')`, [this.company]);
+    for (const CompanyItem of companyItems) {
+      if (this.CompanyList.filter(ci => (ci.company === CompanyItem.company)).length === 0) {
+        this.CompanyList.push(CompanyItem);
+      }
+    }
+  }
 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
@@ -21,6 +32,9 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
     switch (command) {
       case 'company':
         return {};
+      case 'AddDescendantsCompany':
+        await this.AddDescendantsCompany(tx);
+        return this;
       default:
         return {};
     }
@@ -42,7 +56,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
     await lib.util.postMode(true, tx);
 
     await tx.none(`DELETE FROM[rls].[company] WHERE [document] = @p1`, [this.id]);
-    const Users = await tx.manyOrNone<{code: string}>(`
+    const Users = await tx.manyOrNone<{ code: string }>(`
       SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
         SELECT @p1 id
         UNION ALL
