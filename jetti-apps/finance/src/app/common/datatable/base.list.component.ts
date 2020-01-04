@@ -87,10 +87,10 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     };
 
     this.scrollHeight = `${scrollHeight()}px`;
-    this.dataSource.pageSize = Math.round(scrollHeight() / 28);
+    this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28), 1);
     this.resizeObservable$ = fromEvent(window, 'resize')
       .pipe(debounceTime(500), map(evt => {
-        this.dataSource.pageSize = Math.round((scrollHeight() + 42) / 28);
+        this.dataSource.pageSize = Math.max(Math.round((scrollHeight() + 42) / 28), 1);
         const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
         this.dataSource.refresh(id);
         return `${scrollHeight() + 21}px`;
@@ -294,7 +294,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private listen() {
     this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0)this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
+      if (d.length > 0) this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
     });
   }
 
