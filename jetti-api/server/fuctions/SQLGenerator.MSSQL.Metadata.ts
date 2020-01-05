@@ -366,12 +366,13 @@ export class SQLGenegatorMetadata {
     const complexProperty = (prop: string, type: string) => `
         , [${prop}] UNIQUEIDENTIFIER N'$.${prop}'`;
 
-    let insert = ''; let select = ''; let fields = '';
+    let insert = ''; let select = ''; let fields = ''; let columns = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       const type: string = doc[prop].type || 'string';
+      columns += `, [${prop}]`;
       if (type === 'number') fields += `
       , d.[${prop}] * IIF(r.kind = 1, 1, -1) [${prop}], d.[${prop}] * IIF(r.kind = 1, 1, null) [${prop}.In], d.[${prop}] * IIF(r.kind = 1, null, 1) [${prop}.Out]`;
-      else fields += ', ' + prop;
+      else fields += `, [${prop}]`;
 
       insert += `
         , "${prop}"`;
@@ -411,7 +412,7 @@ export class SQLGenegatorMetadata {
       SET NOCOUNT ON;
       INSERT INTO [${type}]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate${fields}
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -426,7 +427,7 @@ export class SQLGenegatorMetadata {
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [${type}] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'${type}');
+      --DELETE r FROM [${type}] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -434,7 +435,10 @@ export class SQLGenegatorMetadata {
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
+      id, parent, date, document, company, kind, calculated, exchangeRate${columns}
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}](id) WITH (MAXDOP=4);
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
@@ -447,6 +451,90 @@ export class SQLGenegatorMetadata {
     for (const type of RegisteredRegisterAccumulation) {
       const register = createRegisterAccumulation({ type: type.type });
       query += SQLGenegatorMetadata.RegisterAccumulationClusteredTable(register.Props(), register.Prop().type.toString());
+    }
+    query = `
+    DROP INDEX IF EXISTS [Documents.parent] ON [dbo].[Documents];
+    CREATE UNIQUE NONCLUSTERED INDEX [Documents.parent] ON [dbo].[Documents]([parent], [id]);
+
+    ${query}
+    `;
+    return query;
+  }
+
+
+  static RegisterAccumulationViewQuery(doc: { [x: string]: any }, type: string) {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'boolean') {
+        return `
+        , [${prop}] BIT N'$.${prop}'`;
+      }
+      if (type === 'number') {
+        return `
+        , [${prop}] MONEY N'$.${prop}'`;
+      }
+      if (type === 'date') {
+        return `
+        , [${prop}] DATE N'$.${prop}'`;
+      }
+      if (type === 'datetime') {
+        return `
+        , [${prop}] DATETIME N'$.${prop}'`;
+      }
+      return `
+        , [${prop}] NVARCHAR(250) N'$.${prop}'`;
+    };
+
+    const complexProperty = (prop: string, type: string) => `
+        , [${prop}] UNIQUEIDENTIFIER N'$.${prop}'`;
+
+    let insert = ''; let select = ''; let fields = '';
+    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+      const type: string = doc[prop].type || 'string';
+      if (type === 'number') fields += `
+      , d.[${prop}] * IIF(r.kind = 1, 1, -1) [${prop}], d.[${prop}] * IIF(r.kind = 1, 1, null) [${prop}.In], d.[${prop}] * IIF(r.kind = 1, null, 1) [${prop}.Out]`;
+      else fields += ', ' + prop;
+
+      insert += `
+        , "${prop}"`;
+      if (type === 'number') {
+        insert += `
+        , "${prop}.In"
+        , "${prop}.Out"`;
+      }
+
+      if (type.includes('.')) {
+        select += complexProperty(prop, type);
+      } else {
+        select += simleProperty(prop, type);
+      }
+    }
+
+    const query = `
+    CREATE OR ALTER VIEW [${type}]
+    AS
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate${fields}
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
+        ) AS d
+        WHERE r.type = N'${type}';
+    GO
+
+    GRANT SELECT,DELETE ON [${type}] TO JETTI;
+    GO
+    `;
+    return query;
+  }
+
+  static RegisterAccumulationView() {
+    let query = '';
+    for (const type of RegisteredRegisterAccumulation) {
+      const register = createRegisterAccumulation({ type: type.type });
+      query += SQLGenegatorMetadata.RegisterAccumulationViewQuery(register.Props(), register.Prop().type.toString());
     }
     query = `
     ${query}

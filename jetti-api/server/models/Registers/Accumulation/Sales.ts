@@ -28,6 +28,9 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Catalog.Storehouse', required: true, dimension: true })
   Storehouse: Ref = null;
 
+  @Props({ type: 'number' })
+  CashShift = 0;
+
   @Props({ type: 'number', resource: true })
   Cost = 0;
 

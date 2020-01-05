@@ -1,4 +1,7 @@
 
+    DROP INDEX IF EXISTS [Documents.parent] ON [dbo].[Documents];
+    CREATE UNIQUE NONCLUSTERED INDEX [Documents.parent] ON [dbo].[Documents]([parent], [id]);
+
     
     RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
     GO
@@ -6,7 +9,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.AccountablePersons];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, Employee, CashFlow
+      d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -35,8 +38,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Employee, CashFlow
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -63,7 +66,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AccountablePersons] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons');
+      --DELETE r FROM [Register.Accumulation.AccountablePersons] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -71,7 +74,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.id] ON [Register.Accumulation.AccountablePersons](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
@@ -82,7 +88,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.AP];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, Department, AO, Supplier, PayDay
+      d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -113,8 +119,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.AP]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, AO, Supplier, PayDay
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -143,7 +149,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AP] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AP');
+      --DELETE r FROM [Register.Accumulation.AP] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -151,7 +157,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
@@ -162,7 +171,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.AR];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, Department, AO, Customer, PayDay
+      d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -193,8 +202,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.AR]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, AO, Customer, PayDay
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -223,7 +232,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AR] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AR');
+      --DELETE r FROM [Register.Accumulation.AR] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -231,7 +240,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.id] ON [Register.Accumulation.AR](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
@@ -242,7 +254,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Bank];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, BankAccount, CashFlow, Analytics
+      d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -268,8 +280,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, BankAccount, CashFlow, Analytics
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -293,7 +305,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Bank] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Bank');
+      --DELETE r FROM [Register.Accumulation.Bank] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -301,7 +313,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.id] ON [Register.Accumulation.Bank](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
@@ -312,7 +327,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Balance];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, Department, Balance, Analytics
+      d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.Balance]
     FROM [Accumulation] r
@@ -333,8 +348,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, Balance, Analytics
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -353,7 +368,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Balance] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance');
+      --DELETE r FROM [Register.Accumulation.Balance] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -361,7 +376,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
@@ -372,7 +390,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Cash];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, CashRegister, CashFlow, Analytics
+      d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -398,8 +416,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, CashRegister, CashFlow, Analytics
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -423,7 +441,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Cash] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash');
+      --DELETE r FROM [Register.Accumulation.Cash] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -431,7 +449,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.id] ON [Register.Accumulation.Cash](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
@@ -442,7 +463,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Cash.Transit];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, Sender, Recipient, CashFlow
+      d.exchangeRate, [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -468,8 +489,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Sender, Recipient, CashFlow
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -493,7 +514,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Cash.Transit] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit');
+      --DELETE r FROM [Register.Accumulation.Cash.Transit] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -501,7 +522,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
@@ -512,7 +536,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Inventory];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, OperationType, Expense, ExpenseAnalytics, Income, IncomeAnalytics, BalanceIn, BalanceInAnalytics, BalanceOut, BalanceOutAnalytics, Storehouse, SKU, batch, Department
+      d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
     INTO [Register.Accumulation.Inventory]
@@ -545,8 +569,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, OperationType, Expense, ExpenseAnalytics, Income, IncomeAnalytics, BalanceIn, BalanceInAnalytics, BalanceOut, BalanceOutAnalytics, Storehouse, SKU, batch, Department
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
         FROM inserted r
@@ -577,7 +601,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Inventory] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Inventory');
+      --DELETE r FROM [Register.Accumulation.Inventory] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -585,7 +609,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
@@ -596,7 +623,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Loan];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, Loan, Counterpartie, CashFlow, currency, PaymentKind
+      d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -627,8 +654,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Loan, Counterpartie, CashFlow, currency, PaymentKind
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -657,7 +684,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Loan] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Loan');
+      --DELETE r FROM [Register.Accumulation.Loan] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -665,7 +692,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.id] ON [Register.Accumulation.Loan](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
@@ -676,7 +706,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, Department, PL, Analytics
+      d.exchangeRate, [Department], [PL], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.PL]
     FROM [Accumulation] r
@@ -697,8 +727,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.PL]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, PL, Analytics
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Department], [PL], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -717,7 +747,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.PL] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL');
+      --DELETE r FROM [Register.Accumulation.PL] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -725,7 +755,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
@@ -736,7 +769,8 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, Department, Customer, Product, Manager, AO, Storehouse
+      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+      , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
@@ -756,6 +790,7 @@
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
         , [Amount] MONEY N'$.Amount'
@@ -773,8 +808,9 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Customer, Product, Manager, AO, Storehouse
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+      , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
@@ -793,6 +829,7 @@
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
         , [Amount] MONEY N'$.Amount'
@@ -809,7 +846,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Sales] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Sales');
+      --DELETE r FROM [Register.Accumulation.Sales] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -817,7 +854,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
@@ -828,7 +868,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Depreciation];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, BusinessOperation, currency, Department, OE
+      d.exchangeRate, [BusinessOperation], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -854,8 +894,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, BusinessOperation, currency, Department, OE
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [BusinessOperation], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -879,7 +919,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Depreciation] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Depreciation');
+      --DELETE r FROM [Register.Accumulation.Depreciation] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -887,7 +927,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [BusinessOperation], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
@@ -898,7 +941,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.CashToPay];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, currency, CashFlow, CashRequest, Contract, Department, OperationType, Loan, CashOrBank, CashRecipient, ExpenseOrBalance, ExpenseAnalytics, BalanceAnalytics, PayDay
+      d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.CashToPay]
     FROM [Accumulation] r
@@ -929,8 +972,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, CashFlow, CashRequest, Contract, Department, OperationType, Loan, CashOrBank, CashRecipient, ExpenseOrBalance, ExpenseAnalytics, BalanceAnalytics, PayDay
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -959,7 +1002,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.CashToPay] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.CashToPay');
+      --DELETE r FROM [Register.Accumulation.CashToPay] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -967,7 +1010,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
@@ -978,7 +1024,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.BudgetItemTurnover];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, Department, Scenario, BudgetItem, Anatitic1, Anatitic2, Anatitic3, Anatitic4, Anatitic5, currency
+      d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
       , d.[AmountInCurrency] * IIF(r.kind = 1, 1, -1) [AmountInCurrency], d.[AmountInCurrency] * IIF(r.kind = 1, 1, null) [AmountInCurrency.In], d.[AmountInCurrency] * IIF(r.kind = 1, null, 1) [AmountInCurrency.Out]
@@ -1013,8 +1059,8 @@
       SET NOCOUNT ON;
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
-        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, Scenario, BudgetItem, Anatitic1, Anatitic2, Anatitic3, Anatitic4, Anatitic5, currency
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
       , d.[AmountInCurrency] * IIF(r.kind = 1, 1, -1) [AmountInCurrency], d.[AmountInCurrency] * IIF(r.kind = 1, 1, null) [AmountInCurrency.In], d.[AmountInCurrency] * IIF(r.kind = 1, null, 1) [AmountInCurrency.Out]
@@ -1047,7 +1093,7 @@
     AS
     BEGIN
 	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.BudgetItemTurnover] r JOIN deleted d ON d.id = r.id; --WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover');
+      --DELETE r FROM [Register.Accumulation.BudgetItemTurnover] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
       DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
     END
     GO
@@ -1055,7 +1101,10 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
 
-    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover] WITH (MAXDOP=4);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [Register.Accumulation.BudgetItemTurnover](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
