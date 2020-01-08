@@ -35,11 +35,11 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Types.Document', label: 'Основание', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.User', label: 'Автор', hiddenInList: false, order: 21 })
+  @Props({ type: 'Catalog.User', label: 'Автор', hiddenInList: false, order: 991, style: { width: '200px' } })
   user: Ref = null;
 
   @Props({
-    type: 'enum', required: true, style: { width: '100px' }, order: 7, label: 'Статус', value: [
+    type: 'enum', required: true, hiddenInList: false,  style: { width: '100px' }, order: 7, label: 'Статус', value: [
       'PREPARED',
       'AWAITING',
       'APPROVED',
@@ -57,7 +57,8 @@ export class DocumentCashRequest extends DocumentBase {
       'Оплата по кредитам и займам полученным',
       'Прочий расход ДС',
       'Выдача займа контрагенту',
-      'Возврат оплаты клиенту'
+      'Возврат оплаты клиенту',
+      'Выплата заработной платы'
     ]
   })
   Operation = 'Оплата поставщику';
@@ -86,6 +87,17 @@ export class DocumentCashRequest extends DocumentBase {
   })
   CashKind = 'ANY';
 
+  @Props({
+    type: 'enum', required: true, style: { width: '140px' },
+    label: 'Способ выплаты',
+    value: [
+      'CASH',
+      'BANK',
+      'SALARYPROJECT'
+    ]
+  })
+  PayRollKind = 'BANK';
+
   @Props({ type: 'Catalog.Department', label: 'Подразделение' })
   Department: Ref = null;
 
@@ -99,7 +111,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({
     type: 'Catalog.Contract',
     hiddenInList: true,
-    required: true,
+    required: false,
     onChangeServer: true,
     label: 'Договор',
     owner: [
@@ -153,8 +165,10 @@ export class DocumentCashRequest extends DocumentBase {
   CashOrBankIn: Ref = null;
 
   @Props({ type: 'date',
-  hiddenInList: true,
-  label: 'Дата платежа'
+  hiddenInList: false,
+  order: 9,
+  label: 'Дата платежа',
+  style: { width: '100px' }
  })
   PayDay = new Date();
 
@@ -175,5 +189,32 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
+
+  @Props({
+    type: 'table', required: false, order: 1,
+    onChange: function (doc: PayRoll, value: PayRoll[]) {
+      let Amount = 0; value.forEach(el => { Amount += el.Salary; });
+      return { Amount: Math.round(Amount * 100) / 100 };
+    }
+  })
+  PayRolls: PayRoll[] = [new PayRoll()];
+
+}
+
+export class PayRoll {
+
+  @Props({ type: 'Catalog.Person', label: 'Сотрудник' })
+  Employee: Ref = null;
+
+  @Props({ type: 'number', label: 'К выплате', style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  Salary = 0;
+
+  @Props({ type: 'number', label: 'Налог', style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  Tax = 0;
+
+  @Props({ type: 'Types.PersonOrCounterpartieBankAccount', label: 'Счет'
+  , owner: [{ dependsOn: 'Employee', filterBy: 'owner' }]
+  , required: true })
+  BankAccount: Ref = null;
 
 }

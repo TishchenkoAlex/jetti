@@ -19,6 +19,7 @@ export type CatalogTypes =
   'Catalog.Operation.Group' |
   'Catalog.Operation.Type' |
   'Catalog.Manager' |
+  'Catalog.Person.BankAccount' |
   'Catalog.Person' |
   'Catalog.PriceType' |
   'Catalog.Product' |
@@ -32,6 +33,7 @@ export type CatalogTypes =
   'Catalog.UsersGroup' |
   'Catalog.Role' |
   'Catalog.SubSystem' |
+  'Catalog.SalaryProject' |
   'Catalog.Unit' |
   'Catalog.TaxRates' |
   'Catalog.ProductCategory' |
@@ -61,7 +63,7 @@ export type DocumentTypes =
   'Document.WorkFlow' |
   'Document.CashRequestRegistry';
 
-  export type ProcessTypes =
+export type ProcessTypes =
   'BusinessProcess.CashRequestApproving';
 
 export type DocTypes =
@@ -81,7 +83,7 @@ export type PrimitiveTypes =
   'boolean' |
   'table' |
   'json' |
-  'javascript'|
+  'javascript' |
   'textarea' |
   'enum' |
   'link';
@@ -95,19 +97,20 @@ export type ComplexTypes =
   'Types.CashOrBank' |
   'Types.CashRecipient' |
   'Types.CounterpartieOrPerson' |
+  'Types.PersonOrCounterpartieBankAccount' |
   'Types.ExpenseOrBalance';
 
 export type IncomeExpenseTypes =
-'Catalog.Expense' |
-'Catalog.Income';
+  'Catalog.Expense' |
+  'Catalog.Income';
 
 export type CashOrBank =
-'Catalog.BankAccount' |
-'Catalog.CashRegister';
+  'Catalog.BankAccount' |
+  'Catalog.CashRegister';
 
 export type IncomeExpenseAnalyticTypes =
-'Catalog.Expense.Analytics' |
-'Catalog.Income.Analytics';
+  'Catalog.Expense.Analytics' |
+  'Catalog.Income.Analytics';
 
 export type AllTypes =
   PrimitiveTypes |

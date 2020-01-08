@@ -8,6 +8,8 @@ import { TypesBase } from './TypesBase';
 import { TypesUserOrGroup } from './Types.UserOrGroup';
 import { TypesCashOrBank } from './Types.CashOrBank';
 import { TypesCashRecipient } from './Types.CashRecipient';
+import { TypesCounterpartieOrPerson } from './Types.CounterpartieOrPerson';
+import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpartieBankAccount';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -29,4 +31,6 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
+  { type: 'Types.CounterpartieOrPerson', Class: TypesCounterpartieOrPerson },
+  { type: 'Types.PersonOrCounterpartieBankAccount', Class: TypesPersonOrCounterpartieBankAccount },
 ];

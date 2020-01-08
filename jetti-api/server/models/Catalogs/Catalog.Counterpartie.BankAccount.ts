@@ -13,7 +13,7 @@ export class CatalogCounterpartieBankAccount extends CatalogBankAccount {
   @Props({ type: 'Catalog.Counterpartie.BankAccount', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true, order: 1 })
+  @Props({ type: 'Types.CounterpartieOrPerson', required: true, order: 1 })
   owner: Ref = null;
 
 }

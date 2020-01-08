@@ -91,6 +91,11 @@
         <j-control [control]="vk['ExpenseAnalytics']" [form]="form"></j-control>
       </div>
 
+      <div *ngIf="form.value.Operation === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+        fxLayoutGap.xs="0px">
+        <j-control [control]="vk['PayRollKind']" [form]="form"></j-control>
+      </div>
+
       <div *ngIf="form.value.Operation === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
         fxLayoutGap="35px" fxLayoutGap.xs="0px">
         <j-control [control]="vk['Loan']" [form]="form"></j-control>
@@ -98,6 +103,18 @@
 
     </div>
     <ng-content></ng-content>
+
+    <br *ngIf="tables.length">
+    <div *ngIf="form.value.Operation === 'Выплата заработной платы'">
+    <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
+      <div *ngFor="let control of tables; let i = index">
+        <p-tabPanel [header]="control.label">
+          <j-control [control]="control" [form]="form"></j-control>
+        </p-tabPanel>
+      </div>
+    </p-tabView>
+  </div>
+
   </p-panel>
 
   <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false">

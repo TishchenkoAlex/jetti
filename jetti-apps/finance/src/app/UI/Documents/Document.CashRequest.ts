@@ -91,7 +91,9 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
 
-    if (this.readonlyMode) { this.form.disable({ emitEvent: false} ); }
+    if (this.readonlyMode) { this.form.disable({ emitEvent: false }); }
+
+    this.onOperationChanges(this.form.get('Operation').value);
   }
 
 
@@ -136,11 +138,18 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // 'Прочий расход ДС',
     // 'Выдача займа контрагенту',
     // 'Возврат оплаты клиенту'
-
-    this.vk['CashOrBank'].required = operation === 'Оплата ДС в другую организацию';
+    // 'Выплата заработной платы'
+    this.vk['PayRollKind'].required = operation === 'Выплата заработной платы';
     this.vk['CashOrBankIn'].required = operation === 'Оплата ДС в другую организацию';
-    this.vk['PaymentKind'].required = operation === 'Оплата по кредитам и займам полученным';
     this.vk['BalanceAnalytics'].required = operation === 'Перечисление налогов и взносов';
+
+    this.vk['PaymentKind'].required =
+      `Выплата заработной платы
+      Оплата по кредитам и займам полученным`.indexOf(operation) !== -1;
+
+    this.vk['CashOrBank'].required =
+      `Выплата заработной платы
+      Оплата ДС в другую организацию`.indexOf(operation) !== -1;
 
     this.vk['CashRecipient'].required =
       `Оплата поставщику
@@ -186,7 +195,7 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('workflowID').setValue(data);
       this.form.get('Status').setValue('AWAITING');
       this.Post();
-      this.form.disable({emitEvent: false});
+      this.form.disable({ emitEvent: false });
       this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
   }

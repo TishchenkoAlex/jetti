@@ -31,6 +31,9 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.BusinessDirection', required: true })
   BusinessDirection: Ref = null;
 
+  @Props({ type: 'Catalog.CashFlow', required: false })
+  CashFlow: Ref = null;
+
   @Props({ type: 'Catalog.Currency', required: true })
   currency: Ref = null;
 
