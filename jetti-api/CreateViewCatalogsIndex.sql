@@ -969,6 +969,27 @@
       GO
       --------------------------------------------------------------------------------------
       
+      CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.TaxRate'
+    
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxRate.v] ON [Catalog.TaxRate.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.code.f] ON [Catalog.TaxRate.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.description.f] ON [Catalog.TaxRate.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.description] ON [Catalog.TaxRate.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.code] ON [Catalog.TaxRate.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.user] ON [Catalog.TaxRate.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.company] ON [Catalog.TaxRate.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.TaxRate.v] TO jetti;
+      GO
+      --------------------------------------------------------------------------------------
+      
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
@@ -1246,6 +1267,7 @@
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v],
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v],

@@ -33,7 +33,7 @@ export type CatalogTypes =
   'Catalog.Role' |
   'Catalog.SubSystem' |
   'Catalog.Unit' |
-  'Catalog.TaxRates' |
+  'Catalog.TaxRate' |
   'Catalog.ProductCategory' |
   'Catalog.ProductKind' |
   'Catalog.ObjectsExploitation' |

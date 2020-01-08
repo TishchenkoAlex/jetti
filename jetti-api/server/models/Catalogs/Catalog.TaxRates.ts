@@ -1,15 +1,15 @@
 import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
-  type: 'Catalog.TaxRates',
-  description: 'Ставки налогов',
+  type: 'Catalog.TaxRate',
+  description: 'Ставка налогов',
   icon: 'fa fa-list',
   menu: 'Ставки налого',
   prefix: 'TXR-'
 })
-export class CatalogTaxRates extends DocumentBase {
+export class CatalogTaxRate extends DocumentBase {
 
-  @Props({ type: 'Catalog.TaxRates', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.TaxRate', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
   @Props({ type: 'number', required: true})

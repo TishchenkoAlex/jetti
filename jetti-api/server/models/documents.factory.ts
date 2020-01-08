@@ -57,7 +57,7 @@ import { CatalogLoanTypes } from './Catalogs/Catalog.LoanTypes';
 import { DocumentCashRequestRegistry } from './Documents/Document.CashRequestRegistry';
 import { CatalogJobTitle } from './Catalogs/Catalog.JobTitle';
 import { CatalogBusinessRegion } from './Catalogs/Catalog.BusinessRegion';
-import { CatalogTaxRates } from './Catalogs/Catalog.TaxRates';
+import { CatalogTaxRate } from './Catalogs/Catalog.TaxRates';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -157,7 +157,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.AcquiringTerminal', Class: CatalogAcquiringTerminal },
   { type: 'Catalog.Bank', Class: CatalogBank },
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
-  { type: 'Catalog.TaxRates', Class: CatalogTaxRates },
+  { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
 
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
