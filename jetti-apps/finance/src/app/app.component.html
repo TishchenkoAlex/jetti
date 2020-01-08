@@ -10,10 +10,10 @@
   <app-topbar></app-topbar>
   <div class="layout-menu-container" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)" >
     <app-inline-profile></app-inline-profile>
-    <p-scrollPanel #layoutMenuScroller [style]="{'overflow-y': 'hidden' }">
+    <p-scrollPanel #layoutMenuScroller>
       <div class="menu-scroll-content">
         <app-menu [reset]="resetMenu"></app-menu>
-      </div>`
+      </div>
     </p-scrollPanel>
   </div>
 

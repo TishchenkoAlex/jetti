@@ -115,7 +115,8 @@ const RolesQuery = `
   SELECT * FROM Documents r
   WHERE (1=1) AND
     type = 'Catalog.SubSystem' AND posted = 1 AND
-	(id IN (SELECT SubSystem FROM #Subsystems) OR @p2 = 1);
+  (id IN (SELECT SubSystem FROM #Subsystems) OR @p2 = 1)
+  ORDER BY code;
 `;
 
 interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }

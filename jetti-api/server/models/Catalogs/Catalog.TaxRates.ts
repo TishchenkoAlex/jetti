@@ -7,7 +7,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'Ставки налого',
   prefix: 'TXR-'
 })
-export class CatalogPriceType extends DocumentBase {
+export class CatalogTaxRates extends DocumentBase {
 
   @Props({ type: 'Catalog.TaxRates', hiddenInList: true, order: -1 })
   parent: Ref = null;

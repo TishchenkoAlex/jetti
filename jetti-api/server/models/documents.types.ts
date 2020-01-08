@@ -46,11 +46,11 @@ export type CatalogTypes =
   'Catalog.Contract' |
   'Catalog.LoanTypes' |
   'Catalog.BusinessDirection' |
-  'Catalog.JobTitle'
+  'Catalog.JobTitle' |
+  'Catalog.BusinessRegion'
   ;
 
 export type DocumentTypes =
-  'Document.CashIn' |
   'Document.ExchangeRates' |
   'Document.Invoice' |
   'Document.Operation' |

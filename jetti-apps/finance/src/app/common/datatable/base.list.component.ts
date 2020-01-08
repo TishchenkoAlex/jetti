@@ -36,9 +36,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
-  resizeObservable$: Observable<string>;
+  pageSize$: Observable<number>;
 
-  scrollHeight = ``;
 
   @Input() pageSize;
   @Input() type: DocTypes;
@@ -80,21 +79,22 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this.showTree = (Doc.Prop() as DocumentOptions).hierarchy === 'folders';
     this.showTreeButton = this.showTree;
-    if (this.showTree) this.settings.filter.push({left: 'isfolder', center: '=', right: false});
+    if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
 
     const scrollHeight = () => {
       return window.innerHeight - this.tbl.el.nativeElement.offsetTop - 115;
     };
 
-    this.scrollHeight = `${scrollHeight()}px`;
-    this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28), 1);
-    this.resizeObservable$ = fromEvent(window, 'resize')
-      .pipe(debounceTime(500), map(evt => {
-        this.dataSource.pageSize = Math.max(Math.round((scrollHeight() + 42) / 28), 1);
-        const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
-        this.dataSource.refresh(id);
-        return `${scrollHeight() + 21}px`;
-      }));
+    if (!this.pageSize) {
+      this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 1), 1);
+      this.pageSize$ = fromEvent(window, 'resize')
+        .pipe(debounceTime(500), map(evt => {
+          this.dataSource.pageSize = Math.max(Math.round((scrollHeight() + 42) / 28 - 1), 1);
+          const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
+          this.dataSource.refresh(id);
+          return this.dataSource.pageSize;
+        }));
+    }
 
     this.setSortOrder();
     this.setFilters();

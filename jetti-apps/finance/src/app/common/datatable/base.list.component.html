@@ -25,9 +25,9 @@
       </div>
     </p-toolbar>
     <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
-      [rows]="pageSize" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000"
+      [rows]="pageSize$ | async" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000"
       (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm" [metaKeySelection]="true"
-      [columns]="columns" class="noselect" [scrollHeight]="(resizeObservable$ | async) || scrollHeight" [(selection)]="selection"
+      [columns]="columns" class="noselect" [(selection)]="selection"
       (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
       [(contextMenuSelection)]="contextMenuSelection" [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand">
       <ng-template pTemplate="colgroup" let-columns>

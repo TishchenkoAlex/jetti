@@ -10,7 +10,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-  <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
+  <div fxLayout="column" style="padding: 6px" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="6px" style="margin-top: 12px; margin-bottom: 6px">
       <div fxFlex>
         <j-autocomplete-png [ngModel]="super?.filters['company']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"

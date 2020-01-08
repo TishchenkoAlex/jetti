@@ -1292,7 +1292,7 @@ body a {
 .layout-wrapper .topbar .topbar-left {
   padding: 15px;
   height: 60px;
-  width: 235px;
+  width: 250px;
   float: left;
   background-color: #457fca;
   background-image: -webkit-gradient(linear, left top, right top, from(#457fca), to(#5691c8));
@@ -1328,7 +1328,7 @@ body a {
   width: 32px;
   height: 32px;
   position: absolute;
-  left: 219px;
+  left: 209px;
   text-align: center;
   background-color: #ffffff;
   -moz-border-radius: 4px;
@@ -1412,7 +1412,7 @@ body a {
 .layout-wrapper .layout-menu-container {
   overflow: auto;
   position: fixed;
-  width: 235px;
+  width: 250px;
   z-index: 99;
   top: 60px;
   height: 100%;
@@ -1450,7 +1450,7 @@ body a {
   overflow-x: hidden;
 }
 .layout-wrapper .layout-menu-container .ui-scrollpanel .menu-scroll-content {
-  width: 253px;
+  width: 265px;
   padding-right: 18px;
 }
 .layout-wrapper .layout-menu-container .ui-scrollpanel .layout-main-menu {
@@ -1888,7 +1888,7 @@ body a {
     margin-left: 0;
   }
   .layout-wrapper.menu-layout-static .layout-main, .layout-wrapper.menu-layout-static .layout-footer {
-    margin-left: 235px;
+    margin-left: 250px;
   }
   .layout-wrapper.menu-layout-static.layout-menu-static-inactive .layout-menu-container {
     margin-left: -250px;
