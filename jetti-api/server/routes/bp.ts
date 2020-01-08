@@ -8,6 +8,12 @@ import { bpApiHost } from '../env/environment';
 
 export const router = express.Router();
 
+export async function DeleteProcess(processID: string) {
+  const instance = axios.create({ baseURL: bpApiHost });
+  const query = `/Processes/pwd/DeleteProcess/CashApplication?ProcessID=${processID}`;
+  await instance.get(query);
+}
+
 router.get('/BP/GetUserTasksByMail', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const email = User(req).email;
@@ -51,6 +57,8 @@ router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFu
     return res.json((await instance.post(query, req.body)).data);
   } catch (err) { next(err); }
 });
+
+
 
 router.get('/CashRequestDesktop', async (req: Request, res: Response, next: NextFunction) => {
   try {

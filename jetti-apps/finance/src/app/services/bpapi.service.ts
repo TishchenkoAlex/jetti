@@ -32,6 +32,11 @@ export class BPApi {
     return this.http.get<Blob>(query);
   }
 
+  DeleteProcess(ProcessID): Observable<{Deleted: boolean, ErrorMessage: string}> {
+    const query = `${environment.api}/BP/DeleteProcess?ProcessID=${ProcessID}`;
+    return this.http.get<{Deleted: boolean, ErrorMessage: string}>(query);
+  }
+
   GetParticipantsByProcessID(ProcessID): Observable<ProcessParticipants> {
     const query = `${environment.api}/BP/GetUsersByProcessID?ProcessID=${ProcessID}`;
     return this.http.get<ProcessParticipants>(query);
