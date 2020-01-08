@@ -13,4 +13,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Department', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.BusinessRegion' })
+  BusinessRegion: Ref = null;
+
 }

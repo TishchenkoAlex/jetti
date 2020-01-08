@@ -30,8 +30,8 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
     const date = rec.date ? rec.date : doc.date;
     const data = {...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
     query += `
-      INSERT INTO "Accumulation" (id, parent, calculated, kind, date, type, company, document, data)
-      VALUES ('${rec.id || v1()}', '${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
+      INSERT INTO "Accumulation" (parent, calculated, kind, date, type, company, document, data)
+      VALUES ('${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
     '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
 

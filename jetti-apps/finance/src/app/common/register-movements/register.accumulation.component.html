@@ -1,5 +1,5 @@
 <!-- <div style="max-height: 500px; overflow: auto; "> -->
-<p-table [value]="movements$ | async" selectionMode="single" [resizableColumns]="true" [(selection)]="selection">
+<p-table [value]="movements$ | async" selectionMode="single" [resizableColumns]="true" [(selection)]="selection" columnResizeMode="expand">
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 24px; text-align: center"></th>

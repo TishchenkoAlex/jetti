@@ -296,6 +296,7 @@
       CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessRegion"')) [BusinessRegion]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Department'
     
@@ -948,6 +949,26 @@
       GO
       --------------------------------------------------------------------------------------
       
+      CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.BusinessRegion'
+    
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessRegion.v] ON [Catalog.BusinessRegion.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code.f] ON [Catalog.BusinessRegion.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description.f] ON [Catalog.BusinessRegion.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description] ON [Catalog.BusinessRegion.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code] ON [Catalog.BusinessRegion.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.user] ON [Catalog.BusinessRegion.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.company] ON [Catalog.BusinessRegion.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.BusinessRegion.v] TO jetti;
+      GO
+      --------------------------------------------------------------------------------------
+      
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
@@ -1224,6 +1245,7 @@
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Scenario.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v],
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v],

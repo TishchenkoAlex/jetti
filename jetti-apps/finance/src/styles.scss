@@ -14,10 +14,20 @@ html, body {
   padding: 70px 8px 0px 8px;
   margin: 0;
 }
+.ui-tabview-nav {
+  background: 0 !important;
+}
+/* .ui-tabview-panels {
+  height: 100%;
+  overflow-y: visible !important;
+} */
 
-.card {
-  padding: 8px !important;
-  margin: 0 !important;
+.ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-state-active {
+  background-color: white !important;
+}
+
+.ui-tabview-nav li.ui-state-active .ui-tabview-title {
+  font-weight: bold !important;
 }
 
 .ui-table .ui-table-tbody > tr > td {
