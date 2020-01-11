@@ -38,10 +38,11 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
   pageSize$: Observable<number>;
 
-
   @Input() pageSize;
   @Input() type: DocTypes;
   @Input() settings: FormListSettings;
+  @Input() data: IViewModel;
+
   @ViewChild('tbl', { static: true }) tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
@@ -60,7 +61,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   ctxData = { column: '', value: undefined };
   showTree = false;
   showTreeButton = true;
-  routeData = this.route.snapshot.data.detail as IViewModel;
   postedCol: ColumnDef = ({
     field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
     style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
@@ -70,14 +70,13 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const dependFromRoute = !this.type;
     if (!this.type) this.type = this.route.snapshot.params.type;
-    if (!this.settings) this.settings = this.routeData.settings;
+    if (!this.settings) this.settings = this.data.settings;
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    const Doc = createDocument(this.type);
-    const Props = Doc.Props();
+    const Props = this.data.schema;
     this.columns = buildColumnDef(Props, this.settings);
 
-    this.showTree = (Doc.Prop() as DocumentOptions).hierarchy === 'folders';
+    this.showTree = this.data.metadata.hierarchy === 'folders';
     this.showTreeButton = this.showTree;
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
 
@@ -117,9 +116,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       });
 
     // обработка команды найти в списке
-    if (dependFromRoute) {
       this._routeSubscruption$ = this.route.queryParams.pipe(
-        filter(params => this.route.snapshot.params.type === this.type && params.goto && !this.route.snapshot.params.id))
+        filter(params => this.route.snapshot.params.type === this.type && params.goto))
         .subscribe(params => {
           const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
           if (exist) {
@@ -133,7 +131,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
             });
           }
         });
-    }
 
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));

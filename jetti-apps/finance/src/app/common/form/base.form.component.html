@@ -3,17 +3,17 @@
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Post&Close"
-          class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
+          class="ui-button-warning" [disabled]="!Form.valid || (lds.busy$ | async)" (click)="postClose()"
           *ngIf="!isDeleted"></button>
         <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()" *ngIf="!isDeleted && isDoc"></button>
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="post()" *ngIf="!isDeleted && isDoc"></button>
         <button pButton type="button" id="unPost" icon="fa fa-square-o" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="unPost()"
           *ngIf="!isDeleted && isPosted && isDoc"></button>
-        <button pButton type="button" id="Save" icon="fa fa-floppy-o" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="Save()" *ngIf="!isPosted || !isDoc"></button>
+        <button pButton type="button" id="save" icon="fa fa-floppy-o" class="ui-button-secondary"
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="save()" *ngIf="!isPosted || !isDoc"></button>
         <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
         <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger" *ngIf="!isNew"
           (click)="delete()" [disabled]="(lds.busy$ | async)"></button>
       </div>
@@ -38,23 +38,26 @@
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
         *ngFor="let i of [0,3,6,9,12,15]">
         <div fxFlex>
-          <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
-            [control]="v[i+0]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
+            [control]="v[i+0]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
-            [control]="v[i+1]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
+            [control]="v[i+1]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
-            [control]="v[i+2]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
+            [control]="v[i+2]" [form]="Form"></j-control>
         </div>
       </div>
 
       <div *ngFor="let control of v">
         <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'"
           style="height: 400px; width: 100%;">
-          <j-control [control]="control" [form]="form"></j-control>
+          <j-control [control]="control" [form]="Form"></j-control>
         </div>
       </div>
 
@@ -62,33 +65,33 @@
       <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
         <div *ngFor="let control of tables; let i = index">
           <p-tabPanel [header]="control.label">
-            <j-control [control]="control" [form]="form"></j-control>
+            <j-control [control]="control" [form]="Form"></j-control>
           </p-tabPanel>
         </div>
       </p-tabView>
+      <j-control *ngIf="vk['info']" [control]="vk['info']" [form]="Form"></j-control>
 
       <ng-content></ng-content>
     </div>
 
-
   </p-panel>
   <p-panel #pad [toggleable]="true" header="Additonal Info" [collapsed]="isDoc ? true : false">
     <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
-      <j-control *ngIf="vk['parent']" [control]="vk['parent']" [form]="form"></j-control>
-      <j-control *ngIf="vk['user']" [control]="vk['user']" [form]="form"></j-control>
-      <j-control *ngIf="vk['workflow']" [control]="vk['workflow']" [form]="form"></j-control>
+      <j-control *ngIf="vk['parent']" [control]="vk['parent']" [form]="Form"></j-control>
+      <j-control *ngIf="vk['user']" [control]="vk['user']" [form]="Form"></j-control>
+      <j-control *ngIf="vk['workflow']" [control]="vk['workflow']" [form]="Form"></j-control>
     </div>
-    <j-control *ngIf="vk['info']" [control]="vk['info']" [form]="form"></j-control>
+
   </p-panel>
 
   <p-panel *ngIf="type === 'Catalog.Operation' && isFolder === false" [toggleable]="true" header="Post script"
     [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
-    <j-control *ngIf="vk['script']" [control]="vk['script']" [form]="form"></j-control>
+    <j-control *ngIf="vk['script']" [control]="vk['script']" [form]="Form"></j-control>
   </p-panel>
 
   <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module" [collapsed]="true"
     (collapsedChange)="mp.collapse($event); pad.collapse($event)">
-    <j-control *ngIf="vk['module']" [control]="vk['module']" [form]="form"></j-control>
+    <j-control *ngIf="vk['module']" [control]="vk['module']" [form]="Form"></j-control>
   </p-panel>
 
   <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #accumulation *ngIf="isDoc && isPosted">

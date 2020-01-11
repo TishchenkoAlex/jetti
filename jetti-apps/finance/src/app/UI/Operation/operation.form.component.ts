@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, Input } from '@angular/core';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { CatalogOperation } from '../../../../../../jetti-api/server/models/Catalogs/Catalog.Operation';
 import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
@@ -8,15 +8,20 @@ import { FormControlInfo } from '../../common/dynamic-form/dynamic-form-base';
 import { getFormGroup } from '../../common/dynamic-form/dynamic-form.service';
 import { BaseDocFormComponent } from '../../common/form/base.form.component';
 import { take } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
+import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.Default,
   template: `
-  <j-form></j-form>`
+  <j-form [id]="this.id" [type]="this.type" [data]="this.data"></j-form>`
 })
 export class OperationFormComponent implements AfterViewInit {
+  @Input() id: string;
+  @Input() type: DocTypes;
+  @Input() data: FormGroup;
 
-  get form() { return this.super.form; }
+  get form() { return this.super.data; }
   get Operation() { return this.form.get('Operation')!; }
 
   @ViewChild(BaseDocFormComponent, { static: false }) super: BaseDocFormComponent;
@@ -60,7 +65,7 @@ export class OperationFormComponent implements AfterViewInit {
 
     this.Operation.valueChanges.pipe(take(1)).subscribe(async v => {
       await this.update(v);
-      this.super.form = this.form;
+      this.super.data = this.form;
       setTimeout(() => this.super.cd.detectChanges());
     });
   }

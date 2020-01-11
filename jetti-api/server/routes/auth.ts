@@ -30,14 +30,14 @@ router.post('/login', async (req, res, next) => {
     instance.defaults.headers.common['Authorization'] = `Bearer ${req.body.token}`;
     const me = (await instance.get('/v1.0/me/')).data;
     const mail = req.body.email;
-    const existing = await getUser(mail);
-    if (!existing) { return res.status(401).json({ message: 'Auth failed' }); }
+    const user = await getUser(mail);
+    if (!user) { return res.status(401).json({ message: 'Auth failed' }); }
     const payload: IJWTPayload = {
       email: me.userPrincipalName,
       description: me.displayName,
-      isAdmin: existing.isAdmin === true ? true : false,
+      isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {},
+      env: {id: user.id, code: user.code, type: user.type, value: user.description},
     };
     const token = jwt.sign(payload, JTW_KEY, { expiresIn: '24h' });
     return res.json({ account: payload, token });
@@ -53,7 +53,7 @@ router.get('/account', authHTTP, async (req, res, next) => {
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {},
+      env: {id: user.id, code: user.code, type: user.type, value: user.description},
     };
     res.json(payload);
   } catch (err) { next(err); }
@@ -62,17 +62,17 @@ router.get('/account', authHTTP, async (req, res, next) => {
 router.post('/refresh', authHTTP, async (req, res, next) => {
   try {
     const payload: IJWTPayload = (<any>req).user;
-    const existing = await getUser(payload.email);
-    if (!existing) { return res.status(401).json({ message: 'Auth failed' }); }
+    const user = await getUser(payload.email);
+    if (!user) { return res.status(401).json({ message: 'Auth failed' }); }
     const new_payload: IJWTPayload = {
-      email: existing.id,
-      description: existing.description,
-      isAdmin: existing.isAdmin === true ? true : false,
+      email: user.id,
+      description: user.description,
+      isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {},
+      env: {id: user.id, code: user.code, type: user.type, value: user.description},
     };
     const token = jwt.sign(new_payload, JTW_KEY, { expiresIn: '72h' });
-    return res.json({ account: existing, token });
+    return res.json({ account: user, token });
   } catch (err) { next(err); }
 });
 

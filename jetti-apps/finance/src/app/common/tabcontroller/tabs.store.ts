@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { FormGroup } from '@angular/forms';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 
 export interface TabDef {
-  header: string; icon: string; docType: string; docID: string; routerLink: string;
+  header: string;
+  icon: string;
+  docType: string; docID: string;
+  routerLink: string;
+  query: { [x: string]: any };
+  data: FormGroup | IViewModel | any;
 }
 
 interface TabsState {
@@ -12,7 +19,10 @@ interface TabsState {
 
 const initailState: TabsState = {
   selectedIndex: 0,
-  tabs: [{ header: 'Home', docType: 'home', icon: 'fa fa-home', docID: '', routerLink: '/' + 'home' }]
+  tabs: [{
+    header: 'Home', docType: 'home', icon: 'fa fa-home',
+    docID: '', routerLink: '/' + 'home', data: null, query: {}
+  }]
 };
 
 @Injectable()

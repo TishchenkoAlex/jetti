@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, Input } from '@angular/core';
 import { SelectItem } from 'primeng/components/common/selectitem';
 // tslint:disable-next-line:import-blacklist
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { BaseDocListComponent } from './../../common/datatable/base.list.component';
-import { FormGroup, FormControl } from '@angular/forms';
+import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+import { AuthService } from 'src/app/auth/auth.service';
+import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
 
 
 @Component({
@@ -24,15 +27,28 @@ import { FormGroup, FormControl } from '@angular/forms';
           id="Group" placeholder="Select group of operation" type="Catalog.Operation.Group">
         </j-autocomplete-png>
       </div>
+      <div fxFlex>
+        <j-autocomplete-png [ngModel]="super?.filters['user']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"
+          (ngModelChange)="super.update({field: 'user', filter: null}, $event, '=')"
+          id="user" placeholder="Select user" type="Catalog.User">
+        </j-autocomplete-png>
+      </div>
       </div>
   </div>
-  <j-list></j-list>
+  <j-list [data]="this.data" [type]="this.type" [settings]="settings" ></j-list>
   `
 })
 export class OperationListComponent implements OnInit {
+  @Input() type: DocTypes;
+  @Input() data: IViewModel;
+
   @ViewChild(BaseDocListComponent, { static: true }) super: BaseDocListComponent;
 
   operationsGroups$: Observable<SelectItem[]>;
+
+  settings = new FormListSettings();
+
+  constructor(public appAuth: AuthService) { }
 
   ngOnInit() {
     this.operationsGroups$ = this.super.ds.api.getOperationsGroups().pipe(
@@ -40,6 +56,10 @@ export class OperationListComponent implements OnInit {
         { label: '(All)', value: null },
         ...data.map(el => <SelectItem>({ label: el.value, value: el })) || []
       ]));
+    this.appAuth.userProfile$.pipe(take(1)).subscribe(u => {
+      const filter = new FormListFilter('user', '=', u.account.env);
+      this.settings.filter = [filter];
+    });
   }
 
   onChange(event) {

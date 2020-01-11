@@ -9,6 +9,7 @@ import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
 import { DocumentCashRequestServer } from './Document.CashRequest.server';
 import { createDocument } from '../documents.factory';
+import { Ref } from '../document';
 
 export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
@@ -120,17 +121,24 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.Amount = sourceDoc.Amount;
     this['Department'] = sourceDoc.Department;
     this['Contract'] = sourceDoc.Contract;
-    this.info = `На основании ${sourceDoc.description}`;
+    this.info = sourceDoc.info; // .replace(/\r?\n/g, ' ');
+    let CashRecipientBankAccount = sourceDoc.CashRecipientBankAccount;
 
-    const BankAccountSupplier = await tx.oneOrNone<{ id: string }>(`
-      SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${sourceDoc.CashRecipient}'`);
+    if (!CashRecipientBankAccount) {
+      const query = `
+        SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${sourceDoc.CashRecipient}'`;
+      const queryResult = await tx.oneOrNone<{ id: Ref }>(query);
+      if (queryResult) CashRecipientBankAccount = queryResult.id;
+    }
 
+    if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
         this['Supplier'] = sourceDoc.CashRecipient;
         this['BankConfirm'] = false;
 
-        const CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx))!;
+        const CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
         if (CashOrBank.type === 'Catalog.CashRegister') {
           this.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; // касса
           this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
@@ -141,7 +149,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         } else {
           this.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9'; // С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
           this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
-          this['BankAccountSupplier'] = BankAccountSupplier?.id;
+          this['BankAccountSupplier'] = CashRecipientBankAccount;
           this['BankAccount'] = CashOrBank.id;
           this.f1 = this['BankAccount'];
           this.f2 = this['Supplier'];

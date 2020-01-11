@@ -1,32 +1,35 @@
-<form novalidate [formGroup]="form" cdkTrapFocus>
+<form novalidate [formGroup]="Form" cdkTrapFocus>
   <p-panel [toggleable]="true" [header]="docDescription">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" icon="fa fa-check-square-o" label="Execute" class="ui-button-warning"
-          [disabled]="!form.valid" (click)="Execute()"></button>
+          [disabled]="!Form.valid" (click)="Execute()"></button>
       </div>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" icon="fa fa-check-square-o" label="Сформировать" class="ui-button-warning"
-          [disabled]="!form.valid" (click)="Create()"></button>
+          [disabled]="!Form.valid" (click)="Create()"></button>
       </div>
       <div class="ui-toolbar-group-right">
-        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="Close()"></button>
+        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="close()"></button>
       </div>
     </p-toolbar>
     <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px" *ngFor="let i of [0,4,8,12]">
         <div fxFlex>
-          <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
-            [control]="v[i+0]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
+            [control]="v[i+0]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
-            [control]="v[i+1]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
+            [control]="v[i+1]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
-          <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
-            [control]="v[i+2]" [form]="form"></j-control>
+          <j-control
+            *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
+            [control]="v[i+2]" [form]="Form"></j-control>
         </div>
       </div>
 
@@ -34,7 +37,7 @@
       <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
         <div *ngFor="let control of tables; let i = index">
           <p-tabPanel [header]="control.label">
-            <j-control [control]="control" [form]="form"></j-control>
+            <j-control [control]="control" [form]="Form"></j-control>
           </p-tabPanel>
         </div>
       </p-tabView>
@@ -45,10 +48,9 @@
     </div>
     <br>
 
-    <p-table #tbl [value]="data$ | async" [(selection)]="selectedRows" dataKey="CashRequest"
-      [lazy]="true" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000"
-       [columns]="columns" class="noselect" [lazyLoadOnInit]="false" [resizableColumns]="true"
-      columnResizeMode="expand">
+    <p-table #tbl [value]="data$ | async" [(selection)]="selectedRows" dataKey="CashRequest" [lazy]="true"
+      sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="1000" [columns]="columns"
+      class="noselect" [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand">
 
       <ng-template pTemplate="header">
         <tr>
@@ -75,11 +77,11 @@
               <span *ngSwitchCase="'datetime'"
                 [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy HH:mm:ss'}}</span>
               <span *ngSwitchCase="'number'" [id]="column.field">
-                <span *ngIf="column.editable === true" (change) = "onEditableChanged(column, $event, ri, rowData)">
+                <span *ngIf="column.editable === true" (change)="onEditableChanged(column, $event, ri, rowData)">
                   <p-cellEditor>
                     <ng-template pTemplate="input">
                       <input pInputText type="text" [(ngModel)]="rowData[column.field]"
-                      [ngModelOptions]="{standalone: true}">
+                        [ngModelOptions]="{standalone: true}">
                     </ng-template>
                     <ng-template pTemplate="output">
                       {{rowData[column.field] | number:'1.2-4'}}
@@ -108,7 +110,7 @@
 
 <p-confirmDialog [key]="id" appendTo="body" [closeOnEscape]="true" [closable]="true" #cdlg>
   <p-footer>
-    <div cdkTrapFocus>
+    <div cdkTrapFocus>`
       <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cdlg.accept()"></button>
       <button type="button" pButton icon="fa fa-close" label="No" (click)="cdlg.reject()"></button>
     </div>

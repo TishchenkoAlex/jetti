@@ -1,12 +1,12 @@
-<form novalidate [formGroup]="form" cdkTrapFocus>
+<form novalidate [formGroup]="Form" cdkTrapFocus>
   <p-panel [toggleable]="true" [header]="docDescription">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" icon="fa fa-check-square-o" label="Execute" class="ui-button-warning"
-          [disabled]="!form.valid" (click)="Execute()"></button>
+          [disabled]="!Form.valid" (click)="Execute()"></button>
       </div>
       <div class="ui-toolbar-group-right">
-        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="Close()"></button>
+        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="close()"></button>
       </div>
     </p-toolbar>
     <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
@@ -15,28 +15,20 @@
         *ngFor="let i of [0,3,6,9,12,15]">
         <div fxFlex>
           <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
-            [control]="v[i+0]" [form]="form"></j-control>
+            [control]="v[i+0]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
           <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
-            [control]="v[i+1]" [form]="form"></j-control>
+            [control]="v[i+1]" [form]="Form"></j-control>
         </div>
         <div fxFlex>
           <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
-            [control]="v[i+2]" [form]="form"></j-control>
+            [control]="v[i+2]" [form]="Form"></j-control>
         </div>
       </div>
 
-      <br *ngIf="tables.length">
-      <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-        <div *ngFor="let control of tables; let i = index">
-          <p-tabPanel [header]="control.label">
-            <j-control [control]="control" [form]="form"></j-control>
-          </p-tabPanel>
-        </div>
-      </p-tabView>
       <div fxFlex>
-        <p-table [value]="data" [scrollable]="true" scrollHeight="400px">
+        <p-table [value]="IOData" [scrollable]="true" scrollHeight="400px">
           <ng-template pTemplate="header">
             <tr>
               <th>Task progress log</th>

@@ -47,7 +47,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       }
       const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
       if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
+      // исключение ошибки при проверке заполненности счета в базеон
+      if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       await OperationServer.baseOn!(row.CashRequest, tx);
+      // переопределение счета
+      if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       OperationServer['Amount'] = row.Amount;
       if (row.LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);

@@ -22,6 +22,7 @@ export class DynamicComponentDirective {
 export class DynamicComponent implements OnInit, AfterViewInit {
   @Input() id: string;
   @Input() type: string;
+  @Input() data: any;
   @Input() kind: 'list' | 'form';
   component: BaseDynamicCompoment;
   componentRef: ComponentRef<any>;
@@ -41,6 +42,9 @@ export class DynamicComponent implements OnInit, AfterViewInit {
     const viewContainerRef = this.host.viewContainerRef;
     viewContainerRef.clear();
     this.componentRef = viewContainerRef.createComponent(componentFactory);
+    this.componentRef.instance.id = this.id;
+    this.componentRef.instance.type = this.type;
+    this.componentRef.instance.data = this.data;
     this.cd.detectChanges();
   }
 

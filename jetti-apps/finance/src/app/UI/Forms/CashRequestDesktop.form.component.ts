@@ -1,19 +1,14 @@
-import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, QueryList, ViewChildren, OnDestroy } from '@angular/core';
-import { MediaObserver } from '@angular/flex-layout';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
-import { AuthService } from '../../auth/auth.service';
-import { DocService } from '../../common/doc.service';
-import { FormControlInfo } from 'src/app/common/dynamic-form/dynamic-form-base';
-import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
-import { take, filter, sampleTime } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import * as IO from 'socket.io-client';
-import { BPApi } from 'src/app/services/bpapi.service';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { _baseDocFormComponent } from 'src/app/common/form/_base.form.component';
 import { Observable } from 'rxjs';
-import { CashRequestDesktop } from '../../../../../../jetti-api/server/models/Forms/Form.CashRequestDesktop';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MediaObserver } from '@angular/flex-layout';
+import { DynamicFormService } from 'src/app/common/dynamic-form/dynamic-form.service';
+import { DocService } from 'src/app/common/doc.service';
+import { AuthService } from 'src/app/auth/auth.service';
+import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
+import { BPApi } from 'src/app/services/bpapi.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,22 +27,7 @@ import { CashRequestDesktop } from '../../../../../../jetti-api/server/models/Fo
     `
   ]
 })
-
-export class CashRequestDesktopComponent {
-
-  @Input() id = Math.random().toString();
-  @Input() type = this.route.snapshot.params.type as string;
-  @Input() form: FormGroup = this.route.snapshot.data.detail;
-  @ViewChildren(CdkTrapFocus) cdkTrapFocus: QueryList<CdkTrapFocus>;
-
-  get model() { return this.form.getRawValue() as CashRequestDesktop; }
-
-  get docDescription() { return <string>this.form['metadata'].description; }
-  get v() { return <FormControlInfo[]>this.form['orderedControls']; }
-  get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
-  get hasTables() { return !!(<FormControlInfo[]>this.form['orderedControls']).find(t => t.controlType === 'table'); }
-  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
-  get description() { return <FormControl>this.form.get('description'); }
+export class CashRequestDesktopComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
   data$: Observable<any[]>;
   columns = [
@@ -64,46 +44,17 @@ export class CashRequestDesktopComponent {
 
   selectedRows = [];
 
-  constructor(public router: Router, public route: ActivatedRoute, public media: MediaObserver,
-    public cd: ChangeDetectorRef, public ds: DocService, private auth: AuthService, public tabStore: TabsStore, public bpApi: BPApi) {
-  }
-
-  private _close() {
-    this.tabStore.close(this.tabStore.state.tabs[this.tabStore.selectedIndex]);
-    const returnTab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
-    this.router.navigate([returnTab.docType, returnTab.docID]);
-  }
-
-  Close() {
-    if (this.form.pristine) { this._close(); return; }
-    this.ds.confirmationService.confirm({
-      header: 'Discard changes and close?',
-      message: '',
-      icon: 'fa fa-question-circle',
-      accept: this._close.bind(this),
-      reject: this.focus.bind(this),
-      key: this.id
-    });
-    this.cd.detectChanges();
-  }
-
-  focus() {
-    const autoCapture = this.cdkTrapFocus.find(el => el.autoCapture);
-    if (autoCapture) autoCapture.focusTrap.focusFirstTabbableElementWhenReady();
+  constructor(public router: Router, public route: ActivatedRoute, public media: MediaObserver, public dss: DynamicFormService,
+    public cd: ChangeDetectorRef, public ds: DocService, public auth: AuthService, public tabStore: TabsStore, public bpApi: BPApi) {
+      super(router, route, auth, ds, tabStore, dss, cd);
   }
 
   async Execute() {
     this.data$ = this.bpApi.CashRequestDesktop();
-    //   if (this.data$.length) {
-    //     Object.keys(this.data$[0]).forEach(el => {
-    //       this.dataFields$.push({ name: el, label: el });
-    //     });
-    //   } else { this.dataFields = [] }
-    // });
   }
 
   async Create() {
-    const model = this.model as any;
+    const model = this.viewModel as any;
     model['CashRequests'] = this.selectedRows.map(e => (
       { CashRequest: { code: '', id: e.CashRequest, type: 'Document.CasheRequest', value: '' } }
     ));
@@ -124,14 +75,4 @@ export class CashRequestDesktopComponent {
     this.selectedRows.forEach(e => { sumToPay += Number(e.AmountToPay); });
   }
 
-  onRowEditInit(rowData) {
-  }
-
-  onRowEditSave(rowData) {
-  }
-
-  onRowEditCancel(rowData, index: number) {
-  }
-
 }
-

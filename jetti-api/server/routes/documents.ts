@@ -94,6 +94,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           break;
         case 'base':
           if (ServerDoc.baseOn) await ServerDoc.baseOn(req.query.base as string, sdb);
+          if (userID) ServerDoc.user = userID;
           break;
         default:
           break;

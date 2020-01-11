@@ -6,7 +6,8 @@ export class Utils {
     while (hex.length < 2) hex = '0' + hex;
     return hex;
   }
-    static createNewGuid(): string {
+
+  static createNewGuid(): string {
 
     const cryptoObj: Crypto = window.crypto; // for IE 11
     if (cryptoObj && cryptoObj.getRandomValues) {
@@ -32,7 +33,7 @@ export class Utils {
       let guidResponse = '';
       for (let i = 0; i < 36; i++) {
         if (guidHolder[i] !== '-' && guidHolder[i] !== '4') {
-          r = Math.random()  * 16 | 0;
+          r = Math.random() * 16 | 0;
         }
         if (guidHolder[i] === 'x') {
           guidResponse += hex[r];

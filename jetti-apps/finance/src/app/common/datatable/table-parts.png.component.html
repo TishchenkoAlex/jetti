@@ -14,6 +14,7 @@
 
   <ng-template pTemplate="header">
     <tr>
+      <th style="width: 50px">#</th>
       <th *ngFor="let col of columns" [ngStyle]="col.headerStyle">
         {{col.label}}
       </th>
@@ -23,6 +24,9 @@
 
   <ng-template pTemplate="body" let-rowData>
     <tr [pSelectableRow]="rowData">
+      <td style="width: 50px; text-align: right;">
+            {{rowData.index + 1}}
+      </td>
       <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field">
         <p-cellEditor>
           <ng-template pTemplate="input">
@@ -50,6 +54,7 @@
 
   <ng-template pTemplate="footer">
     <tr *ngIf="showTotals" style="height: 24px">
+      <th style="width: 50px"></th>
       <th *ngFor="let col of columns" [ngStyle]="col.style">
         <span [ngSwitch]="col.type" *ngIf="col.totals">
           <span *ngSwitchCase="'number'" style="padding-right: 5px">
