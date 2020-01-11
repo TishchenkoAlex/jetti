@@ -128,7 +128,7 @@
     <p-toolbar>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary"
-          (click)="refresh(id.id)" [disabled]="(lds.busy$ | async)"></button>
+          (click)="refresh(id)" [disabled]="(lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-fast-backward" (click)="first()"
           [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-step-backward" (click)="prev()"

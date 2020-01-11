@@ -152,7 +152,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     this.ds.api.onCommand(this.Form.getRawValue(), method, {}).then(value => {
       const form = this.dss.getViewModel(this.type, this.Form['schema'], value);
       this.data = form;
-      setTimeout(() => this.cd.detectChanges());
+      this.Form.markAsDirty();
     });
   }
 

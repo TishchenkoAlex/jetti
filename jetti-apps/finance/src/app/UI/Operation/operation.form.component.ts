@@ -21,13 +21,13 @@ export class OperationFormComponent implements AfterViewInit {
   @Input() type: DocTypes;
   @Input() data: FormGroup;
 
-  get form() { return this.super.data; }
-  get Operation() { return this.form.get('Operation')!; }
+  get Form() { return this.super.Form; }
+  get Operation() { return this.Form.get('Operation')!; }
 
   @ViewChild(BaseDocFormComponent, { static: false }) super: BaseDocFormComponent;
 
   async ngAfterViewInit() {
-    this.form['metadata']['copyTo'] = [];
+    this.Form['metadata']['copyTo'] = [];
     const Operation = this.Operation && this.Operation.value && this.Operation.value.id ?
       await this.super.ds.api.byId<CatalogOperation>(this.Operation.value.id) : null;
 
@@ -37,22 +37,22 @@ export class OperationFormComponent implements AfterViewInit {
         label: (await this.super.ds.api.byId<CatalogOperation>(o.Operation)).description,
         command: () => this.super.baseOn(this.super.type, o.Operation)
       };
-      this.form['metadata']['copyTo'].push(item);
+      this.Form['metadata']['copyTo'].push(item);
     }
 
-    this.form['metadata']['clientModule'] = {};
+    this.Form['metadata']['clientModule'] = {};
     if (Operation && Operation.module) {
       const func = new Function('', Operation.module);
-      this.form['metadata']['clientModule'] = func.bind(this)() || {};
+      this.Form['metadata']['clientModule'] = func.bind(this)() || {};
     }
 
-    this.form['metadata']['commands'] = [];
+    this.Form['metadata']['commands'] = [];
     for (const o of ((Operation && Operation.commandsOnServer) || [])) {
       const item: MenuItem = {
         label: o.label, icon: o.icon,
         command: () => this.super.commandOnSever(o.method)
       };
-      this.form['metadata']['commands'].push(item);
+      this.Form['metadata']['commands'].push(item);
     }
 
     for (const o of ((Operation && Operation.commandsOnClient) || [])) {
@@ -60,12 +60,12 @@ export class OperationFormComponent implements AfterViewInit {
         label: o.label, icon: o.icon,
         command: () => this.super.commandOnClient(o.method)
       };
-      this.form['metadata']['commands'].push(item);
+      this.Form['metadata']['commands'].push(item);
     }
 
     this.Operation.valueChanges.pipe(take(1)).subscribe(async v => {
       await this.update(v);
-      this.super.data = this.form;
+      this.super.data = this.Form;
       setTimeout(() => this.super.cd.detectChanges());
     });
   }
@@ -84,12 +84,12 @@ export class OperationFormComponent implements AfterViewInit {
     // restore original state of Operation
     const doc = createDocument<DocumentOperation>('Document.Operation');
     const docKeys = Object.keys(doc.Props());
-    Object.keys(this.form.controls).forEach(c => {
+    Object.keys(this.Form.controls).forEach(c => {
       if (!docKeys.includes(c)) {
-        this.form.removeControl(c);
-        delete this.form['byKeyControls'][c];
-        const index = (this.form['orderedControls'] as FormControlInfo[]).findIndex(el => el.key === c);
-        (this.form['orderedControls'] as FormControlInfo[]).splice(index, 1);
+        this.Form.removeControl(c);
+        delete this.Form['byKeyControls'][c];
+        const index = (this.Form['orderedControls'] as FormControlInfo[]).findIndex(el => el.key === c);
+        (this.Form['orderedControls'] as FormControlInfo[]).splice(index, 1);
       }
     });
 
@@ -97,13 +97,13 @@ export class OperationFormComponent implements AfterViewInit {
     const formOperation = getFormGroup(view, oldValue, true);
     const orderedControls = formOperation['orderedControls'] as FormControlInfo[];
     orderedControls.forEach(c => {
-      this.form.addControl(c.key, formOperation.controls[c.key]);
-      this.form['byKeyControls'][c.key] = formOperation['byKeyControls'][c.key];
+      this.Form.addControl(c.key, formOperation.controls[c.key]);
+      this.Form['byKeyControls'][c.key] = formOperation['byKeyControls'][c.key];
     });
-    (this.form['orderedControls'] as FormControlInfo[]).splice(7, 0, ...orderedControls);
+    (this.Form['orderedControls'] as FormControlInfo[]).splice(7, 0, ...orderedControls);
     const Prop = doc.Prop() as DocumentOptions;
-    this.form['metadata'] = { ...Prop };
-
+    this.Form['metadata'] = { ...Prop };
+    console.log(this.super.Form['schema']);
     await this.ngAfterViewInit();
   }
 

@@ -27,6 +27,11 @@ import { Table } from './table';
   templateUrl: 'base.list.component.html',
 })
 export class BaseDocListComponent implements OnInit, OnDestroy {
+  @Input() pageSize;
+  @Input() type: DocTypes;
+  @Input() settings: FormListSettings;
+  @Input() data: IViewModel;
+
   locale = calendarLocale; dateFormat = dateFormat;
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService,
@@ -35,22 +40,15 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private _docSubscription$: Subscription = Subscription.EMPTY;
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
-  private debonce$ = new Subject<{ col: any, event: any, center: string }>();
+  private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
+
   pageSize$: Observable<number>;
-
-  @Input() pageSize;
-  @Input() type: DocTypes;
-  @Input() settings: FormListSettings;
-  @Input() data: IViewModel;
-
   @ViewChild('tbl', { static: true }) tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
-  get id() { return { id: this.selection && this.selection.length ? this.selection[0].id : '', posted: true }; }
-  set id(value: { id: string, posted: boolean }) {
-    this.selection = [{ id: value.id, type: this.type, posted: value.posted }];
-  }
+  get id() { return this.selection && this.selection[0] && this.selection[0].id; }
+  set id(id: string) { this.selection = [{ id }]; }
 
   columns: ColumnDef[] = [];
   selection: any[] = [];
@@ -78,6 +76,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.showTree = this.data.metadata.hierarchy === 'folders';
     this.showTreeButton = this.showTree;
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
+    this.columns = [...this.columns.filter(c => !c.hidden)];
 
     const scrollHeight = () => {
       // if (this.tbl.value && this.tbl.value[0] && this.tbl.value[0].type === this.type)
@@ -99,8 +98,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.setFilters();
     this.setContextMenu(this.columns);
 
-    this.columns = [...this.columns.filter(c => (!c.hidden && !(c.field === 'description' && this.isDoc)))];
-
     this._docSubscription$ = merge(...[
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
         filter(doc => doc && doc.type === this.type))
@@ -108,31 +105,31 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
         const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
         if (exist) {
           this.dataSource.refresh(exist.id);
-          this.id = { id: exist.id, posted: exist.posted };
+          this.id = exist.id;
         } else {
           this.dataSource.goto(doc.id);
-          this.id = { id: doc.id, posted: doc.posted };
+          this.id = doc.id;
         }
       });
 
     // обработка команды найти в списке
-      this._routeSubscruption$ = this.route.queryParams.pipe(
-        filter(params => this.route.snapshot.params.type === this.type && params.goto))
-        .subscribe(params => {
-          const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
-          if (exist) {
-            this.router.navigate([this.type], { replaceUrl: true }).then(() =>
-              this.refresh(params.goto));
-          } else {
-            this.router.navigate([this.type], { replaceUrl: true }).then(() => {
-              this.filters = {};
-              this.prepareDataSource();
-              this.goto(params.goto);
-            });
-          }
-        });
+    this._routeSubscruption$ = this.route.queryParams.pipe(
+      filter(params => this.route.snapshot.params.type === this.type && params.goto))
+      .subscribe(params => {
+        const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
+        if (exist) {
+          this.router.navigate([this.type], { replaceUrl: true }).then(() =>
+            this.refresh(params.goto));
+        } else {
+          this.router.navigate([this.type], { replaceUrl: true }).then(() => {
+            this.filters = {};
+            this.prepareDataSource();
+            this.goto(params.goto);
+          });
+        }
+      });
 
-    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(1000))
+    this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
   }
 
@@ -156,7 +153,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (!col) return;
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.id = { id: null, posted: null };
+    this.id = null;
     this.prepareDataSource(this.multiSortMeta);
     this.last();
   }
@@ -164,18 +161,18 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
       if (typeof event !== 'boolean') event = null;
     }
-    this.debonce$.next({ col, event, center });
+    this._debonce$.next({ col, event, center });
   }
 
   onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
     this.multiSortMeta = event.multiSortMeta;
     this.prepareDataSource();
-    if (this.id.id) this.dataSource.sort();
+    if (this.id) this.dataSource.sort();
     else this.isCatalog ? this.first() : this.last();
   }
 
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
-    this.dataSource.id = this.id.id;
+    this.dataSource.id = this.id;
     const order = multiSortMeta
       .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
     const Filter = Object.keys(this.filters)
@@ -255,7 +252,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   parentChange(event) {
-    this.id = { id: null, posted: false };
+    this.id = null;
     this.filters['parent'] = {
       matchMode: '=',
       value: event && event.data && event.data.id ? {
@@ -275,7 +272,47 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     while (!el.id && el.lastElementChild) { el = el.lastElementChild; }
     const value = event.data[el.id];
     this.ctxData = { column: el.id, value: value && value.id ? value : value };
-    this.id = { id: event.data.id, posted: event.data.posted };
+    this.id = event.data.id;
+  }
+
+  first() {
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0) this.id = d[0].id;
+    });
+    this.dataSource.first();
+  }
+
+  private listen() {
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0) this.id = d[d.length - 1].id;
+    });
+  }
+
+  last() { this.listen(); this.dataSource.last(); }
+  prev() { this.listen(); this.dataSource.prev(); }
+  next() { this.listen(); this.dataSource.next(); }
+
+  private listenRefresh(id: string) {
+    this.selection = [];
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0) {
+        const row = d.find(el => el.id === id);
+        if (row) this.id = row.id;
+      }
+    });
+  }
+
+  refresh(id: string) { this.listenRefresh(id); this.dataSource.refresh(id); }
+  goto(id: string) { this.listenRefresh(id); this.dataSource.goto(id); }
+
+  ngOnDestroy() {
+    this._docSubscription$.unsubscribe();
+    this._routeSubscruption$.unsubscribe();
+    this._debonceSubscription$.unsubscribe();
+    this._debonce$.complete();
+    // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
   }
 
   private saveUserSettings() {
@@ -287,65 +324,4 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     };
     this.uss.setFormListSettings(this.type, formListSettings);
   }
-
-  private listen() {
-    this.selection = [];
-    this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0) this.id = { id: d[d.length - 1].id, posted: d[d.length - 1].posted };
-    });
-  }
-
-  last() {
-    this.listen();
-    this.dataSource.last();
-  }
-
-  first() {
-    this.selection = [];
-    this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0) this.id = { id: d[0].id, posted: d[0].posted };
-    });
-    this.dataSource.first();
-  }
-
-  prev() {
-    this.listen();
-    this.dataSource.prev();
-  }
-
-  next() {
-    this.listen();
-    this.dataSource.next();
-  }
-
-
-  private listenRefresh(id: string) {
-    this.selection = [];
-    this.dataSource.result$.pipe(take(1)).subscribe(d => {
-      if (d.length > 0) {
-        const row = d.find(el => el.id === id);
-        if (row)
-          this.id = { id: row.id, posted: row.posted };
-      }
-    });
-  }
-
-  refresh(id: string) {
-    this.listenRefresh(id);
-    this.dataSource.refresh(id);
-  }
-
-  goto(id: string) {
-    this.listenRefresh(id);
-    this.dataSource.goto(id);
-  }
-
-  ngOnDestroy() {
-    this._docSubscription$.unsubscribe();
-    this._routeSubscruption$.unsubscribe();
-    this._debonceSubscription$.unsubscribe();
-    this.debonce$.complete();
-    // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
-  }
-
 }
