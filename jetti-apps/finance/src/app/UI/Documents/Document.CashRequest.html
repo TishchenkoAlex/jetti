@@ -1,25 +1,25 @@
-<form novalidate [formGroup]="form" cdkTrapFocus>
+<form novalidate [formGroup]="Form" cdkTrapFocus>
   <p-panel #mp [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]')" [toggleable]="true">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Провести и закрыть"
-          class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="PostClose()"
+          class="ui-button-warning" [disabled]="!Form.valid || (lds.busy$ | async)" (click)="PostClose()"
           *ngIf="!readonlyMode && !isDeleted"></button>
         <button pButton type="button" id="Post" label="Провести" icon="fa fa-check" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="Post()"
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="Post()"
           *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
         <button pButton type="button" id="unPost" label="Отменить проведение" icon="fa fa-square-o" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="unPost()"
           *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
         <button pButton type="button" id="Copy" label="Копировать" icon="fa fa-copy" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="Copy()" *ngIf="!isDeleted && !isNew"></button>
+          [disabled]="!Form.valid || (lds.busy$ | async)" (click)="Copy()" *ngIf="!isDeleted && !isNew"></button>
         <button pButton type="button" id="Delete" [label]="isDeleted ? 'Отменить удаление' : 'Удалить'" icon="fa fa-trash" class="ui-button-danger"
           *ngIf="!isNew" (click)="Delete()" [disabled]="(lds.busy$ | async)"></button>
       </div>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" id="StartProcess" label="Запустить согласование" class="ui-button-danger"
           *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
-          [disabled]="!form.valid || (lds.busy$ | async)"></button>
+          [disabled]="!Form.valid || (lds.busy$ | async)"></button>
       </div>
       <div class="ui-toolbar-group-right">
         <p-splitButton *ngIf="copyTo.length" [model]="copyTo" styleClass="ui-button-secondary" label="создать на основании...">
@@ -38,78 +38,78 @@
     <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['date']" [form]="form"> </j-control>
-        <j-control [control]="vk['code']" [form]="form"></j-control>
-        <j-control [control]="vk['Status']" [form]="form" disabled = true ></j-control>
-        <j-control [control]="vk['Operation']" [form]="form" (change) = "onOperationChanges($event)"></j-control>
+        <j-control [control]="vk['date']" [form]="Form"> </j-control>
+        <j-control [control]="vk['code']" [form]="Form"></j-control>
+        <j-control [control]="vk['Status']" [form]="Form" disabled = true ></j-control>
+        <j-control [control]="vk['Operation']" [form]="Form" (change) = "onOperationChanges($event)"></j-control>
       </div>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['CashKind']" [form]="form" (change) = 'onCashKindChange($event)'></j-control>
-        <j-control [control]="vk['Amount']" [form]="form"></j-control>
-        <j-control [control]="vk['сurrency']" [form]="form"></j-control>
-        <j-control [control]="vk['PayDay']" [form]="form"></j-control>
+        <j-control [control]="vk['CashKind']" [form]="Form" (change) = 'onCashKindChange($event)'></j-control>
+        <j-control [control]="vk['Amount']" [form]="Form"></j-control>
+        <j-control [control]="vk['сurrency']" [form]="Form"></j-control>
+        <j-control [control]="vk['PayDay']" [form]="Form"></j-control>
       </div>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['company']" [form]="form"></j-control>
-         <j-control *ngIf="form.value.CashKind !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
-        <j-control [control]="vk['CashFlow']" [form]="form"></j-control>
+        <j-control [control]="vk['company']" [form]="Form"></j-control>
+         <j-control *ngIf="Form.value.CashKind !== 'ANY'" [control]="vk['CashOrBank']" [form]="Form"></j-control>
+        <j-control [control]="vk['CashFlow']" [form]="Form"></j-control>
       </div>
 
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
         <j-control [control]="vk['CashRecipient']" [form]="form"></j-control>
-        <j-control *ngIf="form.value.CashKind === 'BANK'" [control]="vk['CashRecipientBankAccount']" [form]="form"></j-control>
+        <j-control *ngIf="Form.value.CashKind === 'BANK'" [control]="vk['CashRecipientBankAccount']" [form]="form"></j-control>
         <j-control [control]="vk['Department']" [form]="form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+      <div *ngIf="Form.value.Operation === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
         fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Contract']" [form]="form"></j-control>
+        <j-control [control]="vk['Contract']" [form]="Form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Перечисление налогов и взносов'" fxLayout="row" fxLayout.xs="column"
+      <div *ngIf="Form.value.Operation === 'Перечисление налогов и взносов'" fxLayout="row" fxLayout.xs="column"
         fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['ExpenseOrBalance']" [form]="form"></j-control>
-        <j-control [control]="vk['BalanceAnalytics']" [form]="form"></j-control>
+        <j-control [control]="vk['ExpenseOrBalance']" [form]="Form"></j-control>
+        <j-control [control]="vk['BalanceAnalytics']" [form]="Form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Оплата ДС в другую организацию'" fxLayout="row" fxLayout.xs="column"
+      <div *ngIf="Form.value.Operation === 'Оплата ДС в другую организацию'" fxLayout="row" fxLayout.xs="column"
         fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['CashOrBankIn']" [form]="form"></j-control>
+        <j-control [control]="vk['CashOrBankIn']" [form]="Form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Оплата по кредитам и займам полученным'" fxLayout="row" fxLayout.xs="column"
+      <div *ngIf="Form.value.Operation === 'Оплата по кредитам и займам полученным'" fxLayout="row" fxLayout.xs="column"
         fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Loan']" [form]="form"></j-control>
-        <j-control [control]="vk['PaymentKind']" [form]="form"></j-control>
+        <j-control [control]="vk['Loan']" [form]="Form"></j-control>
+        <j-control [control]="vk['PaymentKind']" [form]="Form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+      <div *ngIf="Form.value.Operation === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
         fxLayoutGap.xs="0px">
-        <j-control [control]="vk['ExpenseOrBalance']" [form]="form"></j-control>
-        <j-control [control]="vk['ExpenseAnalytics']" [form]="form"></j-control>
+        <j-control [control]="vk['ExpenseOrBalance']" [form]="Form"></j-control>
+        <j-control [control]="vk['ExpenseAnalytics']" [form]="Form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+      <div *ngIf="Form.value.Operation === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
         fxLayoutGap.xs="0px">
         <j-control [control]="vk['PayRollKind']" [form]="form"></j-control>
       </div>
 
-      <div *ngIf="form.value.Operation === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
+      <div *ngIf="Form.value.Operation === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
         fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Loan']" [form]="form"></j-control>
+        <j-control [control]="vk['Loan']" [form]="Form"></j-control>
       </div>
 
     </div>
     <ng-content></ng-content>
 
     <br *ngIf="tables.length">
-    <div *ngIf="form.value.Operation === 'Выплата заработной платы'">
+    <div *ngIf="Form.value.Operation === 'Выплата заработной платы'">
     <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
       <div *ngFor="let control of tables; let i = index">
         <p-tabPanel [header]="control.label">
-          <j-control [control]="control" [form]="form"></j-control>
+          <j-control [control]="control" [form]="Form"></j-control>
         </p-tabPanel>
       </div>
     </p-tabView>
@@ -119,12 +119,12 @@
 
   <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false">
     <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
-      <j-control *ngIf="vk['parent']" [control]="vk['parent']" [form]="form"></j-control>
-      <j-control *ngIf="vk['user']" [control]="vk['user']" [form]="form"></j-control>
-      <j-control *ngIf="vk['workflow']" [control]="vk['workflow']" [form]="form"></j-control>
-      <j-control [control]="vk['workflowID']" disabled=true [form]="form"></j-control>
+      <j-control *ngIf="vk['parent']" [control]="vk['parent']" [form]="Form"></j-control>
+      <j-control *ngIf="vk['user']" [control]="vk['user']" [form]="Form"></j-control>
+      <j-control *ngIf="vk['workflow']" [control]="vk['workflow']" [form]="Form"></j-control>
+      <j-control [control]="vk['workflowID']" disabled=true [form]="Form"></j-control>
     </div>
-    <j-control *ngIf="vk['info']" [control]="vk['info']" [form]="form"></j-control>
+    <j-control *ngIf="vk['info']" [control]="vk['info']" [form]="Form"></j-control>
     <!-- <j-control [control]="vk['paymantInfo']" [form]="form"></j-control> -->
   </p-panel>
 
@@ -141,8 +141,8 @@
 </p-panel>
 
 <p-panel [toggleable]="true" [collapsed]="true" header="Согласование"
-  *ngIf="form.value.workflowID !== undefined && form.value.workflowID !== ''">
-  <bp-task [ProcessID]="form.value.workflowID"></bp-task>
+  *ngIf="Form.value.workflowID !== undefined && Form.value.workflowID !== ''">
+  <bp-task [ProcessID]="Form.value.workflowID"></bp-task>
 </p-panel>
 
 <p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cd appendTo="body">
