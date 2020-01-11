@@ -105,7 +105,6 @@ export class EnumFormControl extends FormControlInfo {
     this.value = '';
     if (options.style) this.style = options.style;
     this.valuesOptions = [
-      { label: '', value: null },
       ...(options.value as string[])
         .map(el => ({ label: el, value: el }))
     ];

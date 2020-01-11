@@ -7,7 +7,8 @@
 
   <div *ngSwitchCase="'enum'" [ngClass]="{'ui-float-label' : control.showLabel}">
     {{ control.value  }}
-    <p-dropdown [options]="control.valuesOptions" [formControlName]="control.key" [showClear]="true" [readonly]="control.readOnly" [required]="control.required"></p-dropdown>
+    <p-dropdown [options]="control.valuesOptions" [formControlName]="control.key"
+     [autoDisplayFirst]="true" [readonly]="control.readOnly" [required]="control.required" appendTo="body"></p-dropdown>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 

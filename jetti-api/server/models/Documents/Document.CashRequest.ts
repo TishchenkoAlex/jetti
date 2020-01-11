@@ -80,9 +80,9 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'enum', required: true, style: { width: '140px' },
     label: 'Тип платежа',
     value: [
-      'CASH',
       'BANK',
-      'ANY'
+      'CASH',
+      'ANY',
     ]
   })
   CashKind = 'ANY';
@@ -91,8 +91,8 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'enum', required: true, style: { width: '140px' },
     label: 'Способ выплаты',
     value: [
-      'CASH',
       'BANK',
+      'CASH',
       'SALARYPROJECT'
     ]
   })

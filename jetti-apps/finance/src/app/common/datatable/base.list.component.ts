@@ -68,7 +68,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   dataSource: ApiDataSource;
 
   ngOnInit() {
-    const dependFromRoute = !this.type;
     if (!this.type) this.type = this.route.snapshot.params.type;
     if (!this.settings) this.settings = this.data.settings;
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
@@ -81,6 +80,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
 
     const scrollHeight = () => {
+      // if (this.tbl.value && this.tbl.value[0] && this.tbl.value[0].type === this.type)
       return window.innerHeight - this.tbl.el.nativeElement.offsetTop - 115;
     };
 
