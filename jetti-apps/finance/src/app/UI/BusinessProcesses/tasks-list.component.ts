@@ -59,7 +59,7 @@ export class TaskListComponent implements OnInit {
     this.columns = [
       { field: 'TaskID', header: 'Задача №', type: 'string', style: { 'text-align': 'center', 'width': '5em' } },
       { field: 'TaskDate', header: 'Дата', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
-      { field: 'TaskName', header: 'Задача', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
+      // { field: 'TaskName', header: 'Задача', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
       // {field: 'ProcessID', header: 'Процесс №'},
       { field: 'Subdivision', header: 'Подразделение', type: 'string', style: { 'text-align': 'center', 'width': '12em' } },
       { field: 'ItemName', header: 'Статья ДДС', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },

@@ -3,12 +3,12 @@ import { RegisteredDocument, createDocument } from '../documents.factory';
 import { buildTypesQueryList } from './../../fuctions/SQLGenerator.MSSQL';
 import { TypesBase } from './TypesBase';
 
-export class TypesCounterpartieOrPerson extends TypesBase {
+export class TypesPersonOrCounterpartieBankAccount extends TypesBase {
 
   QueryList() {
     const select = RegisteredDocument.filter(d =>
-      d.type === 'Catalog.Counterpartie' ||
-      d.type === 'Catalog.Person')
+      d.type === 'Catalog.Counterpartie.BankAccount' ||
+      d.type === 'Catalog.Person.BankAccount')
       .map(el => ({ type: el.type, description: (createDocument(el.type).Prop() as DocumentOptions).description }));
     return buildTypesQueryList(select);
   }

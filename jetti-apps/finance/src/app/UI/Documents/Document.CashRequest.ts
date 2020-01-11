@@ -17,7 +17,6 @@ import { patchOptionsNoEvents } from 'src/app/common/dynamic-form/dynamic-form.s
 import { LoadingService } from 'src/app/common/loading.service';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
 import { BPApi } from 'src/app/services/bpapi.service';
-import { TaskComponent } from 'src/app/UI/BusinessProcesses/task.component';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
@@ -52,25 +51,18 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   get commands() { return (<MenuItem[]>this.form['metadata']['commands']) || []; }
   get copyTo() { return (<MenuItem[]>this.form['metadata']['copyTo']) || []; }
   get module() { return this.form['metadata']['clientModule'] || {}; }
-  get getStatus() { return <string>this.form.get('Status').value; }
-  get readonlyMode() { return false; return this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
 
   private _subscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
-  private _OperationChanges$: Subscription = Subscription.EMPTY;
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, private auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public location: Location, public tabStore: TabsStore,
     private bpApi: BPApi) { }
 
   ngOnInit() {
-    // tslint:disable-next-line: max-line-length
-    // this._StatusChanges$ = this.form.get('Status').valueChanges.subscribe(v => { v === 'PREPARED' ? this.form.enable() : this.form.disable();
-    // tslint:disable-next-line: max-line-length
-    this._OperationChanges$ = this.form.get('Operation').valueChanges.subscribe(v => { this.onOperationChanges(); });
-
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
@@ -85,7 +77,6 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('Operation').setValue('Оплата поставщику');
     }
 
-    // if (this.form.get('Status').value !== 'PREPARED') { this.form.disable(); }
     this.initCopyTo();
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
@@ -99,6 +90,10 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
       this.form.get('code')!.valueChanges,
       this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
       .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+
+    if (this.readonlyMode) { this.form.disable({ emitEvent: false }); }
+
+    this.onOperationChanges(this.form.get('Operation').value);
   }
 
 
@@ -126,15 +121,14 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   }
 
   Save() { this.showDescription(); this.ds.save(this.model); }
-  Delete() { this.ds.delete(this.model.id); }
+  Delete() { this.ds.delete(this.model.id); this.form.enable(); }
+
   Post() { const doc = this.model; this.ds.post(doc); }
   unPost() { this.ds.unpost(this.model); }
   PostClose() { const doc = this.model; this.ds.post(doc, true); }
   Copy() { return this.router.navigate([this.model.type, v1().toUpperCase()], { queryParams: { copy: this.id } }); }
 
-  onOperationChanges() {
-
-    const operation = this.form.get('Operation').value;
+  onOperationChanges(operation: string) {
 
     // 'Оплата поставщику',
     // 'Перечисление налогов и взносов',
@@ -144,11 +138,18 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
     // 'Прочий расход ДС',
     // 'Выдача займа контрагенту',
     // 'Возврат оплаты клиенту'
-
-    this.vk['CashOrBank'].required = operation === 'Оплата ДС в другую организацию';
+    // 'Выплата заработной платы'
+    this.vk['PayRollKind'].required = operation === 'Выплата заработной платы';
     this.vk['CashOrBankIn'].required = operation === 'Оплата ДС в другую организацию';
-    this.vk['PaymentKind'].required = operation === 'Оплата по кредитам и займам полученным';
     this.vk['BalanceAnalytics'].required = operation === 'Перечисление налогов и взносов';
+
+    this.vk['PaymentKind'].required =
+      `Выплата заработной платы
+      Оплата по кредитам и займам полученным`.indexOf(operation) !== -1;
+
+    this.vk['CashOrBank'].required =
+      `Выплата заработной платы
+      Оплата ДС в другую организацию`.indexOf(operation) !== -1;
 
     this.vk['CashRecipient'].required =
       `Оплата поставщику
@@ -190,14 +191,11 @@ export class DocumentCashRequestComponent implements OnInit, OnDestroy {
   }
 
   StartProcess() {
-    // const pres = this.form.pristine;
-    // if (!pres) { return; }
-    // tslint:disable-next-line: max-line-length
-    this.bpApi.StartProcess(this.form.value, this.metadata.type).pipe(take(1)).subscribe(data => {
+    this.bpApi.StartProcess(this.model, this.metadata.type).pipe(take(1)).subscribe(data => {
       this.form.get('workflowID').setValue(data);
       this.form.get('Status').setValue('AWAITING');
       this.Post();
-      // this.form.disable();
+      this.form.disable({ emitEvent: false });
       this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
   }

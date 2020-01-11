@@ -14,6 +14,8 @@ import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { RefValue } from '../common-types';
 import { CatalogCounterpartieBankAccount } from '../Catalogs/Catalog.Counterpartie.BankAccount';
+import { DeleteProcess } from '../../routes/bp';
+import { updateDocument } from '../../routes/utils/post';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -63,6 +65,19 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async baseOn(source: Ref, tx: MSSQL): Promise<this> {
+    return this;
+  }
+
+  async beforeDelete(tx: MSSQL): Promise<this> {
+    if (this.Status  === 'APPROVED') {
+      throw new Error('Утвержденный документ не может быть удален');
+    }
+    if (this.workflowID) {
+      await DeleteProcess(this.workflowID);
+      this.workflowID  = '';
+      this.Status  = 'PREPARED';
+      await updateDocument(this, tx);
+    }
     return this;
   }
 
