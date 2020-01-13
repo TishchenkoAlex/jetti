@@ -39,7 +39,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     this.onOperationChanges(this.form.get('Operation').value);
   }
 
-  onOperationChanges(operation: string) {
+  old_onOperationChanges(operation: string) {
 
     // 'Оплата поставщику',
     // 'Перечисление налогов и взносов',
@@ -86,6 +86,48 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     this.form.markAsTouched();
   }
 
+  onOperationChanges(operation: string) {
+
+    // 'Оплата поставщику',
+    // 'Перечисление налогов и взносов',
+    // 'Оплата ДС в другую организацию',
+    // 'Выдача ДС подотчетнику',
+    // 'Оплата по кредитам и займам полученным',
+    // 'Прочий расход ДС',
+    // 'Выдача займа контрагенту',
+    // 'Возврат оплаты клиенту'
+    // 'Выплата заработной платы'
+        // tslint:disable
+    if (operation === 'Выплата заработной платы') this.form.get('PayRollKind').enable({emitEvent:false}); else this.form.get('PayRollKind').disable({emitEvent:false});
+
+    if (operation === 'Оплата ДС в другую организацию') this.form.get('CashOrBankIn').enable({emitEvent:false}); else this.form.get('CashOrBankIn').disable({emitEvent:false});
+    if (operation === 'Перечисление налогов и взносов') this.form.get('BalanceAnalytics').enable({emitEvent:false}); else this.form.get('BalanceAnalytics').disable({emitEvent:false});
+
+    if (`Выплата заработной платы
+    Оплата по кредитам и займам полученным`.indexOf(operation) !== -1) this.form.get('PaymentKind').enable({emitEvent:false}); else this.form.get('PaymentKind').disable({emitEvent:false});
+
+    if (`Оплата поставщику
+    Перечисление налогов и взносов
+    Оплата ДС в другую организацию
+    Выдача ДС подотчетнику
+    Оплата по кредитам и займам полученным
+    Выдача займа контрагенту
+    Возврат оплаты клиенту`.indexOf(operation) !== -1) this.form.get('CashRecipient').enable({emitEvent:false}); else this.form.get('CashRecipient').disable({emitEvent:false});
+
+    if (`Выплата заработной платы
+    Оплата ДС в другую организацию`.indexOf(operation) !== -1) this.form.get('CashOrBank').enable({emitEvent:false}); else this.form.get('CashOrBank').disable({emitEvent:false});
+
+    if (`Оплата поставщику
+    Возврат оплаты клиенту`.indexOf(operation) !== -1) this.form.get('Contract').enable({emitEvent:false}); else this.form.get('Contract').disable({emitEvent:false});
+
+    if (`Перечисление налогов и взносов
+    Прочий расход ДС`.indexOf(operation) !== -1) this.form.get('ExpenseOrBalance').enable({emitEvent:false}); else this.form.get('ExpenseOrBalance').disable({emitEvent:false});
+
+    if (`Оплата по кредитам и займам полученным
+    Выдача займа контрагенту`.indexOf(operation) !== -1) this.form.get('Loan').enable({emitEvent:false}); else this.form.get('Loan').disable({emitEvent:false});
+
+    this.form.markAsTouched();
+  }
   onCashKindChange(event) {
 
     let CashKindType = '';

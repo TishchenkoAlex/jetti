@@ -2,9 +2,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
   type: 'Catalog.TaxPayerStatus',
-  description: 'Статус плательщика налогов',
+  description: 'Статус плат. налогов',
   icon: 'fa fa-list',
-  menu: 'Статусы плательщиков налогов',
+  menu: 'Статусы плат. налогов',
 })
 export class CatalogTaxPayerStatus extends DocumentBase {
 

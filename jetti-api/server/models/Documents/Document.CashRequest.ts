@@ -88,7 +88,7 @@ export class DocumentCashRequest extends DocumentBase {
   CashKind = 'ANY';
 
   @Props({
-    type: 'enum', required: true, style: { width: '140px' },
+    type: 'enum', required: false, style: { width: '140px' },
     label: 'Способ выплаты',
     value: [
       'BANK',
@@ -186,7 +186,10 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.Expense.Analytics', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseAnalytics: Ref = null;
 
-  @Props({ type: 'Catalog.Balance.Analytics', label: 'Бизнес-процесс №', hiddenInList: true })
+  @Props({ type: 'Catalog.Balance.Analytics', label: 'Аналитика баланса', hiddenInList: true,
+  owner: [
+    { dependsOn: 'ExpenseOrBalance', filterBy: 'parent' }]
+  })
   BalanceAnalytics: Ref = null;
 
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
