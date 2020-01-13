@@ -15,6 +15,7 @@ import { v1 } from 'uuid';
 import { DocService } from '../doc.service';
 import { filter } from 'rxjs/operators';
 import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -84,13 +85,16 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     if (this.isTypeControl && this.placeholder) {
       this.placeholder = this.placeholder.split('[')[0] + '[' + (obj && obj.type ? obj.type : '') + ']';
     }
-    this._value = obj;
-    if (!(this._value.id === null && this._value.type)) {
-      this.suggest.patchValue(this._value);
-      if (!this.NO_EVENT) { this.onChange(this._value); this.change.emit(this._value); }
+    if (this._value && (this._value.id === obj.id)) {
+      this._value = obj;
+      this.suggest.patchValue(this._value, patchOptionsNoEvents);
+      this.NO_EVENT = false;
+      return;
     }
+    this._value = obj;
+    this.suggest.patchValue(this._value);
+    if (!this.NO_EVENT) { this.onChange(this._value); this.change.emit(this._value); }
     this.NO_EVENT = false;
-
   }
   get value() { return this._value; }
 
@@ -124,6 +128,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
+    this._value = this.EMPTY;
     this._docSubscription$ = this.ds.showDialog$.pipe(
       filter(uuid => this.uuid === uuid.uuid)).
       subscribe(uuid => {
