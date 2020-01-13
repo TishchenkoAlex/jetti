@@ -49,7 +49,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   get id() { return this.selection && this.selection[0] && this.selection[0].id; }
-  set id(id: string) { this.selection = [{ id }]; }
+  set id(id: string) { this.selection = [{ id, type: this.type }]; }
 
   columns: ColumnDef[] = [];
   selection: any[] = [];
