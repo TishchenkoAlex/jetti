@@ -1,165 +1,169 @@
-<form novalidate [formGroup]="form" cdkTrapFocus>
-  <p-panel #mp [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]')"
-    [toggleable]="true">
-    <p-toolbar>
-      <div class="ui-toolbar-group-left">
-        <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Провести и закрыть"
-          class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
-          *ngIf="!readonlyMode && !isDeleted"></button>
-        <button pButton type="button" id="Post" label="Провести" icon="fa fa-check" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
-          *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
-        <button pButton type="button" id="unPost" label="Отменить проведение" icon="fa fa-square-o"
-          class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
-          *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
-        <button pButton type="button" id="Copy" label="Копировать" icon="fa fa-copy" class="ui-button-secondary"
-          [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
-        <button pButton type="button" id="Delete" [label]="isDeleted ? 'Отменить удаление' : 'Удалить'"
-          icon="fa fa-trash" class="ui-button-danger" *ngIf="!isNew" (click)="delete()"
-          [disabled]="(lds.busy$ | async)"></button>
-      </div>
-      <div class="ui-toolbar-group-right">
-        <button pButton type="button" id="StartProcess" label="Запустить согласование" class="ui-button-danger"
-          *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
-          [disabled]="!form.valid || (lds.busy$ | async)"></button>
-      </div>
-      <div class="ui-toolbar-group-right">
-        <p-splitButton *ngIf="copyTo.length" [model]="copyTo" styleClass="ui-button-secondary"
-          label="создать на основании...">
-        </p-splitButton>
-        <p-splitButton *ngIf="commands.length" [model]="commands" styleClass="ui-button-secondary" label="commands">
-        </p-splitButton>
-        <!--         <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
-      [disabled]="(lds.busy$ | async)"></button> -->
-        <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="goto()"
-          [disabled]="(lds.busy$ | async)"></button>
-        <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary" (click)="print()"
-          [disabled]="(lds.busy$ | async)"></button>
-      </div>
-    </p-toolbar>
-
-    <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['date']" [form]="form"> </j-control>
-        <j-control [control]="vk['code']" [form]="form"></j-control>
-        <j-control [control]="vk['Status']" [form]="form" disabled=true></j-control>
-        <j-control [control]="vk['Operation']" [form]="form" (change)="onOperationChanges($event)"></j-control>
-        <j-control [control]="vk['CashKind']" [form]="form" (change)='onCashKindChange($event)'></j-control>
-      </div>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['company']" [form]="form"></j-control>
-        <j-control *ngIf="form.value.CashKind !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
-        <j-control [control]="vk['CashFlow']" [form]="form"></j-control>
-      </div>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['CashRecipient']" [form]="form"></j-control>
-        <j-control *ngIf="form.get('CashKind').value === 'BANK'" [control]="vk['CashRecipientBankAccount']" [form]="form">
-        </j-control>
-        <j-control [control]="vk['Department']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
-        fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Contract']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Перечисление налогов и взносов'" fxLayout="row" fxLayout.xs="column"
-        fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['ExpenseOrBalance']" [form]="form"></j-control>
-        <j-control [control]="vk['BalanceAnalytics']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Оплата ДС в другую организацию'" fxLayout="row" fxLayout.xs="column"
-        fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['CashOrBankIn']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Оплата по кредитам и займам полученным'" fxLayout="row" fxLayout.xs="column"
-        fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Loan']" [form]="form"></j-control>
-        <j-control [control]="vk['PaymentKind']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
-        fxLayoutGap.xs="0px">
-        <j-control [control]="vk['ExpenseOrBalance']" [form]="form"></j-control>
-        <j-control [control]="vk['ExpenseAnalytics']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column"
-        fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['PayRollKind']" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="form.value.Operation === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
-        fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Loan']" [form]="form"></j-control>
-      </div>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk['Amount']" [form]="form"></j-control>
-        <j-control [control]="vk['сurrency']" [form]="form"></j-control>
-        <j-control [control]="vk['PayDay']" [form]="form"></j-control>
-      </div>
-
-      <j-control *ngIf="vk.info" [control]="vk.info" [form]="form"></j-control>
-    </div>
-    <ng-content></ng-content>
-
-    <br *ngIf="tables.length">
-    <div *ngIf="form.value.Operation === 'Выплата заработной платы'">
-      <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-        <div *ngFor="let control of tables; let i = index">
-          <p-tabPanel [header]="control.label">
-            <j-control [control]="control" [form]="form"></j-control>
-          </p-tabPanel>
+<div *ngIf="vk.id">
+  <form novalidate [formGroup]="form" cdkTrapFocus>
+    <p-panel #mp [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]')"
+      [toggleable]="true">
+      <p-toolbar>
+        <div class="ui-toolbar-group-left">
+          <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Провести и закрыть"
+            class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
+            *ngIf="!readonlyMode && !isDeleted"></button>
+          <button pButton type="button" id="Post" label="Провести" icon="fa fa-check" class="ui-button-secondary"
+            [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
+            *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
+          <button pButton type="button" id="unPost" label="Отменить проведение" icon="fa fa-square-o"
+            class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
+            *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
+          <button pButton type="button" id="Copy" label="Копировать" icon="fa fa-copy" class="ui-button-secondary"
+            [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
+          <button pButton type="button" id="Delete" [label]="isDeleted ? 'Отменить удаление' : 'Удалить'"
+            icon="fa fa-trash" class="ui-button-danger" *ngIf="!isNew" (click)="delete()"
+            [disabled]="(lds.busy$ | async)"></button>
         </div>
-      </p-tabView>
-    </div>
+        <div class="ui-toolbar-group-right">
+          <button pButton type="button" id="StartProcess" label="Запустить согласование" class="ui-button-danger"
+            *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
+            [disabled]="!form.valid || (lds.busy$ | async)"></button>
+        </div>
+        <div class="ui-toolbar-group-right">
+          <p-splitButton *ngIf="copyTo.length" [model]="copyTo" styleClass="ui-button-secondary"
+            label="создать на основании...">
+          </p-splitButton>
+          <p-splitButton *ngIf="commands.length" [model]="commands" styleClass="ui-button-secondary" label="commands">
+          </p-splitButton>
+          <!--         <button *ngIf="!model.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
+      [disabled]="(lds.busy$ | async)"></button> -->
+          <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="goto()"
+            [disabled]="(lds.busy$ | async)"></button>
+          <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
+            (click)="print()" [disabled]="(lds.busy$ | async)"></button>
+        </div>
+      </p-toolbar>
 
-  </p-panel>
+      <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
 
-  <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false">
-    <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
-      <j-control *ngIf="vk.parent" [control]="vk['parent']" [form]="form"></j-control>
-      <j-control *ngIf="vk.user" [control]="vk['user']" [form]="form"></j-control>
-      <j-control *ngIf="vk.workflow" [control]="vk['workflow']" [form]="form"></j-control>
-      <j-control [control]="vk['workflowID']" disabled=true [form]="form"></j-control>
-    </div>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.date" [form]="form"> </j-control>
+          <j-control [control]="vk.code" [form]="form"></j-control>
+          <j-control [control]="vk.Status" [form]="form"></j-control>
+          <j-control [control]="vk.Operation" [form]="form" (change)="onOperationChanges($event)"></j-control>
+          <j-control [control]="vk.CashKind" [form]="form" (change)='onCashKindChange($event)'></j-control>
+        </div>
 
-    <!-- <j-control [control]="vk['paymantInfo']" [form]="Form"></j-control> -->
-  </p-panel>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.company" [form]="form"></j-control>
+          <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
+          <j-control [control]="vk.CashFlow" [form]="form"></j-control>
+        </div>
 
-</form>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.CashRecipient" [form]="form"></j-control>
+          <j-control *ngIf="form.get('CashKind').value === 'BANK'" [control]="vk['CashRecipientBankAccount']"
+            [form]="form">
+          </j-control>
+          <j-control [control]="vk.Department" [form]="form"></j-control>
+        </div>
 
-<p-panel [toggleable]="true" [collapsed]="true" header="Движения" #accumulation *ngIf="isDoc && isPosted">
-  <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
-  <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-accumulation-list>
-</p-panel>
+        <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+          fxLayoutGap.xs="0px">
+          <j-control [control]="vk.Contract" [form]="form"></j-control>
+        </div>
 
-<p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="viewModel.workflowID">
-  <bp-task [ProcessID]="viewModel.workflowID"></bp-task>
-</p-panel>
+        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
+          <j-control [control]="vk.BalanceAnalytics" [form]="form"></j-control>
+        </div>
 
-<div *ngIf="(isFolder$ | async) === false">
-  <div *ngFor="let r of relations$ | async">
-    <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
-      <j-list *ngIf="!relation.collapsed" [type]="r.type" [pageSize]=10
-        [settings]="{order: [], filter: [
-          {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
-      </j-list>
+        <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
+        </div>
+
+        <div *ngIf="form.get('Operation').value  === 'Оплата по кредитам и займам полученным'" fxLayout="row"
+          fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.Loan" [form]="form"></j-control>
+          <j-control [control]="vk.PaymentKind" [form]="form"></j-control>
+        </div>
+
+        <div *ngIf="form.get('Operation').value  === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
+          fxLayoutGap.xs="0px">
+          <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
+          <j-control [control]="vk.ExpenseAnalytics" [form]="form"></j-control>
+        </div>
+
+        <div *ngIf="form.get('Operation').value  === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.PayRollKind" [form]="form"></j-control>
+        </div>
+
+        <div *ngIf="form.get('Operation').value === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.Loan" [form]="form"></j-control>
+        </div>
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.Amount" [form]="form"></j-control>
+          <j-control [control]="vk['сurrency']" [form]="form"></j-control>
+          <j-control [control]="vk.PayDay" [form]="form"></j-control>
+        </div>
+
+        <j-control [control]="vk.info" [form]="form"></j-control>
+      </div>
+      <ng-content></ng-content>
+
+      <br *ngIf="tables.length">
+      <div *ngIf="form.get('Operation').value  === 'Выплата заработной платы'">
+        <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
+          <div *ngFor="let control of tables; let i = index">
+            <p-tabPanel [header]="control.label">
+              <j-control [control]="control" [form]="form"></j-control>
+            </p-tabPanel>
+          </div>
+        </p-tabView>
+      </div>
+
     </p-panel>
-  </div>
-</div>
 
-<p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cd appendTo="body">
-  <p-footer>
-    <div cdkTrapFocus>
-      <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cd.accept()"></button>
-      <button type="button" pButton icon="fa fa-close" label="No" (click)="cd.reject()"></button>
+    <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false">
+      <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
+        <j-control [control]="vk.parent" [form]="form"></j-control>
+        <j-control [control]="vk.user" [form]="form"></j-control>
+        <j-control [control]="vk.workflow" [form]="form"></j-control>
+        <j-control [control]="vk.workflowID" [form]="form"></j-control>
+      </div>
+
+      <!-- <j-control [control]="vk['paymantInfo']" [form]="Form"></j-control> -->
+    </p-panel>
+
+  </form>
+
+  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #accumulation *ngIf="isDoc && isPosted">
+    <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
+    <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-accumulation-list>
+  </p-panel>
+
+  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value">
+    <bp-task [ProcessID]="form.get('workflowID').value"></bp-task>
+  </p-panel>
+
+  <div *ngIf="(isFolder$ | async) === false">
+    <div *ngFor="let r of relations$ | async">
+      <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
+        <j-list *ngIf="!relation.collapsed" [type]="r.type" [pageSize]=10
+          [settings]="{order: [], filter: [
+          {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
+        </j-list>
+      </p-panel>
     </div>
-  </p-footer>
-</p-confirmDialog>
+  </div>
+
+  <p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cd appendTo="body">
+    <p-footer>
+      <div cdkTrapFocus>
+        <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cd.accept()"></button>
+        <button type="button" pButton icon="fa fa-close" label="No" (click)="cd.reject()"></button>
+      </div>
+    </p-footer>
+  </p-confirmDialog>
+
+</div>

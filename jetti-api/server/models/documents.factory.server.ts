@@ -121,7 +121,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
           const item = {
             icon: '',
             label: base.description,
-            Operation: Operation!.id,
+            Operation: o.Operation,
             type: result.type,
             order: o.order || 1
           };

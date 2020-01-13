@@ -29,11 +29,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           SELECT TOP 1 id
           FROM dbo.[Catalog.Contract]
           WHERE
-          [owner.id] = '${value.id}'
-          and [currency.id] = '${this.сurrency}'
-          and [company.id] = '${this.company}'
+          [owner.id] = @p1
+          and [currency.id] = @p2
+          and [company.id] = @p3
           ORDER BY isDefault desc`;
-        const contractId = await tx.oneOrNone<{ id: string }>(query);
+        const contractId = await tx.oneOrNone<{ id: string }>(query, [value.id, this.сurrency, this.company]);
         if (!contractId) { this.Contract = null; return this; }
         this.Contract = contractId!.id;
         return this;

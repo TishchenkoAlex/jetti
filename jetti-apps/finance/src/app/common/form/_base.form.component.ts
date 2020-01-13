@@ -14,10 +14,8 @@ import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
 import { patchOptionsNoEvents, DynamicFormService, getFormGroup } from '../dynamic-form/dynamic-form.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { AuthService } from 'src/app/auth/auth.service';
-import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
-import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 
 // tslint:disable-next-line: class-name
 export class _baseDocFormComponent implements OnDestroy, OnInit {
@@ -48,17 +46,16 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   isNew$ = this.form$.pipe(map(f => (!f.get('timestamp').value)));
   isFolder$ = this.form$.pipe(map(f => (!!f.get('isfolder').value)));
   commands$ = this.metadata$.pipe(map(m => {
-    return (m && m['commands'] as Command[] || []).map(c => {
-      return (<MenuItem>{
+    return (m && m['commands'] as Command[] || []).map(c => (
+      <MenuItem>{
         label: c.label, icon: c.icon,
         command: () => this.commandOnSever(c.method)
-      });
-    });
+      }));
   }));
   copyTo$ = this.metadata$.pipe(map(m => {
     return (m && m['copyTo'] as CopyTo[] || []).map(c => {
-      const { description, icon } = createDocument(c.type).Prop() as DocumentOptions;
-      return (<MenuItem>{ label: description, icon, command: (event) => this.baseOn(c.type, c.Opration) });
+      const { label, icon, Operation, type } = c;
+      return (<MenuItem>{ label, icon, command: () => this.baseOn(type, Operation) });
     });
   }));
   module$ = this.metadata$.pipe(map(m => {
@@ -89,7 +86,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
   get copyTo() {
     return (this.metadata['copyTo'] as CopyTo[] || []).map(c => {
-      return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Opration) });
+      return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Operation) });
     });
   }
   get module() { return new Function('', this.metadata['clientModule'] || {}).bind(this)() || {}; }
@@ -197,7 +194,8 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     throw new Error('Print not implemented!');
   }
 
-  baseOn(type: DocTypes, Operation?: Ref) {
+  baseOn(type: DocTypes, Operation: Ref) {
+    console.log(type, Operation);
     this.router.navigate([type, v1()],
       { queryParams: { base: this.id, Operation } });
   }

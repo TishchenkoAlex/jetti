@@ -85,8 +85,10 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
       this.placeholder = this.placeholder.split('[')[0] + '[' + (obj && obj.type ? obj.type : '') + ']';
     }
     this._value = obj;
-    this.suggest.patchValue(this._value);
-    if (!this.NO_EVENT) { this.onChange(this._value); this.change.emit(this._value); }
+    if (!(this._value.id === null && this._value.type)) {
+      this.suggest.patchValue(this._value);
+      if (!this.NO_EVENT) { this.onChange(this._value); this.change.emit(this._value); }
+    }
     this.NO_EVENT = false;
 
   }
