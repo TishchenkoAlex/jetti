@@ -6,12 +6,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Контрагенты',
   prefix: 'CPE-',
-  copyTo: [
-    'Document.Invoice'
-  ],
   relations: [
     { name: 'Contracts', type: 'Catalog.Contract', field: 'owner' },
-    { name: 'Bank account', type: 'Catalog.Counterpartie.BankAccount', field: 'owner' }
+    { name: 'Bank accounts', type: 'Catalog.Counterpartie.BankAccount', field: 'owner' },
+    { name: 'Loan contracts', type: 'Catalog.Loan', field: 'owner' }
   ],
   hierarchy: 'folders'
 })

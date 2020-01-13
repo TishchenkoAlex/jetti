@@ -4,7 +4,6 @@ import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; }
-export interface ICommand { command: string; label: string; color?: string; icon: string; }
 export type StorageType = 'folders' | 'elements' | 'all';
 
 export interface PropOptions {
@@ -31,6 +30,8 @@ export interface PropOptions {
 }
 
 export interface Relation { name: string; type: DocTypes; field: string; }
+export interface CopyTo { type: DocTypes; label: string; Opration?: Ref; icon: string; order: number; }
+export interface Command { method: string; label: string; icon: string; order: number; }
 
 export interface DocumentOptions {
   type: DocTypes;
@@ -39,10 +40,10 @@ export interface DocumentOptions {
   menu: string;
   dimensions?: { [x: string]: AllTypes }[];
   prefix?: string;
-  commands?: ICommand[];
+  commands?: Command[];
   presentation?: 'code' | 'description';
   hierarchy?: 'folders' | 'elements';
-  copyTo?: DocTypes[];
+  copyTo?: CopyTo[];
   relations?: Relation[];
 }
 

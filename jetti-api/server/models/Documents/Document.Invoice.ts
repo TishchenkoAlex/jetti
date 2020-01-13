@@ -12,10 +12,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   menu: 'Invoices',
   prefix: 'INV-',
   commands: [
-    { command: 'test', icon: 'fa fa-plus', label: 'test' }
+    { method: 'test', icon: 'fa fa-plus', label: 'test', order: 1 }
   ],
   copyTo: [
-    'Document.PriceList'
+    { type: 'Document.PriceList', icon: '', label: 'PriceList', order: 1 }
   ],
   relations: [
     { name: 'Operations', type: 'Document.Operation', field: 'parent' }

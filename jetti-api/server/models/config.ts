@@ -3,7 +3,7 @@ import { CatalogSubcount } from './../models/Catalogs/Catalog.Subcount';
 import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
-import { DocumentBase, DocumentOptions, PropOptions } from './document';
+import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
 import { createDocument, RegisteredDocument } from './documents.factory';
 import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
 import { createTypes, RegisteredTypes } from './Types/Types.factory';
@@ -18,7 +18,7 @@ export interface IConfigSchema {
   QueryObject?: string;
   QueryList: string;
   dimensions?: { [x: string]: AllTypes }[];
-  copyTo?: DocTypes[];
+  copyTo?: CopyTo[];
   Props: { [x: string]: PropOptions };
   Prop?: DocumentOptions;
   doc?: DocumentBase;

@@ -4,12 +4,10 @@ import { DynamicFormsModule } from './dynamic.froms.module';
 import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { TaskComponent } from './BusinessProcesses/task.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
-import { CashRequestDesktopComponent } from './Forms/CashRequestDesktop.form.component';
 
 @NgModule({
   declarations: [
     SyncFormComponent,
-    CashRequestDesktopComponent,
     TaskListComponent,
     TaskComponent,
     DocumentCashRequestComponent
@@ -23,7 +21,6 @@ import { CashRequestDesktopComponent } from './Forms/CashRequestDesktop.form.com
   ],
   entryComponents: [
     SyncFormComponent,
-    CashRequestDesktopComponent,
     TaskListComponent,
     TaskComponent,
     DocumentCashRequestComponent

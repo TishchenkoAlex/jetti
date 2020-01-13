@@ -82,7 +82,7 @@ export class TextboxFormControl extends FormControlInfo {
     super(options);
     this.type = 'string';
     this.controlType = 'string';
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = '';
   }
 }
@@ -92,7 +92,7 @@ export class LinkFormControl extends FormControlInfo {
     super(options);
     this.type = 'string';
     this.controlType = 'link';
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = '';
   }
 }
@@ -102,12 +102,14 @@ export class EnumFormControl extends FormControlInfo {
     super(options);
     this.controlType = 'enum';
     this.type = 'string';
-    this.value = '';
-    if (options.style) this.style = options.style;
+
+    if (options.style) this.style = { ...this.style, ...options.style };
     this.valuesOptions = [
       ...(options.value as string[])
         .map(el => ({ label: el, value: el }))
     ];
+    // if (this.valuesOptions.length) this.value = this.valuesOptions[0].value;
+    if (this.value === undefined) this.value = '';
   }
 }
 
@@ -116,8 +118,8 @@ export class TextareaFormControl extends FormControlInfo {
     super(options);
     this.type = 'string';
     this.controlType = 'textarea';
-    this.style = { 'min-width': '100%' };
-    if (options.style) this.style = options.style;
+    this.style = { 'min-width': '100%', 'height': '54px' };
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = '';
   }
 }
@@ -128,7 +130,7 @@ export class BooleanFormControl extends FormControlInfo {
     this.controlType = 'boolean';
     this.type = 'boolean';
     this.style = { 'min-width': '24px', 'max-width': '24px', 'width': '90px', 'text-align': 'center', 'margin-top': '26px' };
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = false;
   }
 }
@@ -139,7 +141,7 @@ export class DateFormControl extends FormControlInfo {
     this.type = 'date';
     this.controlType = 'date';
     this.style = { 'min-width': '130px', 'max-width': '130px', 'width': '130px' };
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
   }
 }
 
@@ -149,7 +151,7 @@ export class DateTimeFormControl extends FormControlInfo {
     this.controlType = 'datetime';
     this.type = 'datetime';
     this.style = { 'min-width': '195px', 'max-width': '195px', 'width': '195px' };
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
   }
 }
 
@@ -159,7 +161,7 @@ export class NumberFormControl extends FormControlInfo {
     this.controlType = 'number';
     this.type = 'number';
     this.style = { 'min-width': '100px', 'max-width': '100px', 'width': '100px', 'text-align': 'right' };
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = 0;
   }
 }
@@ -174,7 +176,7 @@ export class AutocompleteFormControl extends FormControlInfo {
     super(options);
     this.controlType = 'autocomplete';
     this.style = { 'width': '250px', 'min-width': '250px', 'max-width': '250px' };
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     this.value = { id: null, code: null, type: this.type, value: null };
   }
 }
@@ -193,7 +195,7 @@ export class ScriptFormControl extends FormControlInfo {
     this.type = 'javascript';
     this.style = { 'width': '568px', 'min-width': '568px', 'max-width': '568px' };
     this.controlType = 'script';
-    if (options.style) this.style = options.style;
+    if (options.style) this.style = { ...this.style, ...options.style };
     if (options.type) this.type = options.type;
     if (this.value === undefined) this.value = '';
   }

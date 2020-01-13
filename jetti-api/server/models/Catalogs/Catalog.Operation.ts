@@ -13,7 +13,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Operations', type: 'Document.Operation', field: 'Operation' }
   ],
   copyTo: [
-    'Document.Operation'
+    {type: 'Document.Operation', icon: '', label: 'Operation', order: 1 }
   ],
   hierarchy: 'folders'
 })
@@ -82,6 +82,9 @@ class CopyTo {
 
   @Props({ type: 'javascript', label: 'method', hiddenInList: true })
   method = '';
+
+  @Props({ type: 'number', required: true })
+  order: number | null = null;
 }
 
 class Command {
@@ -95,5 +98,5 @@ class Command {
   icon = '';
 
   @Props({ type: 'number', required: true })
-  order: number | null = null;
+  order = 0;
 }

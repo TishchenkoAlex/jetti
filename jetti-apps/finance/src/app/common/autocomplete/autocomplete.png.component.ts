@@ -39,7 +39,6 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   @Input() owner: OwnerRef[];
   @Input() placeholder = '';
   @Input() required = false;
-  @Input() disabled = false;
   @Input() hidden = false;
   @Input() storageType: StorageType;
   @Input() tabIndex = -1;
@@ -59,7 +58,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   @Input() appendTo;
 
   form: FormGroup = new FormGroup({
-    suggest: new FormControl({ value: this.value, disabled: this.disabled }, AutocompleteValidator(this))
+    suggest: new FormControl({ value: this.value }, AutocompleteValidator(this))
   });
   suggest = this.form.controls['suggest'] as FormControl;
   Suggests$: Observable<ISuggest[]>;
@@ -98,7 +97,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   registerOnChange(fn: any): void { this.onChange = fn; }
   onTouched = () => { };
   registerOnTouched(fn: any): void { this.onTouched = fn; }
-  setDisabledState?(isDisabled: boolean): void { this.disabled = isDisabled; }
+  setDisabledState?(isDisabled: boolean): void { if (isDisabled) this.suggest.disable(); }
 
   writeValue(obj: any): void {
     this.NO_EVENT = true;
@@ -135,7 +134,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
 
   getSuggests(text: string) {
-    if (this.isTypeValue) {  this.Suggests$ = of([]); this.value = this.EMPTY; return; }
+    if (this.isTypeValue) { this.Suggests$ = of([]); this.value = this.EMPTY; return; }
     this.filters = this.calcFilters();
     this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.filters.filter);
   }

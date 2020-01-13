@@ -6,15 +6,6 @@ import { IServerDocument } from '../documents.factory.server';
 
 export class DocumentExchangeRatesServer extends DocumentExchangeRates implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL) {
-    switch (prop) {
-      case 'company':
-        return {};
-      default:
-        return {};
-    }
-  }
-
   async onCommand(command: string, args: any, tx: MSSQL) {
     switch (command) {
       case 'company':

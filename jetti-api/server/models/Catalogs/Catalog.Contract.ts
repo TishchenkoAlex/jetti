@@ -52,4 +52,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'boolean', required: false })
   isDefault = false;
 
+  @Props({ type: 'boolean', label: 'Ф2'})
+  notAccounting = false;
+
 }

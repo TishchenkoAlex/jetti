@@ -151,10 +151,10 @@ export class ApiService {
     const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}valueChanges/${doc.type}/${property}`;
     const callConfig = { doc: apiDoc, value: value };
-    return this.http.post<PatchValue>(query, callConfig).toPromise();
+    return this.http.post<IViewModel>(query, callConfig).toPromise();
   }
 
-  onCommand(doc: DocumentBase, command: string, args: { [x: string]: any }) {
+  onCommand(doc: DocumentBase | FormBase, command: string, args: { [x: string]: any }) {
     const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}command/${doc.type}/${command}`;
     const callConfig = { doc: apiDoc, args: args };

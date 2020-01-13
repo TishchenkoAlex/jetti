@@ -6,6 +6,9 @@ import { DocService } from '../doc.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { LoadingService } from '../loading.service';
+import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
+import { take } from 'rxjs/operators';
+import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,15 +26,11 @@ export class BaseFormComponent extends _baseDocFormComponent implements OnInit, 
     super(router, route, auth, ds, tabStore, dss, cd);
   }
 
-  async Execute(): Promise<any> {
-    const data = this.Form.value;
-    return await this.ds.api.jobAdd({
-      job: { id: 'post', description: 'Post documents' },
-      type: data.type.id,
-      company: data.company.id,
-      StartDate: data.StartDate,
-      EndDate: data.EndDate
-    }).toPromise();
+  async Execute() {
+    this.ds.api.execute(this.type as FormTypes, 'Execute', this.form.getRawValue() as FormBase).pipe(take(1))
+      .subscribe(data => {
+        // this.form.patchValue(data);
+      });
   }
 
 }

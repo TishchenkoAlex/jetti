@@ -7,7 +7,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'User settings',
   prefix: 'USET-',
   commands: [
-    { command: 'AddDescendantsCompany', icon: 'pi pi-plus', label: 'Добавить починенные компании' }
+    { method: 'AddDescendantsCompany', icon: 'pi pi-plus', label: 'Добавить починенные компании', order: 1 }
   ],
 })
 export class DocumentUserSettings extends DocumentBase {

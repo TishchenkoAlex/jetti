@@ -8,12 +8,12 @@ import { Ref } from '../document';
 
 export class DocumentWorkFlowServer extends DocumentWorkFlow implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+  async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
       case 'company':
-        return {};
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 

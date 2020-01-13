@@ -12,14 +12,15 @@ import { buildColumnDef } from '../../../../../../jetti-api/server/routes/utils/
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { calendarLocale, dateFormat } from '../../primeNG.module';
 import { scrollIntoViewIfNeeded } from '../utils';
-import { DocumentOptions } from './../../../../../../jetti-api/server/models/document';
-import { createDocument } from './../../../../../../jetti-api/server/models/documents.factory';
 import { UserSettingsService } from './../../auth/settings/user.settings.service';
 import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
+import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
+import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
+import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +36,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService,
-    public uss: UserSettingsService, public lds: LoadingService) { }
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService) { }
 
   private _docSubscription$: Subscription = Subscription.EMPTY;
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
@@ -43,7 +44,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   pageSize$: Observable<number>;
-  @ViewChild('tbl', { static: true }) tbl: Table;
+  @ViewChild('tbl', { static: false }) tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
@@ -70,24 +71,24 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (!this.settings) this.settings = this.data.settings;
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    const Props = this.data.schema;
-    this.columns = buildColumnDef(Props, this.settings);
+    if (!this.data) {
+      const Doc = createDocument(this.type);
+      this.data = { schema: Doc.Props(), metadata: Doc.Prop() as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
+    }
+    this.columns = buildColumnDef(this.data.schema, this.settings);
 
     this.showTree = this.data.metadata.hierarchy === 'folders';
     this.showTreeButton = this.showTree;
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
     this.columns = [...this.columns.filter(c => !c.hidden)];
 
-    const scrollHeight = () => {
-      // if (this.tbl.value && this.tbl.value[0] && this.tbl.value[0].type === this.type)
-      return window.innerHeight - this.tbl.el.nativeElement.offsetTop - 115;
-    };
+    const scrollHeight = () => window.innerHeight - 270;
 
     if (!this.pageSize) {
       this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 1), 1);
       this.pageSize$ = fromEvent(window, 'resize')
         .pipe(debounceTime(500), map(evt => {
-          this.dataSource.pageSize = Math.max(Math.round((scrollHeight() + 42) / 28 - 1), 1);
+          this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 1), 1);
           const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
           this.dataSource.refresh(id);
           return this.dataSource.pageSize;
@@ -190,9 +191,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
         label: 'Quick filter', icon: 'pi pi-search',
         command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null)
       },
-      ...((createDocument(this.type).Prop() as DocumentOptions).copyTo || []).map(el => {
-        const { description, icon } = createDocument(el).Prop() as DocumentOptions;
-        return <MenuItem>{ label: description, icon, command: (event) => this.copyTo(el) };
+      ...(this.data.metadata.copyTo || []).map(el => {
+        const { label, icon } = el;
+        return <MenuItem>{ label, icon, command: (event) => this.copyTo(el.type) };
       })];
   }
 
@@ -232,7 +233,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     const tasksCount = this.selection.length; let i = tasksCount;
     for (const s of this.selection) {
       if (s.deleted) continue;
-      this.lds.counter = Math.round(100 - ((--i) / tasksCount * 100));
+      this.lds.counter = Math.round(100 - ((i--) / tasksCount * 100));
       if (mode === 'post') {
         try {
           await this.ds.posById(s.id);

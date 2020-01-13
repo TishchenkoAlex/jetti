@@ -9,9 +9,9 @@ export class DocumentSettingsServer extends DocumentSettings implements IServerD
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
       case 'company':
-        return {};
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 

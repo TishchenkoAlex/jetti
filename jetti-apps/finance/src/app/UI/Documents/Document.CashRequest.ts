@@ -15,7 +15,7 @@ import { take } from 'rxjs/operators';
   templateUrl: 'Document.CashRequest.html'
 })
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
-  get readonlyMode() { return !this.isNew && this.Form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
 
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
@@ -27,16 +27,17 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     super.ngOnInit();
 
     if (this.isNew) {
-      this.Form.get('Status').setValue('PREPARED');
-      this.Form.get('workflowID').setValue('');
-      this.Form.get('Operation').setValue('Оплата поставщику');
+      this.form.get('Status').setValue('PREPARED');
+      this.form.get('workflowID').setValue('');
+      this.form.get('Operation').setValue('Оплата поставщику');
+      this.form.get('CashKind').setValue('BANK');
     }
 
-    if (this.readonlyMode) { this.Form.disable({ emitEvent: false }); }
+    if (this.readonlyMode) { this.form.disable({ emitEvent: false }); }
 
-    this.onOperationChanges(this.Form.get('Operation').value);
+    this.onCashKindChange(this.form.get('CashKind').value);
+    this.onOperationChanges(this.form.get('Operation').value);
   }
-
 
   onOperationChanges(operation: string) {
 
@@ -82,7 +83,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       `Оплата по кредитам и займам полученным
       Выдача займа контрагенту`.indexOf(operation) !== -1;
 
-    this.Form.markAsTouched();
+    this.form.markAsTouched();
   }
 
   onCashKindChange(event) {
@@ -94,7 +95,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       CashKindType = 'Catalog.CashRegister';
     }
 
-    this.Form.get('CashOrBank').setValue(
+    this.form.get('CashOrBank').setValue(
       { id: null, code: null, type: CashKindType, value: null },
       { onlySelf: false, emitEvent: false }
     );
@@ -102,12 +103,16 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   StartProcess() {
     this.bpApi.StartProcess(this.viewModel as DocumentBase, this.metadata.type).pipe(take(1)).subscribe(data => {
-      this.Form.get('workflowID').setValue(data);
-      this.Form.get('Status').setValue('AWAITING');
+      this.form.get('workflowID').setValue(data);
+      this.form.get('Status').setValue('AWAITING');
       this.post();
-      this.Form.disable({ emitEvent: false });
+      this.form.disable({ emitEvent: false });
       this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
+  }
+
+  print() {
+    window.open('https://bi.x100-group.com/Reports/report/Jetti/Cash/CashRequest?rs:Command=Render', '_blank');
   }
 
 }

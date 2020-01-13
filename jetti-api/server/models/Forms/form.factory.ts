@@ -2,7 +2,6 @@ import { FormBase } from './form';
 import { FormTypes } from './form.types';
 import { PostAfterEchange } from './Form.PostAfterEchange';
 import { FormBusinessProcessTasks } from './Form.BusinessProcessTasks';
-import { CashRequestDesktop } from './Form.CashRequestDesktop';
 
 export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
   if (init && init.type) {
@@ -19,5 +18,4 @@ export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
 export const RegisteredForms = new Map<FormTypes, typeof FormBase>([
   ['Form.PostAfterEchange', PostAfterEchange],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
-  ['Form.CashRequestDesktop', CashRequestDesktop]
 ]);

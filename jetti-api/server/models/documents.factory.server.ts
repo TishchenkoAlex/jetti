@@ -2,7 +2,7 @@ import { lib } from '../std.lib';
 import { createDocument, IFlatDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue, PatchValue } from './common-types';
+import { calculateDescription, RefValue, PatchValue, MenuItem } from './common-types';
 import { DocumentBase, DocumentOptions, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
@@ -32,7 +32,7 @@ export interface IServerDocument {
   beforeDelete?(tx: MSSQL): Promise<DocumentBaseServer>;
   afterDelete?(tx: MSSQL): Promise<DocumentBaseServer>;
 
-  onValueChanged?(prop: string, value: any, tx: MSSQL): Promise<PatchValue | {} | { [key: string]: any }>;
+  onValueChanged?(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer>;
   onCommand?(command: string, args: any, tx: MSSQL): Promise<any>;
 
   baseOn?(id: Ref, tx: MSSQL): Promise<DocumentBaseServer>;
@@ -92,6 +92,9 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   let Grop: RefValue | null = null;
   if (result instanceof DocumentOperation && document && document.id) {
     result.f1 = null; result.f2 = null; result.f3 = null;
+    const Prop = result.Prop() as DocumentOptions;
+    Prop.commands = [];
+    Prop.copyTo = [];
     if (result.Operation) {
       Operation = await lib.doc.byIdT<CatalogOperation>(result.Operation as string, tx);
       Grop = await lib.doc.formControlRef(Operation!.Group as string, tx);
@@ -105,7 +108,29 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         });
         if (result[c.parameter] === undefined) result[c.parameter] = Props[c.parameter].value;
       });
+
+      Prop.commands = [
+        ...(Operation && Operation.commandsOnServer || []),
+        ...(Operation && Operation.commandsOnClient || []),
+      ];
+
+      Prop.copyTo = [];
+      for (const o of ((Operation && Operation.CopyTo) || [])) {
+        const base = await lib.doc.byIdT<CatalogOperation>(o.Operation, tx);
+        if (base) {
+          const item = {
+            icon: '',
+            label: base.description,
+            Operation: Operation!.id,
+            type: result.type,
+            order: o.order || 1
+          };
+          Prop.copyTo.push(item);
+        }
+      }
+
       if (Operation && Operation.module) {
+        result['clientModule'] = Operation.module;
         const func = new Function('tx', Operation.module);
         result['serverModule'] = func.bind(result, tx)() || {};
 

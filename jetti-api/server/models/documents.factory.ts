@@ -58,6 +58,10 @@ import { DocumentCashRequestRegistry } from './Documents/Document.CashRequestReg
 import { CatalogJobTitle } from './Catalogs/Catalog.JobTitle';
 import { CatalogBusinessRegion } from './Catalogs/Catalog.BusinessRegion';
 import { CatalogTaxRate } from './Catalogs/Catalog.TaxRates';
+import { CatalogTaxPaymentCode } from './Catalogs/Catalog.TaxPaymentCode';
+import { CatalogTaxPaymentPeriod } from './Catalogs/Catalog.TaxPaymentPeriod';
+import { CatalogTaxPayerStatus } from './Catalogs/Catalog.TaxPayerStatus';
+import { CatalogReatailClient } from './Catalogs/Catalog.ReatailClient';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -158,7 +162,10 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Bank', Class: CatalogBank },
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
-
+  { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },
+  { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod},
+  { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus},
+  { type: 'Catalog.ReatailClient', Class: CatalogReatailClient},
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

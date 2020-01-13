@@ -7,9 +7,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'Реестр оплат',
   prefix: 'CRR-',
   commands: [
-    { command: 'Fill', icon: 'pi pi-plus', label: 'Заполнить' },
-    { command: 'Create', icon: 'pi pi-plus', label: 'Создать документы' },
-    { command: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст' }
+    { method: 'Fill', icon: 'pi pi-plus', label: 'Заполнить', order: 1 },
+    { method: 'Create', icon: 'pi pi-plus', label: 'Создать документы', order: 2 },
+    { method: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст', order: 3 }
   ],
 })
 export class DocumentCashRequestRegistry extends DocumentBase {

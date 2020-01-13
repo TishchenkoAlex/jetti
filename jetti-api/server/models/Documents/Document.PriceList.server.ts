@@ -9,15 +9,16 @@ import { MSSQL } from '../../mssql';
 
 export class DocumentPriceListServer extends DocumentPriceList implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+  async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
       case 'company':
-        return {};
+        return this;
       case 'PriceType':
         const priceType = await lib.doc.byIdT<CatalogPriceType>(value.id, tx);
-        return priceType ? { TaxInclude: priceType.TaxInclude } : {};
+        if (priceType) this.TaxInclude = priceType.TaxInclude;
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 

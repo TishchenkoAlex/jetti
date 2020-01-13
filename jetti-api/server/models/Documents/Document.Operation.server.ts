@@ -1,42 +1,29 @@
 import { lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
-import { PatchValue } from '../common-types';
 import { createDocumentServer, IServerDocument, DocumentBaseServer } from '../documents.factory.server';
 import { RegisterInfoSettings } from '../Registers/Info/Settings';
 import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
 import { DocumentCashRequestServer } from './Document.CashRequest.server';
-import { createDocument } from '../documents.factory';
 import { Ref } from '../document';
+import { calculateDescription } from '../common-types';
 
 export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<PatchValue | {} | { [key: string]: any }> {
-    if (!value) { return {}; }
+  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
     switch (prop) {
       case 'company':
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-        if (!company) { return {}; }
-        const currency = await lib.doc.formControlRef(company.currency!, tx);
-        return { currency };
+        if (company) this.currency = company.currency;
+        return this;
       case 'Operation':
         const Operation = await lib.doc.byIdT<CatalogOperation>(value.id, tx);
-        if (!Operation) { return {}; }
-        const Group = await lib.doc.formControlRef(Operation.Group!, tx);
-        return { Group };
+        if (Operation) this.Group = Operation.Group!;
+        return this;
       default:
-        return {};
-    }
-  }
-
-  async onCommand(command: string, args: any, tx: MSSQL) {
-    switch (command) {
-      case 'company':
-        return {};
-      default:
-        return {};
+        return this;
     }
   }
 
@@ -161,7 +148,9 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       default:
         break;
     }
-    const Props = (await (createDocumentServer(this.type, this, tx))).Props();
+    const doc = await (createDocumentServer(this.type, this, tx));
+    const Props = doc.Props();
+    this.description = doc.description;
     this.Props = () => Props;
   }
 }

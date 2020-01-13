@@ -49,7 +49,11 @@ export type CatalogTypes =
   'Catalog.LoanTypes' |
   'Catalog.BusinessDirection' |
   'Catalog.JobTitle' |
-  'Catalog.BusinessRegion'
+  'Catalog.BusinessRegion' |
+  'Catalog.TaxPaymentCode' |
+  'Catalog.TaxPaymentPeriod' |
+  'Catalog.TaxPayerStatus' |
+  'Catalog.ReatailClient'
   ;
 
 export type DocumentTypes =

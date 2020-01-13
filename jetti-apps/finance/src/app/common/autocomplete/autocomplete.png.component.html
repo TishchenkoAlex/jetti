@@ -4,9 +4,9 @@
     <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
       <input pInputText [ngModel]="suggest.value.value" [ngModelOptions]="{standalone: true}" [required]="required"
         [readonly]="readOnly" autocomplete="off" spellcheck="false" (focus)="$event.target.select()"
-        (ngModelChange)="value={id: 'string', code: '', type: 'string', value: $event}" [disabled]="disabled">
+        (ngModelChange)="value={id: 'string', code: '', type: 'string', value: $event}">
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        [tabindex]=-1 [disabled]="disabled"></button>
+        [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
@@ -15,9 +15,9 @@
     <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
       <input pInputText [ngModel]="suggest.value.value" [ngModelOptions]="{standalone: true}" [required]="required"
         type="number" [readonly]="readOnly" autocomplete="off" (focus)="$event.target.select()"
-        (ngModelChange)="value={id: 'number', code: '', type: 'number', value: $event}" [disabled]="disabled">
+        (ngModelChange)="value={id: 'number', code: '', type: 'number', value: $event}">
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        [tabindex]=-1 [disabled]="disabled"></button>
+        [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
@@ -30,7 +30,7 @@
         (focus)="$event.target.select()" type="datetime-local" (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        [tabindex]=-1 [disabled]="disabled"></button>
+        [tabindex]=-1></button>
     </div>
   </div>
 
@@ -39,20 +39,20 @@
       <input pInputText class="calendar"
         [value]="isDate(suggest.value.value) ? (suggest.value.value | date:'yyy-MM-dd') : null" [required]="required"
         [readonly]="readOnly" autocomplete="off" spellcheck="false" (focus)="$event.target.select()" type="date"
-        (input)="parseDate($event.target.value)" [disabled]="disabled">
+        (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        [tabindex]=-1 [disabled]="disabled"></button>
+        [tabindex]=-1></button>
     </div>
   </div>
 
   <div *ngIf="value?.type === 'boolean'">
     <p-checkbox binary="true" [label]="showLabel ? placeholder : ''" [ngModel]="suggest.value.value"
       [ngModelOptions]="{standalone: true}"
-      (ngModelChange)="value={id: 'boolean', code: '', type: 'boolean', value: $event}" [disabled]="disabled">
+      (ngModelChange)="value={id: 'boolean', code: '', type: 'boolean', value: $event}">
     </p-checkbox>
     <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-      [disabled]="disabled"></button>
+      ></button>
   </div>
 
   <span *ngIf="isComplexValue">
@@ -61,7 +61,7 @@
         [readonly]="readOnly" autocomplete="off" (completeMethod)="getSuggests($event.query)" field="value"
         (onSelect)="this.value = this.suggest.value" [inputStyle]="inputStyle" dataKey="id"
         (onFocus)="this.focus.emit($event)" (onBlur)="onBlur($event)" [autoHighlight]="true" spellcheck="false"
-        appendTo="body" [disableControl]="disabled">
+        appendTo="body" [disableControl]="suggest.disabled" >
         <ng-template let-data pTemplate="item">
           <div fxLayout="row" fxLayoutGap="5px" style="align-content: center; align-items: center;">
             <i *ngIf="data.isfolder" class="pi pi-folder"></i>
@@ -72,11 +72,11 @@
         </ng-template>
       </p-autoComplete>
       <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind"
-        (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="disabled"></button>
+        (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
       <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen"
         [disabled]="this.isEMPTY" (click)="handleOpen($event)" [tabIndex]=-1></button>
       <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear"
-        (click)="handleReset($event)" [tabIndex]=-1 [disabled]="disabled"></button>
+        (click)="handleReset($event)" [tabIndex]=-1 [disabled]="this.suggest.disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </span>

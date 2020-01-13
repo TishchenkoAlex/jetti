@@ -12,10 +12,10 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   menu: 'Заявки на ДС',
   prefix: 'CR-',
   copyTo: [
-    'Document.Operation'
+    { type: 'Document.Operation', icon: '', label: 'Платежный документ', order: 1 }
   ],
   relations: [
-    { name: 'Operations', type: 'Document.Operation', field: 'parent' }
+    { name: 'Operations', type: 'Document.Operation', field: 'parent' },
   ]
 })
 export class DocumentCashRequest extends DocumentBase {
@@ -39,7 +39,7 @@ export class DocumentCashRequest extends DocumentBase {
   user: Ref = null;
 
   @Props({
-    type: 'enum', required: true, hiddenInList: false,  style: { width: '100px' }, order: 7, label: 'Статус', value: [
+    type: 'enum', required: true, hiddenInList: false, style: { width: '100px' }, order: 7, label: 'Статус', value: [
       'PREPARED',
       'AWAITING',
       'APPROVED',
@@ -63,7 +63,7 @@ export class DocumentCashRequest extends DocumentBase {
   })
   Operation = 'Оплата поставщику';
 
-  @Props({ type: 'Catalog.Company', order: 3, label: 'Организация', required: true, onChangeServer: true , style: { width: '250px' }})
+  @Props({ type: 'Catalog.Company', order: 3, label: 'Организация', required: true, onChangeServer: true, style: { width: '250px' } })
   company: Ref = null;
 
   @Props({
@@ -101,11 +101,12 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.Department', label: 'Подразделение' })
   Department: Ref = null;
 
-  @Props({ type: 'Types.CashRecipient',
-  required: true,
-  onChangeServer: true,
-  label: 'Получатель',
- })
+  @Props({
+    type: 'Types.CashRecipient',
+    required: true,
+    onChangeServer: true,
+    label: 'Получатель',
+  })
   CashRecipient: Ref = null;
 
   @Props({
@@ -126,9 +127,9 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'Catalog.Loan',
-     hiddenInList: true,
-     label: 'Договор кредита/займа',
-     owner: [
+    hiddenInList: true,
+    label: 'Договор кредита/займа',
+    owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },
       { dependsOn: 'company', filterBy: 'company' },
       { dependsOn: 'currency', filterBy: 'currency' }]
@@ -164,15 +165,16 @@ export class DocumentCashRequest extends DocumentBase {
   })
   CashOrBankIn: Ref = null;
 
-  @Props({ type: 'date',
-  hiddenInList: false,
-  order: 9,
-  label: 'Дата платежа',
-  style: { width: '100px' }
- })
+  @Props({
+    type: 'date',
+    hiddenInList: false,
+    order: 9,
+    label: 'Дата платежа',
+    style: { width: '100px' }
+  })
   PayDay = new Date();
 
-  @Props({ type: 'number', label: 'Сумма', required: true,  order: 4, style: { width: '100px', textAlign: 'right' } })
+  @Props({ type: 'number', label: 'Сумма', required: true, order: 4, style: { width: '100px', textAlign: 'right' } })
   Amount = 0;
 
   @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })
@@ -212,9 +214,11 @@ export class PayRoll {
   @Props({ type: 'number', label: 'Налог', style: { width: '100px', textAlign: 'right' }, totals: 1 })
   Tax = 0;
 
-  @Props({ type: 'Types.PersonOrCounterpartieBankAccount', label: 'Счет'
-  , owner: [{ dependsOn: 'Employee', filterBy: 'owner' }]
-  , required: true })
+  @Props({
+    type: 'Types.PersonOrCounterpartieBankAccount', label: 'Счет'
+    , owner: [{ dependsOn: 'Employee', filterBy: 'owner' }]
+    , required: true
+  })
   BankAccount: Ref = null;
 
 }

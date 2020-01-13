@@ -5,7 +5,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Физлицо',
   icon: 'fa fa-list',
   menu: 'Физлица',
-  prefix: 'PERS-'
+  prefix: 'PERS-',
+  relations: [
+    { name: 'BankAccount', type: 'Catalog.Person.BankAccount', field: 'owner' }
+  ],
 })
 export class CatalogPerson extends DocumentBase {
 

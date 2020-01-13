@@ -24,20 +24,6 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
     return { doc: this, result: {} };
   }
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
-    switch (prop) {
-      case 'company':
-        if (!value) { return {}; }
-        const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-        if (!company) { return {}; }
-        const currency = await lib.doc.formControlRef(company.currency as string, tx);
-        this.currency = currency ? currency.id : null;
-        return { currency };
-      default:
-        return {};
-    }
-  }
-
   async onCommand(command: string, args: any, tx: MSSQL) {
     switch (command) {
       case 'company':
@@ -93,12 +79,9 @@ export class DocumentInvoiceServer extends DocumentInvoice implements IServerDoc
       sum: this.Amount,
     });
 
-    let totalCost = 0;
+    const totalCost = 0;
 
-    let batchRows: BatchRow[] = [];
     for (const row of this.Items) {
-
-
         Registers.Accumulation.push(new RegisterAccumulationInventory({
           kind: false,
           Expense: ExpenseCOST,

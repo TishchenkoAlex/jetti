@@ -21,7 +21,7 @@ export class OperationFormComponent implements AfterViewInit {
   @Input() type: DocTypes;
   @Input() data: FormGroup;
 
-  get Form() { return this.super.Form; }
+  get Form() { return this.super.data; }
   get Operation() { return this.Form.get('Operation')!; }
 
   @ViewChild(BaseDocFormComponent, { static: false }) super: BaseDocFormComponent;
@@ -71,7 +71,7 @@ export class OperationFormComponent implements AfterViewInit {
   }
 
   update = async (value) => {
-    const oldValue = Object.assign({}, this.super.viewModel);
+    const oldValue = Object.assign({}, this.super.data.getRawValue());
 
     const Operation = value.id ? await this.super.ds.api.byId(value.id) : { doc: { Parameters: [] } };
     const view = {};
@@ -103,7 +103,6 @@ export class OperationFormComponent implements AfterViewInit {
     (this.Form['orderedControls'] as FormControlInfo[]).splice(7, 0, ...orderedControls);
     const Prop = doc.Prop() as DocumentOptions;
     this.Form['metadata'] = { ...Prop };
-    console.log(this.super.Form['schema']);
     await this.ngAfterViewInit();
   }
 

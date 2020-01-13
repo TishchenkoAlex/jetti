@@ -3,20 +3,21 @@ import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren } 
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { merge, of as observableOf, Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { merge, of as observableOf, Subscription, BehaviorSubject } from 'rxjs';
+import { filter, take, map } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
-import { calculateDescription } from '../../../../../../jetti-api/server/models/common-types';
-import { DocumentBase, DocumentOptions, Ref, Relation } from '../../../../../../jetti-api/server/models/document';
+import { calculateDescription, IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+import { DocumentBase, DocumentOptions, Ref, Relation, Command, CopyTo } from '../../../../../../jetti-api/server/models/document';
 import { DocService } from '../doc.service';
 import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
-import { patchOptionsNoEvents, DynamicFormService } from '../dynamic-form/dynamic-form.service';
+import { patchOptionsNoEvents, DynamicFormService, getFormGroup } from '../dynamic-form/dynamic-form.service';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { AuthService } from 'src/app/auth/auth.service';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
+import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 
 // tslint:disable-next-line: class-name
 export class _baseDocFormComponent implements OnDestroy, OnInit {
@@ -30,39 +31,77 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   get isForm() { return this.type.startsWith('Form.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
 
-  get Form() { return this.data; }
-  get viewModel() { return this.Form.getRawValue() as DocumentBase | FormBase; }
-  get docDescription() { return <string>this.Form['metadata'].description; }
-  get metadata() { return <DocumentOptions>this.Form['metadata']; }
-  get relations() { return (this.Form['metadata'].relations || []) as Relation[]; }
-  get v() { return <FormControlInfo[]>this.Form['orderedControls']; }
-  get vk() { return <{ [key: string]: FormControlInfo }>this.Form['byKeyControls']; }
-  get tables() { return (<FormControlInfo[]>this.Form['orderedControls']).filter(t => t.controlType === 'table'); }
-  get hasTables() { return this.tables.length > 0; }
-  get description() { return <FormControl>this.Form.get('description'); }
-  get isPosted() { return <boolean>!!this.Form.get('posted').value; }
-  get isDeleted() { return <boolean>!!this.Form.get('deleted').value; }
-  get isNew() { return !this.Form.get('timestamp').value; }
-  get isFolder() { return !!this.Form.get('isfolder').value; }
-  get commands() {
-    return (this.metadata['commands'] as any[] || []).map(c => {
-      if (c && typeof c.command === 'function') return c;
+  private readonly _form$ = new BehaviorSubject<FormGroup>(undefined);
+  form$ = this._form$.asObservable();
+
+  viewModel$ = this.form$.pipe(map(f => f.getRawValue() as DocumentBase | FormBase));
+  docDescription$ = this.form$.pipe(map(f => <string>f['metadata'].description));
+  metadata$ = this.form$.pipe(map(f => <DocumentOptions>f['metadata']));
+  relations$ = this.form$.pipe(map(f => (f && f['metadata'] && f['metadata'].relations || []) as Relation[]));
+  v$ = this.form$.pipe(map(f => (<FormControlInfo[]>f['orderedControls'])));
+  vk$ = this.form$.pipe(map(f => (<{ [key: string]: FormControlInfo }>f['byKeyControls'])));
+  tables$ = this.form$.pipe(map(f => (<FormControlInfo[]>f['orderedControls']).filter(t => t.controlType === 'table')));
+  hasTables$ = this.tables$.pipe(map(t => t.length > 0));
+  description$ = this.form$.pipe(map(f => (<FormControl>f.get('description'))));
+  isPosted$ = this.form$.pipe(map(f => (<boolean>!!f.get('posted').value)));
+  isDeleted$ = this.form$.pipe(map(f => (<boolean>!!f.get('deleted').value)));
+  isNew$ = this.form$.pipe(map(f => (!f.get('timestamp').value)));
+  isFolder$ = this.form$.pipe(map(f => (!!f.get('isfolder').value)));
+  commands$ = this.metadata$.pipe(map(m => {
+    return (m && m['commands'] as Command[] || []).map(c => {
       return (<MenuItem>{
         label: c.label, icon: c.icon,
-        command: () => this.commandOnSever(c.command)
+        command: () => this.commandOnSever(c.method)
+      });
+    });
+  }));
+  copyTo$ = this.metadata$.pipe(map(m => {
+    return (m && m['copyTo'] as CopyTo[] || []).map(c => {
+      const { description, icon } = createDocument(c.type).Prop() as DocumentOptions;
+      return (<MenuItem>{ label: description, icon, command: (event) => this.baseOn(c.type, c.Opration) });
+    });
+  }));
+  module$ = this.metadata$.pipe(map(m => {
+    return (new Function('', m['clientModule'] || {}).bind(this)()) || {};
+  }));
+
+  get form() { return this._form$.value; }
+  get viewModel() { return this.form.getRawValue(); }
+  get metadata() { return <DocumentOptions>this.form['metadata']; }
+  get docDescription() { return <string>this.metadata.description; }
+  get relations() { return (this.metadata.relations || []) as Relation[]; }
+  get v() { return <FormControlInfo[]>this.form['orderedControls']; }
+  get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
+  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
+  get hasTables() { return this.tables.length > 0; }
+  get description() { return <FormControl>this.form.get('description'); }
+  get isPosted() { return <boolean>!!this.form.get('posted').value; }
+  get isDeleted() { return <boolean>!!this.form.get('deleted').value; }
+  get isNew() { return !this.form.get('timestamp').value; }
+  get isFolder() { return !!this.form.get('isfolder').value; }
+  get commands() {
+    return (this.metadata['commands'] as Command[] || []).map(c => {
+      return (<MenuItem>{
+        label: c.label, icon: c.icon,
+        command: () => this.commandOnSever(c.method)
       });
     });
   }
   get copyTo() {
-    return (this.metadata['copyTo'] as any[] || []).map(c => {
-      if (c && typeof c.command === 'function') return c;
-      const { description, icon } = createDocument(c).Prop() as DocumentOptions;
-      return (<MenuItem>{ label: description, icon, command: (event) => this.baseOn(c) });
+    return (this.metadata['copyTo'] as CopyTo[] || []).map(c => {
+      return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Opration) });
     });
   }
-  get module() { return this.metadata['clientModule'] || {}; }
+  get module() { return new Function('', this.metadata['clientModule'] || {}).bind(this)() || {}; }
+  get settings() {
+    return this.relations.map(r => ({
+      order: [], filter: [
+        { left: r.field, center: '=', right: { id: this.viewModel.id, type: this.viewModel.type, value: this.viewModel.description } }]
+    }));
+  }
 
   private _subscription$: Subscription = Subscription.EMPTY;
+  private _formSubscription$: Subscription = Subscription.EMPTY;
   private _descriptionSubscription$: Subscription = Subscription.EMPTY;
   private _saveCloseSubscription$: Subscription = Subscription.EMPTY;
   private _postSubscription$: Subscription = Subscription.EMPTY;
@@ -73,21 +112,36 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
     public ds: DocService, public tabStore: TabsStore, public dss: DynamicFormService,
-    public cd: ChangeDetectorRef ) { }
+    public cd: ChangeDetectorRef) { }
 
   refresh() {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
-      this.data = formGroup;
-      this.Form.markAsPristine();
+      this.Next(formGroup);
+    });
+  }
+
+  private Next(formGroup: FormGroup) {
+    const orderedControls = [...formGroup['orderedControls']];
+    const byKeyControls = { ...formGroup['byKeyControls'] };
+    formGroup['orderedControls'] = [];
+    formGroup['byKeyControls'] = {};
+    this._form$.next(formGroup);
+    this.cd.markForCheck();
+    setTimeout(() => {
+      formGroup['orderedControls'] = orderedControls;
+      formGroup['byKeyControls'] = byKeyControls;
+      this._form$.next(formGroup);
+      setTimeout(() => this.cd.detectChanges());
     });
   }
 
   showDescription() {
     if (this.isDoc) {
-      const date = this.Form.get('date')!.value;
-      const code = this.Form.get('code')!.value;
-      const group = this.Form.get('Group') && this.Form.get('Group')!.value ? this.Form.get('Group')!.value.value : '';
-      const value = calculateDescription(this.docDescription, JSON.parse(JSON.stringify(date), dateReviverLocal), code, group);
+      const date = this.form.get('date')!.value;
+      const code = this.form.get('code')!.value;
+      const group = this.form.get('Group') && this.form.get('Group')!.value ? this.form.get('Group')!.value.value : '';
+      const value = calculateDescription(this._form$.value['metadata'].description,
+        JSON.parse(JSON.stringify(date), dateReviverLocal), code, group);
       this.description.patchValue(value, patchOptionsNoEvents);
     }
   }
@@ -122,7 +176,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   close() {
-    if (this.Form.pristine) { this._close(); return; }
+    if (this.form.pristine) { this._close(); return; }
     this.ds.confirmationService.confirm({
       header: 'Discard changes and close?',
       message: this.description.value || this.docDescription,
@@ -139,7 +193,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     if (autoCapture) autoCapture.focusTrap.focusFirstTabbableElementWhenReady();
   }
 
-  Print = () => {
+  print() {
     throw new Error('Print not implemented!');
   }
 
@@ -149,23 +203,24 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   commandOnSever(method: string) {
-    this.ds.api.onCommand(this.Form.getRawValue(), method, {}).then(value => {
-      const form = this.dss.getViewModel(this.type, this.Form['schema'], value);
-      this.data = form;
-      this.Form.markAsDirty();
+    this.ds.api.onCommand(this.viewModel, method, {}).then((value: IViewModel) => {
+      const form = getFormGroup(value.schema, value.model, true);
+      form['metadata'] = value.metadata;
+      this.Next(form);
+      this.form.markAsDirty();
     });
   }
 
   commandOnClient(method: string) {
-    this.module[method](this.Form.getRawValue()).then(value => {
-      this.Form.patchValue(value || {}, patchOptionsNoEvents);
-      this.Form.markAsDirty();
+    this.module[method](this.viewModel).then(value => {
+      this.form.patchValue(value || {}, patchOptionsNoEvents);
+      this.form.markAsDirty();
     });
   }
 
   startWorkFlow() {
     this.ds.startWorkFlow(this.id).then(doc => {
-      this.Form.patchValue({ workflow: { id: doc.id, type: doc.type, code: doc.code, value: doc.description } });
+      this.form.patchValue({ workflow: { id: doc.id, type: doc.type, code: doc.code, value: doc.description } });
       this.save();
       this.router.navigate([doc.type, doc.id]);
     });
@@ -177,30 +232,38 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
-        this.Form.patchValue(doc, patchOptionsNoEvents);
+        this.form.patchValue(doc, patchOptionsNoEvents);
         if (this.isDoc) { this.showDescription(); }
-        this.Form.markAsPristine();
+        this.form.markAsPristine();
       });
 
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
-        this.Form.markAsPristine();
+        this.form.markAsPristine();
         this.close();
       });
 
-    this._descriptionSubscription$ = merge(...[
-      this.Form.get('date')!.valueChanges,
-      this.Form.get('code')!.valueChanges,
-      this.Form.get('Group') ? this.Form.get('Group')!.valueChanges : observableOf('')])
-      .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+    setTimeout(() => {
+      this._descriptionSubscription$ = merge(...[
+        this.form.get('date')!.valueChanges,
+        this.form.get('code')!.valueChanges,
+        this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
+        .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+    });
+
+    this._form$.next(this.data);
+    this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
+      this.Next(form);
+    });
   }
 
   ngOnDestroy() {
     this._subscription$.unsubscribe();
+    this._formSubscription$.unsubscribe();
     this._descriptionSubscription$.unsubscribe();
     this._saveCloseSubscription$.unsubscribe();
     this._postSubscription$.unsubscribe();
-    this.ds.showDialog(this._uuid, this.viewModel as DocumentBase);
+    this.ds.showDialog(this._uuid, this.form.getRawValue() as DocumentBase);
   }
 }

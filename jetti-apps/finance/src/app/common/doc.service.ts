@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/components/common/messageservice';
 import { Subject } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { DocumentBase } from './../../../../../jetti-api/server/models/document';
+import { FormGroup } from '@angular/forms';
 
 @Injectable()
 export class DocService {
@@ -43,6 +44,9 @@ export class DocService {
 
   private readonly _workflow$ = new Subject<DocumentBase>();
   workflow$ = this._workflow$.asObservable();
+
+  private readonly _form$ = new Subject<FormGroup>();
+  form$ = this._form$.asObservable();
 
   constructor(public api: ApiService, private messageService: MessageService, public confirmationService: ConfirmationService) { }
 
@@ -88,6 +92,10 @@ export class DocService {
   async startWorkFlow(id: string) {
     const workflow = await this.api.startWorkFlow(id).toPromise();
     return workflow;
+  }
+
+  async form(value: FormGroup) {
+    this._form$.next(value);
   }
 
   openSnackBar(severity: string, summary: string, detail: string) {

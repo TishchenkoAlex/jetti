@@ -16,4 +16,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.BusinessRegion' })
   BusinessRegion: Ref = null;
 
+  @Props({ type: 'date', label: 'Opening date' })
+  OpeningDate = new Date();
+
 }

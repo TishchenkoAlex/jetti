@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output, EventEmitter, isDevMode } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { FormControlInfo } from './dynamic-form-base';
+import { DocService } from '../doc.service';
+import { DynamicFormService, getFormGroup } from './dynamic-form.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +31,9 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
     else if (!date && !this.control.required) this.formControl.setValue(date);
   }
 
-  constructor(public api: ApiService, private cd: ChangeDetectorRef) { }
+  constructor(
+    public api: ApiService, private cd: ChangeDetectorRef,
+    private dss: DynamicFormService, private ds: DocService) {}
 
   ngOnInit() {
     this.formControl = this.form.get(this.control.key)! as FormControl;
@@ -37,6 +41,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
     this.dateTimeValue = this.formControl.value;
 
     this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {
+      if (isDevMode()) console.log('valueChanges', this.control.key);
       this.change.emit(value);
       if (this.formControl && (this.control.onChange || this.control.onChangeServer)) {
         if (this.control.onChange) {
@@ -53,10 +58,11 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
         }
 
         if (this.control.onChangeServer) {
-          this.api.valueChanges(this.form!.root.value, this.control.key, value)
+          this.api.valueChanges((this.form.root as FormGroup).getRawValue(), this.control.key, value)
             .then(patch => {
-              this.form.patchValue(patch || {});
-              this.cd.markForCheck();
+              const form = getFormGroup(patch.schema, patch.model, true);
+              form['metadata'] = patch.metadata;
+              this.ds.form(form);
             });
         }
       }

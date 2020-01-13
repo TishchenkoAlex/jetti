@@ -6,10 +6,9 @@ import { createForm } from '../../../../../../jetti-api/server/models/Forms/form
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
-import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes } from './dynamic-form-base';
-import { StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
-import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { DocTypes, AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes, LinkFormControl } from './dynamic-form-base';
+import { StorageType } from '../../../../../../jetti-api/server/models/document';
+import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
 export function cloneFormGroup(formGroup: FormGroup): FormGroup {
   const newFormGroup = new FormGroup({});
@@ -108,7 +107,7 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
           newControl = new EnumFormControl(controlOptions);
           break;
         case 'link':
-          newControl = new EnumFormControl(controlOptions);
+          newControl = new LinkFormControl(controlOptions);
           break;
         default:
           if (type.includes('.')) {
@@ -188,10 +187,4 @@ export class DynamicFormService {
     return of(result);
   }
 
-  getViewModel(type: string, schema: { [x: string]: any; }, model: { [x: string]: any; }) {
-    const form = getFormGroup(schema, model, true);
-    const doc = createDocument(type as DocTypes);
-    form['metadata'] = doc.Prop() as DocumentOptions;
-    return form;
-  }
 }

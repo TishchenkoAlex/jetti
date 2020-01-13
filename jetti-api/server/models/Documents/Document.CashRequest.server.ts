@@ -1,36 +1,30 @@
 import { lib } from '../../std.lib';
-import { createDocumentServer, IServerDocument } from '../documents.factory.server';
+import { IServerDocument, DocumentBaseServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
-import { DocumentWorkFlow } from './Document.WokrFlow';
-import { DocumentOperation } from './Document.Operation';
 import { PostResult } from '../post.interfaces';
 import { Ref } from '../document';
 import { DocumentCashRequest } from './Document.CashRequest';
 import { RegisterAccumulationAP } from '../Registers/Accumulation/AP';
 import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
-import { CatalogCurrency } from '../Catalogs/Catalog.Currency';
 import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
-import { RefValue } from '../common-types';
-import { CatalogCounterpartieBankAccount } from '../Catalogs/Catalog.Counterpartie.BankAccount';
 import { DeleteProcess } from '../../routes/bp';
 import { updateDocument } from '../../routes/utils/post';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
     switch (prop) {
       case 'company':
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-        if (!company) { return {}; }
-        const сurrency = await lib.doc.formControlRef(company.currency!, tx);
-        return { сurrency };
+        if (!company) return this;
+        this.сurrency = company.currency;
+        return this;
       case 'CashFlow':
-        return {};
+        return this;
       case 'CashRecipient':
-        const emptyContract: RefValue = { code: '', id: '', type: 'Catalog.Contract', value: '' };
-        if (!value.id) { return { Contract: emptyContract }; }
+        if (!value.id) { this.Contract = null; return this; }
         const query = `
           SELECT TOP 1 id
           FROM dbo.[Catalog.Contract]
@@ -40,18 +34,16 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           and [company.id] = '${this.company}'
           ORDER BY isDefault desc`;
         const contractId = await tx.oneOrNone<{ id: string }>(query);
-        if (!contractId) { return { Contract: emptyContract }; }
-        const Contract = await lib.doc.formControlRef(contractId!.id, tx);
-        return { Contract };
+        if (!contractId) { this.Contract = null; return this; }
+        this.Contract = contractId!.id;
+        return this;
       case 'Contract':
-        const emptyCatalogContract: RefValue = { code: '', id: '', type: 'Catalog.Counterpartie.BankAccount', value: '' };
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
-        if (!CatalogContractObject || !CatalogContractObject.BankAccount) { return { CashRecipientBankAccount: emptyCatalogContract }; }
-        const CashRecipientBankAccount = await lib.doc.formControlRef(CatalogContractObject.BankAccount, tx);
-        if (!CashRecipientBankAccount) { return { CashRecipientBankAccount: emptyCatalogContract }; }
-        return { CashRecipientBankAccount };
+        if (!CatalogContractObject || !CatalogContractObject.BankAccount) { this.CashRecipientBankAccount = null; return this; }
+        this.CashRecipientBankAccount = CatalogContractObject.BankAccount;
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 

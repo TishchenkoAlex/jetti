@@ -21,9 +21,9 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
       case 'company':
-        return {};
+        return this;
       default:
-        return {};
+        return this;
     }
   }
 

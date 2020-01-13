@@ -5,7 +5,7 @@ import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
 import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/common-types';
 import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documents.factory';
-import { createDocumentServer } from '../models/documents.factory.server';
+import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
 import { DocumentOperation } from '../models/Documents/Document.Operation';
 import { FormListSettings } from './../models/user.settings';
@@ -17,6 +17,7 @@ import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { User } from './user.settings';
 import { DocumentWorkFlowServer } from '../models/Documents/Document.WorkFlow.server';
+import { ColumnDef } from '../models/column';
 
 export const router = express.Router();
 
@@ -258,21 +259,27 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
-      const value: RefValue = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
+      const doc: IFlatDocument =  JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
+      const value = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
       const property: string = req.params.property;
       const type: DocTypes = req.params.type as DocTypes;
+
+      doc[property] = typeof value === 'object' ? value.id : value;
       const serverDoc = await createDocumentServer(type, doc, tx);
 
-      let result: PatchValue = {};
-      const OnChange: (value: RefValue) => Promise<PatchValue> = serverDoc['serverModule'][property + '_OnChange'];
-      if (typeof OnChange === 'function') result = await OnChange(value) || {};
+      const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChange'];
+      if (typeof OnChange === 'function') await OnChange(value);
 
-      if (Object.keys(result).length === 0 &&
-        (serverDoc && serverDoc.onValueChanged) &&
-        (typeof serverDoc.onValueChanged === 'function')) {
-        result = await serverDoc.onValueChanged(property, value, tx);
+      if (typeof serverDoc.onValueChanged === 'function') {
+        await serverDoc.onValueChanged(property, value, tx);
       }
+      const result: IViewModel = {
+        metadata: serverDoc.Prop() as DocumentOptions,
+        schema: serverDoc.Props(),
+        model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
+        columnsDef: [] as ColumnDef[],
+        settings: new FormListSettings(),
+      };
       res.json(result);
     });
   } catch (err) { next(err); }
@@ -292,8 +299,14 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
       if (typeof docModule === 'function') await docModule(args);
       if (serverDoc.onCommand) await serverDoc.onCommand(command, args, tx);
 
-      const view = await buildViewModel(serverDoc, tx);
-      res.json(view);
+      const result: IViewModel = {
+        metadata: serverDoc.Prop() as DocumentOptions,
+        schema: serverDoc.Props(),
+        model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
+        columnsDef: [] as ColumnDef[],
+        settings: new FormListSettings(),
+      };
+      res.json(result);
     });
   } catch (err) { next(err); }
 });

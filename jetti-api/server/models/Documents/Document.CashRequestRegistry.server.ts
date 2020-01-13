@@ -11,15 +11,6 @@ import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL) {
-    switch (prop) {
-      case 'company':
-        return {};
-      default:
-        return {};
-    }
-  }
-
   async onCommand(command: string, args: any, tx: MSSQL) {
     switch (command) {
       case 'Fill':

@@ -12,7 +12,7 @@ export class CatalogProductKind extends DocumentBase {
   @Props({ type: 'Catalog.ProductKind', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', label: 'Type', value: ['Товар', 'Услуга', 'Работа'], required: true, order: 3 })
+  @Props({ type: 'enum', label: 'Type', value: ['GOODS', 'SERVICE', 'WORK'], required: true, order: 3 })
   ProductType = '';
 
 }

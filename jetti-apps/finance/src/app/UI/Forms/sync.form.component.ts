@@ -10,6 +10,7 @@ import { LoadingService } from 'src/app/common/loading.service';
 import { environment } from 'src/environments/environment';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { take, filter } from 'rxjs/operators';
+import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,8 +46,9 @@ export class SyncFormComponent extends _baseDocFormComponent implements OnInit, 
     super.ngOnDestroy();
   }
 
-  async Execute(): Promise<any> {
-    this.ds.api.execute('Form.PostAfterEchange', 'Execute', this.viewModel as FormBase).pipe(take(1))
+  async Execute() {
+
+    this.ds.api.execute(this.type as FormTypes, 'Execute', this.form.getRawValue() as FormBase).pipe(take(1))
       .subscribe(data => {
         // this.form.patchValue(data);
       });
