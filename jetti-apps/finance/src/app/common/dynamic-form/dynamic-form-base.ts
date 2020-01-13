@@ -193,9 +193,8 @@ export class ScriptFormControl extends FormControlInfo {
   constructor(options: IFormControlInfo) {
     super(options);
     this.type = 'javascript';
-    this.style = { 'width': '568px', 'min-width': '568px', 'max-width': '568px' };
     this.controlType = 'script';
-    if (options.style) this.style = { ...this.style, ...options.style };
+    if (options.style) this.style = options.style;
     if (options.type) this.type = options.type;
     if (this.value === undefined) this.value = '';
   }

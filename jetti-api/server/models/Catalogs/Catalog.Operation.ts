@@ -63,13 +63,13 @@ class Parameter {
   @Props({ type: 'boolean', required: true })
   required = false;
 
-  @Props({ type: 'javascript', label: 'change script', hiddenInList: true })
+  @Props({ type: 'javascript', label: 'change script', hiddenInList: true, style: {width: '550px'} })
   change = '';
 
-  @Props({ type: 'json', hiddenInList: true })
+  @Props({ type: 'json', hiddenInList: true, style: {width: '550px'} })
   tableDef = '';
 
-  @Props({ type: 'json', hiddenInList: true })
+  @Props({ type: 'json', hiddenInList: true, style: {width: '550px'} })
   Props = '';
 }
 
@@ -77,11 +77,8 @@ class CopyTo {
   @Props({ type: 'Catalog.Operation', required: true, style: { width: '400px' } })
   Operation: Ref = null;
 
-  @Props({ type: 'javascript', label: 'script', hiddenInList: true })
+  @Props({ type: 'javascript', label: 'script', hiddenInList: true, style: {width: '550px'}  })
   script = '';
-
-  @Props({ type: 'javascript', label: 'method', hiddenInList: true })
-  method = '';
 
   @Props({ type: 'number', required: true })
   order: number | null = null;
