@@ -19,4 +19,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'date', label: 'Opening date' })
   OpeningDate = new Date();
 
+  @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
+  TaxOffice: Ref = null;
+
 }

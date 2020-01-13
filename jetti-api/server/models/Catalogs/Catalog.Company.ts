@@ -53,4 +53,7 @@ export class CatalogCompany extends DocumentBase {
     ]})
   timeZone = 'UTC';
 
+  @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
+  TaxOffice: Ref = null;
+
 }

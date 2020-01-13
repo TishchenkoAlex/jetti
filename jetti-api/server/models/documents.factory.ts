@@ -62,6 +62,9 @@ import { CatalogTaxPaymentCode } from './Catalogs/Catalog.TaxPaymentCode';
 import { CatalogTaxPaymentPeriod } from './Catalogs/Catalog.TaxPaymentPeriod';
 import { CatalogTaxPayerStatus } from './Catalogs/Catalog.TaxPayerStatus';
 import { CatalogReatailClient } from './Catalogs/Catalog.ReatailClient';
+import { CatalogTaxOffice } from './Catalogs/Catalog.TaxOffice';
+import { CatalogPersonBankAccount } from './Catalogs/Catalog.Person.BankAccount';
+import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -160,12 +163,15 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Scenario', Class: CatalogScenario },
   { type: 'Catalog.AcquiringTerminal', Class: CatalogAcquiringTerminal },
   { type: 'Catalog.Bank', Class: CatalogBank },
+  { type: 'Catalog.Person.BankAccount', Class: CatalogPersonBankAccount },
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
   { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },
   { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod},
   { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus},
+  { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice},
   { type: 'Catalog.ReatailClient', Class: CatalogReatailClient},
+  { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject},
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },
