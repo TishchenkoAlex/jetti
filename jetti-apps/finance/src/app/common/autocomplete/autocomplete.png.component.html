@@ -6,7 +6,7 @@
         [readonly]="readOnly" autocomplete="off" spellcheck="false" (focus)="$event.target.select()"
         (ngModelChange)="value={id: 'string', code: '', type: 'string', value: $event}">
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        pTooltip="Clear" tooltipPosition="bottom" [tabindex]=-1></button>
+        pTooltip="Clear" tooltipPosition="bottom" showDelay="2000" [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
@@ -17,7 +17,7 @@
         type="number" [readonly]="readOnly" autocomplete="off" (focus)="$event.target.select()"
         (ngModelChange)="value={id: 'number', code: '', type: 'number', value: $event}">
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        pTooltip="Clear" tooltipPosition="bottom" [tabindex]=-1></button>
+        pTooltip="Clear" tooltipPosition="bottom" showDelay="2000" [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
@@ -30,7 +30,7 @@
         (focus)="$event.target.select()" type="datetime-local" (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        pTooltip="Clear" tooltipPosition="bottom" [tabindex]=-1></button>
+        pTooltip="Clear" tooltipPosition="bottom" showDelay="2000" [tabindex]=-1></button>
     </div>
   </div>
 
@@ -42,7 +42,7 @@
         (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
       <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-        pTooltip="Clear" tooltipPosition="bottom" [tabindex]=-1></button>
+        pTooltip="Clear" tooltipPosition="bottom" showDelay="2000" [tabindex]=-1></button>
     </div>
   </div>
 
@@ -52,7 +52,7 @@
       (ngModelChange)="value={id: 'boolean', code: '', type: 'boolean', value: $event}">
     </p-checkbox>
     <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
-      pTooltip="Clear" tooltipPosition="bottom"></button>
+      pTooltip="Clear" tooltipPosition="bottom" showDelay="2000"></button>
   </div>
 
   <span *ngIf="isComplexValue">
@@ -72,12 +72,12 @@
         </ng-template>
       </p-autoComplete>
       <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind" pTooltip="Select"
-        tooltipPosition="bottom" (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
+        tooltipPosition="bottom" showDelay="2000" (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
       <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen"
-        pTooltip="Open" tooltipPosition="bottom" [disabled]="this.isEMPTY" (click)="handleOpen($event)"
+        pTooltip="Open" tooltipPosition="bottom" showDelay="2000" [disabled]="this.isEMPTY" (click)="handleOpen($event)"
         [tabIndex]=-1></button>
       <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear" pTooltip="Clear"
-        tooltipPosition="bottom" (click)="handleReset($event)" [tabIndex]=-1
+        tooltipPosition="bottom" showDelay="2000" (click)="handleReset($event)" [tabIndex]=-1
         [disabled]="this.suggest.disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>

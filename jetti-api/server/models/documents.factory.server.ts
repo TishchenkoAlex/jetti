@@ -97,6 +97,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
     Prop.copyTo = [];
     if (result.Operation) {
       Operation = await lib.doc.byIdT<CatalogOperation>(result.Operation as string, tx);
+      if (!Operation) throw new Error(`Operation with id ${result.Operation} not found!`);
       Grop = await lib.doc.formControlRef(Operation!.Group as string, tx);
       result.Group = Operation!.Group;
       let i = 1;

@@ -97,6 +97,10 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           break;
       }
     }
+    const doc = await (createDocumentServer(this.type, this, tx));
+    const Props = doc.Props();
+    this.description = doc.description;
+    this.Props = () => Props;
     return this;
   }
 
@@ -119,11 +123,11 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
 
     if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
+    let CashOrBank;
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
         this['Supplier'] = sourceDoc.CashRecipient;
         this['BankConfirm'] = false;
-        let CashOrBank;
         if (this['BankAccount']) {
           CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
         } else {
@@ -145,17 +149,60 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           this.f1 = this['BankAccount'];
           this.f2 = this['Supplier'];
           this.f3 = this['CashFlow'];
-
         }
         break;
-      case 'Перечисление налогов и взносов':
+      case 'Оплата ДС в другую организацию':
+        const CashOrBankIn = (await lib.doc.byId(sourceDoc.CashOrBankIn, tx));
+        if (!CashOrBankIn) throw new Error('Приемник оплат не заполнен в заявке на ДС');
+        if (this['BankAccount']) {
+          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
+        } else {
+          CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        }
+        if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
+
+        if (CashOrBank.type === 'Catalog.CashRegister') {
+          this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+          if (CashOrBankIn!.type === 'Catalog.CashRegister') {
+            this.Operation = '1B411A80-DBF6-11E9-9DD5-EB2F495F92A0'; // Из кассы - в другую кассу (в путь)
+            this['CashRegisterOUT'] = CashOrBank.id;
+            this['CashRegisterIN'] = CashOrBankIn.id;
+            this.f1 = this['CashRegisterOUT'];
+            this.f2 = this['CashRegisterIN'];
+            // const CashRecipient = (await lib.doc.byId(sourceDoc.CashRecipient, tx));
+            // if (CashRecipient!.type = 'Catalog.Person') {
+            //   this['Person'] = CashRecipient!.id;
+            //   this.f3 = this['Person'];
+            // }
+          } else {
+            this.Operation = 'A6D6678C-BBA3-11E7-8E9F-1B4E8C03A1F5'; // Из кассы - на расчетный счет (в путь)
+            this['BankAccount'] = CashOrBankIn.id;
+            this['CashRegister'] = CashOrBank.id;
+            this.f1 = this['CashRegister'];
+            this.f2 = this['BankAccount'];
+          }
+        } else {
+          this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // Списание безналичных ДС
+          if (CashOrBankIn!.type === 'Catalog.CashRegister') {
+            this.Operation = '369E2910-36CA-11EA-A774-7FBAF34E4AFA'; // С р/с - в кассу (в путь)
+            this['BankAccountOut'] = CashOrBank.id;
+            this['CashRegisterIn'] = CashOrBankIn.id;
+            this['BankConfirm'] = false;
+            this.f1 = this['BankAccountOut'];
+            this.f2 = this['CashRegisterIn'];
+          } else {
+            this.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
+            this['BankAccountOut'] = CashOrBank.id;
+            this['BankAccountTransit'] = CashOrBankIn.id;
+            this['BankConfirm'] = false;
+            this.f1 = this['BankAccountOut'];
+            this.f2 = this['BankAccountTransit'];
+          }
+        }
+        break;
       default:
         break;
     }
-    const doc = await (createDocumentServer(this.type, this, tx));
-    const Props = doc.Props();
-    this.description = doc.description;
-    this.Props = () => Props;
   }
 }
 

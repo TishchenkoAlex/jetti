@@ -21,10 +21,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         if (!company) return this;
         this.сurrency = company.currency;
         return this;
-      case 'CashFlow':
-        return this;
       case 'CashRecipient':
-        if (!value.id) { this.Contract = null; return this; }
+        if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         const query = `
           SELECT TOP 1 id
           FROM dbo.[Catalog.Contract]
@@ -38,6 +36,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.Contract = contractId!.id;
         return this;
       case 'Contract':
+        if (!value.id) {this.CashRecipientBankAccount = null; return this; }
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
         if (!CatalogContractObject || !CatalogContractObject.BankAccount) { this.CashRecipientBankAccount = null; return this; }
         this.CashRecipientBankAccount = CatalogContractObject.BankAccount;

@@ -32,7 +32,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   сurrency: Ref = null;
 
   @Props({
-    type: 'table', required: false, order: 1,
+    type: 'table', required: false, order: 1, label: 'Cash requests',
     onChange: function (doc: CashRequest, value: CashRequest[]) {
       let Amount = 0; value.forEach(el => { Amount += el.Amount; });
       return { Amount: Math.round(Amount * 100) / 100 };
