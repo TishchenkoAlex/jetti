@@ -19,10 +19,10 @@ spec:
           resources:
             requests:
               memory: "256Mi"
-              cpu: "1500m"
+              cpu: "2000m"
             limits:
               memory: "512Mi"
-              cpu: "1500m"
+              cpu: "2000m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -71,7 +71,7 @@ spec:
             - name: EXCHANGE_ACCESS_KEY
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "00119"
+              value: "001"
             - name: NODE_ENV
               value: "production"
 ---
