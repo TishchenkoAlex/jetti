@@ -8,22 +8,24 @@
           <p-toolbar>
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="PostClose" icon="fa fa-check-square-o" label="Post&Close"
-                class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
+                pTooltip="Post and close" tooltipPosition="bottom" class="ui-button-warning"
+                [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
                 *ngIf="!(isDeleted$ | async)"></button>
-              <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary"
-                [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
+              <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary" pTooltip="Post"
+                tooltipPosition="bottom" [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
                 *ngIf="!(isDeleted$ | async) && isDoc"></button>
               <button pButton type="button" id="unPost" icon="fa fa-square-o" class="ui-button-secondary"
-                [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
-                *ngIf="!(isDeleted$ | async) && (isPosted$ | async) && isDoc"></button>
-              <button pButton type="button" id="save" icon="fa fa-floppy-o" class="ui-button-secondary"
-                [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
+                pTooltip="Unpost" tooltipPosition="bottom" [disabled]="!form.valid || (lds.busy$ | async)"
+                (click)="unPost()" *ngIf="!(isDeleted$ | async) && (isPosted$ | async) && isDoc"></button>
+              <button pButton type="button" id="save" icon="fa fa-floppy-o" class="ui-button-secondary" pTooltip="Save"
+                tooltipPosition="bottom" [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
                 *ngIf="!(isPosted$ | async) || !isDoc"></button>
-              <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary"
-                [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
+              <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary" pTooltip="Copy"
+                tooltipPosition="bottom" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
                 *ngIf="!(isDeleted$ | async)  && !(isNew$ | async)"></button>
-              <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger"
-                *ngIf="!(isNew$ | async)" (click)="delete()" [disabled]="(lds.busy$ | async)"></button>
+              <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger" pTooltip="Delete"
+                tooltipPosition="bottom" *ngIf="!(isNew$ | async)" (click)="delete()"
+                [disabled]="(lds.busy$ | async)"></button>
             </div>
             <div class="ui-toolbar-group-right">
               <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async"
@@ -35,11 +37,12 @@
               <!--         <button *ngIf="!viewModel.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
         [disabled]="(lds.busy$ | async)"></button> -->
               <button *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
-                (click)="goto()" [disabled]="(lds.busy$ | async)"></button>
-              <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
+                pTooltip="Show in list" tooltipPosition="bottom" (click)="goto()"
                 [disabled]="(lds.busy$ | async)"></button>
-              <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary"
-                [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
+              <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
+                pTooltip="Print" tooltipPosition="bottom" [disabled]="(lds.busy$ | async)"></button>
+              <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
+                tooltipPosition="bottom" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
             </div>
           </p-toolbar>
 

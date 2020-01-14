@@ -4,38 +4,38 @@
       [toggleable]="true">
       <p-toolbar>
         <div class="ui-toolbar-group-left">
-          <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Провести и закрыть"
-            class="ui-button-warning" [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
+          <button pButton type="button" id="PostClose " icon="fa fa-check-square-o" label="Post&Close"
+            pTooltip="Post and close" tooltipPosition="bottom" class="ui-button-warning"
+            [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
             *ngIf="!readonlyMode && !isDeleted"></button>
-          <button pButton type="button" id="Post" label="Провести" icon="fa fa-check" class="ui-button-secondary"
-            [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
+          <button pButton type="button" id="Post" icon="fa fa-check" pTooltip="Post" tooltipPosition="bottom"
+            class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
             *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
-          <button pButton type="button" id="unPost" label="Отменить проведение" icon="fa fa-square-o"
+          <button pButton type="button" id="unPost" icon="fa fa-square-o" pTooltip="Unpost" tooltipPosition="bottom"
             class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)" (click)="unPost()"
             *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
-          <button pButton type="button" id="Copy" label="Копировать" icon="fa fa-copy" class="ui-button-secondary"
-            [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
-          <button pButton type="button" id="Delete" [label]="isDeleted ? 'Отменить удаление' : 'Удалить'"
-            icon="fa fa-trash" class="ui-button-danger" *ngIf="!isNew" (click)="delete()"
-            [disabled]="(lds.busy$ | async)"></button>
+          <button pButton type="button" id="Copy" icon="fa fa-copy" pTooltip="Copy" tooltipPosition="bottom"
+            class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
+            *ngIf="!isDeleted && !isNew"></button>
+          <button pButton type="button" id="Delete" icon="fa fa-trash" pTooltip="Delete" tooltipPosition="bottom"
+            class="ui-button-danger" *ngIf="!isNew" (click)="delete()" [disabled]="(lds.busy$ | async)"></button>
         </div>
         <div class="ui-toolbar-group-right">
-          <button pButton type="button" id="StartProcess" label="Запустить согласование" class="ui-button-danger"
+          <button pButton type="button" id="StartProcess" label="Start agreement" class="ui-button-danger"
             *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
             [disabled]="!form.valid || (lds.busy$ | async)"></button>
         </div>
         <div class="ui-toolbar-group-right">
-          <p-splitButton *ngIf="copyTo.length" [model]="copyTo" styleClass="ui-button-secondary"
-            label="создать на основании...">
+          <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async" styleClass="ui-button-secondary"
+            label="base on">
           </p-splitButton>
-          <p-splitButton *ngIf="commands.length" [model]="commands" styleClass="ui-button-secondary" label="commands">
+          <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
+            styleClass="ui-button-secondary" label="commands">
           </p-splitButton>
-          <!--         <button *ngIf="!model.disable({emitEvent:false})flow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
-      [disabled]="(lds.busy$ | async)"></button> -->
           <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="goto()"
-            [disabled]="(lds.busy$ | async)"></button>
-          <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
-            (click)="print()" [disabled]="(lds.busy$ | async)"></button>
+            pTooltip="Show in list" tooltipPosition="bottom" [disabled]="(lds.busy$ | async)"></button>
+          <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary" pTooltip="Print"
+            tooltipPosition="bottom" (click)="print()" [disabled]="(lds.busy$ | async)"></button>
         </div>
       </p-toolbar>
 
@@ -51,7 +51,8 @@
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.company" [form]="form"></j-control>
-          <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form"></j-control>
+          <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form">
+          </j-control>
           <j-control [control]="vk.CashFlow" [form]="form"></j-control>
         </div>
 
@@ -63,19 +64,19 @@
           <j-control [control]="vk.Department" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
-          fxLayoutGap.xs="0px">
+        <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.Contract" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row" fxLayout.xs="column"
-          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row"
+          fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
           <j-control [control]="vk.BalanceAnalytics" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row" fxLayout.xs="column"
-          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+        <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row"
+          fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
         </div>
 
@@ -85,8 +86,8 @@
           <j-control [control]="vk.PaymentKind" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px"
-          fxLayoutGap.xs="0px">
+        <div *ngIf="form.get('Operation').value  === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
           <j-control [control]="vk.ExpenseAnalytics" [form]="form"></j-control>
         </div>
