@@ -123,8 +123,12 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       case 'Оплата поставщику':
         this['Supplier'] = sourceDoc.CashRecipient;
         this['BankConfirm'] = false;
-
-        const CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        let CashOrBank;
+        if (this['BankAccount']) {
+          CashOrBank = {id: this['BankAccount'], type: 'Catalog.BankAccount'}
+        } else {
+          CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        }
         if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
         if (CashOrBank.type === 'Catalog.CashRegister') {
           this.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; // касса

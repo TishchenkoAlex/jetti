@@ -40,6 +40,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
       // исключение ошибки при проверке заполненности счета в базеон
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+      if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+      OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       await OperationServer.baseOn!(row.CashRequest, tx);
       // переопределение счета
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
