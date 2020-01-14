@@ -122,13 +122,20 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     const byKeyControls = { ...formGroup['byKeyControls'] };
     formGroup['orderedControls'] = [];
     formGroup['byKeyControls'] = {};
+    this.cd.detach();
     this._form$.next(formGroup);
-    this.cd.markForCheck();
     setTimeout(() => {
+      this.cd.detectChanges();
       formGroup['orderedControls'] = orderedControls;
       formGroup['byKeyControls'] = byKeyControls;
       this._form$.next(formGroup);
-      setTimeout(() => this.cd.detectChanges());
+      setTimeout(() => {
+        this.cd.detectChanges();
+        setTimeout(() => {
+          this.cd.reattach();
+          this.cd.markForCheck();
+        });
+      });
     });
   }
 

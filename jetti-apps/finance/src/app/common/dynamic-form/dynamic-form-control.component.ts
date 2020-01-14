@@ -16,7 +16,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   @Input() form: FormGroup;
   @Input() appendTo;
   @Output() change = new EventEmitter();
-  formControl: FormControl;
+  get formControl() { return this.form.get(this.control.key); }
 
   valueChanges$: Subscription = Subscription.EMPTY;
 
@@ -31,12 +31,9 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
     else if (!date && !this.control.required) this.formControl.setValue(date);
   }
 
-  constructor(
-    public api: ApiService, private cd: ChangeDetectorRef,
-    private dss: DynamicFormService, private ds: DocService) {}
+  constructor(public api: ApiService, private cd: ChangeDetectorRef, private ds: DocService) {}
 
   ngOnInit() {
-    this.formControl = this.form.get(this.control.key)! as FormControl;
 
     this.dateTimeValue = this.formControl.value;
 
