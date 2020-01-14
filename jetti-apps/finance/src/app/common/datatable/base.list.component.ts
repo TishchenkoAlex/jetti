@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { iif as _if, merge, Observable, Subject, Subscription, fromEvent } from 'rxjs';
+import { iif as _if, merge, Observable, Subject, Subscription, fromEvent, combineLatest } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
@@ -114,18 +114,19 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       });
 
     // обработка команды найти в списке
-    this._routeSubscruption$ = this.route.queryParams.pipe(
-      filter(params => this.route.snapshot.params.type === this.type && params.goto))
+    this._routeSubscruption$ = combineLatest([this.route.params, this.route.queryParams]).pipe(
+      filter(params => params[0].type === this.type && params[1].goto))
       .subscribe(params => {
-        const exist = this.dataSource.renderedData.find(d => d.id === params.goto);
+        console.log('', params);
+        const exist = this.dataSource.renderedData.find(d => d.id === params[1].goto);
         if (exist) {
           this.router.navigate([this.type], { replaceUrl: true }).then(() =>
-            this.refresh(params.goto));
+            this.refresh(params[1].goto));
         } else {
           this.router.navigate([this.type], { replaceUrl: true }).then(() => {
             this.filters = {};
             this.prepareDataSource();
-            this.goto(params.goto);
+            this.goto(params[1].goto);
           });
         }
       });
