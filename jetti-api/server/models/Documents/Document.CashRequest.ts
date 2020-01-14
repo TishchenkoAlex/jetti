@@ -160,6 +160,7 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'Types.CashOrBank', hiddenInList: true,
     label: 'Касса/банк получателя',
     owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'company' },
       { dependsOn: 'сurrency', filterBy: 'currency' }
     ]
   })
