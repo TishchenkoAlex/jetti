@@ -147,7 +147,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   onCashKindChange(event) {
-    if  (event === 'ANY') return;
+    if (event === 'ANY') return;
     const CashOrBank = this.form.get('CashOrBank').value;
     let CashKindType = '';
     if (event === 'BANK') {
@@ -165,11 +165,17 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   StartProcess() {
     this.bpApi.StartProcess(this.viewModel as DocumentBase, this.metadata.type).pipe(take(1)).subscribe(data => {
-      this.form.get('workflowID').setValue(data);
-      this.form.get('Status').setValue('AWAITING');
+      if (data === 'APPROVED') {
+        this.form.get('workflowID').setValue('');
+        this.form.get('Status').setValue('APPROVED');
+        this.ds.openSnackBar('success', 'Заявка утверждена', 'Согласование не труебуется');
+      } else {
+        this.form.get('workflowID').setValue(data);
+        this.form.get('Status').setValue('AWAITING');
+        this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${data}`);
+      }
       this.post();
       this.form.disable({ emitEvent: false });
-      this.ds.openSnackBar('success', 'process started', 'Процесс согласования стартован');
     });
   }
 
