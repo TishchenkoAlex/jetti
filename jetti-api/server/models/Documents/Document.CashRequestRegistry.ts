@@ -16,12 +16,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'],
-  onChange: function (doc: DocumentCashRequestRegistry, value) {
-    if (doc.Status  === 'APPROVED') {
-      return { Amount: 1 };
-    }
-  } })
+  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
   Status = 'PREPARED';
 
   @Props({ type: 'Catalog.CashFlow', storageType: 'all' })
