@@ -125,7 +125,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         this['BankConfirm'] = false;
         let CashOrBank;
         if (this['BankAccount']) {
-          CashOrBank = {id: this['BankAccount'], type: 'Catalog.BankAccount'}
+          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
         } else {
           CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
         }
