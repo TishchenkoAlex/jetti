@@ -233,7 +233,7 @@ export async function postById(id: Ref, tx: MSSQL) {
     await lib.util.postMode(true, tx);
     const serverDoc = await setPostedSate(id, tx);
     await unpostDocument(serverDoc, tx);
-    await postDocument(serverDoc, tx);
+    if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
     return serverDoc;
   } catch (err) { throw new Error(`Error on post by document by id = '${id}', ${err}`); }
   finally { await lib.util.postMode(false, tx); }
