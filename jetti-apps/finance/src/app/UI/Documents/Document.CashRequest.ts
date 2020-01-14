@@ -88,18 +88,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   onOperationChanges(operation: string) {
 
-    const CashRecipient = this.form.get('CashRecipient').value;
-    if (CashRecipient && CashRecipient.id) return;
-
-    let CashRecipientType = '';
-    if (operation === 'Оплата ДС в другую организацию') {
-      CashRecipientType = 'Catalog.Company';
-      this.form.get('CashRecipient').setValue(
-        { id: null, code: null, type: CashRecipientType, value: null },
-        { onlySelf: false, emitEvent: false }
-      );
-    }
-
     // 'Оплата поставщику',
     // 'Перечисление налогов и взносов',
     // 'Оплата ДС в другую организацию',
@@ -139,23 +127,40 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     Выдача займа контрагенту`.indexOf(operation) !== -1) this.form.get('Loan').enable({ emitEvent: false }); else this.form.get('Loan').disable({ emitEvent: false });
 
     this.form.markAsTouched();
+
+    if (operation === 'Оплата ДС в другую организацию') {
+      const CashOrBankIn = this.form.get('CashOrBankIn').value;
+      if (!CashOrBankIn || CashOrBankIn.type !== 'Catalog.BankAccount') {
+        this.form.get('CashOrBankIn').setValue(
+          { id: null, code: null, type: 'Catalog.BankAccount', value: null },
+          { onlySelf: false, emitEvent: false }
+        );
+      }
+      const CashRecipient = this.form.get('CashRecipient').value;
+      if (!CashRecipient || CashRecipient.type !== 'Catalog.Company') {
+        this.form.get('CashRecipient').setValue(
+          { id: null, code: null, type: 'Catalog.Company', value: null },
+          { onlySelf: false, emitEvent: false }
+        );
+      }
+    }
   }
+
   onCashKindChange(event) {
-
+    if  (event === 'ANY') return;
     const CashOrBank = this.form.get('CashOrBank').value;
-    if (CashOrBank && CashOrBank.id) return;
-
     let CashKindType = '';
     if (event === 'BANK') {
       CashKindType = 'Catalog.BankAccount';
     } else {
       CashKindType = 'Catalog.CashRegister';
     }
-
-    this.form.get('CashOrBank').setValue(
-      { id: null, code: null, type: CashKindType, value: null },
-      { onlySelf: false, emitEvent: false }
-    );
+    if (!CashOrBank || CashOrBank.type !== CashKindType) {
+      this.form.get('CashOrBank').setValue(
+        { id: null, code: null, type: CashKindType, value: null },
+        { onlySelf: false, emitEvent: false }
+      );
+    }
   }
 
   StartProcess() {
