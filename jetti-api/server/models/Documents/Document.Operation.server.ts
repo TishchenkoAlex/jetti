@@ -99,8 +99,10 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
     const doc = await (createDocumentServer(this.type, this, tx));
     const Props = doc.Props();
+    const Prop = doc.Prop();
     this.description = doc.description;
     this.Props = () => Props;
+    this.Prop = () => Prop;
     return this;
   }
 
