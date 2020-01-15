@@ -37,8 +37,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService,
-    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, private hotkeys: Hotkeys) {}
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, private hotkeys: Hotkeys) { }
 
+  private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
   private _docSubscription$: Subscription = Subscription.EMPTY;
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
@@ -136,15 +137,20 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
-    this.hotkeys.addShortcut({ keys: 'PageDown', description: 'Next page' }).subscribe( () => {this.next(); });
-    this.hotkeys.addShortcut({ keys: 'PageUp', description: 'Previos page' }).subscribe( () => {this.prev(); });
-    this.hotkeys.addShortcut({ keys: 'Home', description: 'First page' }).subscribe( () => {this.first(); });
-    this.hotkeys.addShortcut({ keys: 'End', description: 'Last page' }).subscribe( () => {this.last(); });
-    this.hotkeys.addShortcut({ keys: 'meta.ArrowRight', description: 'Next page' }).subscribe( () => {this.next(); });
-    this.hotkeys.addShortcut({ keys: 'meta.ArrowLeft', description: 'Previos page' }).subscribe( () => {this.prev(); });
-    this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
-    this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.open(); });
-    this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
+    this._hotKeySubscriptions$.push(
+      this.hotkeys.addShortcut({ keys: 'PageDown', description: 'Next page' }).subscribe(() => { this.next(); }
+      ));
+    this._hotKeySubscriptions$.push(
+      this.hotkeys.addShortcut({ keys: 'PageUp', description: 'Previos page' }).subscribe(() => { this.prev(); }
+      ));
+
+    // this.hotkeys.addShortcut({ keys: 'Home', description: 'First page' }).subscribe( () => {this.first(); });
+    // this.hotkeys.addShortcut({ keys: 'End', description: 'Last page' }).subscribe( () => {this.last(); });
+    // this.hotkeys.addShortcut({ keys: 'meta.ArrowRight', description: 'Next page' }).subscribe( () => {this.next(); });
+    // this.hotkeys.addShortcut({ keys: 'meta.ArrowLeft', description: 'Previos page' }).subscribe( () => {this.prev(); });
+    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
+    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.open(); });
+    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
     // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe( () => {this.delete(); });
   }
 
@@ -327,6 +333,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this._routeSubscruption$.unsubscribe();
     this._debonceSubscription$.unsubscribe();
     this._debonce$.complete();
+    this._hotKeySubscriptions$.forEach(el => el.unsubscribe());
     // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
   }
 

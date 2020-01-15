@@ -16,7 +16,6 @@ import { DocService } from '../doc.service';
 import { filter } from 'rxjs/operators';
 import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
-import { Hotkeys } from 'src/app/services/hotkeys.service';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {
@@ -126,7 +125,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
   // end of implementation Validator interface
 
-  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService, private hotkeys: Hotkeys) { }
+  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
     this._value = this.EMPTY;
@@ -140,9 +139,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
         this.cd.markForCheck();
       });
 
-      this.hotkeys.addShortcut({ keys: 'Shift.F4', description: 'Clear' }).subscribe( () => {this.handleReset(new Event('keypress')); });
-      this.hotkeys.addShortcut({ keys: 'F4', description: 'Choise' }).subscribe( () => {this.handleSearch(new Event('keypress')); });
-      this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.handleOpen(new Event('keypress')); });
+      // this.hotkeys.addShortcut({ keys: 'Shift.F4', description: 'Clear' }).subscribe( () => {this.handleReset(new Event('keypress')); });
+      // this.hotkeys.addShortcut({ keys: 'F4', description: 'Choise' }).subscribe( () => {this.handleSearch(new Event('keypress')); });
+      // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.handleOpen(new Event('keypress')); });
   }
 
   getSuggests(text: string) {
