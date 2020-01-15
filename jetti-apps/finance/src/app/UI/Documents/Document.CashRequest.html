@@ -148,8 +148,8 @@
     <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-accumulation-list>
   </p-panel>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value">
-    <bp-task [ProcessID]="form.get('workflowID').value"></bp-task>
+  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value" #bp>
+    <bp-task *ngIf="!bp.collapsed" [ProcessID]="form.get('workflowID').value"></bp-task>
   </p-panel>
 
   <div *ngIf="(isFolder$ | async) === false">
