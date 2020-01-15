@@ -31,9 +31,10 @@ export class Hotkeys {
     merged.description && this.hotkeys.set(merged.keys, merged.description);
 
     return new Observable(observer => {
-      const handler = (e) => {
-        e.preventDefault();
-        observer.next(e);
+      const handler = (e: Event) => {
+      e.preventDefault();
+      observer.next(e);
+      e.stopImmediatePropagation();
       };
 
       const dispose = this.eventManager.addEventListener(merged.element, event, handler);
