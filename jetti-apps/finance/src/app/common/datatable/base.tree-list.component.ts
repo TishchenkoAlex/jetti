@@ -10,6 +10,7 @@ import { DocTypes } from '../../../../../../jetti-api/server/models/documents.ty
 import { DocService } from '../../common/doc.service';
 import { ApiService } from '../../services/api.service';
 import { LoadingService } from '../loading.service';
+import { Hotkeys } from 'src/app/services/hotkeys.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +30,7 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
   private _docSubscription$: Subscription = Subscription.EMPTY;
 
   // tslint:disable-next-line: max-line-length
-  constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService, private cd: ChangeDetectorRef) { }
+  constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService, private cd: ChangeDetectorRef, private hotkeys: Hotkeys) { }
 
   ngOnInit() {
 
@@ -42,7 +43,7 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
         return this.api.tree(this.type).pipe(
           map(tree => <TreeNode[]>[{
             label: '(All)',
-            data: { id: undefined, description: '(All)', type: this.type, value: null, code: null},
+            data: { id: undefined, description: '(All)', type: this.type, value: null, code: null },
             expanded: true,
             expandedIcon: 'fa fa-folder-open',
             collapsedIcon: 'fa fa-folder',
@@ -53,6 +54,11 @@ export class BaseTreeListComponent implements OnInit, OnDestroy {
           }));
       }));
     setTimeout(() => this.paginator.next());
+
+    this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe(() => { this.add(); });
+    this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe(() => { this.open(); });
+    this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe(() => { this.copy(); });
+    this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe(() => { this.delete(); });
   }
 
   private findDoc(tree: TreeNode[], id: string): TreeNode | undefined {

@@ -25,10 +25,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Brand' })
   Brand: Ref = null;
 
-  @Props({ type: 'Catalog.Unit', label: 'Unit' })
+  @Props({ type: 'Catalog.Unit', label: 'Unit', required: true})
   Unit: Ref = null;
-
-  @Props({ type: 'number' })
-  Volume = 0;
 
 }
