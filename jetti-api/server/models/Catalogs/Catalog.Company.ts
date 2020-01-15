@@ -5,6 +5,13 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Организация',
   icon: 'fa fa-list',
   menu: 'Организации',
+  relations: [
+    { name: 'Departments', type: 'Catalog.Department', field: 'company' },
+    { name: 'Bank accounts', type: 'Catalog.BankAccount', field: 'company' },
+    { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'company' },
+    { name: 'Cash registers', type: 'Catalog.CashRegister', field: 'company' },
+    { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'company' },
+  ],
 })
 export class CatalogCompany extends DocumentBase {
 

@@ -24,12 +24,17 @@
         sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection"
         [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'415px'"
         [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
-        [lazyLoadOnInit]="false">
-
+        [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true" [resizableColumns] = "true">
+        <ng-template pTemplate="colgroup" let-columns>
+          <colgroup>
+            <col>
+            <col *ngFor="let column of tbl.columns">
+          </colgroup>
+        </ng-template>
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
             <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
-            <th pReorderableColumn [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
+            <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
               [ngStyle]="column.style">
               {{column.label}}
               <p-sortIcon [field]="column.field"></p-sortIcon>

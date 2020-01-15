@@ -270,7 +270,7 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
     SELECT q.*, Storehouse.Department Department FROM (
       SELECT Storehouse, SKU, SUM([Cost]) [Cost]
       FROM [dbo].[Register.Accumulation.Inventory] r
-      WHERE date <= EOMONTH(@p1) AND company = @p2
+      WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
