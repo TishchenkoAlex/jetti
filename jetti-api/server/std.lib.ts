@@ -233,7 +233,7 @@ export async function postById(id: Ref, tx: MSSQL) {
     await lib.util.postMode(true, tx);
     const serverDoc = await setPostedSate(id, tx);
     await unpostDocument(serverDoc, tx);
-    await postDocument(serverDoc, tx);
+    if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
     return serverDoc;
   } catch (err) { throw new Error(`Error on post by document by id = '${id}', ${err}`); }
   finally { await lib.util.postMode(false, tx); }
@@ -270,7 +270,7 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
     SELECT q.*, Storehouse.Department Department FROM (
       SELECT Storehouse, SKU, SUM([Cost]) [Cost]
       FROM [dbo].[Register.Accumulation.Inventory] r
-      WHERE date <= EOMONTH(@p1) AND company = @p2
+      WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);

@@ -78,7 +78,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.columns = buildColumnDef(this.data.schema, this.settings);
 
     this.showTree = this.data.metadata.hierarchy === 'folders';
+    if (this.pageSize) this.showTree = false;
     this.showTreeButton = this.showTree;
+
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
     this.columns = [...this.columns.filter(c => !c.hidden)];
 

@@ -6,7 +6,12 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Подразделения',
   prefix: 'DEP-',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  relations: [
+    { name: 'Cash registers', type: 'Catalog.CashRegister', field: 'Department' },
+    { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'Department' },
+    { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'Department' }
+  ],
 })
 export class CatalogDepartment extends DocumentBase {
 
