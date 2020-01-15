@@ -70,8 +70,8 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [${type}.id] ON [dbo].[${type}](id);
+      CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](company,date,calculated,id);
       GO
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
@@ -204,7 +204,8 @@ export class SQLGenegatorMetadata {
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
       d.id, d.date [date],
-      d.description Presentation
+      d.description Presentation,
+      d.info
       FROM dbo.[Documents] d
     GO
     GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;

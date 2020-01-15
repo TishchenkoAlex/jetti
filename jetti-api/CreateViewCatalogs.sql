@@ -3,7 +3,8 @@
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
       d.id, d.date [date],
-      d.description Presentation
+      d.description Presentation,
+      d.info
       FROM dbo.[Documents] d
     GO
     GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
