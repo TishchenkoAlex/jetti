@@ -44,7 +44,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
 
 export class CashRequest {
 
-  @Props({ type: 'Document.CashRequest', label: 'Cash request', readOnly: true })
+  @Props({ type: 'Document.CashRequest', label: 'Cash request', readOnly: true, style: { width: '200px', textAlign: 'right' } })
   CashRequest: Ref = null;
 
   @Props({ type: 'number', label: 'Cash request amount', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })

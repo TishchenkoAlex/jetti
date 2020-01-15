@@ -20,6 +20,7 @@ import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequ
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
+  onCopy?(tx: MSSQL): Promise<DocumentBaseServer>;
 
   beforeSave?(tx: MSSQL): Promise<DocumentBaseServer>;
   afterSave?(tx: MSSQL): Promise<DocumentBaseServer>;

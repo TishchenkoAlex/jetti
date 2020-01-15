@@ -9,6 +9,7 @@ import { MSSQL } from '../../mssql';
 import { DocumentCashRequestServer } from './Document.CashRequest.server';
 import { Ref } from '../document';
 import { calculateDescription } from '../common-types';
+import { DocumentCashRequest } from './Document.CashRequest';
 
 export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
@@ -25,6 +26,26 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       default:
         return this;
     }
+  }
+
+  async beforePost(tx: MSSQL) {
+    if (!this.parent) return this;
+    const parentDoc = (await lib.doc.byId(this.parent, tx));
+    if (!parentDoc) return this;
+    switch (parentDoc.type) {
+      case 'Document.CashRequest':
+        const CashRequestServer = await createDocumentServer<DocumentCashRequestServer>('Document.CashRequest', parentDoc, tx);
+        await this.beforePostCashRequest(CashRequestServer, tx);
+        break;
+      default:
+        break;
+    }
+    return this;
+  }
+
+  async beforePostCashRequest(CashRequest: DocumentCashRequestServer, tx: MSSQL) {
+    const rest = await CashRequest.getAmountBalance(tx);
+    if (rest < this.Amount) throw new Error(`${this.description} не может быть проведен: сумма ${this.Amount} превышает остаток ${rest} на ${this.Amount - rest} по ${CashRequest.description}`);
   }
 
   async onPost(tx: MSSQL) {
@@ -87,7 +108,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         case 'Catalog.Counterpartie':
           break;
         case 'Document.CashRequest':
-          await this.CashRequestbaseOn(sourceDoc as DocumentCashRequestServer, tx);
+          await this.baseOnCashRequest(sourceDoc as DocumentCashRequestServer, tx);
           break;
         case 'Catalog.Operation':
           this.Operation = (sourceDoc as CatalogOperation).id;
@@ -106,7 +127,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     return this;
   }
 
-  async CashRequestbaseOn(sourceDoc: DocumentCashRequestServer, tx: MSSQL) {
+  async baseOnCashRequest(sourceDoc: DocumentCashRequestServer, tx: MSSQL) {
     this.company = sourceDoc.company;
     this.currency = sourceDoc.сurrency;
     this['CashFlow'] = sourceDoc.CashFlow;

@@ -92,6 +92,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           ServerDoc.map(copyDoc);
           addIncomeParamsIntoDoc(params, ServerDoc);
           ServerDoc.description = 'Copy: ' + ServerDoc.description;
+          if (ServerDoc.onCopy) await ServerDoc.onCopy(sdb);
           break;
         case 'base':
           if (ServerDoc.baseOn) await ServerDoc.baseOn(req.query.base as string, sdb);

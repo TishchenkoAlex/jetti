@@ -36,7 +36,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.Contract = contractId!.id;
         return this;
       case 'Contract':
-        if (!value.id) {this.CashRecipientBankAccount = null; return this; }
+        if (!value.id) { this.CashRecipientBankAccount = null; return this; }
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
         if (!CatalogContractObject || !CatalogContractObject.BankAccount) { this.CashRecipientBankAccount = null; return this; }
         this.CashRecipientBankAccount = CatalogContractObject.BankAccount;
@@ -60,13 +60,14 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async beforeDelete(tx: MSSQL): Promise<this> {
-    if (this.Status  === 'APPROVED') {
-      throw new Error('Утвержденный документ не может быть удален');
+    if (this.Status === 'APPROVED') {
+      const rest = await this.getAmountBalance(tx);
+      if (this.Amount !== rest) throw new Error(`${this.description} не может быть удален:\n оплачено ${this.Amount - rest}`);
     }
     if (this.workflowID) {
       await DeleteProcess(this.workflowID);
-      this.workflowID  = '';
-      this.Status  = 'PREPARED';
+      this.workflowID = '';
+      this.Status = 'PREPARED';
       await updateDocument(this, tx);
     }
     return this;
@@ -126,6 +127,18 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
 
     return Registers;
+  }
+  // возвращает остаток по заявке
+  async  getAmountBalance(tx: MSSQL): Promise<number> {
+    if (this.Status !== 'APPROVED') return 0;
+    const query = `
+      SELECT
+        SUM(Balance.[Amount]) AS AmountBalance
+      FROM [dbo].[Register.Accumulation.CashToPay] AS Balance -- WITH (NOEXPAND)
+      WHERE Balance.[CashRequest] = @p1`;
+    const queryRes = await tx.manyOrNone<{ AmountBalance: number }>(query, [this.id]);
+    if (queryRes.length) return queryRes[0].AmountBalance;
+    return 0;
   }
 
 }

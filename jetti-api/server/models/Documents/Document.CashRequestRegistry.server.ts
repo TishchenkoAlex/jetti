@@ -42,7 +42,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
-      await OperationServer.baseOn!(row.CashRequest, tx);
+      try {
+        await OperationServer.baseOn!(row.CashRequest, tx);
+      } catch { continue; }
       // переопределение счета
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       OperationServer['Amount'] = row.Amount;
@@ -121,6 +123,13 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       });
     }
     CashRequests.forEach(row => this.Amount += row.Amount);
+  }
+  async onCopy(tx: MSSQL) {
+    this.Status = 'PREPARED';
+    this.CashRequests = [];
+    this.Amount = 0;
+    this.info = '';
+    return this;
   }
 
   async onPost(tx: MSSQL) {

@@ -33,6 +33,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.form.get('CashKind').setValue('BANK');
     }
 
+    this.form.get('Status').disable({ emitEvent: false });
     if (this.readonlyMode) { this.form.disable({ emitEvent: false }); }
 
     this.onCashKindChange(this.form.get('CashKind').value);
@@ -144,6 +145,17 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         );
       }
     }
+  }
+
+  onFillTaxInfo(TaxRate: number) {
+    let info = this.form.get('info').value;
+    let Amount = this.form.get('Amount').value;
+    if (!info || !Amount) return;
+    let infoArr = String(info).trim().split('\n');
+    if (infoArr.length === 0 ) return;
+    let Tax = Amount-Amount/TaxRate*0.01+1;
+    info = `${infoArr[0]}\nСуммма ${String(Amount.toFixed(2)).replace('.','-')} руб.\nВ т.ч. НДС (20%) ${String(Tax.toFixed(2)).replace('.','-')} руб. `.trim();
+    this.form.get('info').setValue(info);
   }
 
   onCashKindChange(event) {
