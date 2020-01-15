@@ -8,6 +8,7 @@ import { cloneFormGroup, patchOptionsNoEvents } from '../../common/dynamic-form/
 import { ApiService } from '../../services/api.service';
 import { EditableColumn } from '../datatable/table';
 import { DocService } from '../doc.service';
+import { Hotkeys } from 'src/app/services/hotkeys.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   private _subscription$: Subscription = Subscription.EMPTY;
   private _valueChanges$: Subscription = Subscription.EMPTY;
 
-  constructor(private api: ApiService, private ds: DocService, private cd: ChangeDetectorRef) { }
+  constructor(private api: ApiService, private ds: DocService, private cd: ChangeDetectorRef, private hotkeys: Hotkeys) { }
 
   ngOnInit() {
     this.columns = this.control.controls.map((el) => <ColumnDef>{
@@ -44,6 +45,10 @@ export class TablePartsComponent implements OnInit, OnDestroy {
         this.dataSource = doc[this.control.key];
         this.cd.detectChanges();
       });
+
+      this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
+      this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
+      this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe( () => {this.delete(); });
   }
 
   getControl(i: number) {

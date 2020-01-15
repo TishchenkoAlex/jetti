@@ -71,12 +71,12 @@
           </div>
         </ng-template>
       </p-autoComplete>
-      <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind" pTooltip="Select"
+      <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind && !this.form.disabled" pTooltip="Select"
         tooltipPosition="bottom" showDelay="2000" (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
-      <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen"
+      <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen || this.form.disabled"
         pTooltip="Open" tooltipPosition="bottom" showDelay="2000" [disabled]="this.isEMPTY" (click)="handleOpen($event)"
         [tabIndex]=-1></button>
-      <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear" pTooltip="Clear"
+      <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear && !this.form.disabled" pTooltip="Clear"
         tooltipPosition="bottom" showDelay="2000" (click)="handleReset($event)" [tabIndex]=-1
         [disabled]="this.suggest.disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
