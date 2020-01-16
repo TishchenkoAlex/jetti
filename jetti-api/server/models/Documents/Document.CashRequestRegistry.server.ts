@@ -30,6 +30,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   private async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
+    await lib.doc.postById(this.id, tx);
     for (const row of this.CashRequests.filter(c => (c.Amount > 0))) {
       let Operation: DocumentOperation | null;
       if (row.LinkedDocument) {
@@ -134,7 +135,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    if (this.Status === 'REJECTED') return Registers;
+    if (this.Status === 'REJECTED' || this.Status === 'APPROVED') return Registers;
 
     for (const row of this.CashRequests
       .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {

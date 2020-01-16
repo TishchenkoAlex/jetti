@@ -28,8 +28,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
   }
 
-  async beforePost(tx: MSSQL) {
-    if (!this.parent) return this;
+async beforePost(tx: MSSQL) {
+    if (!this.parent || this.posted) return this;
     const parentDoc = (await lib.doc.byId(this.parent, tx));
     if (!parentDoc) return this;
     switch (parentDoc.type) {

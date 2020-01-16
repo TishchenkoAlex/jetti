@@ -783,7 +783,6 @@
         , ISNULL([ProductCategory.v].description, '') [ProductCategory.value], d.[ProductCategory] [ProductCategory.id], [ProductCategory.v].type [ProductCategory.type]
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
         , ISNULL([Unit.v].description, '') [Unit.value], d.[Unit] [Unit.id], [Unit.v].type [Unit.type]
-        , d.[Volume] [Volume]
       
         , ISNULL(l5.description, d.description) [Product.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Product.Level4]
