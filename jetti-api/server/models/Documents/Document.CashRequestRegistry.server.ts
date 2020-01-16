@@ -42,9 +42,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
-      try {
-        await OperationServer.baseOn!(row.CashRequest, tx);
-      } catch { continue; }
+      await OperationServer.baseOn!(row.CashRequest, tx);
       // переопределение счета
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       OperationServer['Amount'] = row.Amount;
