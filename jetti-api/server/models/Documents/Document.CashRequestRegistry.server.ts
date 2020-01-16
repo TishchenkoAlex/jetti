@@ -1,6 +1,6 @@
 import { PostResult } from '../post.interfaces';
 import { MSSQL } from '../../mssql';
-import { IServerDocument, createDocumentServer } from '../documents.factory.server';
+import { IServerDocument, createDocumentServer, DocumentBaseServer } from '../documents.factory.server';
 import { DocumentCashRequestRegistry, CashRequest } from './Document.CashRequestRegistry';
 import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
 import { lib } from '../../std.lib';
@@ -11,6 +11,23 @@ import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
+
+  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+    switch (prop) {
+      case 'Operation':
+        const Props = this.Props() as any;
+        Props.CashRequests.CashRequests.BankAccountIn = {
+          ...Props.CashRequests.CashRequests.BankAccountIn, hidden: this.Operation !== 'Оплата ДС в другую организацию'
+        };
+        Props.CashRequests.CashRequests.CashRecipientBankAccount = {
+          ...Props.CashRequests.CashRequests.CashRecipientBankAccount, hidden: this.Operation === 'Оплата ДС в другую организацию'
+        };
+        this.Props = () => Props;
+        return this;
+      default:
+        return this;
+    }
+  }
 
   async onCommand(command: string, args: any, tx: MSSQL) {
     switch (command) {
@@ -43,10 +60,12 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       // исключение ошибки при проверке заполненности счета в базеон
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
-      OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+      const BankAccountSupplier =
+      this.Operation === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+      OperationServer['BankAccountSupplier'] = BankAccountSupplier;
       await OperationServer.baseOn!(row.CashRequest, tx);
       // переопределение счета
-      if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+      if (BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
       OperationServer['Amount'] = row.Amount;
       if (row.LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
@@ -78,7 +97,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       WHERE (1 = 1)
         AND (Balance.[company]  IN (SELECT id FROM dbo.[Descendants](@p1, '')) OR @p1 IS NULL)
         AND (Balance.[CashFlow] IN (SELECT id FROM dbo.[Descendants](@p2, '')) OR @p2 IS NULL)
-        -- AND Balance.[OperationType] IN (@p4)
+        AND Balance.[OperationType] IN (@p4)
         AND Balance.[currency] = @p3
       GROUP BY
         Balance.[currency], Balance.[CashRequest]
@@ -95,6 +114,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
        , DocCR.[CashRecipient.id] AS CashRecipient
        , DocCR.[company.id] AS company
        , DocCR.[CashOrBank.id] AS BankAccount
+       , DocCR.[CashOrBankIn.id] AS BankAccountIn
        , DocCR.[CashRecipientBankAccount.id] AS CashRecipientBankAccount
        , (SELECT COUNT(*) FROM [dbo].[Catalog.Counterpartie.BankAccount] AS CBA
           WHERE CBA.[owner.id] = DocCR.[CashRecipient.id] AND CBA.[currency.id] = DocCR.[сurrency.id] AND CBA.[deleted] = 0) AS CountOfBankAccountCashRecipient
@@ -103,7 +123,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       LEFT JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest]
       ORDER BY Delayed, AmountBalance DESC;`;
 
-    const CashRequests = await tx.manyOrNone<CashRequest>(query, [this.company, this.CashFlow, this.сurrency]);
+    const CashRequests = await tx.manyOrNone<CashRequest>(query,
+      [this.company, this.CashFlow, this.сurrency, this.Operation ? this.Operation : 'Оплата поставщику']);
     for (const row of CashRequests) {
       this.CashRequests.push({
         Amount: row.Amount,
@@ -117,6 +138,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         Confirm: row.Confirm,
         Delayed: row.Delayed,
         company: row.company,
+        BankAccountIn: row.BankAccountIn,
         CashRecipientBankAccount: row.CashRecipientBankAccount,
         CountOfBankAccountCashRecipient: row.CountOfBankAccountCashRecipient,
         LinkedDocument: null
