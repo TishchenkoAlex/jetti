@@ -8,6 +8,7 @@ import { DocumentCashRequest } from './Document.CashRequest';
 import { createDocument } from '../documents.factory';
 import { insertDocument, updateDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
+import { DocumentOperation } from './Document.Operation';
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -30,11 +31,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   private async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
     for (const row of this.CashRequests.filter(c => (c.Amount > 0))) {
-      let Operation: DocumentCashRequest | null;
+      let Operation: DocumentOperation | null;
       if (row.LinkedDocument) {
-        Operation = await lib.doc.byIdT<DocumentCashRequest>(row.LinkedDocument, tx);
+        Operation = await lib.doc.byIdT<DocumentOperation>(row.LinkedDocument, tx);
       } else {
-        Operation = createDocument<DocumentCashRequest>('Document.Operation');
+        Operation = createDocument<DocumentOperation>('Document.Operation');
       }
       const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
       if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
