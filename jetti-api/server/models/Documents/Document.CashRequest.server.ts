@@ -20,8 +20,10 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (!company) return this;
         this.сurrency = company.currency;
+        this.CashOrBank = null;
         return this;
       case 'CashRecipient':
+        if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         const query = `
           SELECT TOP 1 id
@@ -39,7 +41,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         if (!value.id) { this.CashRecipientBankAccount = null; return this; }
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
         if (!CatalogContractObject || !CatalogContractObject.BankAccount) { this.CashRecipientBankAccount = null; return this; }
-        this.CashRecipientBankAccount = CatalogContractObject.BankAccount;
+        if (this.Operation === 'Оплата ДС в другую организацию') {
+          this.CashOrBankIn = CatalogContractObject.BankAccount;
+        } else {
+          this.CashRecipientBankAccount = CatalogContractObject.BankAccount;
+        }
         return this;
       default:
         return this;
@@ -60,7 +66,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async beforeDelete(tx: MSSQL): Promise<this> {
-    if (this.Status === 'APPROVED') {
+    if (this.Status === 'APPROVED' && this.posted) {
       const rest = await this.getAmountBalance(tx);
       if (this.Amount !== rest) throw new Error(`${this.description} не может быть удален:\n оплачено ${this.Amount - rest}`);
     }
@@ -77,6 +83,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
+    if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient) {
+      throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
+    }
     if (this.Status === 'PREPARED' || this.Status === 'REJECTED') {
       return Registers;
     }

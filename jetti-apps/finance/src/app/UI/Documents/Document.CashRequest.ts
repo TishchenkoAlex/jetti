@@ -157,8 +157,12 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (infoArr.length === 0) return;
     let Tax = Amount - Amount / TaxRate * 0.01 + 1;
     info = `${infoArr[0]}\nСуммма ${String(Amount.toFixed(2)).replace('.', '-')} руб.\nВ т.ч. НДС (20%) ${String(Tax.toFixed(2)).replace('.', '-')} руб. `.trim();
-    this.form.get('info').setValue(info);
+  this.form.get('info').setValue(info);
   }
+
+  // onCashOrBankChanges(event) {
+  //    if (this.form.get('Operation').value === '' && event.type === 'Catalog.CashRegister') throw new Error();
+  // }
 
   onCashKindChange(event) {
     if (event === 'ANY') return;

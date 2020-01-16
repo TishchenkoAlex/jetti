@@ -19,6 +19,22 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
   Status = 'PREPARED';
 
+  @Props({
+    type: 'enum', required: true, order: 8, label: 'Вид операции', value: [
+      'Оплата поставщику',
+      'Перечисление налогов и взносов',
+      'Оплата ДС в другую организацию',
+      'Выдача ДС подотчетнику',
+      'Оплата по кредитам и займам полученным',
+      'Прочий расход ДС',
+      'Выдача займа контрагенту',
+      'Возврат оплаты клиенту',
+      'Выплата заработной платы'
+    ],
+    onChangeServer: true,
+  })
+  Operation = 'Оплата поставщику';
+
   @Props({ type: 'Catalog.CashFlow', storageType: 'all' })
   CashFlow: Ref = null;
 
@@ -80,13 +96,16 @@ export class CashRequest {
   @Props({ type: 'Catalog.Company', label: 'Company', readOnly: true })
   company: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', label: 'Bank account', owner: [{ dependsOn: 'company', filterBy: 'company' }], required: true })
+  @Props({ type: 'Catalog.BankAccount', label: 'Bank account out', owner: [{ dependsOn: 'company', filterBy: 'company' }], required: true })
   BankAccount: Ref = null;
 
   @Props({ type: 'Catalog.Counterpartie.BankAccount', label: 'Cash recipient bank account', owner: [
     { dependsOn: 'CashRecipient', filterBy: 'owner' },
-    { dependsOn: 'currency', filterBy: 'currency' }], required: true })
+    { dependsOn: 'currency', filterBy: 'currency' }]})
   CashRecipientBankAccount: Ref = null;
+
+  @Props({ type: 'Catalog.BankAccount', label: 'Bank account in', owner: [{ dependsOn: 'company', filterBy: 'company' }] })
+  BankAccountIn: Ref = null;
 
   @Props({ type: 'number', label: '#BA', readOnly: true, style: { width: '40px', textAlign: 'right' } })
   CountOfBankAccountCashRecipient = 0;
