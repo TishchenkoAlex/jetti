@@ -29,6 +29,8 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
   for (const rec of Registers.Accumulation) {
     const date = rec.date ? rec.date : doc.date;
     const data = {...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
+    delete data.type; delete data.company; delete data.kind; delete data.calculated;
+    delete data.document; delete data.date; delete data.parent;
     query += `
       INSERT INTO "Accumulation" (parent, calculated, kind, date, type, company, document, data)
       VALUES ('${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
@@ -37,6 +39,7 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
 
   for (const rec of Registers.Info) {
     const data = { ...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
+    delete data.type; delete data.company; delete data.document; delete data.date;
     query += `
       INSERT INTO "Register.Info" (date, type, company, document, data)
       VALUES ('${new Date(doc.date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',
