@@ -4,7 +4,7 @@ export class BankStatementUnloader {
 
   private static async getCashRequestsData(docsID: string[], tx: MSSQL) {
 
-    const query = `
+    let query = `
     SELECT
         N'Платежное поручение' as N'СекцияДокумент'
         ,Obj.[code] as N'Номер'
@@ -110,11 +110,9 @@ export class BankStatementUnloader {
         order by Obj.company, BAComp.[code], Obj.[date] `;
 
     const DocIds = docsID.map(el => '\'' + el + '\'').join(',');
-    // query = query.replace('@p1', DocIds).replace('@p1', DocIds);
-    // // .replace('@p1', DocIds);
-    // // query = query.replace(/[sm-i]\./g, `[sm-i]`)
+    query = query.replace(/@p1/g, DocIds);
 
-    return await tx.manyOrNone<[{ key: string, value }]>(query, [docsID]);
+    return await tx.manyOrNone<[{ key: string, value }]>(query, []);
 
   }
 
