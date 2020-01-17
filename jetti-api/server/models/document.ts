@@ -83,7 +83,7 @@ export class DocumentBase {
   @Props({ type: 'Catalog.Company', order: 4, required: true, onChangeServer: true , style: { width: '250px' }})
   company: Ref = null;
 
-  @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.User', hiddenInList: false, order: -1, readOnly: true })
   user: Ref = null;
 
   @Props({ type: 'boolean', hidden: true, hiddenInList: true })

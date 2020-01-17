@@ -9,24 +9,24 @@
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
-          pTooltip="Add" tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
+          pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
         <button id="open" icon="fa fa-pencil-square-o" class="ui-button-secondary" pButton type="button" pTooltip="Open"
-          tooltipPosition="bottom" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
+          tooltipPosition="top" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
         <button id="copy" icon="fa fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
-          pTooltip="Copy" tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)"
+          pTooltip="Copy" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
         <button id="post" icon="fa fa-check" class="ui-button-warning" pButton type="button" (click)="post()"
-          pTooltip="Post" tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)"
+          pTooltip="Post" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
         <button id="unpost" icon="fa fa-square-o" class="ui-button-warning" pButton type="button" pTooltip="Unpost"
-          tooltipPosition="bottom" showDelay="2000" (click)="post('unpost')" [disabled]="(lds.busy$ | async)"
+          tooltipPosition="top" showDelay="2000" (click)="post('unpost')" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
         <button id="delete" icon="fa fa-trash" class="ui-button-danger" pButton type="button" (click)="delete()"
-          pTooltip="Delete" tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)"
+          pTooltip="Delete" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length"></button>
         <button id="showTree" icon="fa fa-sitemap" class="ui-button-secondary" pButton type="button"
-          pTooltip="Tree/List" tooltipPosition="bottom" showDelay="2000" (click)="showTree = !showTree" [disabled]="(lds.busy$ | async)"
+          pTooltip="Tree/List" tooltipPosition="top" showDelay="2000" (click)="showTree = !showTree" [disabled]="(lds.busy$ | async)"
           *ngIf="showTreeButton"></button>
       </div>
     </p-toolbar>
@@ -66,7 +66,7 @@
             </div>
             <div *ngSwitchCase="'number'">
               <input [ngModel]="filters[column.field]?.value" pInputText type="numeric"
-                (ngModelChange)="update(column, $event, '>=')">
+                (ngModelChange)="update(column, $event, '=')">
             </div>
             <div *ngSwitchCase="'date'">
               <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
@@ -135,15 +135,15 @@
     <p-toolbar>
       <div class="ui-toolbar-group-right">
         <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
-          tooltipPosition="bottom" showDelay="2000" (click)="refresh(id)" [disabled]="(lds.busy$ | async)"></button>
+          tooltipPosition="top" showDelay="2000" (click)="refresh(id)" [disabled]="(lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-fast-backward" (click)="first()" pTooltip="First page"
-          tooltipPosition="bottom" showDelay="2000" [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
+          tooltipPosition="top" showDelay="2000" [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-step-backward" (click)="prev()" pTooltip="Previous page"
-          tooltipPosition="bottom" showDelay="2000" [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
+          tooltipPosition="top" showDelay="2000" [disabled]="!dataSource?.continuation?.first || (lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-step-forward" (click)="next()" pTooltip="Next page"
-          tooltipPosition="bottom" showDelay="2000" [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
+          tooltipPosition="top" showDelay="2000" [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
         <button pButton type="button" icon="pi pi-fast-forward" (click)="last()" pTooltip="Last page"
-          tooltipPosition="bottom" showDelay="2000" [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
+          tooltipPosition="top" showDelay="2000" [disabled]="!dataSource?.continuation?.last || (lds.busy$ | async)"></button>
       </div>
     </p-toolbar>
 

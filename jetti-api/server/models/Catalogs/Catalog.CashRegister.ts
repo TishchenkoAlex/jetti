@@ -6,7 +6,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Кассы',
   prefix: 'CSREG-',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  dimensions: [
+    { company: 'Catalog.Company' }
+  ]
 })
 export class CatalogCashRegister extends DocumentBase {
 

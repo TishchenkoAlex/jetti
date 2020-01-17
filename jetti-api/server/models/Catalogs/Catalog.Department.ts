@@ -12,6 +12,9 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'Department' },
     { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'Department' }
   ],
+  dimensions: [
+    { company: 'Catalog.Company' }
+  ]
 })
 export class CatalogDepartment extends DocumentBase {
 

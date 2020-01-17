@@ -65,6 +65,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return this;
   }
 
+  async beforeSave(tx: MSSQL): Promise<this> {
+    if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
+    return this;
+  }
+
   async beforeDelete(tx: MSSQL): Promise<this> {
     if (this.Status === 'APPROVED' && this.posted) {
       const rest = await this.getAmountBalance(tx);

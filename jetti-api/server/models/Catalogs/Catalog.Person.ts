@@ -9,6 +9,9 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   relations: [
     { name: 'BankAccount', type: 'Catalog.Person.BankAccount', field: 'owner' }
   ],
+  dimensions: [
+    { Department: 'Catalog.Department' }
+  ]
 })
 export class CatalogPerson extends DocumentBase {
 

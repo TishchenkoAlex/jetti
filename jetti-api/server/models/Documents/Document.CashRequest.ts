@@ -35,11 +35,11 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Types.Document', label: 'Основание', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.User', label: 'Автор', hiddenInList: false, order: 991, style: { width: '200px' } })
+  @Props({ type: 'Catalog.User', label: 'Автор', readOnly: true, hiddenInList: false, order: 991, style: { width: '200px' } })
   user: Ref = null;
 
   @Props({
-    type: 'enum', required: true, hiddenInList: false, style: { width: '100px' }, order: 7, label: 'Статус', value: [
+    type: 'enum', required: true, readOnly: true, hiddenInList: false, style: { width: '100px' }, order: 7, label: 'Статус', value: [
       'PREPARED',
       'AWAITING',
       'APPROVED',
@@ -88,7 +88,7 @@ export class DocumentCashRequest extends DocumentBase {
   CashKind = 'ANY';
 
   @Props({
-    type: 'enum', required: false, style: { width: '140px' },
+    type: 'enum', required: false, hiddenInList: true, style: { width: '140px' },
     label: 'Способ выплаты',
     value: [
       'BANK',
@@ -186,6 +186,9 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'Catalog.Expense.Analytics', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseAnalytics: Ref = null;
+
+  @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
+  TaxRate: Ref = null;
 
   @Props({ type: 'Catalog.Balance.Analytics', label: 'Аналитика баланса', hiddenInList: true,
   owner: [

@@ -8,23 +8,23 @@
           <p-toolbar>
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="PostClose" icon="fa fa-check-square-o" label="Post&Close"
-                pTooltip="Post and close" tooltipPosition="bottom" showDelay="2000" class="ui-button-warning"
+                pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
                 [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
                 *ngIf="!(isDeleted$ | async)"></button>
               <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary" pTooltip="Post"
-                tooltipPosition="bottom" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
+                tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
                 *ngIf="!(isDeleted$ | async) && isDoc"></button>
               <button pButton type="button" id="unPost" icon="fa fa-square-o" class="ui-button-secondary"
-                pTooltip="Unpost" tooltipPosition="bottom" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)"
+                pTooltip="Unpost" tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)"
                 (click)="unPost()" *ngIf="!(isDeleted$ | async) && (isPosted$ | async) && isDoc"></button>
               <button pButton type="button" id="save" icon="fa fa-floppy-o" class="ui-button-secondary" pTooltip="Save"
-                tooltipPosition="bottom" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
+                tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
                 *ngIf="!(isPosted$ | async) || !isDoc"></button>
               <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary" pTooltip="Copy"
-                tooltipPosition="bottom" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
+                tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
                 *ngIf="!(isDeleted$ | async)  && !(isNew$ | async)"></button>
               <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger" pTooltip="Delete"
-                tooltipPosition="bottom" showDelay="2000" *ngIf="!(isNew$ | async)" (click)="delete()"
+                tooltipPosition="top" showDelay="2000" *ngIf="!(isNew$ | async)" (click)="delete()"
                 [disabled]="(lds.busy$ | async)"></button>
             </div>
             <div class="ui-toolbar-group-right">
@@ -37,12 +37,12 @@
               <!--         <button *ngIf="!viewModel.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
         [disabled]="(lds.busy$ | async)"></button> -->
               <button *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
-                pTooltip="Show in list" tooltipPosition="bottom" showDelay="2000" (click)="goto()"
+                pTooltip="Show in list" tooltipPosition="top" showDelay="2000" (click)="goto()"
                 [disabled]="(lds.busy$ | async)"></button>
               <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
-                pTooltip="Print" tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
+                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
               <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
-                tooltipPosition="bottom" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
+                tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
             </div>
           </p-toolbar>
 

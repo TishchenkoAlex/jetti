@@ -18,7 +18,7 @@ export class CatalogCounterpartie extends DocumentBase {
   @Props({ type: 'Catalog.Counterpartie', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', value: ['ЮрЛицо', 'ФизЛицо', 'ИндПред', 'Нерез', 'Обособ'] })
+  @Props({ type: 'enum', required: true, value: ['ЮрЛицо', 'ФизЛицо', 'ИндПред', 'Нерез', 'Обособ'] })
   kind = 'ЮрЛицо';
 
   @Props({ type: 'string', required: true })

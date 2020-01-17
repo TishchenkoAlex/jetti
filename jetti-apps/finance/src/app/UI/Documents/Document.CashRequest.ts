@@ -9,6 +9,8 @@ import { BPApi } from 'src/app/services/bpapi.service';
 import { DynamicFormService } from 'src/app/common/dynamic-form/dynamic-form.service';
 import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { take } from 'rxjs/operators';
+import { ApiService } from 'src/app/services/api.service';
+import { CatalogCurrency } from '../../../../../../jetti-api/server/models/Catalogs/Catalog.Currency';
 
 @Component({
   selector: 'doc-CashRequest',
@@ -16,30 +18,41 @@ import { take } from 'rxjs/operators';
 })
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
   get readonlyMode() { return !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
-
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
-    private bpApi: BPApi, public dss: DynamicFormService) {
+    private bpApi: BPApi, public dss: DynamicFormService, private api: ApiService) {
     super(router, route, auth, ds, tabStore, dss, cd);
   }
+
+  currencyShortName = '';
+  taxRate = -1;
 
   ngOnInit() {
     super.ngOnInit();
 
     if (this.isNew) {
-      this.form.get('Status').setValue('PREPARED');
-      this.form.get('workflowID').setValue('');
-      this.form.get('Operation').setValue('Оплата поставщику');
-      this.form.get('CashKind').setValue('BANK');
+      this.setValue('Status', 'PREPARED');
+      this.setValue('workflowID', '');
+     // if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
+      if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
     }
 
-    this.form.get('Status').disable({ emitEvent: false });
     if (this.readonlyMode) {
       this.form.disable({ emitEvent: false });
     } else {
-      this.onCashKindChange(this.form.get('CashKind').value);
-      this.onOperationChanges(this.form.get('Operation').value);
+      this.onCashKindChange(this.getValue('CashKind'));
+      this.onOperationChanges(this.getValue('Operation'));
+      this.FillTaxRate(false);
+      this.FillCurrencyShortName(false);
     }
+  }
+
+  getValue(fieldName: string): any {
+    return this.form.get(fieldName).value;
+  }
+
+  setValue(fieldName: string, value: any, options?: any) {
+    this.form.get(fieldName).setValue(value, options);
   }
 
   old_onOperationChanges(operation: string) {
@@ -132,16 +145,16 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     this.form.markAsTouched();
 
     if (operation === 'Оплата ДС в другую организацию') {
-      const CashOrBankIn = this.form.get('CashOrBankIn').value;
+      const CashOrBankIn = this.getValue('CashOrBankIn');
       if (!CashOrBankIn || CashOrBankIn.type !== 'Catalog.BankAccount') {
-        this.form.get('CashOrBankIn').setValue(
+        this.setValue('CashOrBankIn',
           { id: null, code: null, type: 'Catalog.BankAccount', value: null },
           { onlySelf: false, emitEvent: false }
         );
       }
-      const CashRecipient = this.form.get('CashRecipient').value;
+      const CashRecipient = this.getValue('CashRecipient');
       if (!CashRecipient || CashRecipient.type !== 'Catalog.Company') {
-        this.form.get('CashRecipient').setValue(
+        this.setValue('CashRecipient',
           { id: null, code: null, type: 'Catalog.Company', value: null },
           { onlySelf: false, emitEvent: false }
         );
@@ -149,24 +162,43 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     }
   }
 
-  onFillTaxInfo(TaxRate: number) {
-    let info = this.form.get('info').value;
-    let Amount = this.form.get('Amount').value;
+  async FillCurrencyShortName(FillTaxInfo?: boolean) {
+    const Currency = this.getValue('сurrency');
+    this.currencyShortName = '';
+    if (Currency.value) {
+      const CurrencyObject = await this.api.byId(Currency.id);
+      if (CurrencyObject) this.currencyShortName = CurrencyObject['ShortName'];
+    }
+    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
+  }
+
+  async FillTaxRate(FillTaxInfo?: boolean) {
+    const TaxRate = this.getValue('TaxRate');
+    this.taxRate = -1;
+    if (TaxRate.value) {
+      const TaxRateObject = await this.api.byId(TaxRate.id);
+      if (TaxRateObject) this.taxRate = TaxRateObject['Rate'];
+    }
+    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
+  }
+
+  FillTaxInfo(Amount) {
+    if (this.taxRate === -1 || !this.currencyShortName) return;
+    let info = this.getValue('info');
     if (!info || !Amount) return;
     let infoArr = String(info).trim().split('\n');
     if (infoArr.length === 0) return;
-    let Tax = Amount - Amount / TaxRate * 0.01 + 1;
-    info = `${infoArr[0]}\nСуммма ${String(Amount.toFixed(2)).replace('.', '-')} руб.\nВ т.ч. НДС (20%) ${String(Tax.toFixed(2)).replace('.', '-')} руб. `.trim();
-  this.form.get('info').setValue(info);
+    let Tax = Amount - Amount / (this.taxRate * 0.01 + 1);
+    let newInfo = [];
+    newInfo.push(infoArr[0].trim());
+    newInfo.push(`Сумма ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.`);
+    newInfo.push(this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)');
+    this.setValue('info', newInfo.join('\n'));
   }
-
-  // onCashOrBankChanges(event) {
-  //    if (this.form.get('Operation').value === '' && event.type === 'Catalog.CashRegister') throw new Error();
-  // }
 
   onCashKindChange(event) {
     if (event === 'ANY') return;
-    const CashOrBank = this.form.get('CashOrBank').value;
+    const CashOrBank = this.getValue('CashOrBank');
     let CashKindType = '';
     if (event === 'BANK') {
       CashKindType = 'Catalog.BankAccount';
@@ -174,7 +206,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       CashKindType = 'Catalog.CashRegister';
     }
     if (!CashOrBank || CashOrBank.type !== CashKindType) {
-      this.form.get('CashOrBank').setValue(
+      this.setValue('CashOrBank',
         { id: null, code: null, type: CashKindType, value: null },
         { onlySelf: false, emitEvent: false }
       );
@@ -184,12 +216,12 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   StartProcess() {
     this.bpApi.StartProcess(this.viewModel as DocumentBase, this.metadata.type).pipe(take(1)).subscribe(data => {
       if (data === 'APPROVED') {
-        this.form.get('workflowID').setValue('');
-        this.form.get('Status').setValue('APPROVED');
+        this.setValue('workflowID', '');
+        this.setValue('Status', 'APPROVED');
         this.ds.openSnackBar('success', 'Заявка утверждена', 'Согласование не труебуется');
       } else {
-        this.form.get('workflowID').setValue(data);
-        this.form.get('Status').setValue('AWAITING');
+        this.setValue('workflowID', data);
+        this.setValue('Status', 'AWAITING');
         this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${data}`);
       }
       this.post();
@@ -198,7 +230,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   print() {
-    window.open('https://bi.x100-group.com/Reports/report/Jetti/Cash/CashRequest?rs:Command=Render', '_blank');
+    this.OpenReport();
   }
 
+  OpenReport() {
+    window.open('https://bi.x100-group.com/Reports/report/Jetti/Cash/CashRequest?rs:Command=Render', '_blank');
+  }
 }

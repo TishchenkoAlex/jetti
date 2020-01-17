@@ -6,7 +6,11 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Склады',
   prefix: 'STOR-',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  dimensions: [
+    { Department: 'Catalog.Department' },
+    { company: 'Catalog.Company' }
+  ]
 })
 export class CatalogStorehouse extends DocumentBase {
 
