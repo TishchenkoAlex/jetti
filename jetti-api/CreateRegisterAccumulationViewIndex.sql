@@ -30,8 +30,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons] ON [dbo].[Register.Accumulation.AccountablePersons](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.AccountablePersons.id] ON [dbo].[Register.Accumulation.AccountablePersons](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons] ON [dbo].[Register.Accumulation.AccountablePersons](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
@@ -68,8 +68,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP] ON [dbo].[Register.Accumulation.AP](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.AP.id] ON [dbo].[Register.Accumulation.AP](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP] ON [dbo].[Register.Accumulation.AP](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
@@ -106,8 +106,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR] ON [dbo].[Register.Accumulation.AR](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.AR.id] ON [dbo].[Register.Accumulation.AR](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR] ON [dbo].[Register.Accumulation.AR](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
@@ -137,8 +137,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank] ON [dbo].[Register.Accumulation.Bank](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Bank.id] ON [dbo].[Register.Accumulation.Bank](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank] ON [dbo].[Register.Accumulation.Bank](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
@@ -161,8 +161,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance] ON [dbo].[Register.Accumulation.Balance](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Balance.id] ON [dbo].[Register.Accumulation.Balance](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance] ON [dbo].[Register.Accumulation.Balance](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
@@ -192,8 +192,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash] ON [dbo].[Register.Accumulation.Cash](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Cash.id] ON [dbo].[Register.Accumulation.Cash](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash] ON [dbo].[Register.Accumulation.Cash](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
@@ -223,8 +223,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit] ON [dbo].[Register.Accumulation.Cash.Transit](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Cash.Transit.id] ON [dbo].[Register.Accumulation.Cash.Transit](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit] ON [dbo].[Register.Accumulation.Cash.Transit](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
@@ -260,8 +260,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Inventory.id] ON [dbo].[Register.Accumulation.Inventory](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory] ON [dbo].[Register.Accumulation.Inventory](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
@@ -299,8 +299,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan] ON [dbo].[Register.Accumulation.Loan](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Loan.id] ON [dbo].[Register.Accumulation.Loan](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan] ON [dbo].[Register.Accumulation.Loan](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
@@ -323,8 +323,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL] ON [dbo].[Register.Accumulation.PL](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.PL.id] ON [dbo].[Register.Accumulation.PL](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL] ON [dbo].[Register.Accumulation.PL](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
@@ -372,8 +372,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales] ON [dbo].[Register.Accumulation.Sales](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Sales.id] ON [dbo].[Register.Accumulation.Sales](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales] ON [dbo].[Register.Accumulation.Sales](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
@@ -404,8 +404,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation] ON [dbo].[Register.Accumulation.Depreciation](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.Depreciation.id] ON [dbo].[Register.Accumulation.Depreciation](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation] ON [dbo].[Register.Accumulation.Depreciation](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
@@ -439,8 +439,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay] ON [dbo].[Register.Accumulation.CashToPay](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.CashToPay.id] ON [dbo].[Register.Accumulation.CashToPay](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay] ON [dbo].[Register.Accumulation.CashToPay](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
@@ -481,8 +481,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover] ON [dbo].[Register.Accumulation.BudgetItemTurnover](company,date,calculated,id)
-      WITH (MAXDOP=8) --ON [ps_ByMonth]([date])
+      CREATE UNIQUE INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [dbo].[Register.Accumulation.BudgetItemTurnover](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover] ON [dbo].[Register.Accumulation.BudgetItemTurnover](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
