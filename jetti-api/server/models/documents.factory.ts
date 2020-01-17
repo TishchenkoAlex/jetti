@@ -172,7 +172,6 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice},
   { type: 'Catalog.ReatailClient', Class: CatalogReatailClient},
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject},
-  { type: 'Catalog.Person.BankAccount', Class: CatalogPersonBankAccount},
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },
