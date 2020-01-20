@@ -5,8 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Operation',
   dimensions: [
     { Operation: 'Catalog.Operation' },
-    { Amount: 'number'},
-    { currency: 'Catalog.Currency'},
+    { Amount: 'number' },
+    { currency: 'Catalog.Currency' },
     { f1: 'string' },
     { f2: 'string' },
     { f3: 'string' },
@@ -23,6 +23,18 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 export class DocumentOperation extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
+
+  @Props({
+    type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' },
+    onChange: function (doc: DocumentOperation, value: any, api) {
+      if (value && value.id) {
+        const thisObject = api.byId(value.id);
+        const currency = api.formControlRef(thisObject.currency);
+        return { currency };
+      } else return {};
+    }
+  })
+  company: Ref = null;
 
   @Props({ type: 'Catalog.Operation.Group', required: true, order: 5, label: 'Group', hiddenInList: true })
   Group: Ref = null;

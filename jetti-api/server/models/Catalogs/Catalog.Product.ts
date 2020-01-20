@@ -25,7 +25,16 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Brand' })
   Brand: Ref = null;
 
-  @Props({ type: 'Catalog.Unit', label: 'Unit', required: true})
+  @Props({ type: 'Catalog.Unit', label: 'Unit', required: true })
   Unit: Ref = null;
+
+  @Props({ type: 'Catalog.Expense', label: 'Expense' })
+  Expense: Ref = null;
+
+  @Props({
+    type: 'Catalog.Expense.Analytics', label: 'Analytics',
+    owner: [{ dependsOn: 'Expense', filterBy: 'parent' }]
+  })
+  Analytics: Ref = null;
 
 }

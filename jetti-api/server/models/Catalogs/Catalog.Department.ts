@@ -30,4 +30,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
   TaxOffice: Ref = null;
 
+  @Props({ type: 'Catalog.Person' })
+  Manager: Ref = null;
+
 }

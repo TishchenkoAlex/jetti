@@ -16,6 +16,9 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Company', order: 4, required: false, style: { width: '250px' }})
+  company: Ref = null;
+
   @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
   Status = 'PREPARED';
 
