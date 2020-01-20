@@ -17,9 +17,8 @@ export default async function (job: Queue.Job) {
         d.company = @p1
         ${params.StartDate ? ' AND date between @p2 AND @p3 ' : ''}
         ${params.Operation ? ` AND JSON_VALUE(doc, '$.Operation') = @p4 ` : ``}
-        ${params.rePost ? '' : ' AND posted = 0 '} AND
+        ${params.rePost ? ' AND posted = 1' : ' AND posted = 0 '} AND
         d.deleted = 0 and d.type LIKE 'Document.%' AND
-        d.[ExchangeBase] IS NOT NULL AND
         (d.[user] <> 'E050B6D0-FAED-11E9-B75B-A35013C043AE' OR d.[user] IS NULL)
       ORDER BY d.date;`;
     const docs = await sdbq.manyOrNone<{ date: Date, description: string, id: Ref, companyName: string }>(
@@ -35,7 +34,7 @@ export default async function (job: Queue.Job) {
       await job.update(job.data);
       await job.progress(0);
       while (offset < count) {
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 10; i++) {
           if (!docs[offset]) break;
           const q = lib.doc.postById(docs[offset].id, sdbq);
           TaskList.push(q);

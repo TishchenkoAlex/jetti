@@ -121,7 +121,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this._routeSubscruption$ = combineLatest([this.route.params, this.route.queryParams]).pipe(
       filter(params => params[0].type === this.type && params[1].goto))
       .subscribe(params => {
-        console.log('', params);
         const exist = this.dataSource.renderedData.find(d => d.id === params[1].goto);
         if (exist) {
           this.router.navigate([this.type], { replaceUrl: true }).then(() =>

@@ -202,7 +202,6 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   baseOn(type: DocTypes, Operation: Ref) {
-    console.log(type, Operation);
     this.router.navigate([type, v1()],
       { queryParams: { base: this.id, Operation } });
   }
@@ -220,6 +219,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     this.module[method](this.viewModel).then(value => {
       this.form.patchValue(value || {}, patchOptionsNoEvents);
       this.form.markAsDirty();
+      this._form$.next(this.form);
     });
   }
 
@@ -238,14 +238,16 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
         this.form.patchValue(doc, patchOptionsNoEvents);
-        if (this.isDoc) { this.showDescription(); }
         this.form.markAsPristine();
+        this._form$.next(this.form);
+        if (this.isDoc) { this.showDescription(); }
       });
 
     this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
         this.form.markAsPristine();
+        this._form$.next(this.form);
         this.close();
       });
 

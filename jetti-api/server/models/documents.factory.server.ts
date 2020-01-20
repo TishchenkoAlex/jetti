@@ -67,7 +67,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   } else {
     result = createDocument<T>(type, document);
   }
-  result['serverModule'] = {};
+  result['serverModule'] = {}; result['module'] = '{}';
 
   let Props = Object.assign({}, result.Props());
   if (document && document.isfolder) {
@@ -130,7 +130,6 @@ export async function createDocumentServer<T extends DocumentBaseServer>
           Prop.copyTo.push(item);
         }
       }
-
       if (Operation && Operation.module) {
         result['module'] = Operation.module;
         Prop['module'] = result['module'];
