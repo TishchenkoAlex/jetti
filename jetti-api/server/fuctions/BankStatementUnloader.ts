@@ -169,23 +169,24 @@ export class BankStatementUnloader {
   }
 
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
-
+    if (!docsID.length) return '';
     const CashRequestsData = await this.getCashRequestsData(docsID, tx);
-
-    if (!CashRequestsData.length) {
-      return '';
-    }
-
+    if (!CashRequestsData.length) return '';
     let result = '';
     const companySpliter = `---------------------------------------------------------------------`;
     let currentCompany = '';
+    let companyCount = 0;
     for (const row of CashRequestsData) {
       if (currentCompany !== String(row['Плательщик'])) {
         if (result.length) {
           result += '\nКонецФайла';
         }
         currentCompany = String(row['Плательщик']);
-        result += `\n\n${companySpliter}\n${currentCompany}\n${companySpliter}\n\n${this.getHeaderText(row)}`;
+        companyCount++;
+        if (companyCount > 1) {
+          result += `\n\n${companySpliter}\n${currentCompany}\n${companySpliter}\n\n`;
+        }
+        result += `${this.getHeaderText(row)}`;
       }
       for (const prop of Object.keys(row)) {
         if (prop.search('_ig') === -1) {
@@ -223,6 +224,10 @@ export class BankStatementUnloader {
 
     if (result.length) {
       result += '\nКонецФайла';
+    }
+
+    if (companyCount > 1) {
+      result = `${companySpliter}\n${CashRequestsData[0]['Плательщик']}\n${companySpliter}\n\n${result.trim()}`;
     }
 
     return result.trim();

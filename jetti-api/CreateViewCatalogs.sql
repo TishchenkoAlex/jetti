@@ -190,6 +190,7 @@
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
+        , d.[CashRegisterType] [CashRegisterType]
         , d.[isAccounting] [isAccounting]
       
         , ISNULL(l5.description, d.description) [CashRegister.Level5]
