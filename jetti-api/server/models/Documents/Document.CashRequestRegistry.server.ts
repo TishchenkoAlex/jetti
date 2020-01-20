@@ -78,8 +78,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   private async UnloadToText(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
-    const CashRequests = this.CashRequests.filter(c => (c.LinkedDocument!)).map(c => (c.LinkedDocument));
-    this.info = await BankStatementUnloader.getBankStatementAsString(CashRequests, tx);
+    const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
+    this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
     await updateDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }

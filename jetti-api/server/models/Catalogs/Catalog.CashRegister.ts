@@ -25,7 +25,16 @@ export class CatalogCashRegister extends DocumentBase {
   @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false })
   company: Ref = null;
 
+  @Props({
+    type: 'enum', required: false, style: { width: '140px' },
+    label: 'Cash register type',
+    value: [
+      'TRADING',
+      'COMMON'
+    ]
+  })
+  CashRegisterType = 'TRADING';
+
   @Props({ type: 'boolean'})
   isAccounting = true;
-
 }
