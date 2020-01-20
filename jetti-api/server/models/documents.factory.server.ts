@@ -132,7 +132,8 @@ export async function createDocumentServer<T extends DocumentBaseServer>
       }
 
       if (Operation && Operation.module) {
-        result['clientModule'] = Operation.module;
+        result['module'] = Operation.module;
+        Prop['module'] = result['module'];
         const func = new Function('tx', Operation.module);
         result['serverModule'] = func.bind(result, tx)() || {};
 

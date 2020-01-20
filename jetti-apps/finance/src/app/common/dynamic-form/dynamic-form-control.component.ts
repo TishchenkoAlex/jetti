@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { FormControlInfo } from './dynamic-form-base';
 import { DocService } from '../doc.service';
-import { DynamicFormService, getFormGroup } from './dynamic-form.service';
+import { DynamicFormService, getFormGroup, patchOptionsNoEvents } from './dynamic-form.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,15 +31,19 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
     else if (!date && !this.control.required) this.formControl.setValue(date);
   }
 
-  constructor(public api: ApiService, private cd: ChangeDetectorRef, private ds: DocService) {}
+  constructor(public api: ApiService, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
 
     this.dateTimeValue = this.formControl.value;
 
     this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {
-      /// if (isDevMode()) console.log('valueChanges', this.control.change);
       this.change.emit(value);
+      if (this.form.root['metadata'].module) {
+        const func = new Function('', this.form.root['metadata'].module).bind(this)();
+        const method = func[this.control.key + '_OnChange'];
+        if (method) await method();
+      }
       if (this.formControl && (this.control.onChange || this.control.onChangeServer)) {
         if (this.control.onChange) {
           const funcBody = ((this.control.onChange.toString().match(/function[^{]+\{([\s\S]*)\}$/)) || [])[1]

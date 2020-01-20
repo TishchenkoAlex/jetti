@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sm
 spec:
-  replicas: 2
+  replicas: 3
   template:
     metadata:
       labels:
@@ -71,7 +71,7 @@ spec:
             - name: EXCHANGE_ACCESS_KEY
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "015"
+              value: "019"
             - name: NODE_ENV
               value: "production"
 ---

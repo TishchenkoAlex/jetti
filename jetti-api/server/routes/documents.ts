@@ -105,7 +105,8 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
-    const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata: ServerDoc.Prop() as DocumentOptions, settings };
+    const metadata =  ServerDoc.Prop() as DocumentOptions;
+    const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }
 };
@@ -260,7 +261,7 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      const doc: IFlatDocument =  JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
+      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
       const value = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
       const property: string = req.params.property;
       const type: DocTypes = req.params.type as DocTypes;
@@ -268,7 +269,7 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
       doc[property] = typeof value === 'object' ? value.id : value;
       const serverDoc = await createDocumentServer(type, doc, tx);
 
-      const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChange'];
+      const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChangeServer'];
       if (typeof OnChange === 'function') await OnChange(value);
 
       if (typeof serverDoc.onValueChanged === 'function') {

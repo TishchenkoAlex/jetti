@@ -45,6 +45,7 @@ export interface DocumentOptions {
   hierarchy?: 'folders' | 'elements';
   copyTo?: CopyTo[];
   relations?: Relation[];
+  module?: string;
 }
 
 export type Ref = string | null;

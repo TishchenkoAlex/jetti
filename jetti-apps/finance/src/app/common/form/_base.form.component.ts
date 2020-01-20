@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren } 
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { merge, of as observableOf, Subscription, BehaviorSubject } from 'rxjs';
+import { merge, of as observableOf, Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { filter, take, map } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
@@ -58,8 +58,8 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       return (<MenuItem>{ label, icon, command: () => this.baseOn(type, Operation) });
     });
   }));
-  module$ = this.metadata$.pipe(map(m => {
-    return (new Function('', m['clientModule'] || {}).bind(this)()) || {};
+  module$: Observable<{[x: string]: Function}> = this.metadata$.pipe(map(m => {
+    return (new Function('', m.module || '{}').bind(this)());
   }));
 
   get form() { return this._form$.value; }
@@ -89,7 +89,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Operation) });
     });
   }
-  get module() { return new Function('', this.metadata['clientModule'] || {}).bind(this)() || {}; }
+  get module(): {[x: string]: Function} { return new Function('', this.metadata.module || '{}').bind(this)(); }
   get settings() {
     return this.relations.map(r => ({
       order: [], filter: [
