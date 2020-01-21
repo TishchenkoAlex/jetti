@@ -1,0 +1,42 @@
+<!-- <div style="max-height: 500px; overflow: auto; "> -->
+  <p-table [value]="historyList$ | async" selectionMode="single" [resizableColumns]="true" [(selection)]="selection" columnResizeMode="expand">
+    <ng-template pTemplate="header">
+      <tr>
+        <!-- <th style="width: 24px; text-align: center"></th>
+        <th pResizableColumn pSortableColumn="date" style="width: 150px; text-align: center">date<p-sortIcon field="date">
+          </p-sortIcon>
+        </th>
+        <th pResizableColumn pSortableColumn="company" style="width: 200px; text-align: center">company<p-sortIcon
+            field="company"></p-sortIcon>
+        </th> -->
+        <th pResizableColumn [pSortableColumn]="column" *ngFor="let column of (historyList$ | async)"
+          style="text-align: center; width: 200px">{{column}}
+          <p-sortIcon [field]="column"></p-sortIcon>
+        </th>
+        <th style="width: 30px; text-align: center">calc</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData>
+      <tr [pSelectableRow]="rowData">
+        <!-- <td style="width: 24px; text-align: center">
+          <i *ngIf="rowData['kind']" class="fa fa-plus" style="color: #5cb85c"></i>
+          <i *ngIf="!rowData['kind']" class="fa fa-minus" style="color: #d9534f"></i>
+        </td> -->
+        <!-- <td style="width: 150px; text-align: center">{{rowData.date | date: 'dd.MM.y HH:mm:ss'}}</td>
+        <td style="width: 200px; text-align: center">{{rowData.company.value}}</td> -->
+        <!-- <td *ngFor="let column of (additionalColumns$ | async)" style="text-align: center; width: 200px"> -->
+          <!-- <div *ngIf="isNumbert(rowData[column])">{{ rowData[column] | number:'1.4-4' }}</div> -->
+        <td *ngFor="let column of (historyList$ | async)" style="text-align: center; width: 200px"></td>
+          <td style="width: 24px; text-align: center">
+          <div *ngIf="isNumbert(rowData[column])">{{ rowData[column] | number:'1.4-4' }}</div>
+          <div *ngIf="!isNumbert(rowData[column])">
+            {{ rowData[column]?.value === null ? 'EMPTY' : rowData[column]?.value || rowData[column] }}</div>
+        </td>
+        <!-- <td style="width: 24px; text-align: center">
+          <i *ngIf="rowData['calculated']" class="pi pi-cog" style="color: #5cb85c"></i>
+        </td> -->
+      </tr>
+    </ng-template>
+
+  </p-table>

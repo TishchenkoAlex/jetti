@@ -62,6 +62,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       const BankAccountSupplier =
       this.Operation === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+      if (this.Operation === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       OperationServer['BankAccountSupplier'] = BankAccountSupplier;
       await OperationServer.baseOn!(row.CashRequest, tx);
       // переопределение счета

@@ -172,7 +172,13 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         }
         break;
       case 'Оплата по кредитам и займам полученным':
-        CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        if (this['BankAccount']) {
+          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
+        } else if (sourceDoc.CashOrBank) {
+          CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        }
+        if (!CashOrBank) throw new Error(`Не указан источник ДС в ${sourceDoc.description}`);
+
         if (CashOrBank.type === 'Catalog.CashRegister') {
           // касса
           this.Operation = 'DBBCB3D0-1749-11EA-92AC-8B4BF8464BD9';
@@ -193,8 +199,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
             if (queryResult) CashRecipientBankAccount = queryResult.id;
           }
           if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
+          if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${sourceDoc.description}`);
 
-          if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
           this['BankConfirm'] = false;
           this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
           this.Operation = '54AA5310-102E-11EA-AA50-31ECFB22CD33';
@@ -216,7 +222,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         } else {
           CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
         }
-        if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
+        if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${sourceDoc.description}`);
 
         if (CashOrBank.type === 'Catalog.CashRegister') throw new Error('Создание платежного документа из кассы не поддерживается, обратитесь к разработчику');
         // this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
@@ -247,7 +253,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         //   this['BankConfirm'] = false;
         //   this.f1 = this['BankAccountOut'];
         //   this.f2 = this['CashRegisterIn'];
-        // } else { 
+        // } else {
         this.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
         this['BankAccountOut'] = CashOrBank.id;
         this['BankAccountTransit'] = CashOrBankIn.id;

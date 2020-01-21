@@ -158,6 +158,10 @@
     <bp-task *ngIf="!bp.collapsed" [ProcessID]="form.get('workflowID').value"></bp-task>
   </p-panel>
 
+  <!-- <p-panel [toggleable]="true" [collapsed]="true" header="История" #history *ngIf="(isNew$ | async) === false">
+    <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
+  </p-panel> -->
+
   <div *ngIf="(isFolder$ | async) === false">
     <div *ngFor="let r of relations$ | async">
       <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">

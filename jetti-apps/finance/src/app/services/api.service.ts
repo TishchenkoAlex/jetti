@@ -16,6 +16,7 @@ import { LoadingService } from '../common/loading.service';
 import { viewModelToFlatDocument } from '../common/mapping/document.mapping';
 import { FormTypes } from '../../../../../jetti-api/server/models/Forms/form.types';
 import { FormBase } from '../../../../../jetti-api/server/models/Forms/form';
+import { IHistory } from '../common/History/common.history';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -190,6 +191,11 @@ export class ApiService {
   batchActual() {
     const query = `${environment.api}batch/actual`;
     return this.http.get<any[]>(query);
+  }
+
+  getHistoryById(id: Ref): Observable<IHistory[]> {
+    const query = `${environment.api}getHistoryById/${id}`;
+    return (this.http.get(query) as Observable<IHistory[]>);
   }
 
   SubSystemsMenu() {
