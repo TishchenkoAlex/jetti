@@ -67,7 +67,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   } else {
     result = createDocument<T>(type, document);
   }
-  result['serverModule'] = {}; result['module'] = '';
+  result['serverModule'] = {};
 
   let Props = Object.assign({}, result.Props());
   if (document && document.isfolder) {
@@ -131,8 +131,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         }
       }
       if (Operation && Operation.module) {
-        result['module'] = Operation.module;
-        Prop['module'] = result['module'];
+        Prop['module'] = Operation.module;
         const func = new Function('tx', Operation.module);
         result['serverModule'] = func.bind(result, tx)() || {};
 
