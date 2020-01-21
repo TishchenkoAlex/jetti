@@ -10,7 +10,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
   async AddDescendantsCompany(tx: MSSQL) {
     if (!this.company) throw new Error(`Empty company!`);
     const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
-    const companyItems = await tx.manyOrNone<{company: string}>(query, [this.company]);
+    const companyItems = await tx.manyOrNone<{ company: string }>(query, [this.company]);
     for (const CompanyItem of companyItems) {
       if (this.CompanyList.filter(ci => (ci.company === CompanyItem.company)).length === 0) {
         this.CompanyList.push(CompanyItem);
@@ -82,9 +82,6 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
           [user.code, row.company, this.id]);
       }
     }
-
-    await lib.util.postMode(false, tx);
-
     return Registers;
   }
 }

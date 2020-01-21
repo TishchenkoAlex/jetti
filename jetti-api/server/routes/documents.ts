@@ -105,7 +105,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
-    const metadata =  ServerDoc.Prop() as DocumentOptions;
+    const metadata = ServerDoc.Prop() as DocumentOptions;
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }
@@ -116,41 +116,39 @@ router.post('/view', viewAction);
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   const sdb = SDB(req);
   await sdb.tx(async tx => {
-    try {
-      await lib.util.postMode(true, tx);
+    await lib.util.postMode(true, tx);
 
-      const id: string = req.params.id;
-      const doc = await lib.doc.byId(id, tx);
-      if (!doc) throw new Error(`API - Delete: document with id '${id}' not found.`);
+    const id: string = req.params.id;
+    const doc = await lib.doc.byId(id, tx);
+    if (!doc) throw new Error(`API - Delete: document with id '${id}' not found.`);
 
-      const serverDoc = await createDocumentServer(doc.type, doc, tx);
+    const serverDoc = await createDocumentServer(doc.type, doc, tx);
 
-      if (!doc.deleted) {
-        const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
-        if (typeof beforeDelete === 'function') await beforeDelete(tx);
-        if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
-      }
+    if (!doc.deleted) {
+      const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
+      if (typeof beforeDelete === 'function') await beforeDelete(tx);
+      if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
+    }
 
-      serverDoc.deleted = !!!serverDoc.deleted;
-      serverDoc.posted = false;
+    serverDoc.deleted = !!!serverDoc.deleted;
+    serverDoc.posted = false;
 
-      const deleted = await tx.none(`
+    const deleted = await tx.none(`
         DELETE FROM "Register.Account" WHERE document = @p1;
         DELETE FROM "Register.Info" WHERE document = @p1;
         DELETE FROM "Accumulation" WHERE document = @p1;
         UPDATE "Documents" SET deleted = @p3, posted = @p4 WHERE id = @p1;
       `, [id, serverDoc.date, serverDoc.deleted, 0]);
 
-      if (!doc.deleted) {
-        const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
-        if (typeof afterDelete === 'function') await afterDelete(tx);
-        if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
-      }
+    if (!doc.deleted) {
+      const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
+      if (typeof afterDelete === 'function') await afterDelete(tx);
+      if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
+    }
 
-      const view = await buildViewModel(serverDoc, tx);
-      res.json(view);
-    } catch (err) { next(err); }
-    finally { await lib.util.postMode(false, tx); }
+    const view = await buildViewModel(serverDoc, tx);
+    res.json(view);
+
   });
 });
 
@@ -158,19 +156,18 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      try {
-        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-        await lib.util.postMode(true, tx);
-        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        if (serverDoc.timestamp) {
-          await updateDocument(serverDoc, tx);
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (err) { throw err; }
-      finally { await lib.util.postMode(false, tx); }
+
+      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+      await lib.util.postMode(true, tx);
+      if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+      if (serverDoc.timestamp) {
+        await updateDocument(serverDoc, tx);
+      } else {
+        await insertDocument(serverDoc, tx);
+      }
+      res.json((await buildViewModel(serverDoc, tx)));
+
     });
   } catch (err) { next(err); }
 });
@@ -179,23 +176,22 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      try {
-        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-        if (doc && doc.deleted) throw new Error('Cant POST deleted document');
-        doc.posted = true;
-        await lib.util.postMode(true, tx);
-        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        if (serverDoc.timestamp) {
-          await unpostDocument(serverDoc, tx);
-          await updateDocument(serverDoc, tx);
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
-        await postDocument(serverDoc, tx);
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (err) { throw err; }
-      finally { await lib.util.postMode(false, tx); }
+
+      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+      if (doc && doc.deleted) throw new Error('Cant POST deleted document');
+      doc.posted = true;
+      await lib.util.postMode(true, tx);
+      if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+      if (serverDoc.timestamp) {
+        await unpostDocument(serverDoc, tx);
+        await updateDocument(serverDoc, tx);
+      } else {
+        await insertDocument(serverDoc, tx);
+      }
+      await postDocument(serverDoc, tx);
+      res.json((await buildViewModel(serverDoc, tx)));
+
     });
   } catch (err) { next(err); }
 });
@@ -204,22 +200,21 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      try {
-        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-        if (doc && doc.deleted) throw new Error('Cant POST deleted document');
-        doc.posted = true;
-        await lib.util.postMode(true, tx);
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        if (serverDoc.timestamp) {
-          await unpostDocument(serverDoc, tx);
-          await updateDocument(serverDoc, tx);
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
-        await postDocument(serverDoc, tx);
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (err) { throw err; }
-      finally { await lib.util.postMode(false, tx); }
+
+      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+      if (doc && doc.deleted) throw new Error('Cant POST deleted document');
+      doc.posted = true;
+      await lib.util.postMode(true, tx);
+      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+      if (serverDoc.timestamp) {
+        await unpostDocument(serverDoc, tx);
+        await updateDocument(serverDoc, tx);
+      } else {
+        await insertDocument(serverDoc, tx);
+      }
+      await postDocument(serverDoc, tx);
+      res.json((await buildViewModel(serverDoc, tx)));
+
     });
   } catch (err) { next(err); }
 });
@@ -358,23 +353,20 @@ router.post('/setApprovingStatus/:id/:Status', async (req: Request, res: Respons
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      try {
-        const sourse = await lib.doc.byId(req.params.id, tx);
-        if (sourse) {
-          if (!sourse.timestamp) throw new Error('source document not saved');
-          sourse['Status'] = req.params.Status;
-          const serverDoc = await createDocumentServer(sourse.type as DocTypes, sourse, tx);
-          if (serverDoc.timestamp) {
-            await unpostDocument(serverDoc, tx);
-            await updateDocument(serverDoc, tx);
-          } else {
-            await insertDocument(serverDoc, tx);
-          }
-          await postDocument(serverDoc, tx);
-          res.json((await buildViewModel(serverDoc, tx)));
+      const sourse = await lib.doc.byId(req.params.id, tx);
+      if (sourse) {
+        if (!sourse.timestamp) throw new Error('source document not saved');
+        sourse['Status'] = req.params.Status;
+        const serverDoc = await createDocumentServer(sourse.type as DocTypes, sourse, tx);
+        if (serverDoc.timestamp) {
+          await unpostDocument(serverDoc, tx);
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
         }
-      } catch (err) { throw err; }
-      finally { await lib.util.postMode(false, tx); }
+        await postDocument(serverDoc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      }
     });
   } catch (err) { next(err); }
 });
