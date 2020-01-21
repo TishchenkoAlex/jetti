@@ -19,8 +19,9 @@
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'ui-float-label' : control.showLabel}">
-    <input [required]="control.required" pInputText type="number" [formControlName]="control.key" [readonly]="control.readOnly"
-      autocomplete="off" (focus)="$event.target.select()" [id]="control.key">
+    <p-spinner [required]="control.required" [formControlName]="control.key" [readonly]="control.readOnly"
+      (focus)="$event.target.select()" [id]="control.key" size="30" [step]="0.01" [formatInput]="true">
+    </p-spinner>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
