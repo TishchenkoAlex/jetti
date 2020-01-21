@@ -19,13 +19,12 @@
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'ui-float-label' : control.showLabel}">
-    <p-spinner [required]="control.required" [formControlName]="control.key" [readonly]="control.readOnly"
-      (focus)="$event.target.select()" [id]="control.key" [formatInput]="true" size="30">
-    </p-spinner>
+    <input [required]="control.required" pInputText type="number" [formControlName]="control.key" [readonly]="control.readOnly"
+      autocomplete="off" (focus)="$event.target.select()" [id]="control.key">
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <j-autocomplete-png #pc *ngSwitchCase="'autocomplete'" [required]="control.required" 
+  <j-autocomplete-png #pc *ngSwitchCase="'autocomplete'" [required]="control.required"
     [formControlName]="control.key" [disableControl]="control.readOnly"
     [formControl]="form.controls[control.key]" [id]="control.key" [placeholder]="control.label" [hidden]="control.hidden" [type]="control.type"
     [owner]="control.owner" [showLabel]="control.showLabel" (focus)="pc.select()" [storageType]="control.storageType" [appendTo]="appendTo">
