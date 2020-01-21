@@ -2,7 +2,6 @@
   <div *ngIf="vk$ | async as vk">
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
-        {{isCopy}}
         <p-panel #mp
           [header]="(description$ | async)?.value?.concat((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
           [toggleable]="true">
@@ -118,10 +117,6 @@
           </j-register-accumulation-list>
         </p-panel>
 
-        <!-- <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false">
-          <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
-        </p-panel> -->
-
         <div *ngIf="(isFolder$ | async) === false">
           <div *ngFor="let r of relations$ | async">
             <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
@@ -132,6 +127,10 @@
             </p-panel>
           </div>
         </div>
+
+        <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false">
+          <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
+        </p-panel>
 
       </form>
 
