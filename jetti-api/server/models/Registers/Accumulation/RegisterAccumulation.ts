@@ -18,7 +18,7 @@ export function JRegisterAccumulation(props: RegisterAccumulationOptions) {
 }
 export class RegisterAccumulation {
   @Props({ type: 'string', required: true, hidden: true, hiddenInList: true, value: 'newid()' })
-  id = v1();
+  id = v1().toLocaleUpperCase();
 
   @Props({ type: 'string', required: false, hidden: true, hiddenInList: true })
   parent = null;

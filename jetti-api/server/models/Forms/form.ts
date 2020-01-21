@@ -31,7 +31,7 @@ export class FormBase {
   user: IJWTPayload;
 
   @Props({ type: 'string', hidden: true, hiddenInList: true })
-  id = v1();
+  id = v1().toLocaleUpperCase();
 
   @Props({ type: 'string', hidden: true, hiddenInList: true })
   type: FormTypes;

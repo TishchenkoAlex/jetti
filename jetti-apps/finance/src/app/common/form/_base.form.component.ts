@@ -28,6 +28,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   get isDoc() { return this.type.startsWith('Document.'); }
   get isForm() { return this.type.startsWith('Form.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
+  isCopy: boolean;
 
   private readonly _form$ = new BehaviorSubject<FormGroup>(undefined);
   form$ = this._form$.asObservable();
@@ -58,7 +59,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       return (<MenuItem>{ label, icon, command: () => this.baseOn(type, Operation) });
     });
   }));
-  module$: Observable<{[x: string]: Function}> = this.metadata$.pipe(map(m => {
+  module$: Observable<{ [x: string]: Function }> = this.metadata$.pipe(map(m => {
     return (new Function('', m.module || '{}').bind(this)());
   }));
 
@@ -89,7 +90,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Operation) });
     });
   }
-  get module(): {[x: string]: Function} { return new Function('', this.metadata.module || '{}').bind(this)(); }
+  get module(): { [x: string]: Function } { return new Function('', this.metadata.module || '{}').bind(this)(); }
   get settings() {
     return this.relations.map(r => ({
       order: [], filter: [
@@ -104,12 +105,46 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   private _postSubscription$: Subscription = Subscription.EMPTY;
   private _uuid = this.route.snapshot.queryParams.uuid;
 
-  isCopy: boolean;
-
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
     public ds: DocService, public tabStore: TabsStore, public dss: DynamicFormService,
     public cd: ChangeDetectorRef) { }
+
+  ngOnInit() {
+    this.isCopy = !!this.route.snapshot.queryParams.copy;
+
+    this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
+      filter(doc => doc.id === this.id))
+      .subscribe(doc => {
+        this.isCopy = false;
+        this.form.patchValue(doc, patchOptionsNoEvents);
+        this.form.markAsPristine();
+        this._form$.next(this.form);
+        if (this.isDoc) { this.showDescription(); }
+      });
+
+    this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
+      filter(doc => doc.id === this.id))
+      .subscribe(doc => {
+        this.isCopy = false;
+        this.form.markAsPristine();
+        this._form$.next(this.form);
+        this.close();
+      });
+
+    setTimeout(() => {
+      this._descriptionSubscription$ = merge(...[
+        this.form.get('date')!.valueChanges,
+        this.form.get('code')!.valueChanges,
+        this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
+        .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
+    });
+
+    this._form$.next(this.data);
+    this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
+      this.Next(form);
+    });
+  }
 
   refresh() {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
@@ -202,7 +237,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   baseOn(type: DocTypes, Operation: Ref) {
-    this.router.navigate([type, v1()],
+    this.router.navigate([type, v1().toLocaleUpperCase()],
       { queryParams: { base: this.id, Operation } });
   }
 
@@ -228,40 +263,6 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       this.form.patchValue({ workflow: { id: doc.id, type: doc.type, code: doc.code, value: doc.description } });
       this.save();
       this.router.navigate([doc.type, doc.id]);
-    });
-  }
-
-  ngOnInit() {
-    this.isCopy = this.route.snapshot.queryParams.command === 'copy';
-
-    this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
-      filter(doc => doc.id === this.id))
-      .subscribe(doc => {
-        this.form.patchValue(doc, patchOptionsNoEvents);
-        this.form.markAsPristine();
-        this._form$.next(this.form);
-        if (this.isDoc) { this.showDescription(); }
-      });
-
-    this._saveCloseSubscription$ = this.ds.saveClose$.pipe(
-      filter(doc => doc.id === this.id))
-      .subscribe(doc => {
-        this.form.markAsPristine();
-        this._form$.next(this.form);
-        this.close();
-      });
-
-    setTimeout(() => {
-      this._descriptionSubscription$ = merge(...[
-        this.form.get('date')!.valueChanges,
-        this.form.get('code')!.valueChanges,
-        this.form.get('Group') ? this.form.get('Group')!.valueChanges : observableOf('')])
-        .pipe(filter(_ => this.isDoc)).subscribe(_ => this.showDescription());
-    });
-
-    this._form$.next(this.data);
-    this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
-      this.Next(form);
     });
   }
 

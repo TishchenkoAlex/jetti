@@ -2,6 +2,7 @@
   <div *ngIf="vk$ | async as vk">
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
+        {{isCopy}}
         <p-panel #mp
           [header]="(description$ | async)?.value?.concat((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
           [toggleable]="true">

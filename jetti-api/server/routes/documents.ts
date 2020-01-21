@@ -261,6 +261,7 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
+      await lib.util.postMode(true, tx);
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
       const value = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
       const property: string = req.params.property;
@@ -291,6 +292,7 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
+      await lib.util.postMode(true, tx);
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
       const command: string = req.params.command;
       const type: DocTypes = req.params.type as DocTypes;
