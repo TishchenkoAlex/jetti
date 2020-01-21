@@ -324,6 +324,34 @@ router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction
   } catch (err) { next(err); }
 });
 
+// Get history list by object id
+router.get('/getHistoryById/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const query = `
+      SELECT hist._id id
+            ,hist.type
+            ,hist.code
+            ,hist.description
+            ,hist.posted
+            ,hist.deleted
+            ,hist.doc
+            ,hist.parent
+            ,hist.isfolder
+            ,hist.company
+            ,hist.[user] as 'user'
+            ,hist.info
+            ,hist._timestamp as timestamp
+        FROM [dbo].[Documents.Hisroty] hist
+        WHERE _id = '19111710-3C1D-11EA-9511-57523AC2DEB3'
+        order by [_timestamp] desc`;
+      res.json(await tx.manyOrNone(query, [req.params.id]));
+      console.log(res.json);
+    });
+  } catch (err) { next(err); }
+});
+
 // Get formControlRef
 router.get('/formControlRef/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
