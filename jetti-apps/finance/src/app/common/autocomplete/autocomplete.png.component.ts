@@ -69,7 +69,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   showDialog = false;
   filters = new FormListSettings();
-  uuid = v1();
+  uuid = v1().toLocaleUpperCase();
 
   get isComplexValue() { return this.value && this.value.type && this.value.type.includes('.'); }
   get isTypeControl() { return this.type && this.type.startsWith('Types.'); }

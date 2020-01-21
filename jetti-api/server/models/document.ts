@@ -67,7 +67,7 @@ export function JDocument(props: DocumentOptions) {
 export class DocumentBase {
 
   @Props({ type: 'string', hidden: true, hiddenInList: true })
-  id = v1();
+  id = v1().toLocaleUpperCase();
 
   @Props({ type: 'string', hidden: true, hiddenInList: true })
   type: DocTypes;

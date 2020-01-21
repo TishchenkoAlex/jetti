@@ -87,7 +87,7 @@ export const lib: JTL = {
 };
 
 async function GUID(): Promise<string> {
-  return v1();
+  return v1().toLocaleUpperCase();
 }
 
 async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
