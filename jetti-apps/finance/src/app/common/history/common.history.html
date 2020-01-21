@@ -1,20 +1,15 @@
 <!-- <div style="max-height: 500px; overflow: auto; "> -->
-<p-table [value]="historyListSub$ | async" selectionMode="single" [resizableColumns]="true" [(selection)]="selection"
-  columnResizeMode="expand">
+<p-table [value]="historyListSub$ | async" columnResizeMode="expand">
   <ng-template pTemplate="header">
     <tr>
       <th [ngStyle]="{'width': '30px', 'text-align': 'center'}"></th>
-      <th pResizableColumn [pSortableColumn]="column" style="text-align: center; width: 250px">User
-        <p-sortIcon [field]="column"></p-sortIcon>
+      <th style="text-align: center; width: 250px">User
       </th>
-      <th pResizableColumn [pSortableColumn]="column" style="text-align: center; width: 150px">Date
-        <p-sortIcon [field]="column"></p-sortIcon>
+      <th style="text-align: center; width: 150px">Date
       </th>
-      <th pResizableColumn [pSortableColumn]="column" style="text-align: center; width: 150px">Code
-        <p-sortIcon [field]="column"></p-sortIcon>
+      <th style="text-align: center; width: 150px">Code
       </th>
-      <th pResizableColumn [pSortableColumn]="column" style="width: 100%">Description
-        <p-sortIcon [field]="column"></p-sortIcon>
+      <th style="width: 100%">Description
       </th>
     </tr>
   </ng-template>

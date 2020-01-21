@@ -27,7 +27,7 @@ import { CatalogListComponent } from './../UI/Catalog/calatog-list.component';
 import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { DisableControlDirective } from '../common/directives/disabled-control';
-import { HistoryComponent } from '../common/History/common.history';
+import { HistoryComponent } from '../common/history/common.history';
 
 @NgModule({
   declarations: [
