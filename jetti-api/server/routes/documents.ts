@@ -337,7 +337,7 @@ router.get('/getHistoryById/:id', async (req: Request, res: Response, next: Next
       ,users.[description] as userName
       ,hist._timestamp as timestamp
       FROM [dbo].[Documents.Hisroty] hist
-      left join [dbo].[Documents] users on users.id = hist.[user]
+      left join [dbo].[Documents] users on users.id = hist.[_user]
         WHERE _id = @p1
         order by [_timestamp] desc`;
       res.json(await tx.manyOrNone(query, [req.params.id]));
