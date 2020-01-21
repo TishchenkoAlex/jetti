@@ -229,28 +229,22 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
 }
 
 export async function postById(id: Ref, tx: MSSQL) {
-  try {
-    await lib.util.postMode(true, tx);
-    const serverDoc = await setPostedSate(id, tx);
-    await unpostDocument(serverDoc, tx);
-    if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
-    return serverDoc;
-  } catch (err) { throw new Error(`Error on post by document by id = '${id}', ${err}`); }
-  finally { await lib.util.postMode(false, tx); }
+  await lib.util.postMode(true, tx);
+  const serverDoc = await setPostedSate(id, tx);
+  await unpostDocument(serverDoc, tx);
+  if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
+  return serverDoc;
 }
 
 export async function unPostById(id: Ref, tx: MSSQL) {
-  try {
-    await lib.util.postMode(true, tx);
-    const doc = (await lib.doc.byId(id, tx))!;
-    const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-    if (!doc.posted) return serverDoc;
-    serverDoc.posted = false;
-    await unpostDocument(serverDoc, tx);
-    await updateDocument(serverDoc, tx);
-    return serverDoc;
-  } catch (err) { throw err; }
-  finally { await lib.util.postMode(false, tx); }
+  await lib.util.postMode(true, tx);
+  const doc = (await lib.doc.byId(id, tx))!;
+  const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+  if (!doc.posted) return serverDoc;
+  serverDoc.posted = false;
+  await unpostDocument(serverDoc, tx);
+  await updateDocument(serverDoc, tx);
+  return serverDoc;
 }
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {

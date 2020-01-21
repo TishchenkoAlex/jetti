@@ -43,7 +43,7 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       };
       const activeJobs = await JQueue.getActive();
       const jobs = activeJobs.filter(j => j.data.job.id === `sync` && j.data.company === row.company);
-      if (jobs.length === 0) await JQueue.add(data, { attempts: 3 });
+      if (jobs.length === 0) await JQueue.add(data, { attempts: 3, priority: 100 });
     }
     return this;
   }

@@ -12,15 +12,12 @@ router.post('/jobs/add', async (req: Request, res: Response, next: NextFunction)
   try {
     const sdbq = SDB(req);
     await sdbq.tx(async tx => {
-      try {
-        await lib.util.postMode(true, tx);
-        req.body.data.user = User(req);
-        req.body.data.userId = User(req).email;
-        req.body.data.tx = tx;
-        const result = await JQueue.add(req.body.data, req.body.opts);
-        res.json(mapJob(result));
-      } catch (err) { throw err; }
-      finally { await lib.util.postMode(false, tx); }
+      await lib.util.postMode(true, tx);
+      req.body.data.user = User(req);
+      req.body.data.userId = User(req).email;
+      req.body.data.tx = tx;
+      const result = await JQueue.add(req.body.data, req.body.opts);
+      res.json(mapJob(result));
     });
   } catch (err) { next(err); }
 });
