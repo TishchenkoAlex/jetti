@@ -31,6 +31,7 @@ export interface JTL {
     byCode: (type: DocTypes, code: string, tx: MSSQL) => Promise<string | null>;
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
+    historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
@@ -66,6 +67,7 @@ export const lib: JTL = {
     byCode: byCode,
     byId: byId,
     byIdT: byIdT,
+    historyById: historyById,
     formControlRef,
     postById,
     unPostById,
@@ -105,6 +107,27 @@ async function byId(id: string, tx: MSSQL): Promise<IFlatDocument | null> {
   if (!id) return null;
   const result = await tx.oneOrNone<INoSqlDocument | null>(`
   SELECT * FROM "Documents" WHERE id = @p1`, [id]);
+  if (result) return flatDocument(result); else return null;
+}
+
+async function historyById(historyId: string, tx: MSSQL): Promise<IFlatDocument | null> {
+  if (!historyId) return null;
+  const result = await tx.oneOrNone<INoSqlDocument | null>(`
+  SELECT
+    _id id
+    ,type
+    ,date
+    ,code
+    ,description
+    ,posted
+    ,deleted
+    ,doc
+    ,parent
+    ,isfolder
+    ,company
+    ,user
+    ,_timestamp
+ FROM "Documents.Hisroty" WHERE id = @p1`, [historyId]);
   if (result) return flatDocument(result); else return null;
 }
 

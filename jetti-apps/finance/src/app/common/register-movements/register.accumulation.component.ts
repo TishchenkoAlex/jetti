@@ -22,6 +22,7 @@ export class RegisterAccumulationComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
+    console.log('created');
     this.movements$ = this.apiService.getDocAccumulationMovements(this.register, this.doc.id).pipe(share());
     this.additionalColumns$ = this.movements$.pipe(
       map(data =>  Object.keys(data[0])

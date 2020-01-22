@@ -6,7 +6,7 @@ import { AccountRegister } from '../../../../../jetti-api/server/models/account.
 // tslint:disable:max-line-length
 import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/models/document';
-import { AllDocTypes } from '../../../../../jetti-api/server/models/documents.types';
+import { AllDocTypes, DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
 import { RegisterInfo } from '../../../../../jetti-api/server/models/Registers/Info/RegisterInfo';
 import { FormListFilter, FormListOrder, FormListSettings, UserDefaultsSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -195,6 +195,12 @@ export class ApiService {
   getHistoryById(id: Ref): Observable<any[]> {
     const query = `${environment.api}getHistoryById/${id}`;
     return (this.http.get(query) as Observable<any[]>);
+  }
+
+  restoreObjectFromHistory(id: Ref, type: DocTypes): Observable<IViewModel> {
+    const query = `${environment.api}restore/${type}/${id}`;
+    console.log(query);
+    return (this.http.get(query) as Observable<IViewModel>);
   }
 
   SubSystemsMenu() {

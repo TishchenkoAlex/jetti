@@ -1,5 +1,12 @@
 <!-- <div style="max-height: 500px; overflow: auto; "> -->
-<p-table [value]="historyListSub$ | async" columnResizeMode="expand">
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button id="restore" label="Restore" class="ui-button-secondary" pButton type="button" (click)="restore()"
+      [disabled]="(lds.busy$ | async) || !selection"></button>
+  </div>
+</p-toolbar>
+<p-table [value]="historyListSub$ | async" columnResizeMode="expand" [(selection)]="selection" selectionMode="single"
+  dataKey="id">
   <ng-template pTemplate="header">
     <tr>
       <th [ngStyle]="{'width': '30px', 'text-align': 'center'}"></th>
@@ -15,8 +22,8 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
-      <td class="ui-resizable-column" [ngStyle]="{'width': '30px', 'text-align': 'center'}">
+    <tr [pSelectableRow]="rowData" (dblclick)="openHistory(rowData)">
+      <td class="ui-resizable-column" style="text-align: center;">
         <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
           style="color: #5cb85c"></i>
         <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
@@ -25,16 +32,16 @@
         <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
         <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
       </td>
-      <td style="width: 250px; text-align: center">
+      <td class="ui-resizable-column" style="text-align: center;">
         {{rowData.userName }}
       </td>
-      <td style="width: 150px; text-align: center">
+      <td class="ui-resizable-column" style="text-align: center;">
         {{rowData.timestamp | date: 'dd.MM.y HH:mm:ss'}}
       </td>
-      <td style="width: 150px; text-align: center">
+      <td class="ui-resizable-column" style="text-align: center;">
         {{rowData.code }}
       </td>
-      <td style="width: 100%">
+      <td class="ui-resizable-column">
         {{rowData.description }}
       </td>
     </tr>

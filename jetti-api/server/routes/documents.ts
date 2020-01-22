@@ -66,12 +66,12 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
       const addIncomeParamsIntoDoc = async (prm: { [x: string]: any }, d: DocumentBase) => {
         for (const k in prm) {
-          if (k === 'type' || k === 'id' || k === 'new' || k === 'base' || k === 'copy') { continue; }
+          if (k === 'type' || k === 'id' || k === 'new' || k === 'base' || k === 'copy' || k === 'history') { continue; }
           if (typeof params[k] !== 'boolean') d[k] = params[k]; else d[k] = params[k];
         }
       };
 
-      const command = req.query.new ? 'new' : req.query.copy ? 'copy' : req.query.base ? 'base' : '';
+      const command = req.query.new ? 'new' : req.query.copy ? 'copy' : req.query.base ? 'base' : req.query.history ? 'history' : '';
       switch (command) {
         case 'new':
           // init default values from metadata
@@ -98,6 +98,14 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           if (ServerDoc.baseOn) await ServerDoc.baseOn(req.query.base as string, sdb);
           if (userID) ServerDoc.user = userID;
           break;
+        case 'history':
+          const history = await lib.doc.historyById(req.query.history, sdb);
+          if (!history) throw new Error(`history version of document ${req.query.history} is not found!`);
+          const histDoc = await createDocumentServer(type, history, sdb);
+          ServerDoc.map(histDoc);
+          addIncomeParamsIntoDoc(params, ServerDoc);
+          ServerDoc.description = 'History: ' + ServerDoc.description;
+          break;
         default:
           break;
       }
@@ -110,6 +118,25 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     res.json(result);
   } catch (err) { next(err); }
 };
+
+// restore object from his history version
+router.get('/restore/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const id: string = req.params.id;
+    const type = req.params.type as DocTypes;
+    const settings = new FormListSettings();
+    const history = await lib.doc.historyById(id, sdb);
+    const ServerDoc = await createDocumentServer(type, history!, sdb);
+    ServerDoc.timestamp = new Date();
+    const model = (await buildViewModel<DocumentBase>(ServerDoc, sdb))!;
+    const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
+    const metadata = ServerDoc.Prop() as DocumentOptions;
+    const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
+    res.json(result);
+  } catch (err) { next(err); }
+});
+
 router.post('/view', viewAction);
 
 // Delete or UnDelete document
@@ -328,18 +355,20 @@ router.get('/getHistoryById/:id', async (req: Request, res: Response, next: Next
     await sdb.tx(async tx => {
       const query = `
       SELECT
-      hist.posted
-      ,hist.deleted
-      ,hist.description
-      ,hist.date
-      ,hist.code
-      ,hist.isfolder
-      ,users.[description] as userName
-      ,hist._timestamp as timestamp
-      FROM [dbo].[Documents.Hisroty] hist
-      left join [dbo].[Documents] users on users.id = hist.[_user]
-        WHERE _id = @p1
-        order by [_timestamp] desc`;
+        hist.id
+        ,hist.posted
+        ,hist.deleted
+        ,hist.description
+        ,hist.date
+        ,hist.code
+        ,hist.isfolder
+        ,users.[description] as userName
+        ,hist._timestamp as timestamp
+        FROM [dbo].[Documents.Hisroty] hist
+      LEFT JOIN [dbo].[Documents] users
+        ON users.id = hist.[_user]
+      WHERE _id = @p1
+      ORDER BY [_timestamp] desc`;
       res.json(await tx.manyOrNone(query, [req.params.id]));
     });
   } catch (err) { next(err); }

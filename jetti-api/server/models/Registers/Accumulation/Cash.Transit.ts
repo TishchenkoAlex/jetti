@@ -7,6 +7,9 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationCashTransit extends RegisterAccumulation {
 
+  @Props({ type: 'Catalog.Company', required: true, dimension: true })
+  CompanyRecipient: Ref = null;
+
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 

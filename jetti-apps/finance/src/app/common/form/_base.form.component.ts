@@ -29,6 +29,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   get isForm() { return this.type.startsWith('Form.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   isCopy: boolean;
+  isHistory: boolean;
 
   private readonly _form$ = new BehaviorSubject<FormGroup>(undefined);
   form$ = this._form$.asObservable();
@@ -46,6 +47,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   isDeleted$ = this.form$.pipe(map(f => (<boolean>!!f.get('deleted').value)));
   isNew$ = this.form$.pipe(map(f => (!f.get('timestamp').value)));
   isFolder$ = this.form$.pipe(map(f => (!!f.get('isfolder').value)));
+  isDirty$ = this.form$.pipe(map(f => (<boolean>!!f.dirty)));
   commands$ = this.metadata$.pipe(map(m => {
     return (m && m['commands'] as Command[] || []).map(c => (
       <MenuItem>{
@@ -77,6 +79,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   get isDeleted() { return <boolean>!!this.form.get('deleted').value; }
   get isNew() { return !this.form.get('timestamp').value; }
   get isFolder() { return !!this.form.get('isfolder').value; }
+  get isDirty() { return !!this.form.dirty; }
   get commands() {
     return (this.metadata['commands'] as Command[] || []).map(c => {
       return (<MenuItem>{
@@ -111,7 +114,9 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     public cd: ChangeDetectorRef) { }
 
   ngOnInit() {
+
     this.isCopy = !!this.route.snapshot.queryParams.copy;
+    this.isHistory = !!this.route.snapshot.queryParams.history;
 
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
@@ -144,6 +149,8 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
       this.Next(form);
     });
+    if (this.isHistory) this.form.disable({ emitEvent: false });
+
   }
 
   refresh() {
