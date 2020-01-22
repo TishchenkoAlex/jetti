@@ -40,49 +40,52 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
   }
 
   async beforeDelet(tx: MSSQL) {
-    await tx.none(`DELETE FROM[rls].[company] WHERE [document] = @p1`, [this.id]);
+    await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
     return this;
   }
 
   async onUnPost(tx: MSSQL) {
-    await tx.none(`DELETE FROM[rls].[company] WHERE [document] = @p1`, [this.id]);
+    await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
     return this;
   }
 
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    await lib.util.postMode(true, tx);
+    await lib.util.adminMode(true, tx);
+    try {
+      await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
+      const Users = await tx.manyOrNone<{ code: string }>(`
+        SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
+          SELECT @p1 id
+          UNION ALL
+          SELECT [UsersGroup.User] id FROM Documents
+          CROSS APPLY OPENJSON (doc, N'$.Users')
+          WITH
+          (
+            [UsersGroup.User] UNIQUEIDENTIFIER N'$.User'
+          ) AS Users
+          WHERE (1=1) AND
+          [posted] = 1 AND
+          [type] = N'Catalog.UsersGroup' AND
+          [id] = @p1
+        );`, [this.UserOrGroup]
+      );
 
-    await tx.none(`DELETE FROM[rls].[company] WHERE [document] = @p1`, [this.id]);
-    const Users = await tx.manyOrNone<{ code: string }>(`
-      SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
-        SELECT @p1 id
-        UNION ALL
-        SELECT [UsersGroup.User] id FROM Documents
-        CROSS APPLY OPENJSON (doc, N'$.Users')
-        WITH
-        (
-          [UsersGroup.User] UNIQUEIDENTIFIER N'$.User'
-        ) AS Users
-        WHERE (1=1) AND
-        [posted] = 1 AND
-        [type] = N'Catalog.UsersGroup' AND
-        [id] = @p1
-      );`, [this.UserOrGroup]
-    );
-
-    for (const user of Users) {
-      for (const row of this.CompanyList) {
-        Registers.Info.push(new RegisterInfoRLS({
-          company: row.company,
-          user: user.code,
-        }));
-        await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
-          [user.code, row.company, this.id]);
+      for (const user of Users) {
+        for (const row of this.CompanyList) {
+          Registers.Info.push(new RegisterInfoRLS({
+            company: row.company,
+            user: user.code,
+          }));
+          await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
+            [user.code, row.company, this.id]);
+        }
       }
-    }
-    return Registers;
+      return Registers;
+
+    } catch (ex) { throw new Error(ex); }
+    finally { await lib.util.adminMode(false, tx); }
   }
 }
 

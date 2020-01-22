@@ -138,10 +138,6 @@ export async function setPostedSate(id: Ref, tx: MSSQL) {
   return serverDoc;
 }
 
-export async function adminModeForPost(mode: boolean, tx: MSSQL): Promise<boolean> {
-  try {
+export async function adminMode(mode: boolean, tx: MSSQL) {
     await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
-    return mode;
-  } catch (err) { }
-  finally { return true; }
 }

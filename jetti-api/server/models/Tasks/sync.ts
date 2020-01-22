@@ -8,7 +8,7 @@ export default async function (job: Queue.Job) {
   const params = job.data;
   const sdbq = new MSSQL(params.user, TASKS_POOL);
 
-  await lib.util.postMode(true, sdbq);
+  await lib.util.adminMode(true, sdbq);
   try {
     const query = `
       SELECT d.id, d.date, d.description
@@ -50,6 +50,6 @@ export default async function (job: Queue.Job) {
     job.data.message = `job complete for ${params.companyName}`;
     await job.progress(100);
   } catch (ex) { throw ex; }
-  finally { await lib.util.postMode(false, sdbq); }
+  finally { await lib.util.adminMode(false, sdbq); }
 }
 
