@@ -206,6 +206,7 @@
     SELECT
       id, parent, CAST(date AS DATE) date, document, company, kind, calculated
         , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyRecipient"')) "CompanyRecipient"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Sender"')) "Sender"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"')) "Recipient"
