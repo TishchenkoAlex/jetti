@@ -4,9 +4,11 @@ import { DynamicFormsModule } from './dynamic.froms.module';
 import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { TaskComponent } from './BusinessProcesses/task.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
+import { SearchAndReplaceComponent } from './Forms/search-and-replace.component';
 
 @NgModule({
   declarations: [
+    SearchAndReplaceComponent,
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,
@@ -20,6 +22,7 @@ import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
   providers: [
   ],
   entryComponents: [
+    SearchAndReplaceComponent,
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,

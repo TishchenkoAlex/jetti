@@ -3,6 +3,7 @@ import { FormTypes } from './form.types';
 import { dateReviverUTC } from '../../fuctions/dateReviver';
 import PostAfterEchangeServer from './Form.PostAfterEchange.server';
 import { FormBusinessProcessTasks } from './Form.BusinessProcessTasks';
+import FormSearchAndReplaceServer from './Form.SearchAndReplace.Server';
 
 export interface IServerForm {
   Execute (): Promise<FormBase>;
@@ -25,4 +26,5 @@ export function createFormServer<T extends FormBaseServer>(init?: Partial<FormBa
 const RegisteredServerForms = new Map<FormTypes, typeof FormBase>([
   ['Form.PostAfterEchange', PostAfterEchangeServer],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
+  ['Form.SearchAndReplace', FormSearchAndReplaceServer],
 ]);

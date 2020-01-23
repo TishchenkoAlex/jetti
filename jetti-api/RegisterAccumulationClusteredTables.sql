@@ -463,7 +463,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Cash.Transit];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [Sender], [Recipient], [CashFlow]
+      d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -472,6 +472,7 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Sender] UNIQUEIDENTIFIER N'$.Sender'
         , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
@@ -490,7 +491,7 @@
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [Sender], [Recipient], [CashFlow]
+        d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -498,6 +499,7 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Sender] UNIQUEIDENTIFIER N'$.Sender'
         , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
@@ -523,7 +525,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit](id) WITH (MAXDOP=4);
 

@@ -1,0 +1,67 @@
+<form novalidate [formGroup]="form" cdkTrapFocus>
+  <p-panel [toggleable]="true" [header]="docDescription">
+    <p-toolbar>
+      <div class="ui-toolbar-group-left">
+        <button pButton type="button" icon="fa fa-check-square-o" label="Search" class="ui-button-warning" (click)="Search()"></button>
+      </div>
+      <div class="ui-toolbar-group-right">
+        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="close()"></button>
+      </div>
+    </p-toolbar>
+    <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
+
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+        *ngFor="let i of [0,3,6,9,12,15]">
+        <div fxFlex>
+          <j-control *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
+            [control]="v[i+0]" [form]="form"></j-control>
+        </div>
+        <div fxFlex>
+          <j-control *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
+            [control]="v[i+1]" [form]="form"></j-control>
+        </div>
+        <div fxFlex>
+          <j-control *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
+            [control]="v[i+2]" [form]="form"></j-control>
+        </div>
+      </div>
+
+      <div *ngIf="tables$ | async as tables">
+        <br *ngIf="tables.length">
+        <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
+          <div *ngFor="let c of tables; let i = index">
+            <p-tabPanel [header]="c.label">
+              <j-control [control]="c" [form]="form"></j-control>
+            </p-tabPanel>
+          </div>
+        </p-tabView>
+      </div>
+
+      <!-- <div fxFlex>
+        <p-table [value]="IOData" [scrollable]="true" scrollHeight="400px">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Task progress log</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-doc>
+            <tr>
+              <td>{{doc}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div> -->
+
+    </div>
+    <ng-content></ng-content>
+  </p-panel>
+</form>
+
+<p-confirmDialog [key]="id" appendTo="body" [closeOnEscape]="true" [closable]="true" #cdlg>
+  <p-footer>
+    <div cdkTrapFocus>
+      <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cdlg.accept()"></button>
+      <button type="button" pButton icon="fa fa-close" label="No" (click)="cdlg.reject()"></button>
+    </div>
+  </p-footer>
+</p-confirmDialog>

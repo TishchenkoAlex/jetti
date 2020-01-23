@@ -53,6 +53,7 @@ export type CatalogTypes =
   'Catalog.TaxPaymentCode' |
   'Catalog.TaxPaymentPeriod' |
   'Catalog.TaxPayerStatus' |
+  'Catalog.TaxBasisPayment' |
   'Catalog.TaxOffice' |
   'Catalog.ReatailClient'
   ;

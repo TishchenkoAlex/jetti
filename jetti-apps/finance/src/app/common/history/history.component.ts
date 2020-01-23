@@ -31,7 +31,13 @@ export class HistoryComponent implements OnInit {
     this.apiService.getHistoryById(this.doc.id).pipe(take(1)).subscribe(data => { this.historyListSub$.next(data); });
   }
 
+  openOnClick() {
+    this.openHistory(this.selection);
+    // this.selection.forEach(el => {this.openHistory(el); });
+  }
+
   openHistory(histData) {
+    // console.log(histData);
     this.router.navigate([this.doc.type, histData.id], { queryParams: { history: histData.id } });
   }
 
