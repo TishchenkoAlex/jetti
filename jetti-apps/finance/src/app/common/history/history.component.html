@@ -1,6 +1,8 @@
 <p-toolbar>
   <div class="ui-toolbar-group-left">
-    <button id="restore" label="Restore" class="ui-button-secondary" pButton type="button" (click)="restore()"
+    <button id="open" label="Open" class="ui-button-success" pButton type="button" (click)="openOnClick()"
+    [disabled]="(lds.busy$ | async) || !selection"></button>
+    <button id="restore" label="Restore" class="ui-button-warning" pButton type="button" (click)="restore()"
       [disabled]="(lds.busy$ | async) || !selection"></button>
   </div>
 </p-toolbar>

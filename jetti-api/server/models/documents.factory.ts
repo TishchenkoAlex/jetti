@@ -65,6 +65,7 @@ import { CatalogReatailClient } from './Catalogs/Catalog.ReatailClient';
 import { CatalogTaxOffice } from './Catalogs/Catalog.TaxOffice';
 import { CatalogPersonBankAccount } from './Catalogs/Catalog.Person.BankAccount';
 import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
+import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -167,6 +168,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
   { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },
+  { type: 'Catalog.TaxBasisPayment', Class: CatalogTaxBasisPayment},
   { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod},
   { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus},
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice},

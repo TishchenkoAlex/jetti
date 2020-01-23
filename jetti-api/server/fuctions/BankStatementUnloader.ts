@@ -176,6 +176,7 @@ export class BankStatementUnloader {
     const companySpliter = `---------------------------------------------------------------------`;
     let currentCompany = '';
     let companyCount = 0;
+    const naznMaxLength = 210;
     for (const row of CashRequestsData) {
       if (currentCompany !== String(row['Плательщик'])) {
         if (result.length) {
@@ -206,7 +207,9 @@ export class BankStatementUnloader {
               } else {
                 naznStrings[0] = val;
               }
-              result += `\nНазначениеПлатежа=${naznStrings[0]} ${naznStrings[1]}`;
+              const comNazn = `${naznStrings[0]} ${naznStrings[1]}`;
+              if (comNazn.length > naznMaxLength) throw new Error(`Превышена максимально допустимая длина назначения платежа в документе №${row['Номер']} на ${comNazn.length - naznMaxLength} символов`);
+              result += `\nНазначениеПлатежа=${comNazn}`;
               result += `\nНазначениеПлатежа1=${naznStrings[0]}`;
               result += `\nНазначениеПлатежа2=${naznStrings[1]}`;
               continue;

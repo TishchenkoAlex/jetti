@@ -1028,6 +1028,7 @@
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.TaxPaymentCode'
     
@@ -1042,6 +1043,26 @@
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.company] ON [Catalog.TaxPaymentCode.v](company,id) INCLUDE([date]);
 
       GRANT SELECT ON dbo.[Catalog.TaxPaymentCode.v] TO jetti;
+      GO
+      --------------------------------------------------------------------------------------
+      
+      CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.TaxBasisPayment'
+    
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxBasisPayment.v] ON [Catalog.TaxBasisPayment.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.code.f] ON [Catalog.TaxBasisPayment.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.description.f] ON [Catalog.TaxBasisPayment.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.description] ON [Catalog.TaxBasisPayment.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.code] ON [Catalog.TaxBasisPayment.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.user] ON [Catalog.TaxBasisPayment.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.company] ON [Catalog.TaxBasisPayment.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.TaxBasisPayment.v] TO jetti;
       GO
       --------------------------------------------------------------------------------------
       
@@ -1442,6 +1463,7 @@
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentCode.v],
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxBasisPayment.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentPeriod.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPayerStatus.v],
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxOffice.v],

@@ -44,3 +44,16 @@ router.post('/form/:type/:method', async (req: Request, res: Response, next: Nex
     res.json(view);
   } catch (err) { next(err); }
 });
+
+router.post('/form/:type/nonmodel/:method', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const user = User(req);
+    const doc: FormBase = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
+    doc.type = req.params.type as FormTypes;
+    doc.user = user;
+    const serverDoc = createFormServer(doc);
+    res.json(await serverDoc[req.params.method]());
+  } catch (err) { next(err); }
+});
+
