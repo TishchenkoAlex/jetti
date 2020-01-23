@@ -21,7 +21,7 @@ import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
-import { Hotkeys } from 'src/app/services/hotkeys.service';
+import { TabsStore } from '../tabcontroller/tabs.store';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,13 +31,13 @@ import { Hotkeys } from 'src/app/services/hotkeys.service';
 export class BaseDocListComponent implements OnInit, OnDestroy {
   @Input() pageSize;
   @Input() type: DocTypes;
-  @Input() settings: FormListSettings;
+  @Input() settings: FormListSettings = new FormListSettings();
   @Input() data: IViewModel;
 
   locale = calendarLocale; dateFormat = dateFormat;
 
-  constructor(public route: ActivatedRoute, public router: Router, public ds: DocService,
-    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, private hotkeys: Hotkeys) { }
+  constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService) { }
 
   private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
   private _docSubscription$: Subscription = Subscription.EMPTY;
@@ -53,6 +53,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   get id() { return this.selection && this.selection[0] && this.selection[0].id; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; }
 
+  group = '';
   columns: ColumnDef[] = [];
   selection: any[] = [];
   contextMenuSelection = [];
@@ -70,7 +71,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
+    if (!this.group) this.group = this.route.snapshot.params.group;
     if (!this.settings) this.settings = this.data.settings;
+
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
     if (!this.data) {
@@ -78,6 +81,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       this.data = { schema: Doc.Props(), metadata: Doc.Prop() as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
     }
     this.columns = buildColumnDef(this.data.schema, this.settings);
+    if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
 
     this.showTree = this.data.metadata.hierarchy === 'folders';
     if (this.pageSize) this.showTree = false;
@@ -118,39 +122,17 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       });
 
     // обработка команды найти в списке
-    this._routeSubscruption$ = combineLatest([this.route.params, this.route.queryParams]).pipe(
-      filter(params => params[0].type === this.type && params[1].goto))
+    this._routeSubscruption$ = this.route.params.pipe(
+      filter(params => params.type === this.type && params.group === this.group && this.route.snapshot.queryParams.goto))
       .subscribe(params => {
-        const exist = this.dataSource.renderedData.find(d => d.id === params[1].goto);
-        if (exist) {
-          this.router.navigate([this.type], { replaceUrl: true }).then(() =>
-            this.refresh(params[1].goto));
-        } else {
-          this.router.navigate([this.type], { replaceUrl: true }).then(() => {
-            this.filters = {};
-            this.prepareDataSource();
-            this.goto(params[1].goto);
-          });
-        }
+        this.refresh(this.route.snapshot.queryParams.goto);
+        const route: any[] = [this.type];
+        if (this.group) route.push('group', this.group);
+        setTimeout(() => this.router.navigate(route, { replaceUrl: true }));
       });
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
-    this._hotKeySubscriptions$.push(
-      this.hotkeys.addShortcut({ keys: 'PageDown', description: 'Next page' }).subscribe(() => { this.next(); }
-      ));
-    this._hotKeySubscriptions$.push(
-      this.hotkeys.addShortcut({ keys: 'PageUp', description: 'Previos page' }).subscribe(() => { this.prev(); }
-      ));
-
-    // this.hotkeys.addShortcut({ keys: 'Home', description: 'First page' }).subscribe( () => {this.first(); });
-    // this.hotkeys.addShortcut({ keys: 'End', description: 'Last page' }).subscribe( () => {this.last(); });
-    // this.hotkeys.addShortcut({ keys: 'meta.ArrowRight', description: 'Next page' }).subscribe( () => {this.next(); });
-    // this.hotkeys.addShortcut({ keys: 'meta.ArrowLeft', description: 'Previos page' }).subscribe( () => {this.prev(); });
-    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
-    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.open(); });
-    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
-    // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe( () => {this.delete(); });
   }
 
   private setFilters() {
@@ -191,7 +173,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     else this.isCatalog ? this.first() : this.last();
   }
 
-  prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
+  private prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
     this.dataSource.id = this.id;
     const order = multiSortMeta
       .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));

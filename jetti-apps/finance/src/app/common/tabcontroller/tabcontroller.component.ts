@@ -27,12 +27,22 @@ export class TabControllerComponent {
 
     this.route.params
       .subscribe(params => {
-        let index = tabStore.state.tabs.findIndex(el => el.docType === params.type && el.docID === (params.id || ''));
+        let index = tabStore.state.tabs.findIndex(el =>
+          el.type === params.type &&
+          el.id === (params.id || '') &&
+          el.group === (params.group || '')
+        );
         if (index === -1) {
           const header = this.getTabTitle(this.route.snapshot.data.detail);
           const newLink: TabDef = {
-            docType: params.type, docID: (params.id || ''), icon: header.icon, routerLink: this.router.url,
-            header: header.header, data: this.route.snapshot.data.detail, query: this.route.snapshot.queryParams
+            type: params.type,
+            id: (params.id || ''),
+            group: (params.group || ''),
+            icon: header.icon,
+            routerLink: this.router.url,
+            query: this.route.snapshot.queryParams,
+            header: header.header,
+            data: this.route.snapshot.data.detail
           };
           tabStore.push(newLink);
           index = tabStore.selectedIndex;
@@ -43,7 +53,7 @@ export class TabControllerComponent {
 
     merge(...[this.ds.save$, this.ds.delete$]).pipe(filter(doc => doc.id === this.route.snapshot.params.id))
       .subscribe(doc => {
-        const tab = tabStore.state.tabs.find(i => i.docID === doc.id && i.docType === doc.type);
+        const tab = tabStore.state.tabs.find(i => i.id === doc.id && i.type === doc.type && i.group === (doc['Group'] || ''));
         if (tab) {
           tab.header = doc.description;
           tabStore.replace(tab);
@@ -57,8 +67,10 @@ export class TabControllerComponent {
       const metadata = detail['metadata'];
       return { header: doc.description || metadata.description, icon: metadata.icon };
     } else {
-      if (detail.metadata) {
-        return { header: detail.metadata.menu, icon: detail.metadata.icon };
+      if (detail && detail.metadata) {
+        let Group = '';
+        if (detail.metadata.Group) Group = ` [${detail.metadata.Group.code}]`;
+        return { header: detail.metadata.menu + Group, icon: detail.metadata.icon };
       }
     }
   }
@@ -66,19 +78,23 @@ export class TabControllerComponent {
   selectedIndexChange(event) {
     (event.originalEvent as Event).stopImmediatePropagation();
     const tab = this.tabStore.state.tabs[event.index];
-    this.router.navigate([tab.docType, tab.docID], { queryParams: tab.query });
+    const route = [tab.type];
+    if (tab.group) route.push('group', tab.group); else route.push(tab.id);
+    this.router.navigate(route);
   }
 
   handleClose(event) {
     (event.originalEvent as Event).stopImmediatePropagation();
     let tab = this.tabStore.state.tabs[event.index];
-    const component = this.components.find(e => e.id === tab.docID && e.type === tab.docType);
+    const component = this.components.find(e => e.id === tab.id && e.type === tab.type);
     if (component && component.componentRef.instance.close) {
       component.componentRef.instance.close();
     } else {
       this.tabStore.close(tab);
       tab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
-      this.router.navigate([tab.docType, tab.docID], { queryParams: tab.query });
+      const route = [tab.type];
+      if (tab.group) route.push('group', tab.group); else route.push(tab.id);
+      this.router.navigate(route);
     }
   }
 }

@@ -10,19 +10,19 @@
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="fa fa-pencil-square-o" class="ui-button-secondary" pButton type="button" pTooltip="Open"
+        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" pTooltip="Open"
           tooltipPosition="top" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
-        <button id="copy" icon="fa fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
+        <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
           pTooltip="Copy" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
         <button id="post" icon="fa fa-check" class="ui-button-warning" pButton type="button" (click)="post()"
           pTooltip="Post" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
-        <button id="unpost" icon="fa fa-square-o" class="ui-button-warning" pButton type="button" pTooltip="Unpost"
+        <button id="unpost" icon="far fa-square" class="ui-button-warning" pButton type="button" pTooltip="Unpost"
           tooltipPosition="top" showDelay="2000" (click)="post('unpost')" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
-        <button id="delete" icon="fa fa-trash" class="ui-button-danger" pButton type="button" (click)="delete()"
+        <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
           pTooltip="Delete" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length"></button>
         <button id="showTree" icon="fa fa-sitemap" class="ui-button-secondary" pButton type="button"

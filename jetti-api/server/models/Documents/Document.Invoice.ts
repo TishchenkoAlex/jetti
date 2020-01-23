@@ -8,7 +8,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { Manager: 'Catalog.Manager' },
     { Amount: 'number' },
   ],
-  icon: 'fa fa-file-text-o',
+  icon: 'far fa-file-alt',
   menu: 'Invoices',
   prefix: 'INV-',
   commands: [

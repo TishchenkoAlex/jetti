@@ -8,7 +8,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { Document: 'Types.Object' },
     { user: 'Catalog.User' },
   ],
-  icon: 'fa fa-file-text-o',
+  icon: 'far fa-file-alt',
   menu: 'WorkFlow list',
   prefix: 'WF-'
 })

@@ -39,9 +39,9 @@ export class ApiService {
     return this.http.post<DocListResponse>(query, body);
   }
 
-  getView(type: string): Observable<IViewModel> {
+  getView(type: string, group: string): Observable<IViewModel> {
     const query = `${environment.api}view`;
-    return this.http.post<IViewModel>(query, { type });
+    return this.http.post<IViewModel>(query, { type, group });
   }
 
   getViewModel(type: string, id = '', params: { [key: string]: any } = {}): Observable<IViewModel> {

@@ -17,12 +17,9 @@ spec:
         - name: jetti
           image: eu.gcr.io/jetti-x100/jetti-api:latest
           resources:
-            requests:
-              memory: "256Mi"
-              cpu: "500m"
             limits:
               memory: "512Mi"
-              cpu: "1000m"
+              cpu: "200m"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -71,7 +68,7 @@ spec:
             - name: EXCHANGE_ACCESS_KEY
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "05"
+              value: "06"
             - name: NODE_ENV
               value: "production"
 ---

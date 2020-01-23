@@ -26,12 +26,13 @@ export class TabResolver implements Resolve<FormGroup | IViewModel | null> {
   public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const id = route.params.id || '';
     const type = route.params.type;
+    const group = route.params.group || '';
     if (type === 'home') return null;
     if (type.startsWith('Form.')) { return this.dfs.getFormView$(type); }
-    if (this.tabStore.state.tabs.findIndex(i => i.docType === type && i.docID === id) === -1) {
+    if (this.tabStore.state.tabs.findIndex(i => i.type === type && i.id === id && i.group === group) === -1) {
       return id ?
         this.dfs.getViewModel$(type, id, route.queryParams) :
-        this.api.getView(type);
+        this.api.getView(type, group);
     }
     return null;
   }
@@ -41,6 +42,7 @@ export class TabResolver implements Resolve<FormGroup | IViewModel | null> {
 export const routes: Routes = [
   { path: ':type/:id', component: TabControllerComponent, resolve: { detail: TabResolver }, canActivate: [AuthGuardService] },
   { path: ':type', component: TabControllerComponent, resolve: { detail: TabResolver }, canActivate: [AuthGuardService] },
+  { path: ':type/group/:group', component: TabControllerComponent, resolve: { detail: TabResolver }, canActivate: [AuthGuardService] },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' }
 ];

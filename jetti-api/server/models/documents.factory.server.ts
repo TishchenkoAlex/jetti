@@ -89,11 +89,11 @@ export async function createDocumentServer<T extends DocumentBaseServer>
     };
   }
 
+  const Prop = { ...result.Prop() as DocumentOptions};
   let Operation: CatalogOperation | null = null;
   let Grop: RefValue | null = null;
   if (result instanceof DocumentOperation && document && document.id) {
     result.f1 = null; result.f2 = null; result.f3 = null;
-    const Prop = result.Prop() as DocumentOptions;
     Prop.commands = [];
     Prop.copyTo = [];
     if (result.Operation) {
@@ -101,6 +101,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
       if (!Operation) throw new Error(`Operation with id ${result.Operation} not found!`);
       Grop = await lib.doc.formControlRef(Operation!.Group as string, tx);
       result.Group = Operation!.Group;
+      Prop['Group'] = Grop;
       let i = 1;
       (Operation && Operation.Parameters || []).sort((a, b) => (a.order || 0) - (b.order || 0)).forEach(c => {
         if (c.type!.startsWith('Catalog.')) result[`f${i++}`] = result[c.parameter];
@@ -131,7 +132,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         }
       }
       if (Operation && Operation.module) {
-        Prop['module'] = Operation.module;
+        Prop.module = Operation.module;
         const func = new Function('tx', Operation.module);
         result['serverModule'] = func.bind(result, tx)() || {};
 
@@ -142,6 +143,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   }
   // protect against mutate
   result.Props = () => Props;
+  result.Prop = () => Prop;
 
   if (result.isDoc) result.description =
     calculateDescription((result.Prop() as DocumentOptions).description, result.date, result.code, Grop && Grop.value as string || '');

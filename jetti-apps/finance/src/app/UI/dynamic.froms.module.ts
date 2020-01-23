@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseTreeListComponent } from '../common/datatable/base.tree-list.component';
-import { BaseTreeListToolbarComponent } from '../common/datatable/base.tree-list.toolbar.component';
 import { PipesModule } from '../common/pipes';
 import { RegisterAccumulationComponent } from '../common/register-movements/register.accumulation.component';
 import { RegisterAccumulationListComponent } from '../common/register-movements/register.accumulation.list.component';
@@ -45,7 +44,6 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
     CatalogListComponent,
 
     TablePartsComponent,
@@ -91,7 +89,6 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
     CatalogListComponent,
 
     TablePartsComponent,
@@ -119,7 +116,6 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
     CatalogListComponent,
 
     OperationFormComponent,

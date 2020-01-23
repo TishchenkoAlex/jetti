@@ -4,10 +4,10 @@
   (onClose)="handleClose($event)" 
   (onChange)="selectedIndexChange($event)">
   <p-tabPanel #tp *ngFor="let tab of (tabStore.state$ | async).tabs" header="{{ tab.header | bcEllipsis:25 }}"
-    [leftIcon]="tab.icon" [closable]="tab.docType !== 'home'">
+    [leftIcon]="tab.icon" [closable]="tab.type !== 'home'">
     <ng-template pTemplate="content">
       <div class="card" style="padding: 0; margin: 0">
-        <dynamic-component [type]="tab.docType" [kind]="tab.docID ? 'form' :'list'" [id]="tab.docID || ''" 
+        <dynamic-component [type]="tab.type" [kind]="tab.id ? 'form' :'list'" [id]="tab.id || ''" 
         [data]="tab.data"></dynamic-component>
       </div>
     </ng-template>

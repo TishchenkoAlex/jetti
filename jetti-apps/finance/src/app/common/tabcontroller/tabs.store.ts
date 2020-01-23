@@ -6,7 +6,9 @@ import { IViewModel } from '../../../../../../jetti-api/server/models/common-typ
 export interface TabDef {
   header: string;
   icon: string;
-  docType: string; docID: string;
+  type: string;
+  id: string;
+  group: string;
   routerLink: string;
   query: { [x: string]: any };
   data: FormGroup | IViewModel | any;
@@ -20,8 +22,8 @@ interface TabsState {
 const initailState: TabsState = {
   selectedIndex: 0,
   tabs: [{
-    header: 'Home', docType: 'home', icon: 'fa fa-home',
-    docID: '', routerLink: '/' + 'home', data: null, query: {}
+    header: 'Home', type: 'home', icon: 'fa fa-home',
+    id: '', routerLink: '/' + 'home', data: null, query: {}, group: ''
   }]
 };
 
@@ -50,7 +52,7 @@ export class TabsStore {
 
   replace(value: TabDef) {
     const copy = [...this.state.tabs];
-    const index = this.state.tabs.findIndex(el => el.docType === value.docType && el.docID === value.docID);
+    const index = this.state.tabs.findIndex(el => el.type === value.type && el.id === value.id && el.group === value.group);
     copy[index] = value;
     this._state.next(({
       ...this.state,
@@ -60,10 +62,10 @@ export class TabsStore {
 
   close(value: TabDef) {
     const copy = [...this.state.tabs];
-    const index = this.state.tabs.findIndex(el => el.docType === value.docType && el.docID === value.docID);
+    const index = this.state.tabs.findIndex(el => el.type === value.type && el.id === value.id && el.group === value.group);
     const currentTab = this.state.tabs[this.state.selectedIndex];
     copy.splice(index, 1);
-    let selectedIndex = copy.findIndex(el => el.docType === currentTab.docType && el.docID === currentTab.docID);
+    let selectedIndex = copy.findIndex(el => el.type === currentTab.type && el.id === currentTab.id && el.group === currentTab.group);
     if (selectedIndex === -1) selectedIndex = Math.min(this.state.selectedIndex, copy.length - 1);
     this._state.next(({
       ...this.state,
