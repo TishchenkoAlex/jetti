@@ -141,60 +141,65 @@ router.post('/view', viewAction);
 
 // Delete or UnDelete document
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  const sdb = SDB(req);
-  await sdb.tx(async tx => {
-    await lib.util.postMode(true, tx);
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      await lib.util.adminMode(true, tx);
+      try {
+        const id: string = req.params.id;
+        const doc = await lib.doc.byId(id, tx);
+        if (!doc) throw new Error(`API - Delete: document with id '${id}' not found.`);
 
-    const id: string = req.params.id;
-    const doc = await lib.doc.byId(id, tx);
-    if (!doc) throw new Error(`API - Delete: document with id '${id}' not found.`);
+        const serverDoc = await createDocumentServer(doc.type, doc, tx);
 
-    const serverDoc = await createDocumentServer(doc.type, doc, tx);
+        if (!doc.deleted) {
+          const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
+          if (typeof beforeDelete === 'function') await beforeDelete(tx);
+          if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
+        }
 
-    if (!doc.deleted) {
-      const beforeDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['beforeDelete'];
-      if (typeof beforeDelete === 'function') await beforeDelete(tx);
-      if (serverDoc.beforeDelete) await serverDoc.beforeDelete(tx);
-    }
+        serverDoc.deleted = !!!serverDoc.deleted;
+        serverDoc.posted = false;
 
-    serverDoc.deleted = !!!serverDoc.deleted;
-    serverDoc.posted = false;
-
-    const deleted = await tx.none(`
+        const deleted = await tx.none(`
         DELETE FROM "Register.Account" WHERE document = @p1;
         DELETE FROM "Register.Info" WHERE document = @p1;
         DELETE FROM "Accumulation" WHERE document = @p1;
         UPDATE "Documents" SET deleted = @p3, posted = @p4 WHERE id = @p1;
       `, [id, serverDoc.date, serverDoc.deleted, 0]);
 
-    if (!doc.deleted) {
-      const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
-      if (typeof afterDelete === 'function') await afterDelete(tx);
-      if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
-    }
+        if (!doc.deleted) {
+          const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
+          if (typeof afterDelete === 'function') await afterDelete(tx);
+          if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
+        }
 
-    const view = await buildViewModel(serverDoc, tx);
-    res.json(view);
-
-  });
+        const view = await buildViewModel(serverDoc, tx);
+        res.json(view);
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
+    });
+  } catch (err) { next(err); }
 });
 
 router.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
+      await lib.util.adminMode(true, tx);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
 
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      await lib.util.postMode(true, tx);
-      if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-      if (serverDoc.timestamp) {
-        await updateDocument(serverDoc, tx);
-      } else {
-        await insertDocument(serverDoc, tx);
-      }
-      res.json((await buildViewModel(serverDoc, tx)));
-
+        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        if (serverDoc.timestamp) {
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });
@@ -207,18 +212,20 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
       if (doc && doc.deleted) throw new Error('Cant POST deleted document');
       doc.posted = true;
-      await lib.util.postMode(true, tx);
-      if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-      if (serverDoc.timestamp) {
-        await unpostDocument(serverDoc, tx);
-        await updateDocument(serverDoc, tx);
-      } else {
-        await insertDocument(serverDoc, tx);
-      }
-      await postDocument(serverDoc, tx);
-      res.json((await buildViewModel(serverDoc, tx)));
-
+      await lib.util.adminMode(true, tx);
+      try {
+        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        if (serverDoc.timestamp) {
+          await unpostDocument(serverDoc, tx);
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
+        await postDocument(serverDoc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });
@@ -231,17 +238,19 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
       if (doc && doc.deleted) throw new Error('Cant POST deleted document');
       doc.posted = true;
-      await lib.util.postMode(true, tx);
-      const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-      if (serverDoc.timestamp) {
-        await unpostDocument(serverDoc, tx);
-        await updateDocument(serverDoc, tx);
-      } else {
-        await insertDocument(serverDoc, tx);
-      }
-      await postDocument(serverDoc, tx);
-      res.json((await buildViewModel(serverDoc, tx)));
-
+      await lib.util.adminMode(true, tx);
+      try {
+        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        if (serverDoc.timestamp) {
+          await unpostDocument(serverDoc, tx);
+          await updateDocument(serverDoc, tx);
+        } else {
+          await insertDocument(serverDoc, tx);
+        }
+        await postDocument(serverDoc, tx);
+        res.json((await buildViewModel(serverDoc, tx)));
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });
@@ -283,29 +292,32 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      await lib.util.postMode(true, tx);
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
-      const value = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
-      const property: string = req.params.property;
-      const type: DocTypes = req.params.type as DocTypes;
+      await lib.util.adminMode(true, tx);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
+        const value = JSON.parse(JSON.stringify(req.body.value), dateReviverUTC);
+        const property: string = req.params.property;
+        const type: DocTypes = req.params.type as DocTypes;
 
-      doc[property] = typeof value === 'object' ? value.id : value;
-      const serverDoc = await createDocumentServer(type, doc, tx);
+        doc[property] = typeof value === 'object' ? value.id : value;
+        const serverDoc = await createDocumentServer(type, doc, tx);
 
-      const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChangeServer'];
-      if (typeof OnChange === 'function') await OnChange(value);
+        const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChangeServer'];
+        if (typeof OnChange === 'function') await OnChange(value);
 
-      if (typeof serverDoc.onValueChanged === 'function') {
-        await serverDoc.onValueChanged(property, value, tx);
-      }
-      const result: IViewModel = {
-        metadata: serverDoc.Prop() as DocumentOptions,
-        schema: serverDoc.Props(),
-        model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
-        columnsDef: [] as ColumnDef[],
-        settings: new FormListSettings(),
-      };
-      res.json(result);
+        if (typeof serverDoc.onValueChanged === 'function') {
+          await serverDoc.onValueChanged(property, value, tx);
+        }
+        const result: IViewModel = {
+          metadata: serverDoc.Prop() as DocumentOptions,
+          schema: serverDoc.Props(),
+          model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
+          columnsDef: [] as ColumnDef[],
+          settings: new FormListSettings(),
+        };
+        res.json(result);
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });
@@ -314,25 +326,28 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      await lib.util.postMode(true, tx);
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
-      const command: string = req.params.command;
-      const type: DocTypes = req.params.type as DocTypes;
-      const args: { [key: string]: any } = req.params.args as any;
-      const serverDoc = await createDocumentServer(type, doc, tx);
+      await lib.util.adminMode(true, tx);
+      try {
+        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body.doc), dateReviverUTC);
+        const command: string = req.params.command;
+        const type: DocTypes = req.params.type as DocTypes;
+        const args: { [key: string]: any } = req.params.args as any;
+        const serverDoc = await createDocumentServer(type, doc, tx);
 
-      const docModule: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule'][command];
-      if (typeof docModule === 'function') await docModule(args);
-      if (serverDoc.onCommand) await serverDoc.onCommand(command, args, tx);
+        const docModule: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule'][command];
+        if (typeof docModule === 'function') await docModule(args);
+        if (serverDoc.onCommand) await serverDoc.onCommand(command, args, tx);
 
-      const result: IViewModel = {
-        metadata: serverDoc.Prop() as DocumentOptions,
-        schema: serverDoc.Props(),
-        model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
-        columnsDef: [] as ColumnDef[],
-        settings: new FormListSettings(),
-      };
-      res.json(result);
+        const result: IViewModel = {
+          metadata: serverDoc.Prop() as DocumentOptions,
+          schema: serverDoc.Props(),
+          model: (await buildViewModel<DocumentBase>(serverDoc, tx))!,
+          columnsDef: [] as ColumnDef[],
+          settings: new FormListSettings(),
+        };
+        res.json(result);
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });

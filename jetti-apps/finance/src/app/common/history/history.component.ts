@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable, Subject, Subscription, merge } from 'rxjs';
-import { map, share, take, filter } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Subject, Subscription, merge } from 'rxjs';
+import { take, filter } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { Router } from '@angular/router';
@@ -13,8 +13,7 @@ import { getFormGroup } from '../dynamic-form/dynamic-form.service';
   selector: 'j-history',
   templateUrl: './history.component.html',
 })
-
-export class HistoryComponent implements OnInit {
+export class HistoryComponent implements OnInit, OnDestroy {
 
   @Input() doc: DocumentBase;
   selection: any;
@@ -49,5 +48,9 @@ export class HistoryComponent implements OnInit {
       this.ds.openSnackBar('success', 'Restored', 'Restored');
       this.ds.form(form);
     });
+  }
+
+  ngOnDestroy() {
+    this._subscription$.unsubscribe();
   }
 }

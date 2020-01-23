@@ -9,7 +9,7 @@ import { RegisterAccumulationTypes } from './models/Registers/Accumulation/facto
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminModeForPost, postDocument, unpostDocument, updateDocument, setPostedSate } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 
@@ -45,7 +45,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
-    postMode: (mode: boolean, tx: MSSQL) => Promise<boolean>,
+    adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () => Promise<string>
@@ -80,7 +80,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
-    postMode: adminModeForPost,
+    adminMode: adminMode,
     closeMonth: closeMonth,
     GUID,
     closeMonthErrors,
@@ -252,22 +252,28 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
 }
 
 export async function postById(id: Ref, tx: MSSQL) {
-  await lib.util.postMode(true, tx);
-  const serverDoc = await setPostedSate(id, tx);
-  await unpostDocument(serverDoc, tx);
-  if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
-  return serverDoc;
+  await lib.util.adminMode(true, tx);
+  try {
+    const serverDoc = await setPostedSate(id, tx);
+    await unpostDocument(serverDoc, tx);
+    if (serverDoc.deleted === false) await postDocument(serverDoc, tx);
+    return serverDoc;
+  } catch (ex) { throw new Error(ex); }
+  finally { await lib.util.adminMode(false, tx); }
 }
 
 export async function unPostById(id: Ref, tx: MSSQL) {
-  await lib.util.postMode(true, tx);
-  const doc = (await lib.doc.byId(id, tx))!;
-  const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-  if (!doc.posted) return serverDoc;
-  serverDoc.posted = false;
-  await unpostDocument(serverDoc, tx);
-  await updateDocument(serverDoc, tx);
-  return serverDoc;
+  await lib.util.adminMode(true, tx);
+  try {
+    const doc = (await lib.doc.byId(id, tx))!;
+    const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+    if (!doc.posted) return serverDoc;
+    serverDoc.posted = false;
+    await unpostDocument(serverDoc, tx);
+    await updateDocument(serverDoc, tx);
+    return serverDoc;
+  } catch (ex) { throw new Error(ex); }
+  finally { await lib.util.adminMode(false, tx); }
 }
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
