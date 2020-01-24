@@ -1,90 +1,16 @@
-<!-- <form novalidate [formGroup]="form" cdkTrapFocus>
-  <p-panel [toggleable]="true" [header]="docDescription">
-    <p-toolbar>
-      <div class="ui-toolbar-group-left">
-        <button pButton type="button" icon="fa fa-check-square-o" label="Search" class="ui-button-warning"
-          (click)="ExecuteServerMethod('Search')"></button>
-        <button pButton type="button" label="Replace" class="ui-button-danger"
-          (click)="ExecuteServerMethod('Replace')"></button>
-      </div>
-      <div class="ui-toolbar-group-right">
-        <button pButton type="button" icon="fa fa-close" class="ui-button-danger" (click)="close()"></button>
-      </div>
-    </p-toolbar>
-
-    <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk.OldValue" [form]="form"> </j-control>
-        <j-control [control]="vk.OldValueRecords" [form]="form"></j-control>
-      </div>
-
-      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-        <j-control [control]="vk.NewValue" [form]="form"> </j-control>
-        <j-control [control]="vk.NewValueRecords" [form]="form"></j-control>
-      </div>
-
-      <div *ngIf="tables$ | async as tables">
-        <br *ngIf="tables.length">
-        <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-          <div *ngFor="let c of tables; let i = index">
-            <p-tabPanel [header]="c.label">
-              <j-control [control]="c" [form]="form"></j-control>
-            </p-tabPanel>
-          </div>
-        </p-tabView>
-      </div>
-
-    </div>
-    <ng-content></ng-content>
-  </p-panel>
-</form>
-
-<p-confirmDialog [key]="id" appendTo="body" [closeOnEscape]="true" [closable]="true" #cdlg>
-  <p-footer>
-    <div cdkTrapFocus>
-      <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cdlg.accept()"></button>
-      <button type="button" pButton icon="fa fa-close" label="No" (click)="cdlg.reject()"></button>
-    </div>
-  </p-footer>
-</p-confirmDialog> -->
-
-
 <div *ngIf="form$ | async as form">
   <div *ngIf="vk$ | async as vk">
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
-        <p-panel #mp
-          [header]="(description$ | async)?.value?.concat((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
-          [toggleable]="true">
+        <p-panel #mp header="Search and replace" [toggleable]="true">
           <p-toolbar *ngIf="!isHistory">
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="Search" icon="fab fa-searchengin" label="Search"
                 pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
-               (click)="ExecuteServerMethod('Search')"
-                ></button>
-                <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace"
-                pTooltip="Replace" tooltipPosition="top" showDelay="2000" class="ui-button-danger"
-               (click)="ExecuteServerMethod('Replace')"
-                ></button>
-              
-            </div>
-            <div class="ui-toolbar-group-right">
-              <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async"
-                styleClass="ui-button-secondary" label="base on">
-              </p-splitButton>
-              <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
-                styleClass="ui-button-secondary" label="commands">
-              </p-splitButton>
-              <!--         <button *ngIf="!viewModel.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
-        [disabled]="(lds.busy$ | async)"></button> -->
-              <button *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
-                pTooltip="Show in list" tooltipPosition="top" showDelay="2000" (click)="goto()"
-                [disabled]="(lds.busy$ | async)"></button>
-              <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
-                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
-              <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
-                tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
+                (click)="ExecuteServerMethod('Search')"></button>
+              <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace" pTooltip="Replace"
+                tooltipPosition="top" showDelay="2000" class="ui-button-danger"
+                (click)="ExecuteServerMethod('Replace')"></button>
             </div>
           </p-toolbar>
 
@@ -126,65 +52,10 @@
                 </div>
               </p-tabView>
             </div>
-
-            <j-control *ngIf="vk.info" [control]="vk.info" [form]="form"></j-control>
-
             <ng-content></ng-content>
           </div>
-
         </p-panel>
-        <p-panel #pad [toggleable]="true" header="Additonal Info" [collapsed]="isDoc ? true : false">
-          <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
-            <j-control *ngIf="vk.parent" [control]="vk.parent" [form]="form"></j-control>
-            <j-control *ngIf="vk.user" [control]="vk.user" [form]="form"></j-control>
-            <j-control *ngIf="vk.workflow" [control]="vk.workflow" [form]="form"></j-control>
-          </div>
-        </p-panel>
-
-        <div *ngIf="!isHistory">
-          <p-panel *ngIf="type === 'Catalog.Operation' && (isFolder$ | async) === false" [toggleable]="true"
-            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
-            <j-control *ngIf="vk.script" [control]="vk.script" [form]="form"></j-control>
-          </p-panel>
-
-          <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module"
-            [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
-            <j-control *ngIf="vk.module" [control]="vk.module" [form]="form"></j-control>
-          </p-panel>
-
-          <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #accumulation
-            *ngIf="isDoc && (isPosted$ | async)">
-            <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
-            <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel">
-            </j-register-accumulation-list>
-          </p-panel>
-
-          <div *ngIf="(isFolder$ | async) === false">
-            <div *ngFor="let r of relations$ | async">
-              <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
-                <j-list *ngIf="!relation.collapsed" [type]="r.type" [pageSize]=10
-                  [settings]="{order: [], filter: [
-                  {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
-                </j-list>
-              </p-panel>
-            </div>
-          </div>
-
-          <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false">
-            <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
-          </p-panel>
-        </div>
-
       </form>
-
-      <p-confirmDialog [key]="id" [closeOnEscape]="true" [closable]="true" #cdlg appendTo="body">
-        <p-footer>
-          <div cdkTrapFocus>
-            <button type="button" pButton icon="fa fa-check" label="Yes" (click)="cdlg.accept()"></button>
-            <button type="button" pButton icon="fa fa-close" label="No" (click)="cdlg.reject()"></button>
-          </div>
-        </p-footer>
-      </p-confirmDialog>
     </div>
   </div>
 </div>
