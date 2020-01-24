@@ -3,7 +3,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
 @JDocument({
   type: 'Document.CashRequestRegistry',
   description: 'Реестр оплат',
-  icon: 'pi pi-list',
+  icon: 'far fa-file-alt',
   menu: 'Реестр оплат',
   prefix: 'CRR-',
   commands: [

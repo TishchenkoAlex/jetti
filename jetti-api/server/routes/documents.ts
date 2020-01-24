@@ -114,6 +114,9 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
     const metadata = ServerDoc.Prop() as DocumentOptions;
+    if (params.group) {
+      metadata['Group'] = await lib.doc.formControlRef(params.group, sdb);
+    }
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }

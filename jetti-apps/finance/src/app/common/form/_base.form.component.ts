@@ -203,20 +203,30 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   goto() {
-    return this.router.navigate([this.viewModel.type],
+    const route = [this.viewModel.type];
+    const group = this.viewModel.Group && this.viewModel.Group.id;
+    if (group) route.push('group', group);
+    return this.router.navigate(route,
       { queryParams: { goto: this.id, posted: this.viewModel.posted }, replaceUrl: true });
   }
 
   private _close() {
-    const tab = this.tabStore.state.tabs.find(t => t.docID === this.id && t.docType === this.type);
+    const tab = this.tabStore.state.tabs.find(t => t.id === this.id && t.type === this.type);
     if (tab) {
       this.tabStore.close(tab);
-      const parentTab = this.tabStore.state.tabs.find(t => t.docType === this.type && !t.docID);
+      let Group = '';
+      const GroupControl = this.form.get('Group');
+      if (GroupControl) Group = GroupControl.value.id;
+      const parentTab = this.tabStore.state.tabs.find(t => t.type === this.type && !t.id && t.group === Group);
       if (parentTab) {
-        this.router.navigate([parentTab.docType, parentTab.docID], { queryParams: parentTab.query });
+        const route = [parentTab.type];
+        if (parentTab.group) route.push('group', parentTab.group);
+        this.router.navigate(route);
       } else {
         const returnTab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
-        this.router.navigate([returnTab.docType, returnTab.docID], { queryParams: returnTab.query });
+        const route = [returnTab.type];
+        if (returnTab.group) route.push('group', returnTab.group);
+        this.router.navigate(route);
       }
     }
   }

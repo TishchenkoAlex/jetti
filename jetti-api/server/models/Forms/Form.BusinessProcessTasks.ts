@@ -4,7 +4,7 @@ import { Props, Ref } from '../document';
 @JForm({
   type: 'Form.BusinessProcessTasks',
   description: 'Мои задачи',
-  icon: 'fa fa-money',
+  icon: 'fas fa-tasks',
   menu: 'Список задач',
 })
 export class FormBusinessProcessTasks extends FormBase {

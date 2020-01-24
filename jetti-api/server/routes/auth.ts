@@ -13,6 +13,7 @@ import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documen
 import { DocTypes } from '../models/documents.types';
 import { DocumentOptions, Ref } from '../models/document';
 import { createForm } from '../models/Forms/form.factory';
+import { CatalogOperationGroup } from '../models/Catalogs/Catalog.Operation.Group';
 
 export const router = express.Router();
 
@@ -150,20 +151,26 @@ export async function buildMenu(user: CatalogUser): Promise<MenuItem[]> {
       type: SubSystem.type,
       icon: SubSystem.icon,
       label: SubSystem.description,
-      items: [
-        ...SubSystem.Catalogs.map(el => {
+      items: await Promise.all([
+        ...SubSystem.Documents.map(async el => {
+          const Group = await lib.doc.byIdT<CatalogOperationGroup>(el.Group, sdba);
+          if (Group) {
+            return { type: el.Document as DocTypes, icon: Group.icon,
+              routerLink: [`/${el.Document}/group/${Group.id}`], label: Group.menu };
+          } else  {
+            const prop = createDocument(el.Document as DocTypes).Prop() as DocumentOptions;
+            return { type: prop.type, icon: prop.icon, routerLink: ['/' + prop.type], label: prop.menu };
+          }
+        }),
+        ...SubSystem.Catalogs.map(async el => {
           const prop = createDocument(el.Catalog as DocTypes).Prop() as DocumentOptions;
           return { type: prop.type, icon: prop.icon, routerLink: ['/' + prop.type], label: prop.menu };
         }),
-        ...SubSystem.Documents.map(el => {
-          const prop = createDocument(el.Document as DocTypes).Prop() as DocumentOptions;
-          return { type: prop.type, icon: prop.icon, routerLink: ['/' + prop.type], label: prop.menu };
-        }),
-        ...SubSystem.Forms.filter(el => el.Form).map(el => {
+        ...SubSystem.Forms.filter(el => el.Form).map(async el => {
           const prop = createForm({ type: el.Form as any }).Prop() as DocumentOptions;
           return { type: prop.type, icon: prop.icon, routerLink: ['/' + prop.type], label: prop.menu };
         }),
-      ]
+      ])
     };
   });
   const subs = await Promise.all(sub);

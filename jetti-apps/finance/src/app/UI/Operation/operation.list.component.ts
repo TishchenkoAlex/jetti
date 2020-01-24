@@ -1,14 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, Input } from '@angular/core';
-import { SelectItem } from 'primeng/components/common/selectitem';
-// tslint:disable-next-line:import-blacklist
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { BaseDocListComponent } from './../../common/datatable/base.list.component';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { AuthService } from 'src/app/auth/auth.service';
-import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
-
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +16,7 @@ import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/se
           id="company" placeholder="Select company" type="Catalog.Company">
         </j-autocomplete-png>
       </div>
-      <div fxFlex>
+      <div fxFlex *ngIf="!super.group">
         <j-autocomplete-png [ngModel]="super?.filters['Group']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"
           (ngModelChange)="super.update({field: 'Group', filter: null}, $event, '=')"
           id="Group" placeholder="Select group of operation" type="Catalog.Operation.Group">
@@ -35,7 +30,7 @@ import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/se
       </div>
       </div>
   </div>
-  <j-list [data]="this.data" [type]="this.type" [settings]="settings" ></j-list>
+  <j-list [data]="this.data" [type]="this.type" ></j-list>
   `
 })
 export class OperationListComponent implements OnInit {
@@ -44,28 +39,12 @@ export class OperationListComponent implements OnInit {
 
   @ViewChild(BaseDocListComponent, { static: true }) super: BaseDocListComponent;
 
-  operationsGroups$: Observable<SelectItem[]>;
-
-  settings = new FormListSettings();
-
-  constructor(public appAuth: AuthService) { }
+  constructor(public appAuth: AuthService) {  }
 
   ngOnInit() {
-    this.operationsGroups$ = this.super.ds.api.getOperationsGroups().pipe(
-      map(data => [
-        { label: '(All)', value: null },
-        ...data.map(el => <SelectItem>({ label: el.value, value: el })) || []
-      ]));
     this.appAuth.userProfile$.pipe(take(1)).subscribe(u => {
-      const filter = new FormListFilter('user', '=', u.account.env);
-      this.settings.filter = [filter];
+      this.super.settings.filter.push({left: 'user', center: '=', right: u.account.env});
     });
-  }
-
-  onChange(event) {
-    this.super.filters.Group = { matchMode: '=', value: event.value };
-    this.super.prepareDataSource();
-    this.super.dataSource.sort();
   }
 
 }

@@ -3,27 +3,27 @@
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp
-          [header]="(description$ | async)?.value?.concat((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
+          [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
           [toggleable]="true">
           <p-toolbar *ngIf="!isHistory">
             <div class="ui-toolbar-group-left">
-              <button pButton type="button" id="PostClose" icon="fa fa-check-square-o" label="Post&Close"
+              <button pButton type="button" id="PostClose" icon="fa fa-check-square" label="Post&Close"
                 pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
                 [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
                 *ngIf="!(isDeleted$ | async)"></button>
               <button pButton type="button" id="Post" icon="fa fa-check" class="ui-button-secondary" pTooltip="Post"
                 tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="post()"
                 *ngIf="!(isDeleted$ | async) && isDoc"></button>
-              <button pButton type="button" id="unPost" icon="fa fa-square-o" class="ui-button-secondary"
+              <button pButton type="button" id="unPost" icon="far fa-square" class="ui-button-secondary"
                 pTooltip="Unpost" tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)"
                 (click)="unPost()" *ngIf="!(isDeleted$ | async) && (isPosted$ | async) && isDoc"></button>
-              <button pButton type="button" id="save" icon="fa fa-floppy-o" class="ui-button-secondary" pTooltip="Save"
+              <button pButton type="button" id="save" icon="far fa-save" class="ui-button-secondary" pTooltip="Save"
                 tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
                 *ngIf="!(isPosted$ | async) || !isDoc"></button>
-              <button pButton type="button" id="Copy" icon="fa fa-copy" class="ui-button-secondary" pTooltip="Copy"
+              <button pButton type="button" id="Copy" icon="far fa-copy" class="ui-button-secondary" pTooltip="Copy"
                 tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
                 *ngIf="!(isDeleted$ | async)  && !(isNew$ | async)"></button>
-              <button pButton type="button" id="Delete" icon="fa fa-trash" class="ui-button-danger" pTooltip="Delete"
+              <button pButton type="button" id="Delete" icon="far fa-trash-alt" class="ui-button-danger" pTooltip="Delete"
                 tooltipPosition="top" showDelay="2000" *ngIf="!(isNew$ | async)" (click)="delete()"
                 [disabled]="(lds.busy$ | async)"></button>
             </div>
@@ -49,7 +49,7 @@
           <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
 
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-              *ngFor="let i of [0,3,6,9,12,15]">
+              *ngFor="let i of [0,3,6,9,12,15,18]">
               <div fxFlex>
                 <j-control
                   *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"

@@ -959,6 +959,8 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Prefix] [Prefix]
+        , d.[menu] [menu]
+        , d.[icon] [icon]
       
         , ISNULL(l5.description, d.description) [OperationGroup.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [OperationGroup.Level4]

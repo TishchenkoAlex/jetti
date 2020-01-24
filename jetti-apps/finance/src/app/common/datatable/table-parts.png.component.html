@@ -40,7 +40,7 @@
               <span *ngSwitchCase="'script'">{{getControl(rowData.index).get(col.field)?.value}}</span>
               <span *ngSwitchCase="'boolean'">
                 <i
-                  [class]="getControl(rowData.index).get(col.field)?.value ? 'fa fa-check-square' : 'fa fa-square-o'"></i>
+                  [class]="getControl(rowData.index).get(col.field)?.value ? 'far fa-check-square' : 'far fa-square'"></i>
               </span>
               <span *ngSwitchDefault>{{ getControlValue(rowData.index, col.field, col.type) }}
               </span>

@@ -27,8 +27,8 @@
                   {{rowData[column.name]  || ''  | date:'dd.MM.yyyy HH:mm:ss'}}</span></span>
               <span *ngSwitchCase="'number'">{{rowData[column.name] | number:'1.0'}}</span>
               <span *ngSwitchCase="'boolean'">
-                <i *ngIf="rowData[column.name]" class="fa fa-check-square"></i>
-                <i *ngIf="!rowData[column.name]" class="fa fa-square-o"></i>
+                <i *ngIf="rowData[column.name]" class="far fa-check-square"></i>
+                <i *ngIf="!rowData[column.name]" class="far fa-square"></i>
               </span>
               <span *ngSwitchCase="'string'">{{rowData[column.name]  || '' }}</span>
               <span *ngSwitchDefault>{{rowData[column.name]}}</span>

@@ -175,10 +175,6 @@ export class DynamicFormService {
       }));
   }
 
-  getView$(type: string) {
-    return this.api.getView(type);
-  }
-
   getFormView$(type: FormTypes) {
     const form = createForm({ type: type });
     const view = form.Props();

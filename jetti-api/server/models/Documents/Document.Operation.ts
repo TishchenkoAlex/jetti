@@ -12,7 +12,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { f3: 'string' },
     { company: 'Catalog.Company' }
   ],
-  icon: 'fa fa-file-text-o',
+  icon: 'far fa-file-alt',
   menu: 'Operations',
   prefix: 'OPER-',
   commands: [],

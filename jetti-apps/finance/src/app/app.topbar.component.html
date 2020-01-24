@@ -48,7 +48,7 @@
       </li>
       <li #notifications [ngClass]="{'active-top-menu':app.activeTopbarItem === notifications}">
         <a href="#" (click)="app.onTopbarItemClick($event,notifications)">
-          <i class="topbar-icon fa fa-fw fa-bell-o">
+          <i class="topbar-icon far fa-bell">
             <p-progressSpinner *ngIf="(ts.latestJobsAll$ | async)" styleClass="topbar-badge animated rubberBand" [strokeWidth]="8" [style]="{width: '17px', height: '18px'}"></p-progressSpinner>
           </i>
           <span *ngIf="(ts.latestJobsAll$ | async) as counter" >
@@ -61,9 +61,9 @@
             <a href="#" (click)="$event.preventDefault()">
               <div style="display: flex; align-items: center; ">
                 <p-progressSpinner *ngIf="event['status'] === 'Active'" [strokeWidth]="6" [style]="{width: '20px', height: '20px', 'margin-right': '7px'}"></p-progressSpinner>
-                <i *ngIf="event['status'] === 'Completed'" class="fa fa-fw fa-tasks"></i>
-                <i *ngIf="event['status'] === 'Waiting'" class="fa fa-fw fa-clock-o"></i>
-                <i *ngIf="event['status'] === 'Failed'" class="fa fa-fw fa-exclamation-circle" style="color: red"></i>
+                <i *ngIf="event['status'] === 'Completed'" class="fas fa-tasks"></i>
+                <i *ngIf="event['status'] === 'Waiting'" class="far fa-clock"></i>
+                <i *ngIf="event['status'] === 'Failed'" class="fas fa-exclamation-circle" style="color: red"></i>
                 <span>
                   {{event.data && event.data['job'].description}}, {{event.failedReason }} {{ event.progress }} of {{event.data['job']['total']}},
                   {{ event.finishedOn | date:'short' }}

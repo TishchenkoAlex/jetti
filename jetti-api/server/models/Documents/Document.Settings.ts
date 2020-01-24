@@ -3,7 +3,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 @JDocument({
   type: 'Document.Settings',
   description: 'Settings',
-  icon: 'fa fa-file-text-o',
+  icon: 'far fa-file-alt',
   menu: 'Settings',
   prefix: 'SET-'
 })

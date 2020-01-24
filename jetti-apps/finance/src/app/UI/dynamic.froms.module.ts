@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseTreeListComponent } from '../common/datatable/base.tree-list.component';
-import { BaseTreeListToolbarComponent } from '../common/datatable/base.tree-list.toolbar.component';
 import { PipesModule } from '../common/pipes';
 import { RegisterAccumulationComponent } from '../common/register-movements/register.accumulation.component';
 import { RegisterAccumulationListComponent } from '../common/register-movements/register.accumulation.list.component';
@@ -23,8 +22,6 @@ import { TabControllerComponent } from './../common/tabcontroller/tabcontroller.
 import { SuggestDialogComponent } from './../dialog/suggest.dialog.component';
 import { HomeComponent } from './../home/home.component';
 import { MaterialModule } from './../material.module';
-import { CatalogListComponent } from './../UI/Catalog/calatog-list.component';
-import { OperationFormComponent } from './Operation/operation.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { DisableControlDirective } from '../common/directives/disabled-control';
 import { HistoryComponent } from '../common/history/history.component';
@@ -45,8 +42,6 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
-    CatalogListComponent,
 
     TablePartsComponent,
     SuggestDialogComponent,
@@ -56,7 +51,6 @@ import { HistoryComponent } from '../common/history/history.component';
     RegisterAccumulationListComponent,
     RegisterInfoComponent,
 
-    OperationFormComponent,
     OperationListComponent,
 
     HistoryComponent,
@@ -91,8 +85,6 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
-    CatalogListComponent,
 
     TablePartsComponent,
     SuggestDialogComponent,
@@ -102,7 +94,6 @@ import { HistoryComponent } from '../common/history/history.component';
     RegisterAccumulationListComponent,
     RegisterInfoComponent,
 
-    OperationFormComponent,
     OperationListComponent,
 
     HistoryComponent,
@@ -119,10 +110,7 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-    BaseTreeListToolbarComponent,
-    CatalogListComponent,
 
-    OperationFormComponent,
     OperationListComponent,
   ]
 })

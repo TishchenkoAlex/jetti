@@ -10,19 +10,19 @@
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="fa fa-pencil-square-o" class="ui-button-secondary" pButton type="button" pTooltip="Open"
+        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" pTooltip="Open"
           tooltipPosition="top" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
-        <button id="copy" icon="fa fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
+        <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
           pTooltip="Copy" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length == 1"></button>
         <button id="post" icon="fa fa-check" class="ui-button-warning" pButton type="button" (click)="post()"
           pTooltip="Post" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
-        <button id="unpost" icon="fa fa-square-o" class="ui-button-warning" pButton type="button" pTooltip="Unpost"
+        <button id="unpost" icon="far fa-square" class="ui-button-warning" pButton type="button" pTooltip="Unpost"
           tooltipPosition="top" showDelay="2000" (click)="post('unpost')" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length >=1 && isDoc"></button>
-        <button id="delete" icon="fa fa-trash" class="ui-button-danger" pButton type="button" (click)="delete()"
+        <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
           pTooltip="Delete" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selection?.length"></button>
         <button id="showTree" icon="fa fa-sitemap" class="ui-button-secondary" pButton type="button"
@@ -106,7 +106,7 @@
             <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
               style="color: #5cb85c"></i>
             <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
-            <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="fa fa-square-o"
+            <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="far fa-square"
               style="color: #f0ad4e"></i>
             <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
             <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
@@ -119,7 +119,7 @@
               <span *ngSwitchCase="'number'" [id]="column.field">{{rowData[column.field] | number:'1.2-4'}}</span>
               <span *ngSwitchCase="'boolean'" [id]="column.field">
                 <i *ngIf="rowData[column.field]" class="fa fa-check-square" [id]="column.field"></i>
-                <i *ngIf="!rowData[column.field]" class="fa fa-square-o" [id]="column.field"></i>
+                <i *ngIf="!rowData[column.field]" class="far fa-square" [id]="column.field"></i>
               </span>
               <span *ngSwitchCase="'string'" [id]="column.field">{{rowData[column.field]}}</span>
               <span *ngSwitchCase="'enum'" [id]="column.field">{{rowData[column.field]}}</span>

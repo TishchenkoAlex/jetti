@@ -18,4 +18,10 @@ export class CatalogOperationGroup extends DocumentBase {
   @Props({ type: 'string', required: true})
   Prefix = '';
 
+  @Props({ type: 'string', required: true })
+  menu = '';
+
+  @Props({ type: 'string', required: true })
+  icon = '';
+
 }

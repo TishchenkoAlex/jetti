@@ -3,7 +3,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 @JDocument({
   type: 'Document.ExchangeRates',
   description: 'Exchange rates',
-  icon: 'fa fa-file-text-o',
+  icon: 'far fa-file-alt',
   menu: 'Exchange rates',
   prefix: 'EXC-'
 })
