@@ -106,7 +106,7 @@
             <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
               style="color: #5cb85c"></i>
             <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
-            <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="fa fa-square-o"
+            <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="far fa-square"
               style="color: #f0ad4e"></i>
             <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
             <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
@@ -119,7 +119,7 @@
               <span *ngSwitchCase="'number'" [id]="column.field">{{rowData[column.field] | number:'1.2-4'}}</span>
               <span *ngSwitchCase="'boolean'" [id]="column.field">
                 <i *ngIf="rowData[column.field]" class="fa fa-check-square" [id]="column.field"></i>
-                <i *ngIf="!rowData[column.field]" class="fa fa-square-o" [id]="column.field"></i>
+                <i *ngIf="!rowData[column.field]" class="far fa-square" [id]="column.field"></i>
               </span>
               <span *ngSwitchCase="'string'" [id]="column.field">{{rowData[column.field]}}</span>
               <span *ngSwitchCase="'enum'" [id]="column.field">{{rowData[column.field]}}</span>

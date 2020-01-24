@@ -16,7 +16,7 @@ import { AuthService } from 'src/app/auth/auth.service';
           id="company" placeholder="Select company" type="Catalog.Company">
         </j-autocomplete-png>
       </div>
-      <div fxFlex>
+      <div fxFlex *ngIf="!super.group">
         <j-autocomplete-png [ngModel]="super?.filters['Group']?.value" [inputStyle]="{'background-color': 'lightgoldenrodyellow'}"
           (ngModelChange)="super.update({field: 'Group', filter: null}, $event, '=')"
           id="Group" placeholder="Select group of operation" type="Catalog.Operation.Group">

@@ -160,8 +160,18 @@ body .ui-tabview.ui-tabview-right .ui-tabview-nav li {
 .ui-button-icon-only .fa {
   margin-top: -.45em !important;
   margin-left: -.48em !important;
-  ;
 }
+
+.ui-toolbar .ui-button.ui-button-icon-only {
+  margin-right: 1px;
+  width: 28px;
+  height: 28px;
+}
+
+.ui-button-icon-only .ui-button-icon-left {
+  margin-top: -.43em;
+}
+
 
 .ui-button-text-icon-left .fa {
   margin-top: -.41em !important;
@@ -312,11 +322,6 @@ body .ui-treetable .ui-treetable-thead > tr > th, body .ui-treetable .ui-treetab
   font-size: 12px; 
 }
 
-.ui-toolbar .ui-button.ui-button-icon-only {
-  margin-right: 1px;
-  width: 28px;
-  height: 28px;
-}
 
 .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-list-item {
   padding: 6px 6px !important;
@@ -325,3 +330,4 @@ body .ui-treetable .ui-treetable-thead > tr > th, body .ui-treetable .ui-treetab
 .ui-dialog .ui-dialog-footer {
   padding: 4px !important;
 }
+

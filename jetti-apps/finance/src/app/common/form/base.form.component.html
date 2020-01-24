@@ -3,7 +3,7 @@
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp
-          [header]="(description$ | async)?.value?.concat((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
+          [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
           [toggleable]="true">
           <p-toolbar *ngIf="!isHistory">
             <div class="ui-toolbar-group-left">
@@ -17,7 +17,7 @@
               <button pButton type="button" id="unPost" icon="far fa-square" class="ui-button-secondary"
                 pTooltip="Unpost" tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)"
                 (click)="unPost()" *ngIf="!(isDeleted$ | async) && (isPosted$ | async) && isDoc"></button>
-              <button pButton type="button" id="save" icon="fa fa-save" class="ui-button-secondary" pTooltip="Save"
+              <button pButton type="button" id="save" icon="far fa-save" class="ui-button-secondary" pTooltip="Save"
                 tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="save()"
                 *ngIf="!(isPosted$ | async) || !isDoc"></button>
               <button pButton type="button" id="Copy" icon="far fa-copy" class="ui-button-secondary" pTooltip="Copy"
