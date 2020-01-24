@@ -8,13 +8,24 @@ import { createFormServer } from '../models/Forms/form.factory.server';
 import { FormTypes } from '../models/Forms/form.types';
 import { FormBase } from '../models/Forms/form';
 import { User } from './user.settings';
+import { lib } from '../std.lib';
+import { IViewModel } from '../models/common-types';
+import { DocumentOptions } from '../models/document';
+import { FormListSettings } from '../models/user.settings';
+import { ColumnDef } from '../models/column';
 
 export const router = express.Router();
 
-async function buildViewModel(ServerDoc: FormBase, tx: MSSQL) {
+function noSqlDocument(flatDoc: FormBase) {
+  if (!flatDoc) throw new Error(`noSqlDocument: source is null!`);
+  const { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ...doc } = flatDoc;
+  return { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, doc };
+}
+
+export async function buildViewModel<T>(ServerDoc: FormBase, tx: MSSQL) {
   const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
-  const NoSqlDocument = JSON.stringify(ServerDoc);
-  return await tx.oneOrNone<{ [key: string]: any }>(viewModelQuery, [NoSqlDocument]);
+  const NoSqlDocument = JSON.stringify(noSqlDocument(ServerDoc));
+  return await tx.oneOrNone<T>(viewModelQuery, [NoSqlDocument]);
 }
 
 router.post('/form/:type/execute', async (req: Request, res: Response, next: NextFunction) => {
@@ -40,8 +51,15 @@ router.post('/form/:type/:method', async (req: Request, res: Response, next: Nex
     doc.user = user;
     const serverDoc = createFormServer(doc);
     await serverDoc[req.params.method]();
-    const view = await buildViewModel(serverDoc, sdb);
-    res.json(view);
+    serverDoc.user = null  as any;
+    const result: IViewModel = {
+      metadata: serverDoc.Prop() as DocumentOptions,
+      schema: serverDoc.Props(),
+      model: (await buildViewModel<FormBase>(serverDoc, sdb))!,
+      columnsDef: [] as ColumnDef[],
+      settings: new FormListSettings(),
+    };
+    res.json(result);
   } catch (err) { next(err); }
 });
 

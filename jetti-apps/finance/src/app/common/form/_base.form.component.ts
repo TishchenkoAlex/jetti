@@ -159,7 +159,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     });
   }
 
-  private Next(formGroup: FormGroup) {
+  public Next(formGroup: FormGroup) {
     const orderedControls = [...formGroup['orderedControls']];
     const byKeyControls = { ...formGroup['byKeyControls'] };
     formGroup['orderedControls'] = [];

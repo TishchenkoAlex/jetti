@@ -184,7 +184,7 @@ export class ApiService {
   execute(type: FormTypes, method: string, doc: FormBase) {
     const apiDoc = viewModelToFlatDocument(doc as any);
     const query = `${environment.api}form/${type}/${method}`;
-    return this.http.post<FormBase>(query, apiDoc);
+    return this.http.post<{[x: string]: any}>(query, apiDoc);
   }
 
   batchActual() {

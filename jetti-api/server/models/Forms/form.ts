@@ -79,25 +79,35 @@ export class FormBase {
   }
 
   Props() {
-    const result: { [x: string]: any } = {};
-    for (const prop of Object.keys(this)) {
-      const Prop = Object.assign({}, this.targetProp(this, prop));
+
+    const proto = new this.constructor.prototype.constructor;
+
+    const p = this.Prop() as FormOptions;
+
+    const result: { [x: string]: PropOptions } = {};
+    for (const prop of Object.keys(proto)) {
+      const Prop = proto.targetProp(this, prop);
       if (!Prop) { continue; }
+      result[prop] = Object.assign({}, Prop);
+      const metadata = proto.Prop() as FormOptions;
       for (const el in result[prop]) {
         if (typeof result[prop][el] === 'function') result[prop][el] = result[prop][el].toString();
       }
-      result[prop] = Prop;
-      const value = (this as any)[prop];
+      const value = (proto as any)[prop];
       if (Array.isArray(value) && value.length) {
         const arrayProp: { [x: string]: any } = {};
         for (const arrProp of Object.keys(value[0])) {
-          const PropArr = Object.assign({}, this.targetProp(value[0], arrProp));
+          const PropArr = proto.targetProp(value[0], arrProp);
           if (!PropArr) { continue; }
-          arrayProp[arrProp] = PropArr;
+          arrayProp[arrProp] = Object.assign({}, PropArr);
+          for (const el in arrayProp[arrProp]) {
+            if (typeof arrayProp[arrProp][el] === 'function') arrayProp[arrProp][el] = arrayProp[arrProp][el].toString();
+          }
         }
         result[prop][prop] = arrayProp;
       }
     }
+    this.Props = () => result;
     return result;
   }
 }

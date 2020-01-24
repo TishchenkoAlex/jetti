@@ -5,12 +5,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { DocService } from 'src/app/common/doc.service';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
-import { DynamicFormService } from 'src/app/common/dynamic-form/dynamic-form.service';
+import { DynamicFormService, getFormGroup } from 'src/app/common/dynamic-form/dynamic-form.service';
 import { LoadingService } from 'src/app/common/loading.service';
 import { environment } from 'src/environments/environment';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { take, filter } from 'rxjs/operators';
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +20,6 @@ import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.
 })
 export class SearchAndReplaceComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
-  IOData = [];
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
     public ds: DocService, public tabStore: TabsStore, public dss: DynamicFormService,
@@ -29,30 +29,21 @@ export class SearchAndReplaceComponent extends _baseDocFormComponent implements 
 
   ngOnInit() {
     super.ngOnInit();
-    // this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
-    //   const wsUrl = `${environment.socket}?token=${u.token}`;
-
-    //   const socket = IO(wsUrl, { transports: ['websocket'] });
-    //   socket.on('sync', (data: any) => {
-    //     if (data && data.data && data.data.message)
-    //       this.IOData = [data.data.message, ...this.IOData];
-    //       if (this.IOData.length > 1000) this.IOData.length = 1000;
-    //       this.cd.detectChanges();
-    //   });
-    // });
   }
 
   ngOnDestroy() {
     super.ngOnDestroy();
   }
 
-  async Search() {
+  async ExecuteServerMethod(methodName: string) {
 
-    this.ds.api.execute(this.type as FormTypes, 'Search', this.form.getRawValue() as FormBase).pipe(take(1))
-      .subscribe(data => { console.log(data);
-        this.form.patchValue(data);
-      });
+    this.ds.api.execute(this.type as FormTypes, methodName, this.form.getRawValue() as FormBase).pipe(take(1))
+    .subscribe(value => {
+      const form = getFormGroup(value.schema, value.model, true);
+      form['metadata'] = value.metadata;
+      super.Next(form);
+      this.form.markAsDirty();
+    });
   }
-
 }
 

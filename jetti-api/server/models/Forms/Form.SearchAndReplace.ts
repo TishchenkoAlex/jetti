@@ -9,31 +9,28 @@ import { Props, Ref } from '../document';
 })
 export class FormSearchAndReplace extends FormBase {
 
-  @Props({ type: 'Types.Catalog', order: 1, label: 'Old value'})
+  @Props({ type: 'Types.Catalog', order: 1, label: 'Old value' })
   OldValue: Ref = null;
 
   @Props({ type: 'Types.Catalog', order: 1, label: 'New value' })
   NewValue: Ref = null;
 
-  @Props({ type: 'string', order: 1, label: 'Result' })
-  ResultText = '';
-
   @Props({
-    type: 'table', required: false, order: 1, label: 'Search result',
+    type: 'table', order: 1, label: 'Search result',
   })
-  SearchResult: SearchResultRow[] = [new SearchResultRow()];
+  SearchResult: SearchResult[] = [new SearchResult()];
 
 }
 
-export class SearchResultRow {
+export class SearchResult {
 
-  @Props({ type: 'Types.Catalog', label: 'Searched value'})
-  SearchedValue: Ref = null;
+  @Props({ type: 'string', label: 'Searched value' })
+  SearchedValue = '';
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   Source = '';
 
-  @Props({ type: 'string', label: 'Type'})
+  @Props({ type: 'string', label: 'Type' })
   Type = '';
 
   @Props({ type: 'number', totals: 1 })
