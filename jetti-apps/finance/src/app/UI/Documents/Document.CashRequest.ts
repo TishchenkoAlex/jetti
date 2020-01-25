@@ -33,7 +33,15 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (this.isNew) {
       this.setValue('Status', 'PREPARED');
       this.setValue('workflowID', '');
-     // if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
+      // let currency = this.getValue('сurrency');
+      // if (!currency || !currency.id) {
+      //   currency = this.api.byId('A4867005-66B8-4A8A-9105-3F25BB081936').then(val => {
+      //     this.setValue('currency',
+      //       { id: val.id, code: val.code, type: val.type, value: val.description },
+      //       { onlySelf: false, emitEvent: false })
+      //   });
+      // }
+      // if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
     }
 
@@ -146,7 +154,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     TaxOfficeCode2
     TaxPayerStatus
     TaxBasisPayment
-    TaxPaymentPeriod`.split('\n').forEach(el => {this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов'});
+    TaxPaymentPeriod`.split('\n').forEach(el => { this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов' });
 
     this.form.markAsTouched();
 
@@ -165,6 +173,15 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
           { onlySelf: false, emitEvent: false }
         );
       }
+    } else if (operation === 'Перечисление налогов и взносов') {
+      const TaxRate = this.getValue('TaxRate');
+      if (!TaxRate || TaxRate.id !== '7CFE6E50-35EA-11EA-A185-21EAFAF35D68') {
+        let a = this.api.byId('7CFE6E50-35EA-11EA-A185-21EAFAF35D68').then(val => {
+          this.setValue('TaxRate',
+            { id: val.id, code: val.code, type: 'Catalog.TaxRate', value: val.description },
+            { onlySelf: false, emitEvent: false })
+        })
+      };
     }
   }
 

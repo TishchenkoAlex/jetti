@@ -1,12 +1,12 @@
 
-    CREATE VIEW [dbo].[Catalog.Documents] AS
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
       d.id, d.date [date],
       d.description Presentation,
       d.info,
-      d.type,JSON_VALUE(doc, N'$.DocReceived') DocReceived
-      FROM dbo.[Documents] d
+      d.type,CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
+    FROM dbo.[Documents] d
     GO
     GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
     GO
@@ -1488,6 +1488,7 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([owner.v].description, '') [owner.value], d.[owner] [owner.id], [owner.v].type [owner.type]
+        , ISNULL([Bank.v].description, '') [Bank.value], d.[Bank] [Bank.id], [Bank.v].type [Bank.type]
         , ISNULL([SalaryProject.v].description, '') [SalaryProject.value], d.[SalaryProject] [SalaryProject.id], [SalaryProject.v].type [SalaryProject.type]
         , d.[OpenDate] [OpenDate]
       
@@ -1508,6 +1509,7 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [owner.v] WITH (NOEXPAND) ON [owner.v].id = d.[owner]
+        LEFT JOIN dbo.[Catalog.Bank.v] [Bank.v] WITH (NOEXPAND) ON [Bank.v].id = d.[Bank]
         LEFT JOIN dbo.[Catalog.SalaryProject.v] [SalaryProject.v] WITH (NOEXPAND) ON [SalaryProject.v].id = d.[SalaryProject]
     
       GO
@@ -2112,6 +2114,7 @@
         , d.[TaxOfficeCode2] [TaxOfficeCode2]
         , ISNULL([BalanceAnalytics.v].description, '') [BalanceAnalytics.value], d.[BalanceAnalytics] [BalanceAnalytics.id], [BalanceAnalytics.v].type [BalanceAnalytics.type]
         , d.[workflowID] [workflowID]
+        , ISNULL([tempCompanyParent.v].description, '') [tempCompanyParent.value], d.[tempCompanyParent] [tempCompanyParent.id], [tempCompanyParent.v].type [tempCompanyParent.type]
       
         , ISNULL(l5.description, d.description) [CashRequest.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
@@ -2146,6 +2149,7 @@
         LEFT JOIN dbo.[Catalog.TaxBasisPayment.v] [TaxBasisPayment.v] WITH (NOEXPAND) ON [TaxBasisPayment.v].id = d.[TaxBasisPayment]
         LEFT JOIN dbo.[Catalog.TaxPaymentPeriod.v] [TaxPaymentPeriod.v] WITH (NOEXPAND) ON [TaxPaymentPeriod.v].id = d.[TaxPaymentPeriod]
         LEFT JOIN dbo.[Catalog.Balance.Analytics.v] [BalanceAnalytics.v] WITH (NOEXPAND) ON [BalanceAnalytics.v].id = d.[BalanceAnalytics]
+        LEFT JOIN dbo.[Catalog.Company.v] [tempCompanyParent.v] WITH (NOEXPAND) ON [tempCompanyParent.v].id = d.[tempCompanyParent]
     
       GO
       GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
