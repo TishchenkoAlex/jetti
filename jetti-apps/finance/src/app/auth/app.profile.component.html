@@ -2,8 +2,8 @@
   <div *ngIf="appAuth.isLoggedIn$ | async">
     <div class="profile" [ngClass]="{'profile-expanded':active}">
       <a href="#" (click)="onClick($event)">
-        <!-- <img class="profile-image" src={{appAuth.userProfile$.value.account?.picture}} /> -->
-        <span class="profile-name">{{ (appAuth.userProfile$ | async)?.account?.description }}</span>
+        <img class="profile-image" [src]="this.image">
+         <span class="profile-name">{{ (appAuth.userProfile$ | async)?.account?.description }}</span>
         <i class="fa fa-fw fa-caret-down"></i>
         <span class="profile-role">{{ (appAuth.userProfile$ | async)?.account?.email }}</span>
       </a>
@@ -41,7 +41,7 @@
       </li>
       <li role="menuitem">
         <a style="cursor: pointer" (click)="appAuth.logout()" [attr.tabindex]="!active ? '-1' : null">
-          <i class="fa fa-fw fa-sign-out"></i>
+          <i class="fa fa-fw fa-sign-out-alt"></i>
           <span>Logout</span>
         </a>
         <div class="layout-menu-tooltip">

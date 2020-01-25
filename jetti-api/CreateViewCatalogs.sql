@@ -1,5 +1,5 @@
 
-    CREATE VIEW [dbo].[Catalog.Documents] AS
+    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
     SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
       d.id, d.date [date],

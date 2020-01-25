@@ -89,6 +89,7 @@ export interface IAccount extends IJWTPayload {
 export interface ILoginResponse {
   account: IAccount | undefined;
   token: string;
+  photo?: any;
 }
 
 export interface ITree {

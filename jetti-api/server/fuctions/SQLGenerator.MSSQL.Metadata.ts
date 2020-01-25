@@ -408,10 +408,11 @@ export class SQLGenegatorMetadata {
     WHERE r.type = N'${type}';
     GO
 
-    CREATE OR ALTER TRIGGER [${type}.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [${type}.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [${type}]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -422,15 +423,6 @@ export class SQLGenegatorMetadata {
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
         ) AS d
         WHERE r.type = N'${type}';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [${type}.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [${type}] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 

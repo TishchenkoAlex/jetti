@@ -32,10 +32,11 @@
     WHERE r.type = N'Register.Accumulation.AccountablePersons';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AccountablePersons.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.AccountablePersons.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -59,15 +60,6 @@
         , [AmountIsPaid] MONEY N'$.AmountIsPaid'
         ) AS d
         WHERE r.type = N'Register.Accumulation.AccountablePersons';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AccountablePersons.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AccountablePersons] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -113,10 +105,11 @@
     WHERE r.type = N'Register.Accumulation.AP';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AP.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.AP.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AP]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -142,15 +135,6 @@
         , [AmountIsPaid] MONEY N'$.AmountIsPaid'
         ) AS d
         WHERE r.type = N'Register.Accumulation.AP';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AP.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AP] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -196,10 +180,11 @@
     WHERE r.type = N'Register.Accumulation.AR';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AR.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.AR.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AR]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -225,15 +210,6 @@
         , [AmountIsPaid] MONEY N'$.AmountIsPaid'
         ) AS d
         WHERE r.type = N'Register.Accumulation.AR';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.AR.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.AR] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -274,10 +250,11 @@
     WHERE r.type = N'Register.Accumulation.Bank';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Bank.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Bank.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -298,15 +275,6 @@
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Bank';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Bank.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Bank] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -342,10 +310,11 @@
     WHERE r.type = N'Register.Accumulation.Balance';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -361,15 +330,6 @@
         , [Amount] MONEY N'$.Amount'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Balance] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -410,10 +370,11 @@
     WHERE r.type = N'Register.Accumulation.Cash';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -434,15 +395,6 @@
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Cash';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Cash] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -484,10 +436,11 @@
     WHERE r.type = N'Register.Accumulation.Cash.Transit';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Transit.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Transit.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -509,15 +462,6 @@
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Cash.Transit';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Transit.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Cash.Transit] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -565,10 +509,11 @@
     WHERE r.type = N'Register.Accumulation.Inventory';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Inventory.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Inventory.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -596,15 +541,6 @@
         , [Qty] MONEY N'$.Qty'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Inventory';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Inventory.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Inventory] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -650,10 +586,11 @@
     WHERE r.type = N'Register.Accumulation.Loan';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Loan.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Loan.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -679,15 +616,6 @@
         , [AmountIsPaid] MONEY N'$.AmountIsPaid'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Loan';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Loan.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Loan] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -723,10 +651,11 @@
     WHERE r.type = N'Register.Accumulation.PL';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.PL.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.PL.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.PL]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -742,15 +671,6 @@
         , [Amount] MONEY N'$.Amount'
         ) AS d
         WHERE r.type = N'Register.Accumulation.PL';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.PL.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.PL] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -804,10 +724,11 @@
     WHERE r.type = N'Register.Accumulation.Sales';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Sales.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Sales.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -841,15 +762,6 @@
         , [AmountInAR] MONEY N'$.AmountInAR'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Sales';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Sales.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Sales] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -890,10 +802,11 @@
     WHERE r.type = N'Register.Accumulation.Depreciation';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Depreciation.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Depreciation.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -914,15 +827,6 @@
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Depreciation';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.Depreciation.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.Depreciation] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -968,10 +872,11 @@
     WHERE r.type = N'Register.Accumulation.CashToPay';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.CashToPay.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.CashToPay.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -997,15 +902,6 @@
         , [Amount] MONEY N'$.Amount'
         ) AS d
         WHERE r.type = N'Register.Accumulation.CashToPay';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.CashToPay.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.CashToPay] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
@@ -1055,10 +951,11 @@
     WHERE r.type = N'Register.Accumulation.BudgetItemTurnover';
     GO
 
-    CREATE OR ALTER TRIGGER [Register.Accumulation.BudgetItemTurnover.Insert] ON [Accumulation] AFTER INSERT
+    CREATE OR ALTER TRIGGER [Register.Accumulation.BudgetItemTurnover.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
       SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1088,15 +985,6 @@
         , [Qty] MONEY N'$.Qty'
         ) AS d
         WHERE r.type = N'Register.Accumulation.BudgetItemTurnover';
-    END
-    GO
-
-    CREATE OR ALTER TRIGGER [Register.Accumulation.BudgetItemTurnover.Delete] ON [Accumulation] AFTER DELETE
-    AS
-    BEGIN
-	    SET NOCOUNT ON;
-      --DELETE r FROM [Register.Accumulation.BudgetItemTurnover] r JOIN deleted d ON d.id = r.id AND d.date = r.date;
-      DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
     END
     GO
 
