@@ -2,7 +2,7 @@
   <div *ngIf="appAuth.isLoggedIn$ | async">
     <div class="profile" [ngClass]="{'profile-expanded':active}">
       <a href="#" (click)="onClick($event)">
-        <img class="profile-image" [src]="this.image">
+        <img *ngIf="this.image" class="profile-image" [src]="this.image">
          <span class="profile-name">{{ (appAuth.userProfile$ | async)?.account?.description }}</span>
         <i class="fa fa-fw fa-caret-down"></i>
         <span class="profile-role">{{ (appAuth.userProfile$ | async)?.account?.email }}</span>
