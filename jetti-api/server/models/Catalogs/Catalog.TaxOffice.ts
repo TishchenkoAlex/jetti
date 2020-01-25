@@ -13,16 +13,16 @@ export class CatalogTaxOffice extends DocumentBase {
   parent: Ref = null;
 
   @Props({ type: 'string', label: 'Наименование полное', required: true })
-  FullName = 0;
+  FullName = '';
 
   @Props({ type: 'string', label: 'Код налогового органа', required: true})
-  Code1 = 0;
+  Code1 = '';
 
   @Props({ type: 'string', label: 'ОКТМО', required: true})
-  Code2 = 0;
+  Code2 = '';
 
   @Props({ type: 'string', label: 'ОКАТО', required: false})
-  Code3 = 0;
+  Code3 = '';
 
 }
 

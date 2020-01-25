@@ -76,26 +76,6 @@
           <j-control [control]="vk.Contract" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'">
-          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-            <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
-            <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
-            <j-control [control]="vk.BalanceAnalytics" [form]="form"></j-control>
-          </div>
-
-          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-            <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
-            <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
-            <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
-          </div>
-
-          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-            <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
-            <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
-            <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
-          </div>
-        </div>
-
         <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
@@ -128,6 +108,23 @@
           <j-control [control]="vk['сurrency']" [form]="form" (change)='FillCurrencyShortName(true)'></j-control>
           <j-control [control]="vk.TaxRate" [form]="form" (change)='FillTaxRate(true)'></j-control>
           <j-control [control]="vk.PayDay" [form]="form"></j-control>
+        </div>
+
+        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row"
+          fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <p-fieldset legend="Налоговые реквизиты" [toggleable]="true">
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+              <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
+              <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
+            </div>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+              <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
+              <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
+              <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
+              <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
+              <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
+            </div>
+          </p-fieldset>
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">

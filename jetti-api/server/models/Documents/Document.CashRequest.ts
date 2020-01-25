@@ -179,7 +179,7 @@ export class DocumentCashRequest extends DocumentBase {
   Amount = 0;
 
   @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })
-  сurrency: Ref = null;
+  сurrency: Ref = 'A4867005-66B8-4A8A-9105-3F25BB081936';
 
   @Props({ type: 'Types.ExpenseOrBalance', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseOrBalance: Ref = null;
@@ -190,16 +190,32 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;
 
-  @Props({ type: 'Catalog.TaxPaymentCode', label: 'КБК', hiddenInList: true })
+  @Props({
+    type: 'Catalog.TaxPaymentCode', label: 'КБК', hiddenInList: true,
+    owner: [
+      { dependsOn: 'tempCompanyParent', filterBy: 'company' }]
+  })
   TaxPaymentCode: Ref = null;
 
-  @Props({ type: 'Catalog.TaxPayerStatus', label: 'Статус плательщика', hiddenInList: true })
+  @Props({
+    type: 'Catalog.TaxPayerStatus', label: 'Статус плательщика', hiddenInList: true,
+    owner: [
+      { dependsOn: 'tempCompanyParent', filterBy: 'company' }]
+  })
   TaxPayerStatus: Ref = null;
 
-  @Props({ type: 'Catalog.TaxBasisPayment', label: 'Основание', hiddenInList: true })
+  @Props({
+    type: 'Catalog.TaxBasisPayment', label: 'Основание', hiddenInList: true,
+    owner: [
+      { dependsOn: 'tempCompanyParent', filterBy: 'company' }]
+  })
   TaxBasisPayment: Ref = null;
 
-  @Props({ type: 'Catalog.TaxPaymentPeriod', label: 'Период', hiddenInList: true })
+  @Props({
+    type: 'Catalog.TaxPaymentPeriod', label: 'Период', hiddenInList: true,
+    owner: [
+      { dependsOn: 'tempCompanyParent', filterBy: 'company' }]
+  })
   TaxPaymentPeriod: Ref = null;
 
   @Props({ type: 'string', label: 'Номер документа' })
@@ -211,14 +227,18 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'string', label: 'ОКТМО', hiddenInList: true })
   TaxOfficeCode2 = '';
 
-  @Props({ type: 'Catalog.Balance.Analytics', label: 'Аналитика баланса', hiddenInList: true,
-  owner: [
-    { dependsOn: 'ExpenseOrBalance', filterBy: 'parent' }]
+  @Props({
+    type: 'Catalog.Balance.Analytics', label: 'Аналитика баланса', hiddenInList: true,
+    owner: [
+      { dependsOn: 'ExpenseOrBalance', filterBy: 'parent' }]
   })
   BalanceAnalytics: Ref = null;
 
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
+
+  @Props({ type: 'Catalog.Company', hiddenInList: true })
+  tempCompanyParent: Ref = null;
 
   @Props({
     type: 'table', required: false, order: 1,

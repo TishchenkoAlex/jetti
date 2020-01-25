@@ -11,6 +11,7 @@ import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { DeleteProcess } from '../../routes/bp';
 import { updateDocument } from '../../routes/utils/post';
+import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -18,9 +19,22 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     switch (prop) {
       case 'company':
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-        if (!company) return this;
-        this.сurrency = company.currency;
         this.CashOrBank = null;
+        this.tempCompanyParent = null;
+        this.TaxBasisPayment = null;
+        this.TaxDocDate = null as any;
+        this.TaxOfficeCode2 = '';
+        this.TaxDocNumber = '';
+        this.TaxPaymentPeriod = null;
+        this.TaxPayerStatus = null;
+        this.TaxPaymentCode = null;
+        
+        if (company) {
+          this.сurrency = company.currency;
+          this.tempCompanyParent = company.parent;
+          const TaxOffice = await lib.doc.byIdT<CatalogTaxOffice>(company.TaxOffice, tx);
+          this.TaxOfficeCode2 = (TaxOffice ? TaxOffice.Code2 : null) as any;
+        }
         return this;
       case 'CashRecipient':
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
