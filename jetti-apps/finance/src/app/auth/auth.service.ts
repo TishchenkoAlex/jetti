@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, tap } from 'rxjs/operators';
 import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/common-types';
 import { environment, OAuthSettings } /*  */ from '../../environments/environment';
-export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '' };
+export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '', photo: undefined };
 
 @Injectable()
 export class AuthService {
@@ -48,13 +48,14 @@ export class AuthService {
   public getAccount() {
     return this.http.get<IAccount>(`${environment.auth}account`).pipe(
       tap(account => {
-        const LoginResponse: ILoginResponse = { account, token: this.token };
+        const LoginResponse: ILoginResponse = { account, token: this.token, photo: null };
         this.init(LoginResponse);
       }));
   }
 
   private init(loginResponse: ILoginResponse) {
     if (loginResponse.token && loginResponse.account) {
+      if (loginResponse.photo !== null) localStorage.setItem('photo', loginResponse.photo);
       this.token = loginResponse.token;
       this._userProfile$.next(loginResponse);
     }

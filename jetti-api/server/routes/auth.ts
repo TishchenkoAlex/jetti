@@ -33,6 +33,13 @@ router.post('/login', async (req, res, next) => {
     const mail = req.body.email;
     const user = await getUser(mail);
     if (!user) { return res.status(401).json({ message: 'Auth failed' }); }
+
+    let photoArraybuffer; let photo;
+    try {
+      photoArraybuffer = (await instance.get('/v1.0/me/photos/48x48/$value', { responseType: 'arraybuffer' })).data;
+      photo = Buffer.from(photoArraybuffer, 'binary').toString('base64');
+    } catch {};
+
     const payload: IJWTPayload = {
       email: me.userPrincipalName,
       description: me.displayName,
@@ -40,8 +47,10 @@ router.post('/login', async (req, res, next) => {
       roles: [],
       env: {id: user.id, code: user.code, type: user.type, value: user.description},
     };
-    const token = jwt.sign(payload, JTW_KEY, { expiresIn: '24h' });
-    return res.json({ account: payload, token });
+
+    const token = jwt.sign(payload, JTW_KEY, { expiresIn: '72h' });
+
+    return res.json({ account: payload, token, photo });
   } catch (err) { next(err); }
 });
 
@@ -176,4 +185,3 @@ export async function buildMenu(user: CatalogUser): Promise<MenuItem[]> {
   const subs = await Promise.all(sub);
   return subs;
 }
-

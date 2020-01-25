@@ -32,8 +32,8 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
     delete data.type; delete data.company; delete data.kind; delete data.calculated;
     delete data.document; delete data.date; delete data.parent;
     query += `
-      INSERT INTO "Accumulation" (parent, calculated, kind, date, type, company, document, data)
-      VALUES ('${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
+      INSERT INTO "Accumulation" (id, parent, calculated, kind, date, type, company, document, data)
+      VALUES ('${rec.id || v1().toUpperCase()}', '${rec.parent}', ${rec.calculated ? 1 : 0}, ${rec.kind ? 1 : 0}, '${new Date(date).toJSON()}', N'${rec.type}' , N'${rec.company || doc.company}',
     '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
 

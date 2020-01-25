@@ -1,6 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
+import { SafeUrl, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-inline-profile',
@@ -21,9 +22,15 @@ import { AuthService } from '../auth/auth.service';
 export class AppProfileComponent {
 
   active: boolean;
+  image: SafeUrl = '';
   @Input() inline = true;
 
-  constructor(public appAuth: AuthService) { }
+  constructor(public appAuth: AuthService, private sanitizer: DomSanitizer) {
+    appAuth.userProfile$.subscribe(data => {
+      const photo = localStorage.getItem('photo');
+      if (photo) this.image = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpg;base64,${photo}`);
+    });
+  }
 
   onClick(event) {
     this.active = !this.active;
