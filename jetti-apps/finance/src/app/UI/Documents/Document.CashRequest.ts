@@ -142,6 +142,12 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (`Оплата по кредитам и займам полученным
     Выдача займа контрагенту`.indexOf(operation) !== -1) this.form.get('Loan').enable({ emitEvent: false }); else this.form.get('Loan').disable({ emitEvent: false });
 
+    `TaxPaymentCode
+    TaxOfficeCode2
+    TaxPayerStatus
+    TaxBasisPayment
+    TaxPaymentPeriod`.split('\n').forEach(el => {this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов'});
+
     this.form.markAsTouched();
 
     if (operation === 'Оплата ДС в другую организацию') {
