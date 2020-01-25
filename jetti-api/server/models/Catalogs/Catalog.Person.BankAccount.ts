@@ -18,10 +18,13 @@ export class CatalogPersonBankAccount extends DocumentBase {
   @Props({ type: 'Catalog.Person', required: true, order: 1 })
   owner: Ref = null;
 
-  @Props({ type: 'Catalog.SalaryProject', required: true, hiddenInForm: false })
+  @Props({ type: 'Catalog.Bank', required: false })
+  Bank: Ref = null;
+
+  @Props({ type: 'Catalog.SalaryProject', required: false })
   SalaryProject: Ref = null;
 
-  @Props({ type: 'date', required: false, hiddenInForm: false })
+  @Props({ type: 'date', required: false })
   OpenDate = new Date;
 
 }

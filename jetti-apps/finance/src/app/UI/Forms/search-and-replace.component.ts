@@ -1,4 +1,3 @@
-import * as IO from 'socket.io-client';
 import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { _baseDocFormComponent } from 'src/app/common/form/_base.form.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -7,11 +6,9 @@ import { DocService } from 'src/app/common/doc.service';
 import { TabsStore } from 'src/app/common/tabcontroller/tabs.store';
 import { DynamicFormService, getFormGroup } from 'src/app/common/dynamic-form/dynamic-form.service';
 import { LoadingService } from 'src/app/common/loading.service';
-import { environment } from 'src/environments/environment';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
-import { take, filter } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
-import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
