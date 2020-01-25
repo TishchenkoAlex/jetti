@@ -190,6 +190,27 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;
 
+  @Props({ type: 'Catalog.TaxPaymentCode', label: 'КБК', hiddenInList: true })
+  TaxPaymentCode: Ref = null;
+
+  @Props({ type: 'Catalog.TaxPayerStatus', label: 'Статус плательщика', hiddenInList: true })
+  TaxPayerStatus: Ref = null;
+
+  @Props({ type: 'Catalog.TaxBasisPayment', label: 'Основание', hiddenInList: true })
+  TaxBasisPayment: Ref = null;
+
+  @Props({ type: 'Catalog.TaxPaymentPeriod', label: 'Период', hiddenInList: true })
+  TaxPaymentPeriod: Ref = null;
+
+  @Props({ type: 'string', label: 'Номер документа' })
+  TaxDocNumber = '';
+
+  @Props({ type: 'date', label: 'Дата документа' })
+  TaxDocDate = '';
+
+  @Props({ type: 'string', label: 'ОКТМО', hiddenInList: true })
+  TaxOfficeCode2 = '';
+
   @Props({ type: 'Catalog.Balance.Analytics', label: 'Аналитика баланса', hiddenInList: true,
   owner: [
     { dependsOn: 'ExpenseOrBalance', filterBy: 'parent' }]
