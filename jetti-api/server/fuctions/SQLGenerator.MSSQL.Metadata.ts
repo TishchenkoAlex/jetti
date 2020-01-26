@@ -220,20 +220,26 @@ export class SQLGenegatorMetadata {
   static CreateViewCatalogsIndex() {
 
     let query = `
-      DROP SECURITY POLICY [rls].[companyAccessPolicy]
-      GO`;
-    let PREDICATE = '';
+    --DROP SECURITY POLICY IF EXISTS [rls].[companyAccessPolicy];
+    --GO
+
+    --CREATE SECURITY POLICY [rls].[companyAccessPolicy]
+      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty] 
+      --WITH (STATE = ON);
+    --GO
+    `;
     for (const catalog of RegisteredDocument) {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
       const select = SQLGenegator.QueryListRaw(doc.Props(), doc.type);
 
-      PREDICATE += `
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v],`;
-
       query += `
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
+      GO
+
       CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select}
       GO
+
       CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
       ${doc.type.startsWith('Document.') ? `
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
@@ -246,6 +252,13 @@ export class SQLGenegatorMetadata {
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id) INCLUDE([date]);
 
       GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];
+      GO
+
+      RAISERROR('${catalog.type} complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       `;
@@ -261,11 +274,7 @@ export class SQLGenegatorMetadata {
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
 
-
-      CREATE SECURITY POLICY [rls].[companyAccessPolicy] ${PREDICATE}
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty]
-      WITH (STATE = ON, SCHEMABINDING = ON)
-      GO`;
+`;
     return query;
   }
 

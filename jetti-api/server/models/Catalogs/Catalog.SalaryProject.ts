@@ -19,5 +19,14 @@ export class CatalogSalaryProject extends DocumentBase {
 
   @Props({ type: 'date', required: true, style: { width: '100px' } })
   OpenDate = new Date;
+  
+  @Props({ type: 'string' })
+  BankBranch = '';
+  
+  @Props({ type: 'string' })
+  BankBranchOffice = '';
+
+  @Props({ type: 'string' })
+  BankAccount = '';
 
 }
