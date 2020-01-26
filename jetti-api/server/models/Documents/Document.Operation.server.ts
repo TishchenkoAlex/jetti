@@ -134,6 +134,13 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this['Department'] = sourceDoc.Department;
     this.info = sourceDoc.info; // .replace(/\r?\n/g, ' ');
     let CashOrBank;
+
+    if (this['BankAccount']) {
+      CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
+    } else {
+      CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+    }
+
     let CashRecipientBankAccount;
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
@@ -148,11 +155,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
         this['Supplier'] = sourceDoc.CashRecipient;
         this['BankConfirm'] = false;
-        if (this['BankAccount']) {
-          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
-        } else {
-          CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
-        }
+
         if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
         if (CashOrBank.type === 'Catalog.CashRegister') {
           this.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; // касса
@@ -171,14 +174,24 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           this.f3 = this['CashFlow'];
         }
         break;
+      case 'Перечисление налогов и взносов':
+        this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+        this.Operation = '8D128C20-3E20-11EA-A722-63A01E818155';
+        `TaxPaymentCode 
+        TaxOfficeCode2
+        TaxPayerStatus
+        TaxBasisPayment
+        TaxDocNumber
+        TaxDocDate
+        TaxPaymentPeriod`.split('\n').forEach(el => { this[el.trim()] = sourceDoc[el.trim()] });
+        this['Supplier'] = sourceDoc.CashRecipient;
+        this['BankAccount'] = CashOrBank.id;
+        this.f1 = this['CashRegister'];
+        this.f2 = this['Supplier'];
+        this.f3 = this['CashFlow'];
+        break;
       case 'Оплата по кредитам и займам полученным':
-        if (this['BankAccount']) {
-          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
-        } else if (sourceDoc.CashOrBank) {
-          CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
-        }
         if (!CashOrBank) throw new Error(`Не указан источник ДС в ${sourceDoc.description}`);
-
         if (CashOrBank.type === 'Catalog.CashRegister') {
           // касса
           this.Operation = 'DBBCB3D0-1749-11EA-92AC-8B4BF8464BD9';
@@ -268,98 +281,3 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
   }
 }
-
-// Operation = 'Оплата поставщику';
-
-//   @Props({ type: 'Catalog.Department' })
-//   Department: Ref = null;
-
-//   @Props({ type: 'Types.CashRecipient', required: true })
-//   CashRecipient: Ref = null;
-
-//   @Props({ type: 'Catalog.Contract', owner: [{ dependsOn: 'CashRecipient', filterBy: 'owner' }] })
-//   Contract: Ref = null;
-
-//   @Props({ type: 'Catalog.CashFlow', required: true })
-//   CashFlow: Ref = null;
-
-//   @Props({ type: 'Catalog.Loan'})
-//   Loan: Ref = null;
-
-//   @Props({ type: 'Types.CashOrBank',
-//   owner: [
-//       { dependsOn: 'company', filterBy: 'company' },
-//       { dependsOn: 'сurrency', filterBy: 'currency' }
-//   ]
-// })
-//   CashOrBank: Ref = null;
-
-//   @Props({ type: 'date' })
-//   PayDay = new Date();
-
-//   @Props({ type: 'number', required: true })
-//   Amount = 0;
-
-//   @Props({ type: 'Catalog.Currency', required: true })
-//   сurrency: Ref = null;
-
-//   @Props({ type: 'Types.ExpenseOrBalance'})
-//   ExpenseOrBalance: Ref = null;
-
-//   @Props({ type: 'Catalog.Expense.Analytics' })
-//   ExpenseAnalytics: Ref = null;
-
-//   @Props({ type: 'Catalog.Balance.Analytics' })
-//   BalanceAnalytics: Ref = null;
-
-//   @Props({ type: 'string' })
-//   workflowID = '';
-      // 770FA450-BB58-11E7-8996-53A59C675CDA - Из кассы -  оплата поставщику (НАЛИЧНЫЕ)
-      // 68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9 - С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
-
-// 'Оплата поставщику',
-// 'Перечисление налогов и взносов',
-// 'Оплата ДС в другую организацию',
-// 'Выдача ДС подотчетнику',
-// 'Оплата по кредитам и займам полученным',
-// 'Выплата по ведомости',
-// 'Прочий расход ДС',
-// 'Выдача займа контрагенту',
-// 'Возврат оплаты клиенту'
-// DocumentOperationServer {
-//   id: '67b18bc0-2813-11ea-a430-e1105a7d7435',
-//   date: 2019-12-26T19:10:39.740Z,
-//   code: '',
-//   description: 'Operation (Списание безналичных ДС) #, 2019-12-26T19:10:39.740Z',
-//   company: null,
-//   user: null,
-//   posted: false,
-//   deleted: false,
-//   parent: null,
-//   isfolder: false,
-//   info: '',
-//   timestamp: null,
-//   workflow: null,
-//   Group: '269BBFE8-BE7A-11E7-9326-472896644AE4',
-//   Operation: '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9',
-//   Amount: 0,
-//   currency: null,
-//   f1: undefined,
-//   f2: undefined,
-//   f3: undefined,
-//   type: 'Document.Operation',
-//   serverModule: {},
-//   Props: [Function],
-//   BankDocNumber: undefined,
-//   BankConfirmDate: undefined,
-//   BankConfirm: undefined,
-//   Department: undefined,
-//   BankAccount: undefined,
-//   Supplier: undefined,
-//   f4: undefined,
-//   Contract: undefined,
-//   f5: undefined,
-//   CashFlow: undefined,
-//   f6: undefined,
-//   BankAccountSupplier: undefined
-// }

@@ -103,7 +103,6 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'Types.CashRecipient',
-    required: true,
     onChangeServer: true,
     label: 'Получатель',
   })
@@ -124,6 +123,9 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'Catalog.CashFlow', label: 'Статья ДДС', required: true })
   CashFlow: Ref = null;
+  
+  @Props({ type: 'Catalog.SalaryProject', label: 'Зарплатный проект' })
+  SalaryProject: Ref = null;
 
   @Props({
     type: 'Catalog.Loan',
