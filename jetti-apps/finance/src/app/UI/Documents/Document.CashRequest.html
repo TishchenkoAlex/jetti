@@ -96,6 +96,7 @@
         <div *ngIf="form.get('Operation').value  === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.PayRollKind" [form]="form"></j-control>
+          <j-control [control]="vk.SalaryProject" [form]="form"></j-control>
         </div>
 
         <div *ngIf="form.get('Operation').value === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
