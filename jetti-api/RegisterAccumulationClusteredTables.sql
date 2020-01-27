@@ -344,6 +344,71 @@
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Balance.Report];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [currency], [Department], [Balance], [Analytics]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.Balance.Report]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Balance.Report';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.Report.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.Balance.Report]
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [Balance], [Analytics]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Balance.Report';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report](id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -774,6 +839,75 @@
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+    RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Salary];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [currency], [Department], [Person], [Employee], [SalaryKind], [Analytics]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.Salary]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Salary';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Salary.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.Salary]
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [Person], [Employee], [SalaryKind], [Analytics]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Salary';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Person], [Employee], [SalaryKind], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary](id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
     
     RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;

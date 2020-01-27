@@ -30,6 +30,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   isCopy: boolean;
   isHistory: boolean;
+  navigateCommands: MenuItem[] = [];
 
   private readonly _form$ = new BehaviorSubject<FormGroup>(undefined);
   form$ = this._form$.asObservable();
@@ -150,7 +151,8 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       this.Next(form);
     });
     if (this.isHistory) this.form.disable({ emitEvent: false });
-
+    this.navigateCommands.push(<MenuItem>{label: 'Show in list', command: () => this.goto()});
+    this.navigateCommands.push(<MenuItem>{label: 'Used in...', command: () => this.usedIn()});
   }
 
   refresh() {
@@ -208,6 +210,10 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     if (group) route.push('group', group);
     return this.router.navigate(route,
       { queryParams: { goto: this.id, posted: this.viewModel.posted }, replaceUrl: true });
+  }
+
+  usedIn() {
+    this.router.navigate(['Form.SearchAndReplace', this.id], { });
   }
 
   private _close() {

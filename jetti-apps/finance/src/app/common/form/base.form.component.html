@@ -23,22 +23,29 @@
               <button pButton type="button" id="Copy" icon="far fa-copy" class="ui-button-secondary" pTooltip="Copy"
                 tooltipPosition="top" showDelay="2000" [disabled]="!form.valid || (lds.busy$ | async)" (click)="copy()"
                 *ngIf="!(isDeleted$ | async)  && !(isNew$ | async)"></button>
-              <button pButton type="button" id="Delete" icon="far fa-trash-alt" class="ui-button-danger" pTooltip="Delete"
-                tooltipPosition="top" showDelay="2000" *ngIf="!(isNew$ | async)" (click)="delete()"
+              <button pButton type="button" id="Delete" icon="far fa-trash-alt" class="ui-button-danger"
+                pTooltip="Delete" tooltipPosition="top" showDelay="2000" *ngIf="!(isNew$ | async)" (click)="delete()"
                 [disabled]="(lds.busy$ | async)"></button>
             </div>
             <div class="ui-toolbar-group-right">
               <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async"
                 styleClass="ui-button-secondary" label="base on">
               </p-splitButton>
+              <p-splitButton *ngIf="!(isNew$ | async)" [model]="navigateCommands" styleClass="ui-button-secondary"
+                label="Navigate">
+                <!-- <p-menuitem *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
+                pTooltip="Show in list" tooltipPosition="top" showDelay="2000" (click)="goto()"
+                ></p-menuitem>
+                <p-menuitem *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
+                pTooltip="Search" tooltipPosition="top" showDelay="2000" (click)="search()"
+                ></p-menuitem> -->
+              </p-splitButton>
               <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
                 styleClass="ui-button-secondary" label="commands">
               </p-splitButton>
               <!--         <button *ngIf="!viewModel.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
         [disabled]="(lds.busy$ | async)"></button> -->
-              <button *ngIf="!(isNew$ | async)" pButton type="button" icon="pi pi-list" class="ui-button-secondary"
-                pTooltip="Show in list" tooltipPosition="top" showDelay="2000" (click)="goto()"
-                [disabled]="(lds.busy$ | async)"></button>
+
               <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
                 pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
               <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"

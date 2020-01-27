@@ -9,11 +9,11 @@
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="fa fa-pencil-square-o" class="ui-button-secondary" pButton type="button"
+        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button"
           (click)="open()" [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
-        <button id="copy" icon="fa fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
+        <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
-        <button id="delete" icon="fa fa-trash" class="ui-button-danger" pButton type="button" (click)="delete()"
+        <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length"></button>
         <button id="showTree" icon="fa fa-sitemap" class="ui-button-secondary" pButton type="button"
           (click)="showTree = !showTree" [disabled]="(lds.busy$ | async)" *ngIf="showTreeButton"></button>

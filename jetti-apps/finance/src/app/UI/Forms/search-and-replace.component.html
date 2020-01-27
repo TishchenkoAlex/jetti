@@ -2,8 +2,8 @@
   <div *ngIf="vk$ | async as vk">
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
-        <p-panel #mp header="Search and replace" [toggleable]="true">
-          <p-toolbar *ngIf="!isHistory">
+        <p-panel #mp [header]='header' [toggleable]="true">
+          <p-toolbar *ngIf="!onlyViewMode">
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="Search" icon="fab fa-searchengin" label="Search"
                 pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
@@ -15,40 +15,33 @@
           </p-toolbar>
 
           <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
-
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-              *ngFor="let i of [0,3,6,9,12,15]">
-              <div fxFlex>
-                <j-control
-                  *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
-                  [control]="v[i+0]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control
-                  *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
-                  [control]="v[i+1]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control
-                  *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
-                  [control]="v[i+2]" [form]="form"></j-control>
-              </div>
-            </div>
-
-            <div *ngFor="let control of v">
-              <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'"
-                style="height: 400px; width: 100%;">
-                <j-control [control]="control" [form]="form"></j-control>
+            <div *ngIf="!onlyViewMode">
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+                *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
+                <div fxFlex>
+                  <j-control
+                    *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
+                    [control]="v[i+0]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control
+                    *ngIf="v[i+1] &&  v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
+                    [control]="v[i+1]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control
+                    *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
+                    [control]="v[i+2]" [form]="form"></j-control>
+                </div>
               </div>
             </div>
 
             <div *ngIf="tables$ | async as tables">
-              <br *ngIf="tables.length">
               <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
                 <div *ngFor="let c of tables; let i = index">
-                  <p-tabPanel [header]="c.label">
+                  
                     <j-control [control]="c" [form]="form"></j-control>
-                  </p-tabPanel>
+                  
                 </div>
               </p-tabView>
             </div>

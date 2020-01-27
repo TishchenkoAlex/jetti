@@ -9,23 +9,20 @@ import { Props, Ref } from '../document';
 })
 export class FormSearchAndReplace extends FormBase {
 
-  @Props({ type: 'Types.Catalog', order: 1, label: 'Old value' })
+  @Props({ type: 'Types.Catalog', order: 1, label: 'Searched value' })
   OldValue: Ref = null;
 
   @Props({ type: 'Types.Catalog', order: 1, label: 'New value' })
   NewValue: Ref = null;
 
   @Props({
-    type: 'table', order: 1, label: 'Search result',
+    type: 'table', order: 1, label: 'Search result', readOnly: true,
   })
   SearchResult: SearchResult[] = [new SearchResult()];
 
 }
 
 export class SearchResult {
-
-  @Props({ type: 'string', label: 'Searched value' })
-  SearchedValue = '';
 
   @Props({ type: 'string' })
   Source = '';

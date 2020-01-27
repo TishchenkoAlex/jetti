@@ -167,6 +167,37 @@
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
+        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) "Balance"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) "Analytics"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1, -1) "Amount"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1,  null) "Amount.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, null,  1) "Amount.Out"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, 1, -1) "AmountInBalance"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, 1,  null) "AmountInBalance.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, null,  1) "AmountInBalance.Out"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, 1, -1) "AmountInAccounting"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, 1,  null) "AmountInAccounting.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, null,  1) "AmountInAccounting.Out"
+      FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Balance.Report';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
+    GO
+      CREATE UNIQUE INDEX [Register.Accumulation.Balance.Report.id] ON [dbo].[Register.Accumulation.Balance.Report](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report] ON [dbo].[Register.Accumulation.Balance.Report](company,date,calculated,id);
+      GO
+    RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Cash]
@@ -377,6 +408,40 @@
       CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales] ON [dbo].[Register.Accumulation.Sales](company,date,calculated,id);
       GO
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+    RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.Salary]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
+        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) "Person"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) "Employee"
+        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.SalaryKind')) "SalaryKind" 
+
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) "Analytics"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1, -1) "Amount"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1,  null) "Amount.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, null,  1) "Amount.Out"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, 1, -1) "AmountInBalance"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, 1,  null) "AmountInBalance.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInBalance')) * IIF(kind = 1, null,  1) "AmountInBalance.Out"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, 1, -1) "AmountInAccounting"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, 1,  null) "AmountInAccounting.In"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountInAccounting')) * IIF(kind = 1, null,  1) "AmountInAccounting.Out"
+      FROM dbo.[Accumulation] WHERE type = N'Register.Accumulation.Salary';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
+    GO
+      CREATE UNIQUE INDEX [Register.Accumulation.Salary.id] ON [dbo].[Register.Accumulation.Salary](id);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary] ON [dbo].[Register.Accumulation.Salary](company,date,calculated,id);
+      GO
+    RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
     
     RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;

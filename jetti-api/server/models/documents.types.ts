@@ -24,6 +24,7 @@ export type CatalogTypes =
   'Catalog.PriceType' |
   'Catalog.Product' |
   'Catalog.Storehouse' |
+  'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
   'Catalog.Documents' |
   'Catalog.Catalogs' |

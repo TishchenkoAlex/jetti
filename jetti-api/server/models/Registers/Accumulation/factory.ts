@@ -1,3 +1,5 @@
+import { RegisterAccumulationSalary } from './Salary';
+import { RegisterAccumulationBalanceReport } from './Balance.Reports';
 import { RegisterAccumulationAccountablePersons } from './AccountablePersons';
 import { RegisterAccumulationAP } from './AP';
 import { RegisterAccumulationAR } from './AR';
@@ -20,12 +22,14 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.AR' |
   'Register.Accumulation.Bank' |
   'Register.Accumulation.Balance' |
+  'Register.Accumulation.Balance.Report' |
   'Register.Accumulation.Cash' |
   'Register.Accumulation.Cash.Transit' |
   'Register.Accumulation.Inventory' |
   'Register.Accumulation.Loan' |
   'Register.Accumulation.PL' |
   'Register.Accumulation.Sales' |
+  'Register.Accumulation.Salary' |
   'Register.Accumulation.Depreciation' |
   'Register.Accumulation.CashToPay' |
   'Register.Accumulation.BudgetItemTurnover';
@@ -37,12 +41,14 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },
   { type: 'Register.Accumulation.Bank', Class: RegisterAccumulationBank },
   { type: 'Register.Accumulation.Balance', Class: RegisterAccumulationBalance },
+  { type: 'Register.Accumulation.Balance.Report', Class: RegisterAccumulationBalanceReport },
   { type: 'Register.Accumulation.Cash', Class: RegisterAccumulationCash },
   { type: 'Register.Accumulation.Cash.Transit', Class: RegisterAccumulationCashTransit },
   { type: 'Register.Accumulation.Inventory', Class: RegisterAccumulationInventory },
   { type: 'Register.Accumulation.Loan', Class: RegisterAccumulationLoan },
   { type: 'Register.Accumulation.PL', Class: RegisterAccumulationPL },
   { type: 'Register.Accumulation.Sales', Class: RegisterAccumulationSales },
+  { type: 'Register.Accumulation.Salary', Class: RegisterAccumulationSalary },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },
   { type: 'Register.Accumulation.CashToPay', Class: RegisterAccumulationCashToPay },
   { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover }

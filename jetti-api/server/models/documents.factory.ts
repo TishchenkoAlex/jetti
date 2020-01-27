@@ -66,6 +66,7 @@ import { CatalogTaxOffice } from './Catalogs/Catalog.TaxOffice';
 import { CatalogPersonBankAccount } from './Catalogs/Catalog.Person.BankAccount';
 import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
 import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
+import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -126,7 +127,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Counterpartie.BankAccount', Class: CatalogCounterpartieBankAccount },
   { type: 'Catalog.Contract', Class: CatalogContract },
   { type: 'Catalog.BusinessDirection', Class: CatalogBusinessDirection },
-
+  { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
   { type: 'Catalog.Expense', Class: CatalogExpense },
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },

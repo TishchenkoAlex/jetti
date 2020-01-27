@@ -90,12 +90,12 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
       GROUP BY type `;
 
     const searchRes = await sdbq.manyOrNone<{ Records: number, Type: string, Source: string }>(query, [this.OldValue]);
+    this.SearchResult = [];
     for (const row of searchRes) {
       this.SearchResult.push({
         Records: row.Records,
         Type: row.Type,
-        Source: row.Source,
-        SearchedValue: this.OldValue
+        Source: row.Source
       });
     }
 
@@ -110,7 +110,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     const sdbq = new MSSQL(this.user, TASKS_POOL);
     const NewValue = await lib.doc.byId(this.NewValue, sdbq);
     const OldValue = await lib.doc.byId(this.OldValue, sdbq);
-    if (NewValue?.type !== OldValue?.type) throw new Error(`Bad params: The new value type ${NewValue?.type} mast be same type ${OldValue?.type} as old value`);
+    if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);
 
     let query = `
     BEGIN TRANSACTION

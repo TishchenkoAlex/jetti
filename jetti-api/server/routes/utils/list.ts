@@ -4,8 +4,6 @@ import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
-import e = require('express');
-
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
@@ -59,6 +57,10 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
               where += ` AND "${f.left}" >= '${f.right[0]}'`;
             if (f.right[1])
               where += ` AND "${f.left}" <= '${f.right[1]}'`;
+            break;
+          }
+          if (typeof f.right === 'number') {
+            where += ` AND "${f.left}" ${f.center} '${f.right}'`;
             break;
           }
           if (typeof f.right === 'boolean') {
