@@ -28,6 +28,12 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'date', required: false})
   EndDate: Ref = null;
 
+  @Props({ type: 'number', required: false})
+  Indulgence = 0;
+
+  @Props({ type: 'number', required: false})
+  Amount = 0;
+
   @Props({ type: 'Catalog.BusinessDirection', required: true })
   BusinessDirection: Ref = null;
 
