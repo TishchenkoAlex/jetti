@@ -1822,6 +1822,9 @@
         , ISNULL([bank.v].description, '') [bank.value], d.[bank] [bank.id], [bank.v].type [bank.type]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
         , d.[OpenDate] [OpenDate]
+        , d.[BankBranch] [BankBranch]
+        , d.[BankBranchOffice] [BankBranchOffice]
+        , d.[BankAccount] [BankAccount]
       
         , ISNULL(l5.description, d.description) [SalaryProject.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [SalaryProject.Level4]
