@@ -1,12 +1,12 @@
 
       
-    DROP SECURITY POLICY IF EXISTS [rls].[companyAccessPolicy];
-    GO
+    --DROP SECURITY POLICY IF EXISTS [rls].[companyAccessPolicy];
+    --GO
 
-    CREATE SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty] 
-      WITH (STATE = ON);
-    GO
+    --CREATE SECURITY POLICY [rls].[companyAccessPolicy]
+      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty] 
+      --WITH (STATE = ON);
+    --GO
     
       ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Account.v];
       GO
