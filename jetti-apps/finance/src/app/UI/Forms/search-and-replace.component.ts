@@ -47,7 +47,6 @@ export class SearchAndReplaceComponent extends _baseDocFormComponent implements 
 
   fillHeader() {
     const oldval = this.form.get('OldValue').value;
-    console.log(oldval);
     this.header = this.onlyViewMode ? `${oldval ? oldval.value : ''} used in` : `Search and replace`;
   }
 

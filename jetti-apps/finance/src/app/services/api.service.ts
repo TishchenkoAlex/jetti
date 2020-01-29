@@ -205,7 +205,6 @@ export class ApiService {
 
   restoreObjectFromHistory(id: Ref, type: DocTypes): Observable<IViewModel> {
     const query = `${environment.api}restore/${type}/${id}`;
-    console.log(query);
     return (this.http.get(query) as Observable<IViewModel>);
   }
 

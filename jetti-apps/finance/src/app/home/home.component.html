@@ -1,20 +1,18 @@
 <!-- <j-tree-list #tl docType="Catalog.Product"></j-tree-list> -->
-<div *ngIf="auth.isLoggedIn$ | async" style="display: flex; justify-content: center; height: calc(100vh - 130px); align-items: center; flex-direction: column;">
-  <a href="https://bi.x100-group.com/Reports/" class="button" style="font-size: large; text-decoration: underline;" target="_blank">Power BI Reports</a>
-  <p> This home page is under construction/Эта стартовая страница пока в разработке...</p>
-</div>
-<form *ngIf="auth.isLoggedOut$ | async" #f="ngForm">
-  <div class="card login-panel ui-fluid">
-    <div class="login-panel-content">
-      <div class="ui-g">
-        <div class="ui-g-3" style="text-align:left;" style="cursor: pointer;">
-          <img src="/assets/layout/images/login/icon-login.svg" (click)="login()"/>
-        </div>
-        <div class="ui-g-9" style="text-align:right;">
-          <h2 class="welcome-text">Welcome Guest</h2>
-          <span class="guest-sign-in">Sign in to Jetti apps</span>
-        </div>
-      </div>
-    </div>
+<div style="height: calc(100vh - 110px); width: 100%;
+    background-image: url(/assets/layout/images/x100-home.jpg);    
+    background-repeat: no-repeat;
+    background-size: cover;
+    ">
+  <div *ngIf="auth.isLoggedIn$ | async" fxLayout="row" fxLayoutAlign="space-between">
+    <span></span>
+    <img src="/assets/layout/images/powerbi.JPG" style="cursor: pointer; width: 120px;" (click)="powerBi()" />
+    <span style="color: lightgray;">vesrion 1.0.004</span>
   </div>
-</form>
+  <div *ngIf="auth.isLoggedOut$ | async" style="cursor: pointer; display: flex;
+  justify-content: center;
+  align-items: flex-end;">
+    <h1 style="color: cornflowerblue; font-weight: 200;">Welcome to the Jetti-apps!</h1>
+    <img src="/assets/layout/images/login/icon-login.svg" (click)="login()" />
+  </div>
+</div>

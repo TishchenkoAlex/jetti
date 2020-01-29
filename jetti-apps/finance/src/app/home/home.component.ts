@@ -16,4 +16,8 @@ export class HomeComponent  {
   async login() {
     (await this.auth.login()).pipe(take(1)).subscribe();
   }
+
+  powerBi() {
+    window.open('https://bi.x100-group.com/Reports/', '_blank');
+  }
 }
