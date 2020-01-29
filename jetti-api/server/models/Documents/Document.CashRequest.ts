@@ -123,8 +123,13 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'Catalog.CashFlow', label: 'Статья ДДС', required: true })
   CashFlow: Ref = null;
-  
-  @Props({ type: 'Catalog.SalaryProject', label: 'Зарплатный проект' })
+
+  @Props({
+    type: 'Catalog.SalaryProject', label: 'Зарплатный проект',
+    owner: [
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
   SalaryProject: Ref = null;
 
   @Props({
@@ -181,13 +186,21 @@ export class DocumentCashRequest extends DocumentBase {
   Amount = 0;
 
   @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })
-  сurrency: Ref = 'A4867005-66B8-4A8A-9105-3F25BB081936';
+  сurrency: Ref = 'A4867005-66B8-4A8A-9105-3F25BB081936'; // RUB
 
   @Props({ type: 'Types.ExpenseOrBalance', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseOrBalance: Ref = null;
 
   @Props({ type: 'Catalog.Expense.Analytics', label: 'Аналитики расходов', hiddenInList: true })
   ExpenseAnalytics: Ref = null;
+
+  @Props({
+    type: 'Catalog.Salary.Analytics', label: 'Выплачено', hiddenInList: true,
+    owner: [
+      { dependsOn: 'tempSalaryKind', filterBy: 'SalaryKind' }
+    ]
+  })
+  SalaryAnalitics: Ref = null;
 
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;
@@ -241,6 +254,9 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'Catalog.Company', hiddenInList: true })
   tempCompanyParent: Ref = null;
+
+  @Props({ type: 'string', hiddenInList: true })
+  tempSalaryKind = 'PAID'
 
   @Props({
     type: 'table', required: false, order: 1,

@@ -1,3 +1,4 @@
+import { BaseHierarchyListComponent } from './../common/datatable/base.hierarchy-list.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -42,6 +43,7 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
+    BaseHierarchyListComponent,
 
     TablePartsComponent,
     SuggestDialogComponent,
@@ -85,6 +87,7 @@ import { HistoryComponent } from '../common/history/history.component';
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
+    BaseHierarchyListComponent,
 
     TablePartsComponent,
     SuggestDialogComponent,

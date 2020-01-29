@@ -61,7 +61,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       const BankAccountSupplier =
-      this.Operation === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+        this.Operation === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
       if (this.Operation === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
       OperationServer['BankAccountSupplier'] = BankAccountSupplier;
       await OperationServer.baseOn!(row.CashRequest, tx);
@@ -121,14 +121,15 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
           WHERE CBA.[owner.id] = DocCR.[CashRecipient.id] AND CBA.[currency.id] = DocCR.[сurrency.id] AND CBA.[deleted] = 0) AS CountOfBankAccountCashRecipient
        , null as LinkedDocument
       FROM #CashRequestBalance AS CRT
-      LEFT JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest]
+      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and DocCR.[CashKind] <> 'CASH'
       ORDER BY Delayed, AmountBalance DESC;`;
 
     const CashRequests = await tx.manyOrNone<CashRequest>(query,
       [this.company, this.CashFlow, this.сurrency, this.Operation ? this.Operation : 'Оплата поставщику']);
+    const rowAmountName = this.Operation === 'Выплата заработной платы' ? 'AmountBalance' : 'Amount';
     for (const row of CashRequests) {
       this.CashRequests.push({
-        Amount: row.Amount,
+        Amount: row[rowAmountName],
         AmountBalance: row.AmountBalance,
         AmountPaid: row.AmountPaid,
         AmountRequest: row.AmountBalance,
@@ -145,7 +146,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         LinkedDocument: null
       });
     }
-    CashRequests.forEach(row => this.Amount += row.Amount);
+    this.CashRequests.forEach(row => this.Amount += row.Amount);
   }
   async onCopy(tx: MSSQL) {
     this.Status = 'PREPARED';
