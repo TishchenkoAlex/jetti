@@ -75,8 +75,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
   async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
     switch (command) {
-      case 'company':
-        return {};
+      case 'returnToStatusPrepared':
+        await this.returnToStatusPrepared(tx);
+        return this;
       default:
         return {};
     }
@@ -84,6 +85,28 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
   async baseOn(source: Ref, tx: MSSQL): Promise<this> {
     return this;
+  }
+
+  async returnToStatusPrepared(tx: MSSQL) {
+    if (this.Status === 'PREPARED') return;
+    if (!this.user) throw new Error(`Не заполнен автор документа`);
+    const mail = tx.user.email;
+    if (!mail) throw new Error(`Не заполнен адрес электронной почты текущего пользователя`);
+    const currentUser = await lib.doc.byCode('Catalog.User', mail, tx);
+    if (!currentUser) throw new Error(`Не удалось опеределить текущего пользователя`);
+    if (currentUser !== this.user) throw new Error(`Операция разрешена только автору документа`);
+    const relatedDocs = await this.getRelatedDocuments(tx);
+    if (relatedDocs.length) {
+      let relatedDocsString = '';
+      relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description });
+      throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
+    }
+    if (this.workflowID) {
+      await DeleteProcess(this.workflowID);
+      this.workflowID = '';
+    }
+    this.Status = 'PREPARED';
+    await updateDocument(this, tx);
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
@@ -99,9 +122,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     if (this.workflowID) {
       await DeleteProcess(this.workflowID);
       this.workflowID = '';
-      this.Status = 'PREPARED';
-      await updateDocument(this, tx);
     }
+    this.Status = 'PREPARED';
+    await updateDocument(this, tx);
     return this;
   }
 
@@ -175,4 +198,20 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return 0;
   }
 
+  // возвращает связанные документы
+  async  getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
+    const query = `
+    select  
+      id,
+      description
+    from Documents
+    where contains(doc, @p1)
+    union 
+    select
+      id,
+      description
+    from Documents
+    where parent =  @p1`;
+    return await tx.manyOrNone<{ id: string, description: string }>(query, [this.id]);
+  }
 }

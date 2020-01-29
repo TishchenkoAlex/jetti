@@ -6,7 +6,7 @@ export class MSSQL {
 
   private pool: sql.ConnectionPool | sql.Transaction;
 
-  constructor(private user: IJWTPayload, private GLOBAL_POOL: sql.ConnectionPool, transaction?: sql.Transaction) {
+  constructor(public user: IJWTPayload, private GLOBAL_POOL: sql.ConnectionPool, transaction?: sql.Transaction) {
     if (transaction instanceof sql.Transaction) this.pool = transaction;
     else this.pool = GLOBAL_POOL;
     if (!user) this.user = { email: '', isAdmin: false, env: {}, description: '', roles: []};

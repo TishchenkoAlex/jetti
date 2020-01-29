@@ -16,7 +16,10 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   ],
   relations: [
     { name: 'Operations', type: 'Document.Operation', field: 'parent' },
-  ]
+  ],
+  commands: [
+    { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 }
+  ],
 })
 export class DocumentCashRequest extends DocumentBase {
 

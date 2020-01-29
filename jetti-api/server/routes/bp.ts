@@ -9,6 +9,7 @@ import { bpApiHost } from '../env/environment';
 export const router = express.Router();
 
 export async function DeleteProcess(processID: string) {
+  if (!processID) return;
   const instance = axios.create({ baseURL: bpApiHost });
   const query = `/Processes/pwd/DeleteProcess/CashApplication?ProcessID=${processID}`;
   await instance.get(query);

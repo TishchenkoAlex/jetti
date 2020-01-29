@@ -744,10 +744,15 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[Gender] [Gender]
+        , d.[FirstName] [FirstName]
+        , d.[LastName] [LastName]
+        , d.[MiddleName] [MiddleName]
         , d.[Code1] [Code1]
         , d.[Code2] [Code2]
         , d.[Address] [Address]
         , d.[Phone] [Phone]
+        , d.[Email] [Email]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([JobTitle.v].description, '') [JobTitle.value], d.[JobTitle] [JobTitle.id], [JobTitle.v].type [JobTitle.type]
         , d.[Profile] [Profile]
