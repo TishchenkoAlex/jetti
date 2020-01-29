@@ -36,7 +36,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   openHistory(histData) {
-    // console.log(histData);
     this.router.navigate([this.doc.type, histData.id], { queryParams: { history: histData.id } });
   }
 
