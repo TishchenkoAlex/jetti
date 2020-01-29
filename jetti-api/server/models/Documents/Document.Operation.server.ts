@@ -27,6 +27,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
   }
 
   async beforePost(tx: MSSQL) {
+    // запрет проведения с 0 суммой для группы 1.0 - Приобретение товаров и услуг
+    if ((!this.Amount || this.Amount < 0.01) && this.Group === 'E74FF926-C149-11E7-BD8F-43B2F3011722') throw new Error(`${this.description} не может быть проведен: не заполнена сумма документа`);
     if (!this.parent || this.posted) return this;
     const parentDoc = (await lib.doc.byId(this.parent, tx));
     if (!parentDoc) return this;
@@ -129,6 +131,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.company = sourceDoc.company;
     this.currency = sourceDoc.сurrency;
     this.parent = sourceDoc.id;
+    this.date = new Date();
     this.Amount = sourceDoc.Amount;
     this['CashFlow'] = sourceDoc.CashFlow;
     this['Department'] = sourceDoc.Department;
@@ -190,6 +193,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         this.f2 = this['Supplier'];
         this.f3 = this['CashFlow'];
         break;
+
       case 'Оплата по кредитам и займам полученным':
         if (!CashOrBank) throw new Error(`Не указан источник ДС в ${sourceDoc.description}`);
         if (CashOrBank.type === 'Catalog.CashRegister') {
@@ -275,6 +279,43 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         this.f2 = this['BankAccountTransit'];
         // }
         // }
+        break;
+      case 'Выплата заработной платы':
+        CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+        if (this['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
+          CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
+        }
+        if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${sourceDoc.description}`);
+        this['PayRolls'] = [];
+        this['SalaryAnalytics'] = sourceDoc.SalaryAnalitics;
+        this.f2 = this['SalaryAnalytics'];
+        this.f3 = this['Department'];
+
+        if (CashOrBank.type === 'Catalog.CashRegister') {
+          this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';// Расходный кассовый ордер
+          this.Operation = 'ABA074C0-41BF-11EA-A3C3-75A64D409CDC';
+          this['CashRegister'] = CashOrBank.id;
+          this.f1 = this['CashRegister'];
+          sourceDoc.PayRolls.forEach(el => {
+            this['PayRolls'].push({
+              Employee: el.Employee,
+              Amount: el.Salary
+            })
+          });
+        } else if (CashOrBank.type === 'Catalog.BankAccount') {
+          this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+          this.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC';
+          this['BankAccount'] = CashOrBank.id;
+          this.f1 = this['BankAccount'];
+          sourceDoc.PayRolls.forEach(el => {
+            this['PayRolls'].push({
+              Employee: el.Employee,
+              Amount: el.Salary,
+              Tax: el.Tax,
+              BankAccount: el.BankAccount
+            })
+          });
+        }
         break;
       default:
         break;

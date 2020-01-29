@@ -11,5 +11,9 @@
 		{
 			"path": "jetti-apps/finance"
 		}
-	]
+	],
+	"settings": {
+		"editor.cursorBlinking": "phase",
+		"editor.cursorStyle": "line-thin"
+	}
 }

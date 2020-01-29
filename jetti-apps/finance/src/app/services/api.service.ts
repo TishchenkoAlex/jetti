@@ -181,6 +181,12 @@ export class ApiService {
     return this.http.get<ITree[]>(query);
   }
 
+
+  hierarchyList(type: AllDocTypes, parentId?: string) {
+    const query = `${environment.api}hierarchyList/${type}${parentId ? '/' + parentId : ''}`;
+    return this.http.get<ITree[]>(query);
+  }
+
   execute(type: FormTypes, method: string, doc: FormBase) {
     const apiDoc = viewModelToFlatDocument(doc as any);
     const query = `${environment.api}form/${type}/${method}`;

@@ -366,6 +366,23 @@ router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction
   } catch (err) { next(err); }
 });
 
+// Get hierarchyList for document list
+router.get('/hierarchyList/:type/:parent', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      let query = `select id, description, parent from "Documents" where isfolder = 1 and type = @p1 and parent = @p2 order by description, parent`;
+      let params = [req.params.type];
+      if (req.params.parent) {
+        params.push(req.params.parent);
+      } else {
+        query.replace('parent = @p2', 'parent is NULL');
+      }
+      res.json(await tx.manyOrNone(query, params));
+    });
+  } catch (err) { next(err); }
+});
+
 // Get history list by object id
 router.get('/getHistoryById/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

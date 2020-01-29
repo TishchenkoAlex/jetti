@@ -18,6 +18,18 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'Catalog.Person', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'enum', value: ['MALE', 'FEMALE', 'SELF'] })
+  Gender = null;
+
+  @Props({ type: 'string' })
+  FirstName: Ref = null;
+
+  @Props({ type: 'string' })
+  LastName: Ref = null;
+
+  @Props({ type: 'string' })
+  MiddleName: Ref = null;
+
   @Props({ type: 'string' })
   Code1: Ref = null;
 
@@ -29,6 +41,9 @@ export class CatalogPerson extends DocumentBase {
 
   @Props({ type: 'string' })
   Phone: Ref = null;
+
+  @Props({ type: 'string' })
+  Email: Ref = null;
 
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;

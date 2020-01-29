@@ -1,3 +1,4 @@
+import { RegisterAccumulationSalary } from './../Registers/Accumulation/Salary';
 import { lib } from '../../std.lib';
 import { IServerDocument, DocumentBaseServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
@@ -18,7 +19,6 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
     switch (prop) {
       case 'company':
-        const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         this.CashOrBank = null;
         this.tempCompanyParent = null;
         this.TaxBasisPayment = null;
@@ -28,7 +28,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.TaxPaymentPeriod = null;
         this.TaxPayerStatus = null;
         this.TaxPaymentCode = null;
-        
+        this.CashRecipient = null;
+        this.CashRecipientBankAccount = null;
+        this.Contract = null;
+        this.Department = null;
+        const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
+
         if (company) {
           this.сurrency = company.currency;
           this.tempCompanyParent = company.parent;
@@ -37,6 +42,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         }
         return this;
       case 'CashRecipient':
+        this.Contract = null;
+        this.CashRecipientBankAccount = null;
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         const query = `
@@ -132,27 +139,26 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         break;
     }
 
-    if (this.Status === 'APPROVED') {
-      // CashToPay
-      Registers.Accumulation.push(new RegisterAccumulationCashToPay({
-        kind: true,
-        CashRecipient: this.CashRecipient,
-        Amount: this.Amount,
-        date: this.PayDay,
-        PayDay: this.PayDay,
-        CashRequest: this.id,
-        currency: сurrency,
-        CashFlow: this.CashFlow,
-        // Contract: this.Contract,
-        // CashOrBank: this.CashOrBank,
-        // Loan: this.Loan,
-        OperationType: this.Operation,
-        // Department: this.Department,
-        // ExpenseAnalytics: this.ExpenseAnalytics,
-        // ExpenseOrBalance: this.ExpenseOrBalance,
-        // BalanceAnalytics: this.BalanceAnalytics
-      }));
-    }
+    if (this.Status !== 'APPROVED') return Registers;
+    // CashToPay
+    Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+      kind: true,
+      CashRecipient: this.CashRecipient,
+      Amount: this.Amount,
+      date: this.PayDay,
+      PayDay: this.PayDay,
+      CashRequest: this.id,
+      currency: сurrency,
+      CashFlow: this.CashFlow,
+      // Contract: this.Contract,
+      // CashOrBank: this.CashOrBank,
+      // Loan: this.Loan,
+      OperationType: this.Operation,
+      // Department: this.Department,
+      // ExpenseAnalytics: this.ExpenseAnalytics,
+      // ExpenseOrBalance: this.ExpenseOrBalance,
+      // BalanceAnalytics: this.BalanceAnalytics
+    }));
 
     return Registers;
   }

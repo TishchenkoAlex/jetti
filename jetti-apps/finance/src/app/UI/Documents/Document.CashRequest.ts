@@ -41,7 +41,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       //       { onlySelf: false, emitEvent: false })
       //   });
       // }
-      // if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
+      if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
     }
 
