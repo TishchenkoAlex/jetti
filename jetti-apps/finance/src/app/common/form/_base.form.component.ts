@@ -228,7 +228,6 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
         const route = [parentTab.type];
         if (parentTab.group) route.push('group', parentTab.group);
         this.router.navigate(route);
-        this.tabStore.close(tab);
       } else {
         const returnTab = this.tabStore.state.tabs[this.tabStore.selectedIndex];
         const route = [returnTab.type];

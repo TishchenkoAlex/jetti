@@ -18,6 +18,6 @@ export class HomeComponent  {
   }
 
   powerBi() {
-    window.open('https://bi.x100-group.com/Reports/', '_self');
+    window.open('https://bi.x100-group.com/Reports/', '_blank');
   }
 }
