@@ -392,6 +392,8 @@
         , d.[kind] [kind]
         , d.[StartDate] [StartDate]
         , d.[EndDate] [EndDate]
+        , d.[Indulgence] [Indulgence]
+        , d.[Amount] [Amount]
         , ISNULL([BusinessDirection.v].description, '') [BusinessDirection.value], d.[BusinessDirection] [BusinessDirection.id], [BusinessDirection.v].type [BusinessDirection.type]
         , ISNULL([CashFlow.v].description, '') [CashFlow.value], d.[CashFlow] [CashFlow.id], [CashFlow.v].type [CashFlow.type]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
