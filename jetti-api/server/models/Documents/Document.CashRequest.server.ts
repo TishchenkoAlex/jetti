@@ -164,7 +164,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
     if (this.Status !== 'APPROVED') return Registers;
     // CashToPay
-    if (this.Operation = 'Выплата заработной платы') {
+    if (this.Operation === 'Выплата заработной платы') {
       this.PayRolls.forEach(el => {
         Registers.Accumulation.push(new RegisterAccumulationCashToPay({
           kind: true,
