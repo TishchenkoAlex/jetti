@@ -286,6 +286,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
         }
         if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${sourceDoc.description}`);
+        this['SalaryProject'] = sourceDoc.SalaryProject;
         this['PayRolls'] = [];
         this['SalaryAnalytics'] = sourceDoc.SalaryAnalitics;
         this.f2 = this['SalaryAnalytics'];

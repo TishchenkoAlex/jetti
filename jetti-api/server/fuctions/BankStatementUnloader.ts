@@ -2,9 +2,61 @@ import { MSSQL } from '../mssql';
 
 export class BankStatementUnloader {
 
-  private static async getCashRequestsData(docsID: string[], tx: MSSQL) {
+  static docsIdsString = '';
+  static docsIds: string[];
+  static tx: MSSQL;
+  static isSalaryProject = false;
 
-    let query = `
+  private static getQueryTextSalaryProjectCommon() {
+    return `select 
+    doc.id N'ИдПервичногоДокумента',
+    FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаРеестра',
+    bank.code N'БИК',
+    JSON_VALUE(comp.doc,'$.Code1') N'ИНН',
+    comp.description N'НаименованиеОрганизации',
+    FORMAT (CAST(JSON_VALUE(sp.doc,'$.OpenDate') as date), 'dd.MM.yyyy') N'ДатаДоговора',
+    sp.code N'НомерДоговора',
+    FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаФормирования',
+    doc.id ig_Id,
+    JSON_VALUE(doc.doc,'$.SalaryProject') ig_SalaryProject,
+    currency.code ig_КодВалюты,
+    JSON_QUERY(doc.doc,'$.PayRolls') ig_PayRolls,
+    JSON_VALUE(sp.doc,'$.BankBranch') ig_ОтделениеБанка,
+    JSON_VALUE(sp.doc,'$.BankBranchOffice') ig_BankBranchOffice
+    from [dbo].[Documents] doc 
+    inner join [dbo].[Documents] sp on JSON_VALUE(doc.doc,N'$.SalaryProject') = sp.id
+    inner join [dbo].[Documents] comp on sp.company = comp.id
+    inner join [dbo].[Documents] bank on JSON_VALUE(sp.doc,N'$.bank') = bank.id
+    inner join [dbo].[Documents] currency on JSON_VALUE(doc.doc,N'$.currency') = currency.id
+    where doc.id in (@p1)`
+  }
+
+  private static getQueryTextSalaryEmployees() {
+    return `
+    DROP TABLE IF EXISTS #PayRolls;
+    SELECT *
+    INTO #PayRolls
+    FROM OPENJSON(@p1, N'$.PayRolls')
+    WITH (
+        Employee VARCHAR(200) N'$.Employee',
+        BankAccount VARCHAR(200) N'$.BankAccount',
+        Amount INT N'$.Amount');
+    SELECT 
+      JSON_VALUE(person.doc,'$.LastName') N'Фамилия',
+      JSON_VALUE(person.doc,'$.FirstName') N'Имя',
+      JSON_VALUE(person.doc,'$.MiddleName') N'Отчество',
+      N'ig_ОтделениеБанка' N'rp_ОтделениеБанка',
+      ba.code N'ЛицевойСчет',
+      pr.Amount N'Сумма',
+      N'ig_КодВалюты' N'rp_КодВалюты'
+    FROM #PayRolls pr
+      left join [dbo].[Documents] person on person.id = pr.Employee
+      left join [dbo].[Documents] ba on ba.id = pr.BankAccount;`
+  }
+
+  private static getQueryTextCommon() {
+
+    return `
     SELECT
         N'Платежное поручение' as N'СекцияДокумент'
         ,Obj.[code] as N'Номер'
@@ -259,19 +311,81 @@ export class BankStatementUnloader {
 		
         WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '8D128C20-3E20-11EA-A722-63A01E818155' -- перечисление налогов и взносов
 
-        order by Obj.company, BAComp.[code], Obj.[date] `;
-
-    const DocIds = docsID.map(el => '\'' + el + '\'').join(',');
-    query = query.replace(/@p1/g, DocIds);
-
-    return await tx.manyOrNone<[{ key: string, value }]>(query, []);
+        order by Obj.company, BAComp.[code], Obj.[date] `
 
   }
 
-  static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
-    if (!docsID.length) return '';
-    const CashRequestsData = await this.getCashRequestsData(docsID, tx);
-    if (!CashRequestsData.length) return '';
+  private static async executeQuery(query: string, params: any[] = []) {
+    query = query.replace(/@p1/g, this.docsIdsString);
+    return await this.tx.manyOrNone<[{ key: string, value }]>(query, params);
+  }
+
+  private static async init(docsID: any[], tx: MSSQL): Promise<number> {
+    this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
+    this.docsIds = docsID;
+    this.tx = tx;
+    return this.docsIds.length;
+  }
+
+  private static async getBankStatementData(): Promise<[{ key: string, value }][]> {
+    let result = await this.executeQuery(this.getQueryTextSalaryProjectCommon());
+    this.isSalaryProject = result.length > 0;
+    if (!this.isSalaryProject) result = await this.executeQuery(this.getQueryTextCommon());
+    return result;
+  }
+
+  private static async getSalaryProjectEmployeesDataFromJSON(EmployeesDataJSON: string): Promise<[{ key: string, value }][]> {
+    //return await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployees().replace(/@p1/g, EmployeesDataJSON), []);
+    return await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployees(), [EmployeesDataJSON]);
+  }
+
+  private static async BankStatementDataAsSalaryProjectBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
+
+    let result = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <СчетаПК xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://v8.1c.ru/edi/edi_stnd/109" xsi:type="СчетПК"`;
+
+    for (const row of bankStatementData) {
+      for (const prop of Object.keys(row)) {
+        if (prop.search('ig_') !== -1) continue;
+        result += ` ${prop}=\"${row[prop]}\" `;
+      }
+    }
+
+    result += '>\n\t<ЗачислениеЗарплаты>';
+
+    const common = bankStatementData[0];
+    const EmployeesInJSON = `{"PayRolls":${JSON.stringify(common['ig_PayRolls'])}}`;
+    const employees = await this.getSalaryProjectEmployeesDataFromJSON(EmployeesInJSON);
+    let rowIndex = 1;
+    let amount = 0;
+    for (const row of employees) {
+      result += `\n\t\t<Сотрудник Нпп="${rowIndex}">`
+      for (const prop of Object.keys(row)) {
+        if (prop.search('ig_') !== -1) continue;
+        if (prop.search('rp_') !== -1) {
+          result += `\n\t\t\t<${prop.replace('rp_', '')}>${common[row[prop]]}</${prop.replace('rp_', '')}>`;
+        } else {
+          result += `\n\t\t\t<${prop}>${row[prop]}</${prop}>`;
+        }
+      }
+      result += `\n\t\t<Сотрудник>`
+      amount += row['Сумма'];
+      rowIndex++;
+    }
+    result += `\n\t</ЗачислениеЗарплаты>`;
+    result += `\n\t<ВидЗачисления>01</ВидЗачисления>`;
+    result += `\n\t<КонтрольныеСуммы>`;
+    result += `\n\t\t<КоличествоЗаписей>${rowIndex-1}</КоличествоЗаписей>`;
+    result += `\n\t\t<СуммаИтого>${amount}</СуммаИтого>`;
+    result += `\n\t</КонтрольныеСуммы>`;
+    result += `\n</СчетаПК>`;
+    console.log(result);
+    return result.trim();
+  }
+
+  private static async BankStatementDataAsCommonBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
+
     let result = '';
     const companySpliter = `---------------------------------------------------------------------`;
     let currentCompany = '';
@@ -279,7 +393,7 @@ export class BankStatementUnloader {
     const naznMaxLength = 210;
     let addFieldsPrefix = '';
 
-    for (const row of CashRequestsData) {
+    for (const row of bankStatementData) {
 
       switch (row['Oper_ig']) {
         case '8D128C20-3E20-11EA-A722-63A01E818155':
@@ -349,11 +463,22 @@ export class BankStatementUnloader {
     }
 
     if (companyCount > 1) {
-      result = `${companySpliter}\n${CashRequestsData[0]['Плательщик']}\n${companySpliter}\n\n${result.trim()}`;
+      result = `${companySpliter}\n${bankStatementData[0]['Плательщик']}\n${companySpliter}\n\n${result.trim()}`;
     }
 
     return result.trim();
 
+  }
+
+  static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
+    ;
+    if (!this.init(docsID, tx)) return '';
+    const BankStatementData = await this.getBankStatementData();
+    if (!BankStatementData.length) return '';
+    return this.isSalaryProject ?
+      await this.BankStatementDataAsSalaryProjectBankStatementString(BankStatementData)
+      :
+      await this.BankStatementDataAsCommonBankStatementString(BankStatementData)
   }
 
   private static getHeaderText(StatementData): string {

@@ -164,24 +164,35 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
     if (this.Status !== 'APPROVED') return Registers;
     // CashToPay
-    Registers.Accumulation.push(new RegisterAccumulationCashToPay({
-      kind: true,
-      CashRecipient: this.CashRecipient,
-      Amount: this.Amount,
-      date: this.PayDay,
-      PayDay: this.PayDay,
-      CashRequest: this.id,
-      currency: сurrency,
-      CashFlow: this.CashFlow,
-      // Contract: this.Contract,
-      // CashOrBank: this.CashOrBank,
-      // Loan: this.Loan,
-      OperationType: this.Operation,
-      // Department: this.Department,
-      // ExpenseAnalytics: this.ExpenseAnalytics,
-      // ExpenseOrBalance: this.ExpenseOrBalance,
-      // BalanceAnalytics: this.BalanceAnalytics
-    }));
+    if (this.Operation = 'Выплата заработной платы') {
+      this.PayRolls.forEach(el => {
+        Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+          kind: true,
+          CashRecipient: el.Employee,
+          Amount: el.Salary,
+          date: this.PayDay,
+          PayDay: this.PayDay,
+          CashRequest: this.id,
+          currency: сurrency,
+          CashFlow: this.CashFlow,
+          OperationType: this.Operation
+        })
+        )
+      })
+    } else {
+      Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+        kind: true,
+        CashRecipient: this.CashRecipient,
+        Amount: this.Amount,
+        date: this.PayDay,
+        PayDay: this.PayDay,
+        CashRequest: this.id,
+        currency: сurrency,
+        CashFlow: this.CashFlow,
+        OperationType: this.Operation
+      })
+      )
+    };
 
     return Registers;
   }

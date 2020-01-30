@@ -45,6 +45,47 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
   }
 
+  // private async Create(tx: MSSQL) {
+  //   if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
+  //   await lib.doc.postById(this.id, tx);
+  //   const rowsWithAmount = this.CashRequests.filter(c => (c.Amount > 0));
+  //   let currentCR: any = ''
+  //   let Operation: DocumentOperation | null;
+
+  //   for (const row of rowsWithAmount) {
+  //     if (currentCR === row.CashRequest) continue;
+  //     currentCR = row.CashRequest;
+  //     if (row.LinkedDocument) {
+  //       Operation = await lib.doc.byIdT<DocumentOperation>(row.LinkedDocument, tx);
+  //     } else {
+  //       Operation = createDocument<DocumentOperation>('Document.Operation');
+  //     }
+  //     const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
+  //     if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
+  //     if (this.Operation === 'Выплата заработной платы') {
+
+  //     } else {
+  //       // исключение ошибки при проверке заполненности счета в базеон
+  //       if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+  //       if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+  //       const BankAccountSupplier =
+  //         this.Operation === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+  //       if (this.Operation === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+  //       OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+  //     }
+  //     await OperationServer.baseOn!(row.CashRequest, tx);
+  //     // переопределение счета
+  //     if (BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+  //     OperationServer['Amount'] = row.Amount;
+  //     if (row.LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+  //     await lib.doc.postById(OperationServer.id, tx);
+  //     row.LinkedDocument = OperationServer.id;
+  //   }
+  //   // this.Post(true, tx);
+  //   await updateDocument(this, tx);
+  //   await lib.doc.postById(this.id, tx);
+  // }
+
   private async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
     await lib.doc.postById(this.id, tx);
