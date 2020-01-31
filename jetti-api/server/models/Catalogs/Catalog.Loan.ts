@@ -18,7 +18,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'date', hiddenInForm: false,  hiddenInList: false, hidden: false, order: 1 })
   date = new Date();
 
-  @Props({ type: 'Catalog.Counterpartie', required: true })
+  @Props({ type: 'Types.CounterpartieOrPerson', required: true })
   owner: Ref = null;
 
   @Props({

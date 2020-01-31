@@ -157,6 +157,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     TaxPaymentPeriod`.split('\n').forEach(el => { this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов' });
 
     this.vk['CashRecipient'].required = operation !== 'Выплата заработной платы';
+    this.vk['CashOrBank'].required = operation === 'Выплата заработной платы';
 
     this.form.markAsTouched();
 

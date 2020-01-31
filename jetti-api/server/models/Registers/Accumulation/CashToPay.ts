@@ -19,6 +19,9 @@ export class RegisterAccumulationCashToPay extends RegisterAccumulation {
   @Props({ type: 'Catalog.Contract', required: true, dimension: true })
   Contract: Ref = null;
 
+  @Props({ type: 'Catalog.Person.BankAccount', required: true, dimension: true })
+  BankAccountPerson: Ref = null;
+
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 

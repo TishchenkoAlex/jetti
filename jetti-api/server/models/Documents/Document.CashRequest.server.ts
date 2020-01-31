@@ -1,4 +1,4 @@
-import { RegisterAccumulationSalary } from './../Registers/Accumulation/Salary';
+import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
 import { lib } from '../../std.lib';
 import { IServerDocument, DocumentBaseServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
@@ -13,6 +13,7 @@ import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { DeleteProcess } from '../../routes/bp';
 import { updateDocument } from '../../routes/utils/post';
 import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
+import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -169,6 +170,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         Registers.Accumulation.push(new RegisterAccumulationCashToPay({
           kind: true,
           CashRecipient: el.Employee,
+          BankAccountPerson: el.BankAccount,
           Amount: el.Salary,
           date: this.PayDay,
           PayDay: this.PayDay,
@@ -209,17 +211,33 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return 0;
   }
 
+  // возвращает остаток по заявке в разрезе получателей и счетов
+  //todo: обратится в базу х100
+  public async  getAmountBalanceWithCashRecipientsAndBankAccounts(tx: MSSQL): Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
+    const query = `
+    SELECT
+        Balance.[CashRecipient] AS CashRecipient,
+        Balance.[BankAccountPerson] AS BankAccountPerson,
+        SUM(Balance.[Amount]) AS Amount
+    FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
+    WHERE Balance.[CashRequest] = @p1
+    GROUP BY
+        Balance.[CashRecipient],Balance.[BankAccountPerson]
+    HAVING SUM(Balance.[Amount]) > 0`;
+    return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>(query, [this.id]);;
+  }
+
   // возвращает связанные документы
   async  getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
     const query = `
-    select  
-      id,
+    select
+    id,
       description
     from Documents
     where contains(doc, @p1)
-    union 
+    union
     select
-      id,
+    id,
       description
     from Documents
     where parent =  @p1`;

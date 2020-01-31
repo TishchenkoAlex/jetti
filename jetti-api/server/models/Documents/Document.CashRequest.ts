@@ -286,7 +286,6 @@ export class PayRoll {
   @Props({
     type: 'Types.PersonOrCounterpartieBankAccount', label: 'Счет'
     , owner: [{ dependsOn: 'Employee', filterBy: 'owner' }]
-    , required: true
   })
   BankAccount: Ref = null;
 

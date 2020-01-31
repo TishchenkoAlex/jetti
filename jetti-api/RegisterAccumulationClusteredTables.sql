@@ -981,7 +981,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.CashToPay];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
+      d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.CashToPay]
     FROM [Accumulation] r
@@ -992,6 +992,7 @@
         , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
         , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
         , [Loan] UNIQUEIDENTIFIER N'$.Loan'
@@ -1014,7 +1015,7 @@
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
+        d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -1024,6 +1025,7 @@
         , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
         , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
         , [Loan] UNIQUEIDENTIFIER N'$.Loan'
@@ -1043,7 +1045,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay](id) WITH (MAXDOP=4);
 

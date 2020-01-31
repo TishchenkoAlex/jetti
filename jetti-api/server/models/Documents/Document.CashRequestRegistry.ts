@@ -16,7 +16,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Company', order: 4, required: false, style: { width: '250px' }})
+  @Props({ type: 'Catalog.Company', order: 4, required: false, style: { width: '250px' } })
   company: Ref = null;
 
   @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
@@ -59,11 +59,16 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   })
   CashRequests: CashRequest[] = [new CashRequest()];
 
+  // @Props({
+  //   type: 'table', required: false, order: 2, label: 'Bank statements texts',
+  // })
+  // BankStatements: BankStatement[] = [new BankStatement()];
+
 }
 
 export class CashRequest {
 
-  @Props({ type: 'Document.CashRequest', label: 'Cash request', readOnly: true, style: { width: '200px', textAlign: 'right' } })
+  @Props({ type: 'Document.CashRequest', label: 'Cash request', readOnly: true, style: { width: '320px', textAlign: 'left' } })
   CashRequest: Ref = null;
 
   @Props({ type: 'number', label: 'Cash request amount', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
@@ -75,19 +80,23 @@ export class CashRequest {
   @Props({ type: 'number', label: 'Amount balance', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
   AmountBalance = 0;
 
-  @Props({ type: 'number', label: 'Amount request', readOnly: false,
-    style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1 })
+  @Props({
+    type: 'number', label: 'Amount request', readOnly: false,
+    style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1
+  })
   AmountRequest = 0;
 
   @Props({ type: 'number', label: '#AP', readOnly: true, style: { width: '60px', textAlign: 'center' } })
   Delayed = 0;
 
-  @Props({ type: 'number', label: 'Amount', required: true,
+  @Props({
+    type: 'number', label: 'Amount', required: true,
     style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1,
     onChange: function (doc: CashRequest, value) {
-      return { Confirm: value > 0 ? true : false};
-    } },
-    )
+      return { Confirm: value > 0 ? true : false };
+    }
+  },
+  )
   Amount = 0;
 
   @Props({ type: 'boolean', label: 'Cnfrm', style: { width: '50px', textAlign: 'center' } })
@@ -99,20 +108,35 @@ export class CashRequest {
   @Props({ type: 'Catalog.Company', label: 'Company', readOnly: true })
   company: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', label: 'Bank account out', owner: [{ dependsOn: 'company', filterBy: 'company' }], required: true })
+  @Props({ type: 'Catalog.BankAccount', label: 'Bank account out', owner: [{ dependsOn: 'company', filterBy: 'company' }, { dependsOn: 'currency', filterBy: 'currency' }], required: true })
   BankAccount: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie.BankAccount', label: 'Cash recipient bank account', owner: [
-    { dependsOn: 'CashRecipient', filterBy: 'owner' },
-    { dependsOn: 'currency', filterBy: 'currency' }]})
+  @Props({
+    type: 'Catalog.Counterpartie.BankAccount', label: 'Cash recipient bank account', owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'owner' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
   CashRecipientBankAccount: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', label: 'Bank account in', owner: [{ dependsOn: 'company', filterBy: 'company' }] })
+  @Props({ type: 'Catalog.Person.BankAccount', label: 'Bank account person', readOnly: true, required: false })
+  BankAccountPerson: Ref = null;
+
+  @Props({ type: 'Catalog.BankAccount', label: 'Bank account in', owner: [{ dependsOn: 'company', filterBy: 'company' }, { dependsOn: 'currency', filterBy: 'currency' }] })
   BankAccountIn: Ref = null;
 
   @Props({ type: 'number', label: '#BA', readOnly: true, style: { width: '40px', textAlign: 'right' } })
   CountOfBankAccountCashRecipient = 0;
 
-  @Props({ type: 'Types.Document', label: 'Linked document', readOnly: true })
+  @Props({ type: 'Types.Document', label: 'Linked document', readOnly: true, style: { width: '440px' } })
   LinkedDocument: Ref = null;
 }
+
+// export class BankStatement {
+
+//   @Props({ type: 'Catalog.Company', order: 1, readOnly: true, label: 'Company', required: false, style: { width: '20%' } })
+//   company: Ref = null;
+
+//   @Props({ type: 'string', label: 'Bank statement', style: { width: '80%' } })
+//   BankStatementText = 0;
+
+// }

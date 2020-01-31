@@ -5,7 +5,10 @@ import { JDocument, Props, Ref, DocumentBase } from '../document';
   description: 'Лицевой счет',
   icon: 'fa fa-list',
   menu: 'Лицевые счета',
-  prefix: 'BANK.P-'
+  prefix: 'BANK.P-',
+  dimensions: [
+    { SalaryProject: 'Catalog.SalaryProject' }
+  ]
 })
 export class CatalogPersonBankAccount extends DocumentBase {
 

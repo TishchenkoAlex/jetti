@@ -36,7 +36,7 @@ export interface IServerDocument {
   onValueChanged?(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer>;
   onCommand?(command: string, args: any, tx: MSSQL): Promise<any>;
 
-  baseOn?(id: Ref, tx: MSSQL): Promise<DocumentBaseServer>;
+  baseOn?(id: Ref, tx: MSSQL, params?: any): Promise<DocumentBaseServer>;
 }
 
 export type DocumentBaseServer = DocumentBase & IServerDocument;
