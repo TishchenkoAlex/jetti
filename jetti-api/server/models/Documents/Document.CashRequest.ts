@@ -52,7 +52,7 @@ export class DocumentCashRequest extends DocumentBase {
   Status = 'PREPARED';
 
   @Props({
-    type: 'enum', required: true, order: 8, label: 'Вид операции', value: [
+    type: 'enum', required: true, order: 8, style: { width: '250px' }, label: 'Вид операции', value: [
       'Оплата поставщику',
       'Перечисление налогов и взносов',
       'Оплата ДС в другую организацию',
@@ -61,7 +61,8 @@ export class DocumentCashRequest extends DocumentBase {
       'Прочий расход ДС',
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
-      'Выплата заработной платы'
+      'Выплата заработной платы',
+      'Выплата заработной платы без ведомости',
     ]
   })
   Operation = 'Оплата поставщику';
@@ -80,7 +81,7 @@ export class DocumentCashRequest extends DocumentBase {
   PaymentKind = 'BODY';
 
   @Props({
-    type: 'enum', required: true, style: { width: '140px' },
+    type: 'enum', style: { width: '140px' },
     label: 'Тип платежа',
     value: [
       'BANK',
@@ -94,12 +95,11 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'enum', required: false, hiddenInList: true, style: { width: '140px' },
     label: 'Способ выплаты',
     value: [
-      'BANK',
       'CASH',
       'SALARYPROJECT'
     ]
   })
-  PayRollKind = 'BANK';
+  PayRollKind = 'SALARYPROJECT';
 
   @Props({ type: 'Catalog.Department', label: 'Подразделение' })
   Department: Ref = null;
@@ -274,17 +274,17 @@ export class DocumentCashRequest extends DocumentBase {
 
 export class PayRoll {
 
-  @Props({ type: 'Catalog.Person', label: 'Сотрудник' })
+  @Props({ type: 'Catalog.Person', label: 'Сотрудник', style: { width: '350px' } })
   Employee: Ref = null;
 
-  @Props({ type: 'number', label: 'К выплате', style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  @Props({ type: 'number', label: 'К выплате', totals: 1 })
   Salary = 0;
 
-  @Props({ type: 'number', label: 'Налог', style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  @Props({ type: 'number', label: 'Налог', totals: 1 })
   Tax = 0;
 
   @Props({
-    type: 'Types.PersonOrCounterpartieBankAccount', label: 'Счет'
+    type: 'Catalog.Person.BankAccount', label: 'Счет', style: { width: '350px' }
     , owner: [{ dependsOn: 'Employee', filterBy: 'owner' }]
   })
   BankAccount: Ref = null;

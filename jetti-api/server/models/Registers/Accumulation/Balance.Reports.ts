@@ -3,7 +3,7 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 
 @JRegisterAccumulation({
   type: 'Register.Accumulation.Balance.Report',
-  description: 'Активы/Пассивы'
+  description: 'Активы/Пассивы (аналитика)'
 })
 export class RegisterAccumulationBalanceReport extends RegisterAccumulation {
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })

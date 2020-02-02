@@ -136,6 +136,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     Выдача ДС подотчетнику
     Оплата по кредитам и займам полученным
     Выдача займа контрагенту
+    Выплата заработной платы без ведомости
     Возврат оплаты клиенту`.indexOf(operation) !== -1) this.form.get('CashRecipient').enable({ emitEvent: false }); else this.form.get('CashRecipient').disable({ emitEvent: false });
 
     // if (`Выплата заработной платы
@@ -160,32 +161,47 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     this.vk['CashOrBank'].required = operation === 'Выплата заработной платы';
 
     this.form.markAsTouched();
+    const CashRecipient = this.getValue('CashRecipient');
 
-    if (operation === 'Оплата ДС в другую организацию') {
-      const CashOrBankIn = this.getValue('CashOrBankIn');
-      if (!CashOrBankIn || CashOrBankIn.type !== 'Catalog.BankAccount') {
-        this.setValue('CashOrBankIn',
-          { id: null, code: null, type: 'Catalog.BankAccount', value: null },
-          { onlySelf: false, emitEvent: false }
-        );
-      }
-      const CashRecipient = this.getValue('CashRecipient');
-      if (!CashRecipient || CashRecipient.type !== 'Catalog.Company') {
-        this.setValue('CashRecipient',
-          { id: null, code: null, type: 'Catalog.Company', value: null },
-          { onlySelf: false, emitEvent: false }
-        );
-      }
-    } else if (operation === 'Перечисление налогов и взносов') {
-      const TaxRate = this.getValue('TaxRate');
-      if (!TaxRate || TaxRate.id !== '7CFE6E50-35EA-11EA-A185-21EAFAF35D68') {
-        let a = this.api.byId('7CFE6E50-35EA-11EA-A185-21EAFAF35D68').then(val => {
-          this.setValue('TaxRate',
-            { id: val.id, code: val.code, type: 'Catalog.TaxRate', value: val.description },
-            { onlySelf: false, emitEvent: false })
-        })
-      };
+    switch (operation) {
+      case 'Оплата ДС в другую организацию':
+        const CashOrBankIn = this.getValue('CashOrBankIn');
+        if (!CashOrBankIn || CashOrBankIn.type !== 'Catalog.BankAccount') {
+          this.setValue('CashOrBankIn',
+            { id: null, code: null, type: 'Catalog.BankAccount', value: null },
+            { onlySelf: false, emitEvent: false }
+          );
+        }
+        if (!CashRecipient || CashRecipient.type !== 'Catalog.Company') {
+          this.setValue('CashRecipient',
+            { id: null, code: null, type: 'Catalog.Company', value: null },
+            { onlySelf: false, emitEvent: false }
+          );
+        }
+        break;
+      case 'Перечисление налогов и взносов':
+        const TaxRate = this.getValue('TaxRate');
+        if (!TaxRate || TaxRate.id !== '7CFE6E50-35EA-11EA-A185-21EAFAF35D68') {
+          let a = this.api.byId('7CFE6E50-35EA-11EA-A185-21EAFAF35D68').then(val => {
+            this.setValue('TaxRate',
+              { id: val.id, code: val.code, type: 'Catalog.TaxRate', value: val.description },
+              { onlySelf: false, emitEvent: false })
+          })
+        };
+        break;
+      case 'Выплата заработной платы без ведомости':
+        if (!CashRecipient || CashRecipient.type !== 'Catalog.Person') {
+          this.setValue('CashRecipient',
+            { id: null, code: null, type: 'Catalog.Person', value: null },
+            { onlySelf: false, emitEvent: false }
+          );
+        }
+        break;
+      default:
+        break;
     }
+
+
   }
 
   async FillCurrencyShortName(FillTaxInfo?: boolean) {

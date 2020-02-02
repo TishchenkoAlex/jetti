@@ -161,14 +161,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.Amount = sourceDoc.Amount;
     this['CashFlow'] = sourceDoc.CashFlow;
     this['Department'] = sourceDoc.Department;
-    this.info = sourceDoc.info; // .replace(/\r?\n/g, ' ');
-    let CashOrBank;
-
-    if (this['BankAccount']) {
-      CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
-    } else {
-      CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
-    }
+    this.info = sourceDoc.info;
 
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
@@ -185,6 +178,9 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         break;
       case 'Выплата заработной платы':
         await this.baseOnCashRequestВыплатаЗаработнойПлаты(sourceDoc, tx, params)
+        break;
+      case 'Выплата заработной платы без ведомости':
+        await this.baseOnCashRequestВыплатаЗаработнойПлатыБезВедомости(sourceDoc, tx, params)
         break;
       default:
         break;
@@ -257,6 +253,33 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       this.f2 = this['Supplier'];
       this.f3 = this['CashFlow'];
     }
+  }
+
+  async baseOnCashRequestВыплатаЗаработнойПлатыБезВедомости(sourceDoc: DocumentCashRequestServer, tx: MSSQL, params: any) {
+    let CashOrBank;
+    CashOrBank = (await lib.doc.byId(sourceDoc.CashOrBank, tx));
+    if (this['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
+      CashOrBank = { id: this['BankAccount'], type: 'Catalog.BankAccount' };
+    }
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${sourceDoc.description}`);
+    this.Amount = await sourceDoc.getAmountBalance(tx);
+    this['SalaryAnalytics'] = sourceDoc.SalaryAnalitics;
+    this['Employee'] = sourceDoc.CashRecipient;
+    this.f2 = this['SalaryAnalytics'];
+    this.f3 = this['Employee'];
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';// Расходный кассовый ордер
+      this.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A';//Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      this['CashRegister'] = CashOrBank.id;
+      this.f1 = this['CashRegister'];
+    } else if (CashOrBank.type === 'Catalog.BankAccount') {
+      this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; //4.1 - Списание безналичных ДС
+      this.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; //С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      this['BankAccount'] = CashOrBank.id;
+      this['BankAccountPerson'] = sourceDoc.CashRecipientBankAccount;
+      this.f1 = this['BankAccount'];
+    }
+
   }
 
   async baseOnCashRequestОплатаПоКредитамИЗаймамПолученным(sourceDoc: DocumentCashRequestServer, tx: MSSQL, params: any) {

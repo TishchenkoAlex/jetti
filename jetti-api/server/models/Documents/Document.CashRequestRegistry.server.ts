@@ -83,7 +83,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
       // переопределение счета
       if (this.Operation !== 'Выплата заработной платы' && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      if (this.Operation !== 'Выплата заработной платы') OperationServer['Amount'] = row.Amount;
+      if (this.Operation !== 'Выплата заработной платы' && this.Operation !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
+      if (this.Operation === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount']) OperationServer['Amount'] = row.Amount;
       if (LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
       rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => {el.LinkedDocument = OperationServer.id});    
