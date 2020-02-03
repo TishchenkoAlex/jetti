@@ -13,7 +13,7 @@ export class BankStatementUnloader {
       doc.id N'ИдПервичногоДокумента',
       FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаРеестра',
       bank.code N'БИК',
-      JSON_VALUE(comp.doc,'$.Code1') N'ИНН',
+      ISNULL(JSON_VALUE(comp.doc,'$.Code1'),'') N'ИНН',
       comp.description N'НаименованиеОрганизации',
       FORMAT (CAST(JSON_VALUE(sp.doc,'$.OpenDate') as date), 'dd.MM.yyyy') N'ДатаДоговора',
       sp.code N'НомерДоговора',
@@ -21,9 +21,9 @@ export class BankStatementUnloader {
       doc.id ig_Id,
       JSON_VALUE(doc.doc,'$.SalaryProject') ig_SalaryProject,
       currency.code ig_КодВалюты,
-      JSON_QUERY(doc.doc,'$.PayRolls') ig_PayRolls,
-      JSON_VALUE(sp.doc,'$.BankBranch') ig_ОтделениеБанка,
-      JSON_VALUE(sp.doc,'$.BankBranchOffice') ig_BankBranchOffice
+      ISNULL(JSON_QUERY(doc.doc,'$.PayRolls'),'') ig_PayRolls,
+      ISNULL(JSON_VALUE(sp.doc,'$.BankBranch'),'') ig_ОтделениеБанка,
+      ISNULL(JSON_VALUE(sp.doc,'$.BankBranchOffice'),'') ig_BankBranchOffice
     from [dbo].[Documents] doc 
       inner join [dbo].[Documents] sp on JSON_VALUE(doc.doc,N'$.SalaryProject') = sp.id
       inner join [dbo].[Documents] comp on sp.company = comp.id
@@ -41,11 +41,11 @@ export class BankStatementUnloader {
     WITH (
         Employee VARCHAR(200) N'$.Employee',
         BankAccount VARCHAR(200) N'$.BankAccount',
-        Amount INT N'$.Amount');
+        Amount FLOAT N'$.Amount');
     SELECT 
-      JSON_VALUE(person.doc,'$.LastName') N'Фамилия',
-      JSON_VALUE(person.doc,'$.FirstName') N'Имя',
-      JSON_VALUE(person.doc,'$.MiddleName') N'Отчество',
+      ISNULL(JSON_VALUE(person.doc,'$.LastName'),'') N'Фамилия',
+      ISNULL(JSON_VALUE(person.doc,'$.FirstName'),'') N'Имя',
+      ISNULL(JSON_VALUE(person.doc,'$.MiddleName'),'') N'Отчество',
       N'ig_ОтделениеБанка' N'rp_ОтделениеБанка',
       ba.code N'ЛицевойСчет',
       pr.Amount N'Сумма',
@@ -313,7 +313,7 @@ export class BankStatementUnloader {
         WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '8D128C20-3E20-11EA-A722-63A01E818155' -- перечисление налогов и взносов
   
         UNION
-        
+
         SELECT
         N'Платежное поручение' as N'СекцияДокумент'
         ,Obj.[code] as N'Номер'
@@ -334,11 +334,11 @@ export class BankStatementUnloader {
         ,Person.description N'Получатель1'--(Person.doc, '$.FullName') as N'Получатель1'
         ,BAEmp.[code] as N'ПолучательРасчСчет'
         ,BankPers.description as N'ПолучательБанк1'
-        ,JSON_VALUE(BankPers.doc, '$.Address') as N'ПолучательБанк2'
+        ,ISNULL(JSON_VALUE(BankPers.doc, '$.Address'),'') as N'ПолучательБанк2'
         ,BankPers.[code] as N'ПолучательБИК'
         ,JSON_VALUE(BankPers.doc, '$.KorrAccount') as N'ПолучательКорсчет'
         ,'01' as N'ВидОплаты'
-        ,JSON_VALUE(Comp.doc, '$.Code2') as N'ПлательщикКПП'
+        ,ISNULL(JSON_VALUE(Comp.doc, '$.Code2'),'') as N'ПлательщикКПП'
         ,3 as N'Очередность'
         ,Obj.[info] as N'НазначениеПлатежа'
         ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig'
@@ -406,7 +406,7 @@ export class BankStatementUnloader {
 
     let result = `
     <?xml version="1.0" encoding="UTF-8"?>
-    <СчетаПК xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://v8.1c.ru/edi/edi_stnd/109" xsi:type="СчетПК"`;
+<СчетаПК xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://v8.1c.ru/edi/edi_stnd/109" xsi:type="СчетПК"`;
 
     for (const row of bankStatementData) {
       for (const prop of Object.keys(row)) {

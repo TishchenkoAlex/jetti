@@ -86,7 +86,7 @@
             </div>
             <div *ngSwitchCase="'enum'">
               <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value"
-                (ngModelChange)="update(column, $event, 'like')" [showClear]="true" appendTo="body"></p-dropdown>
+                (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
             </div>
             <div *ngSwitchDefault>
               <j-autocomplete-png [checkValue]="false"
