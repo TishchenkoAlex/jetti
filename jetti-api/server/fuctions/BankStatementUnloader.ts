@@ -411,7 +411,7 @@ export class BankStatementUnloader {
     for (const row of bankStatementData) {
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1) continue;
-        result += ` ${prop}=\"${row[prop]}\" `;
+        result += ` ${prop}=\"${prop === 'НомерДоговора' ? this.getShortDocNumber(row[prop]) : row[prop]}\" `;
       }
     }
 
@@ -425,14 +425,14 @@ export class BankStatementUnloader {
     for (const row of employees) {
       result += `\n\t\t<Сотрудник Нпп="${rowIndex}">`
       for (const prop of Object.keys(row)) {
-        if (prop.search('ig_') !== -1) continue;
+        if (prop.search('ig_') !== -1 || !row[prop] || (prop.search('rp_') !== -1 && !common[row[prop]])) continue;
         if (prop.search('rp_') !== -1) {
           result += `\n\t\t\t<${prop.replace('rp_', '')}>${common[row[prop]]}</${prop.replace('rp_', '')}>`;
         } else {
           result += `\n\t\t\t<${prop}>${row[prop]}</${prop}>`;
         }
       }
-      result += `\n\t\t<Сотрудник>`
+      result += `\n\t\t</Сотрудник>`
       amount += row['Сумма'];
       rowIndex++;
     }
@@ -443,7 +443,6 @@ export class BankStatementUnloader {
     result += `\n\t\t<СуммаИтого>${amount}</СуммаИтого>`;
     result += `\n\t</КонтрольныеСуммы>`;
     result += `\n</СчетаПК>`;
-    console.log(result);
     return result.trim();
   }
 
