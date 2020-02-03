@@ -142,9 +142,9 @@ async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T |
 
 async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, level: number }[] | Ref | null> {
   if (!id) return null;
-  let query = `SELECT id, levelDown as N'level' FROM dbo.[Ancestors](@p1) WHERE levelDown = @p2 or @p2 is NULL`
+  let query = `SELECT id, levelUp as N'level' FROM dbo.[Ancestors](@p1) WHERE levelUp = @p2 or @p2 is NULL`
   let result;
-  if (level) {
+  if (level || level  === 0) {
     result = await tx.oneOrNone<{ id: Ref, level: number } | null>(query, [id, level]);
     if (result) result = result.id;
   } else {
