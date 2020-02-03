@@ -17,8 +17,18 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 
+export declare interface IFormEventsModel {
+  onOpen(): void;
+  beforeSave(): void;
+  beforeClose(): void;
+  beforeDelete(): void;
+  beforePost(): void;
+  beforeCopy(): void;
+  beforeUnPost(): void;
+}
+
 // tslint:disable-next-line: class-name
-export class _baseDocFormComponent implements OnDestroy, OnInit {
+export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsModel {
 
   @Input() id: string;
   @Input() type: DocTypes;
@@ -147,12 +157,15 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     });
 
     this._form$.next(this.data);
+    this.onOpen()
+
     this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
       this.Next(form);
     });
+
     if (this.isHistory) this.form.disable({ emitEvent: false });
-    this.navigateCommands.push(<MenuItem>{label: 'Show in list', command: () => this.goto()});
-    this.navigateCommands.push(<MenuItem>{label: 'Used in...', command: () => this.usedIn()});
+    this.navigateCommands.push(<MenuItem>{ label: 'Show in list', command: () => this.goto() });
+    this.navigateCommands.push(<MenuItem>{ label: 'Used in...', command: () => this.usedIn() });
   }
 
   refresh() {
@@ -194,12 +207,14 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
     }
   }
 
-  save() { this.showDescription(); this.ds.save(this.viewModel as DocumentBase); }
-  delete() { this.ds.delete(this.viewModel.id); }
-  post() { const doc = this.viewModel; this.ds.post(doc as DocumentBase); }
-  unPost() { this.ds.unpost(this.viewModel as DocumentBase); }
-  postClose() { const doc = this.viewModel; this.ds.post(doc as DocumentBase, true); }
+  save() { this.beforeSave(); this.showDescription(); this.ds.save(this.viewModel as DocumentBase); }
+  delete() { this.beforeDelete(); this.ds.delete(this.viewModel.id); }
+  post(close = false) { this.beforePost(); const doc = this.viewModel; this.ds.post(doc as DocumentBase, close); }
+  unPost() { this.beforeUnPost(); this.ds.unpost(this.viewModel as DocumentBase); }
+  postClose() { this.post(true) }
+
   copy() {
+    this.beforeCopy();
     return this.router.navigate(
       [this.viewModel.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
   }
@@ -212,9 +227,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       { queryParams: { goto: this.id, posted: this.viewModel.posted }, replaceUrl: true });
   }
 
-  usedIn() {
-    this.router.navigate(['Form.SearchAndReplace', this.id], { });
-  }
+  usedIn() { this.router.navigate(['Form.SearchAndReplace', this.id], {}); }
 
   private _close() {
     const tab = this.tabStore.state.tabs.find(t => t.id === this.id && t.type === this.type);
@@ -239,6 +252,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
   }
 
   close() {
+    this.beforeClose();
     if (this.form.pristine) { this._close(); return; }
     this.ds.confirmationService.confirm({
       header: 'Discard changes and close?',
@@ -249,6 +263,24 @@ export class _baseDocFormComponent implements OnDestroy, OnInit {
       key: this.id
     });
     this.cd.detectChanges();
+  }
+
+  onOpen() { this.executeDocumentModuleMethod('onOpen'); }
+  beforeSave() { this.executeDocumentModuleMethod('beforeSave'); }
+  beforeClose() { this.executeDocumentModuleMethod('beforeClose'); }
+  beforeDelete() { this.executeDocumentModuleMethod('beforeDelete'); }
+  beforePost() { this.executeDocumentModuleMethod('beforePost'); }
+  beforeCopy() { this.executeDocumentModuleMethod('beforeCopy'); }
+  beforeUnPost() { this.executeDocumentModuleMethod('beforeUnPost'); }
+
+  private executeDocumentModuleMethod(methodName: string, params?: [{ key: string, value: any }]) {
+    const func = new Function('', this.metadata.module).bind(this)();
+    if (func) {
+      const method = func[methodName];
+      if (method) {
+        method().catch(e => {this.ds.openSnackBar('error',`On execute method \"${methodName}\"`,e); })
+      }
+    }
   }
 
   focus() {

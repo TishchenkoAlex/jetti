@@ -32,6 +32,8 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
+    Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, level: number }[] | Ref | null>;
+    Descendants: (id: Ref, tx: MSSQL) => Promise<{ id: Ref, parent: Ref }[] | null>;
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
@@ -68,6 +70,8 @@ export const lib: JTL = {
     byId: byId,
     byIdT: byIdT,
     historyById: historyById,
+    Ancestors,
+    Descendants,
     formControlRef,
     postById,
     unPostById,
@@ -134,6 +138,25 @@ async function historyById(historyId: string, tx: MSSQL): Promise<IFlatDocument 
 async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T | null> {
   const result = await byId(id, tx);
   if (result) return createDocument<T>(result.type, result); else return null;
+}
+
+async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, level: number }[] | Ref | null> {
+  if (!id) return null;
+  let query = `SELECT id, levelDown as N'level' FROM dbo.[Ancestors](@p1) WHERE levelDown = @p2 or @p2 is NULL`
+  let result;
+  if (level) {
+    result = await tx.oneOrNone<{ id: Ref, level: number } | null>(query, [id, level]);
+    if (result) result = result.id;
+  } else {
+    result = await tx.manyOrNone<{ id: Ref, level: number } | null>(query, [id, null]);
+  }
+  return result;
+}
+
+async function Descendants(id: string, tx: MSSQL): Promise<{ id: Ref, parent: Ref }[] | null> {
+  if (!id) return null;
+  return await tx.manyOrNone<{ id: Ref, parent: Ref }>(`SELECT id, parent FROM dbo.[Descendants](@p1,'')`, [id]);
+  
 }
 
 function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocument | null {
