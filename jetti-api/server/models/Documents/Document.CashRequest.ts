@@ -208,6 +208,9 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;
 
+  @Props({ type: 'string', label: 'КПП', hiddenInList: true })
+  TaxKPP = '';
+
   @Props({
     type: 'Catalog.TaxPaymentCode', label: 'КБК', hiddenInList: true,
     owner: [

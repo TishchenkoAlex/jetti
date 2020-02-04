@@ -1456,6 +1456,7 @@
         , ISNULL([Counterpartie.v].description, '') [Counterpartie.value], d.[Counterpartie] [Counterpartie.id], [Counterpartie.v].type [Counterpartie.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , d.[isDefault] [isDefault]
+        , d.[Code1] [Code1]
       
         , ISNULL(l5.description, d.description) [AcquiringTerminal.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AcquiringTerminal.Level4]
@@ -2149,6 +2150,7 @@
         , ISNULL([ExpenseAnalytics.v].description, '') [ExpenseAnalytics.value], d.[ExpenseAnalytics] [ExpenseAnalytics.id], [ExpenseAnalytics.v].type [ExpenseAnalytics.type]
         , ISNULL([SalaryAnalitics.v].description, '') [SalaryAnalitics.value], d.[SalaryAnalitics] [SalaryAnalitics.id], [SalaryAnalitics.v].type [SalaryAnalitics.type]
         , ISNULL([TaxRate.v].description, '') [TaxRate.value], d.[TaxRate] [TaxRate.id], [TaxRate.v].type [TaxRate.type]
+        , d.[TaxKPP] [TaxKPP]
         , ISNULL([TaxPaymentCode.v].description, '') [TaxPaymentCode.value], d.[TaxPaymentCode] [TaxPaymentCode.id], [TaxPaymentCode.v].type [TaxPaymentCode.type]
         , ISNULL([TaxPayerStatus.v].description, '') [TaxPayerStatus.value], d.[TaxPayerStatus] [TaxPayerStatus.id], [TaxPayerStatus.v].type [TaxPayerStatus.type]
         , ISNULL([TaxBasisPayment.v].description, '') [TaxBasisPayment.value], d.[TaxBasisPayment] [TaxBasisPayment.id], [TaxBasisPayment.v].type [TaxBasisPayment.type]

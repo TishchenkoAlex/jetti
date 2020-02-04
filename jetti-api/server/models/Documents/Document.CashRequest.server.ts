@@ -33,6 +33,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.CashRecipientBankAccount = null;
         this.Contract = null;
         this.Department = null;
+        this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
 
         if (company) {
@@ -40,6 +41,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           this.tempCompanyParent = company.parent;
           const TaxOffice = await lib.doc.byIdT<CatalogTaxOffice>(company.TaxOffice, tx);
           this.TaxOfficeCode2 = (TaxOffice ? TaxOffice.Code2 : null) as any;
+          this.TaxKPP = company.Code2 as any;
         }
         return this;
       case 'CashRecipient':

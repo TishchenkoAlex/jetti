@@ -171,6 +171,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   refresh() {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
       this.Next(formGroup);
+      this.onOpen();
     });
   }
 
@@ -215,6 +216,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
   copy() {
     this.beforeCopy();
+    this.ds.openSnackBar('success','заголовок', 'текст сообщения');
     return this.router.navigate(
       [this.viewModel.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
   }

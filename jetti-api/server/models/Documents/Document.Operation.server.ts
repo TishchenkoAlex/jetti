@@ -199,7 +199,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
     this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
     this.Operation = '8D128C20-3E20-11EA-A722-63A01E818155';
-    `TaxPaymentCode 
+    `TaxKPP
+    TaxPaymentCode 
     TaxOfficeCode2
     TaxPayerStatus
     TaxBasisPayment

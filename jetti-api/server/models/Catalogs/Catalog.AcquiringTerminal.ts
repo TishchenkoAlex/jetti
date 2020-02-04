@@ -24,4 +24,7 @@ export class CatalogAcquiringTerminal extends DocumentBase {
   @Props({ type: 'boolean'})
   isDefault = false;
 
+  @Props({ type: 'string', label: 'Мерчант'})
+  Code1 = '';
+
 }
