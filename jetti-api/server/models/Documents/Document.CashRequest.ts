@@ -219,6 +219,10 @@ export class DocumentCashRequest extends DocumentBase {
   TaxPaymentCode: Ref = null;
 
   @Props({
+    type: 'Catalog.TaxAssignmentCode', label: 'КНП', hiddenInList: true })
+  TaxAssignmentCode: Ref = null;
+
+  @Props({
     type: 'Catalog.TaxPayerStatus', label: 'Статус плательщика', hiddenInList: true,
     owner: [
       { dependsOn: 'tempCompanyParent', filterBy: 'company' }]

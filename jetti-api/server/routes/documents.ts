@@ -355,6 +355,20 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
   } catch (err) { next(err); }
 });
 
+router.get('/ancestors/:id/:level', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+      res.json(await lib.doc.Ancestors(req.params.id, sdb, req.params.level as any));
+  } catch (err) { next(err); }
+});
+
+router.get('/descendants/:id/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+      res.json(await lib.doc.Descendants(req.params.id, sdb));
+  } catch (err) { next(err); }
+});
+
 // Get tree for document list
 router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {

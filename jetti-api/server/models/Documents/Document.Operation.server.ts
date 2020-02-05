@@ -248,6 +248,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     } else {
       this.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9'; // С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
       this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+      this['TaxAssignmentCode'] = sourceDoc.TaxAssignmentCode; // КНП для Казахстана
       this['BankAccountSupplier'] = CashRecipientBankAccount;
       this['BankAccount'] = CashOrBank.id;
       this.f1 = this['BankAccount'];

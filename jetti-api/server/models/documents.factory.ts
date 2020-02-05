@@ -1,3 +1,4 @@
+import { CatalogTaxAssignmentCode } from './Catalogs/Catalog.TaxAssignmentCode';
 import { CatalogAccount } from './Catalogs/Catalog.Account';
 import { CatalogBalance } from './Catalogs/Catalog.Balance';
 import { CatalogBalanceAnalytics } from './Catalogs/Catalog.Balance.Analytics';
@@ -168,6 +169,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Person.BankAccount', Class: CatalogPersonBankAccount },
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
+  { type: 'Catalog.TaxAssignmentCode', Class: CatalogTaxAssignmentCode },
   { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },
   { type: 'Catalog.TaxBasisPayment', Class: CatalogTaxBasisPayment},
   { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod},

@@ -26,7 +26,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   currencyShortName = '';
   taxRate = -1;
-
+  isKAZAKHSTAN = false;
+  
   ngOnInit() {
     super.ngOnInit();
 
@@ -61,6 +62,13 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   setValue(fieldName: string, value: any, options?: any) {
     this.form.get(fieldName).setValue(value, options);
+  }
+
+  async FillisKAZAKHSTAN() {
+    let comp = this.getValue('company').value;
+    if (!comp) return false;
+    comp = await this.api.ancestors(comp, 1);
+    return comp === '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
   }
 
   old_onOperationChanges(operation: string) {
@@ -108,6 +116,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       Выдача займа контрагенту`.indexOf(operation) !== -1;
 
     this.form.markAsTouched();
+  }
+
+  onCompanyChanges(event) {
+    this.FillisKAZAKHSTAN();
   }
 
   onOperationChanges(operation: string) {

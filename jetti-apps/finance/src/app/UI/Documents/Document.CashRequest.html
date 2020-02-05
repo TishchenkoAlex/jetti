@@ -77,6 +77,7 @@
         <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.Contract" [form]="form"></j-control>
+          <j-control [control]="vk.TaxAssignmentCode" [form]="form"></j-control>
         </div>
 
         <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row"
