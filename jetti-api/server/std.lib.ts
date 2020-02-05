@@ -12,6 +12,7 @@ import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
+import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -47,6 +48,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
@@ -84,6 +86,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
+    bankStatementUnloadById: bankStatementUnloadById,
     adminMode: adminMode,
     closeMonth: closeMonth,
     GUID,
@@ -303,6 +306,10 @@ export async function movementsByDoc<T extends RegisterAccumulation>(type: Regis
   const queryText = `
   SELECT * FROM [Accumulation] WHERE type = @p1 AND document = @p2`;
   return await tx.manyOrNone<T>(queryText, [type, doc]);
+}
+
+async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<string> {
+  return await BankStatementUnloader.getBankStatementAsString(docsID, tx);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {

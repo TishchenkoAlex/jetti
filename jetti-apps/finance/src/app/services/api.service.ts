@@ -27,6 +27,16 @@ export class ApiService {
     return (this.http.get<T>(query)).toPromise();
   }
 
+  ancestors(id: string, level: number): Promise<Ref | null>{
+    const query = `${environment.api}ancestors/${id}/${level}`;
+    return (this.http.get<Ref | null>(query)).toPromise();
+  }
+
+  descendants(id: string, level: number): Promise<{ id: Ref, parent: Ref }[]>{
+    const query = `${environment.api}descendants/${id}/${level}`;
+    return (this.http.get<{ id: Ref, parent: Ref }[]>(query)).toPromise();
+  }
+
   formControlRef(id: string): Promise<RefValue> {
     const query = `${environment.api}formControlRef/${id}`;
     return (this.http.get<RefValue>(query)).toPromise();

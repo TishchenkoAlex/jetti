@@ -52,6 +52,7 @@ export type CatalogTypes =
   'Catalog.JobTitle' |
   'Catalog.BusinessRegion' |
   'Catalog.TaxPaymentCode' |
+  'Catalog.TaxAssignmentCode' |
   'Catalog.TaxPaymentPeriod' |
   'Catalog.TaxPayerStatus' |
   'Catalog.TaxBasisPayment' |

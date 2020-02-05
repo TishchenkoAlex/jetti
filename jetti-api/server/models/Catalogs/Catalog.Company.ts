@@ -51,6 +51,9 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', required: false })
   Code3: Ref = null;
 
+  @Props({ type: 'string', required: false })// Код Бенефициара (для Казахастана)
+  BC = '';
+
   @Props({ type: 'enum', required: true, value: [
     'UTC',
     'Central European Standard Time',
