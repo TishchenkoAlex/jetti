@@ -282,7 +282,7 @@ export class BankStatementUnloader {
         ,Obj.[date] as ObjDate_ig
 		    ,'02' as N'Налоги_СтатусСоставителя'
         ,'' as N'Налоги_ПоказательТипа'
-        ,ISNULL(JSON_VALUE(Comp.doc, '$.Code2'), '0')  as N'Налоги_ПлательщикКПП'
+        ,JSON_VALUE(Obj.doc, '$.TaxKPP') as N'Налоги_ПлательщикКПП'
         ,TaxPaymentCode.code as N'Налоги_ПоказательКБК'
         ,JSON_VALUE(Obj.doc, '$.TaxOfficeCode2') as N'Налоги_ОКАТО'
         ,TaxBasisPayment.code as N'Налоги_ПоказательОснования'
