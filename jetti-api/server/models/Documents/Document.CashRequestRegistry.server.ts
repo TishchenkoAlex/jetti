@@ -1,3 +1,4 @@
+// tslint:disable: max-line-length
 import { PostResult } from '../post.interfaces';
 import { MSSQL } from '../../mssql';
 import { IServerDocument, createDocumentServer, DocumentBaseServer } from '../documents.factory.server';
@@ -87,7 +88,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (this.Operation === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount']) OperationServer['Amount'] = row.Amount;
       if (LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
-      rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => {el.LinkedDocument = OperationServer.id});    
+      rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => { el.LinkedDocument = OperationServer.id });
     }
     // this.Post(true, tx);
     await updateDocument(this, tx);
