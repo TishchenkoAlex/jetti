@@ -9,7 +9,7 @@ export class MSSQL {
   constructor(public user: IJWTPayload, private GLOBAL_POOL: sql.ConnectionPool, transaction?: sql.Transaction) {
     if (transaction instanceof sql.Transaction) this.pool = transaction;
     else this.pool = GLOBAL_POOL;
-    if (!user) this.user = { email: '', isAdmin: false, env: {}, description: '', roles: []};
+    if (!user) this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [] };
   }
 
   private async setSession(request: sql.Request, query: string) {
@@ -102,9 +102,7 @@ export class MSSQL {
       console.error('SQL: error', err);
       try {
         await transaction.rollback();
-      } catch {
-        console.error('SQL: ROLLBACK error', err);
-      }
+      } catch { }
       throw new Error(err);
     }
   }
