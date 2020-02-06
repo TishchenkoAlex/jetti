@@ -4,7 +4,7 @@ import { Props, Ref } from '../document';
 @JForm({
   type: 'Form.SearchAndReplace',
   description: 'Search and replace',
-  icon: 'fa fa-pencil-square-o',
+  icon: 'fab fa-searchengin',
   menu: 'Search & replace',
 })
 export class FormSearchAndReplace extends FormBase {

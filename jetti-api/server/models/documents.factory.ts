@@ -1,3 +1,5 @@
+import { CatalogLoanRepaymentProcedure } from './Catalogs/Catalog.LoanRepaymentProcedure';
+import { CatalogCountry } from './Catalogs/Catalog.Country';
 import { CatalogTaxAssignmentCode } from './Catalogs/Catalog.TaxAssignmentCode';
 import { CatalogAccount } from './Catalogs/Catalog.Account';
 import { CatalogBalance } from './Catalogs/Catalog.Balance';
@@ -124,6 +126,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.CashRegister', Class: CatalogCashRegister },
   { type: 'Catalog.Currency', Class: CatalogCurrency },
   { type: 'Catalog.Company', Class: CatalogCompany },
+  { type: 'Catalog.Country', Class: CatalogCountry },
   { type: 'Catalog.Counterpartie', Class: CatalogCounterpartie },
   { type: 'Catalog.Counterpartie.BankAccount', Class: CatalogCounterpartieBankAccount },
   { type: 'Catalog.Contract', Class: CatalogContract },
@@ -134,6 +137,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
   { type: 'Catalog.Income', Class: CatalogIncome },
   { type: 'Catalog.Loan', Class: CatalogLoan },
+  { type: 'Catalog.LoanRepaymentProcedure', Class: CatalogLoanRepaymentProcedure },
   { type: 'Catalog.LoanTypes', Class: CatalogLoanTypes },
   { type: 'Catalog.Manager', Class: CatalogManager },
   { type: 'Catalog.Person', Class: CatalogPerson },
@@ -171,12 +175,12 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
   { type: 'Catalog.TaxAssignmentCode', Class: CatalogTaxAssignmentCode },
   { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },
-  { type: 'Catalog.TaxBasisPayment', Class: CatalogTaxBasisPayment},
-  { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod},
-  { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus},
-  { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice},
-  { type: 'Catalog.ReatailClient', Class: CatalogReatailClient},
-  { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject},
+  { type: 'Catalog.TaxBasisPayment', Class: CatalogTaxBasisPayment },
+  { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod },
+  { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus },
+  { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
+  { type: 'Catalog.ReatailClient', Class: CatalogReatailClient },
+  { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

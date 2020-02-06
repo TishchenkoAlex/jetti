@@ -8,6 +8,7 @@ export type CatalogTypes =
   'Catalog.CashFlow' |
   'Catalog.CashRegister' |
   'Catalog.Company' |
+  'Catalog.Country' |
   'Catalog.Counterpartie' |
   'Catalog.Currency' |
   'Catalog.Department' |
@@ -47,6 +48,7 @@ export type CatalogTypes =
   'Catalog.Bank' |
   'Catalog.Counterpartie.BankAccount' |
   'Catalog.Contract' |
+  'Catalog.LoanRepaymentProcedure' |  
   'Catalog.LoanTypes' |
   'Catalog.BusinessDirection' |
   'Catalog.JobTitle' |
