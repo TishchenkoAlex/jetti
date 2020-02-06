@@ -4,7 +4,7 @@ import { Props, Ref } from '../document';
 @JForm({
   type: 'Form.PostAfterEchange',
   description: 'Post after IIKO',
-  icon: 'fa fa-money',
+  icon: 'fas fa-hammer',
   menu: 'Post after IIKO',
 })
 export class PostAfterEchange extends FormBase {
