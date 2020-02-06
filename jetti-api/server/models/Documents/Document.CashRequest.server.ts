@@ -101,7 +101,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     const relatedDocs = await this.getRelatedDocuments(tx);
     if (relatedDocs.length) {
       let relatedDocsString = '';
-      relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description });
+      relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
       throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
     }
     if (this.workflowID) {
@@ -181,8 +181,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           CashFlow: this.CashFlow,
           OperationType: this.Operation
         })
-        )
-      })
+        );
+      });
     } else {
       Registers.Accumulation.push(new RegisterAccumulationCashToPay({
         kind: true,
@@ -195,8 +195,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         CashFlow: this.CashFlow,
         OperationType: this.Operation
       })
-      )
-    };
+      );
+    }
 
     return Registers;
   }
@@ -214,8 +214,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   // возвращает остаток по заявке в разрезе получателей и счетов
-  //todo: обратится в базу х100
-  public async  getAmountBalanceWithCashRecipientsAndBankAccounts(tx: MSSQL): Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
+  // todo: обратится в базу х100
+  public async  getAmountBalanceWithCashRecipientsAndBankAccounts(
+    tx: MSSQL): Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
     const query = `
     SELECT
         Balance.[CashRecipient] AS CashRecipient,
@@ -226,7 +227,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     GROUP BY
         Balance.[CashRecipient],Balance.[BankAccountPerson]
     HAVING SUM(Balance.[Amount]) > 0`;
-    return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>(query, [this.id]);;
+    return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>
+      (query, [this.id]);
   }
 
   // возвращает связанные документы

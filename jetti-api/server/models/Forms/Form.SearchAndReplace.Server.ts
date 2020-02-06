@@ -14,7 +14,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
   async Search() {
     if (!this.OldValue) throw new Error('Searched value is not defined');
 
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     const query = `
 
       select  COUNT(id) Records
@@ -107,7 +107,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     if (!this.NewValue) throw new Error('New value is not defined');
     if (this.NewValue === this.OldValue) throw new Error('Bad params: The new value cannot be equal to the old value');
     this.user.isAdmin = true;
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     const NewValue = await lib.doc.byId(this.NewValue, sdbq);
     const OldValue = await lib.doc.byId(this.OldValue, sdbq);
     if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);

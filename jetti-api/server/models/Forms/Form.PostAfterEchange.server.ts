@@ -9,9 +9,9 @@ import { Ref } from '../document';
 
 export default class PostAfterEchangeServer extends PostAfterEchange implements IServerForm {
   async Execute() {
-    this.user.isAdmin  = true;
+    this.user.isAdmin = true;
     if (this.EndDate) this.EndDate.setHours(23, 59, 59, 999);
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     const query = `
       SELECT company, COUNT(*) count
       FROM [dbo].[Documents]

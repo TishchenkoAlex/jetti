@@ -164,12 +164,12 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
         serverDoc.deleted = !!!serverDoc.deleted;
         serverDoc.posted = false;
 
-        const deleted = await tx.none(`
-        DELETE FROM "Register.Account" WHERE document = @p1;
-        DELETE FROM "Register.Info" WHERE document = @p1;
-        DELETE FROM "Accumulation" WHERE document = @p1;
-        UPDATE "Documents" SET deleted = @p3, posted = @p4 WHERE id = @p1;
-      `, [id, serverDoc.date, serverDoc.deleted, 0]);
+        await tx.none(`
+          DELETE FROM "Register.Account" WHERE document = @p1;
+          DELETE FROM "Register.Info" WHERE document = @p1;
+          DELETE FROM "Accumulation" WHERE document = @p1;
+          UPDATE "Documents" SET deleted = @p3, posted = @p4 WHERE id = @p1;
+        `, [id, serverDoc.date, serverDoc.deleted, 0]);
 
         if (!doc.deleted) {
           const afterDelete: (tx: MSSQL) => Promise<void> = serverDoc['serverModule']['afterDelete'];
@@ -192,11 +192,14 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
       await lib.util.adminMode(true, tx);
       try {
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
         if (serverDoc.timestamp) {
           await updateDocument(serverDoc, tx);
+          if (serverDoc.posted && serverDoc.isDoc) {
+            await unpostDocument(serverDoc, tx);
+            await postDocument(serverDoc, tx);
+          }
         } else {
           await insertDocument(serverDoc, tx);
         }
@@ -211,7 +214,6 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
       if (doc && doc.deleted) throw new Error('Cant POST deleted document');
       doc.posted = true;
@@ -237,7 +239,6 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
       if (doc && doc.deleted) throw new Error('Cant POST deleted document');
       doc.posted = true;
@@ -358,14 +359,14 @@ router.post('/command/:type/:command', async (req: Request, res: Response, next:
 router.get('/ancestors/:id/:level', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
-      res.json(await lib.doc.Ancestors(req.params.id, sdb, req.params.level as any));
+    res.json(await lib.doc.Ancestors(req.params.id, sdb, req.params.level as any));
   } catch (err) { next(err); }
 });
 
 router.get('/descendants/:id/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
-      res.json(await lib.doc.Descendants(req.params.id, sdb));
+    res.json(await lib.doc.Descendants(req.params.id, sdb));
   } catch (err) { next(err); }
 });
 
@@ -385,8 +386,8 @@ router.get('/hierarchyList/:type/:parent', async (req: Request, res: Response, n
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      let query = `select id, description, parent from "Documents" where isfolder = 1 and type = @p1 and parent = @p2 order by description, parent`;
-      let params = [req.params.type];
+      const query = `select id, description, parent from "Documents" where isfolder = 1 and type = @p1 and parent = @p2 order by description, parent`;
+      const params = [req.params.type];
       if (req.params.parent) {
         params.push(req.params.parent);
       } else {
