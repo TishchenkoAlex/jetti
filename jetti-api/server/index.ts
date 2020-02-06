@@ -59,7 +59,8 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 export const HTTP = httpServer.createServer(app);
 export const IO = socketIO(HTTP);
 IO.use(authIO);
-IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH}));
+IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+IO.of('/').adapter.on('error', (error) => { });
 
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port:${port}`));
@@ -67,20 +68,22 @@ JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 let script = '';
 
-script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
-fs.writeFile('CreateViewCatalogsIndex.sql', script, (err) => {});
+if (process.env.NODE_ENV !== 'production') {
+  script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
+  fs.writeFile('CreateViewCatalogsIndex.sql', script, (err) => { });
 
-script = SQLGenegatorMetadata.CreateViewCatalogs();
-fs.writeFile('CreateViewCatalogs.sql', script, (err) => {});
+  script = SQLGenegatorMetadata.CreateViewCatalogs();
+  fs.writeFile('CreateViewCatalogs.sql', script, (err) => { });
 
-script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => {});
+  script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+  fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
 
-script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => {});
+  script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
+  fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => { });
 
-script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
-fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => {});
+  script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
+  fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
 
-script = SQLGenegatorMetadata.RegisterAccumulationView();
-fs.writeFile('RegisterAccumulationView.sql', script, (err) => {});
+  script = SQLGenegatorMetadata.RegisterAccumulationView();
+  fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+}

@@ -12,18 +12,29 @@ export class SqlPool {
       return new Promise<Connection>((resolve, reject) => {
         const connection = new Connection(this.config);
         connection.on('connect', ((error: ConnectionError) => {
-          if (error) return reject(error);
-          if (process.env.NODE_ENV !== 'production') console.log('Create connection', this.pool.numUsed());
+          if (error) {
+            console.error(`create: connection.on('connect') event, ConnectionError: ${error}`);
+            return reject(error);
+          }
           return resolve(connection);
         }));
+        connection.on('error', ((error: Error) => {
+          console.error(`create: connection.on('error') event, Error: ${error}`);
+          return reject(error);
+        }));
       });
+    },
+    validate: connecion => {
+      return connecion['loggedIn'];
     },
     destroy: connecion => {
       return new Promise<void>((resolve, reject) => {
         connecion.on('end', () => resolve());
-        connecion.on('error', error => reject(error));
+        connecion.on('error', (error: Error) => {
+          console.error(`destroy: connection.on('error') event, Error: ${error}`);
+          reject(error);
+        });
         connecion.close();
-        if (process.env.NODE_ENV !== 'production') console.log('Close connection', this.pool.numUsed());
       });
     },
     min: this.config.pool.min,
@@ -33,7 +44,7 @@ export class SqlPool {
 
 export class MSSQL {
 
-  constructor(private sqlPool: SqlPool, public user?: any) {
+  constructor(private sqlPool: SqlPool, public user?: any, private connection?: Connection) {
     this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [], ...user };
   }
 
@@ -64,9 +75,9 @@ export class MSSQL {
   manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
     return (new Promise<T[]>(async (resolve, reject) => {
       try {
-        const connection = await this.sqlPool.pool.acquire().promise;
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.sqlPool.pool.release(connection);
+          if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve([]);
           const result = rows.map(row => {
@@ -85,9 +96,9 @@ export class MSSQL {
   oneOrNone<T>(sql: string, params: any[] = []): Promise<T | null> {
     return new Promise(async (resolve, reject) => {
       try {
-        const connection = await this.sqlPool.pool.acquire().promise;
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.sqlPool.pool.release(connection);
+          if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve(null);
           const data = {} as T;
@@ -104,9 +115,9 @@ export class MSSQL {
   none(sql: string, params: any[] = []): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        const connection = await this.sqlPool.pool.acquire().promise;
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.sqlPool.pool.release(connection);
+          if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           return resolve();
         });
@@ -118,16 +129,16 @@ export class MSSQL {
 
   async tx(func: (tx: MSSQL, name?: string, isolationLevel?: ISOLATION_LEVEL) => Promise<void>,
     name?: string, isolationLevel = ISOLATION_LEVEL.READ_COMMITTED) {
-    const connection = await this.sqlPool.pool.acquire().promise;
+    const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
     await this.beginTransaction(connection, name, isolationLevel);
     try {
-      await func(this, name, isolationLevel);
+      await func(new MSSQL(this.sqlPool, this.user, connection), name, isolationLevel);
       await this.commitTransaction(connection);
     } catch (error) {
       try { await this.rollbackTransaction(connection); } catch { }
       throw new Error(error);
     } finally {
-      this.sqlPool.pool.release(connection);
+      if (!this.connection) this.sqlPool.pool.release(connection);
     }
   }
 
