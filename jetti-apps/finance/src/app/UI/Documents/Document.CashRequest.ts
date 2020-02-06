@@ -27,33 +27,11 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   currencyShortName = '';
   taxRate = -1;
   isKAZAKHSTAN = false;
-  
+
   ngOnInit() {
     super.ngOnInit();
 
-    if (this.isNew) {
-      this.setValue('Status', 'PREPARED');
-      this.setValue('workflowID', '');
-      // let currency = this.getValue('сurrency');
-      // if (!currency || !currency.id) {
-      //   currency = this.api.byId('A4867005-66B8-4A8A-9105-3F25BB081936').then(val => {
-      //     this.setValue('currency',
-      //       { id: val.id, code: val.code, type: val.type, value: val.description },
-      //       { onlySelf: false, emitEvent: false })
-      //   });
-      // }
-      if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
-      if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
-    }
-
-    if (this.readonlyMode) {
-      this.form.disable({ emitEvent: false });
-    } else {
-      this.onCashKindChange(this.getValue('CashKind'));
-      this.onOperationChanges(this.getValue('Operation'));
-      this.FillTaxRate(false);
-      this.FillCurrencyShortName(false);
-    }
+    this.onOpen();
   }
 
   getValue(fieldName: string): any {
@@ -216,6 +194,36 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   }
 
+  onOpen() {
+
+    if (this.isNew) {
+      this.setValue('Status', 'PREPARED');
+      this.setValue('workflowID', '');
+      if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
+      if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
+    }
+
+    if (this.readonlyMode) {
+      this.form.disable({ emitEvent: false });
+      this.form.get('info').enable({ emitEvent: false });
+    } else {
+      this.onCashKindChange(this.getValue('CashKind'));
+      this.onOperationChanges(this.getValue('Operation'));
+      this.FillTaxRate(false);
+      this.FillCurrencyShortName(false);
+    }
+
+
+  }
+
+  refresh() {
+    this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
+      this.Next(formGroup);
+      this.onOpen();
+    });
+  }
+
+
   async FillCurrencyShortName(FillTaxInfo?: boolean) {
     const Currency = this.getValue('сurrency');
     this.currencyShortName = '';
@@ -244,9 +252,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (infoArr.length === 0) return;
     let Tax = Amount - Amount / (this.taxRate * 0.01 + 1);
     let newInfo = [];
+    let taxInfo = this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)';
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`Сумма ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.`);
-    newInfo.push(this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)');
+    newInfo.push(`Сумма ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}. ${taxInfo}`);
+    // newInfo.push(this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)');
     this.setValue('info', newInfo.join('\n'));
   }
 
