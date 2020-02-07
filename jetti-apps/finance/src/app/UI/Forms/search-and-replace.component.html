@@ -8,6 +8,8 @@
               <button pButton type="button" id="Search" icon="fab fa-searchengin" label="Search"
                 pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
                 (click)="ExecuteServerMethod('Search')"></button>
+              <button pButton type="button" id="ExchangeData" icon="fas fa-exchange-alt" label="Fill exchange data"
+                class="ui-button-warning" (click)="ExecuteServerMethod('FillExchangeData')"></button>
               <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace" pTooltip="Replace"
                 tooltipPosition="top" showDelay="2000" class="ui-button-danger"
                 (click)="ExecuteServerMethod('Replace')"></button>
@@ -39,9 +41,9 @@
             <div *ngIf="tables$ | async as tables">
               <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
                 <div *ngFor="let c of tables; let i = index">
-                  
-                    <j-control [control]="c" [form]="form"></j-control>
-                  
+
+                  <j-control [control]="c" [form]="form"></j-control>
+
                 </div>
               </p-tabView>
             </div>

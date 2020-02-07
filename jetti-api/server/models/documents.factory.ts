@@ -1,3 +1,4 @@
+import { CatalogPersonIdentity } from './Catalogs/Catalog.PersonIdentity';
 import { CatalogLoanRepaymentProcedure } from './Catalogs/Catalog.LoanRepaymentProcedure';
 import { CatalogCountry } from './Catalogs/Catalog.Country';
 import { CatalogTaxAssignmentCode } from './Catalogs/Catalog.TaxAssignmentCode';
@@ -155,6 +156,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
+  { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
