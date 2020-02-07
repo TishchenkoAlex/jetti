@@ -1,9 +1,9 @@
 import { IServerForm } from './form.factory.server';
 import { lib } from '../../std.lib';
 import { MSSQL } from '../../mssql';
-import { TASKS_POOL } from '../../sql.pool.tasks';
 import { Ref } from '../document';
 import { FormSearchAndReplace } from './Form.SearchAndReplace';
+import { TASKS_POOL } from '../../sql.pool.tasks';
 
 export default class FormSearchAndReplaceServer extends FormSearchAndReplace implements IServerForm {
 
@@ -13,7 +13,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
 
   async getExchangeData(id: string, tx: MSSQL): Promise<{ ExchangeCode: string, ExchangeBase: string } | null> {
 
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     let query = `select ExchangeCode, ExchangeBase from dbo.[Documents] where id = @p1`;
     return await sdbq.oneOrNone<{ ExchangeCode: string, ExchangeBase: string } | null>(query, [id]);
 
@@ -24,7 +24,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
 
 
     if (!this.OldValue) throw new Error('Searched value is not defined');
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     await this.FillExchangeData(sdbq);
 
     this.NewValueExchangeBase
@@ -141,7 +141,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     if (!this.NewValue) throw new Error('New value is not defined');
     if (this.NewValue === this.OldValue) throw new Error('Bad params: The new value cannot be equal to the old value');
     this.user.isAdmin = true;
-    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
     const NewValue = await lib.doc.byId(this.NewValue, sdbq);
     const OldValue = await lib.doc.byId(this.OldValue, sdbq);
     if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);
