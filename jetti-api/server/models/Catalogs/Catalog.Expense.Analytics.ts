@@ -12,4 +12,7 @@ export class CatalogExpenseAnalytics extends DocumentBase {
   @Props({ type: 'Catalog.Expense', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.BudgetItem' })
+  BudgetItem: Ref = null;
+
 }

@@ -18,6 +18,29 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.SettlementsReconciliation]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) "Customer"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
+        , ISNULL(JSON_VALUE(data, '$.Status'), '') "Status"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.Period'),127) "Period"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Document"')) "Document"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) "Amount"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountPaid')) "AmountPaid"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountBalance')) "AmountBalance"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.SettlementsReconciliation';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.SettlementsReconciliation] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.SettlementsReconciliation] ON [dbo].[Register.Info.SettlementsReconciliation](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.ExchangeRates]
     WITH SCHEMABINDING
     AS

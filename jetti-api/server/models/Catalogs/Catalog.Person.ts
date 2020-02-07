@@ -55,4 +55,21 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'string' })
   Profile: Ref = null;
 
+  @Props({ type: 'Catalog.PersonIdentity' })
+  DocumentType: Ref = null;
+
+  @Props({ type: 'string' })
+  DocumentCode = '';
+
+  @Props({ type: 'string' })
+  DocumentNumber = '';
+
+  @Props({ type: 'date' })
+  DocumentDate = null;
+
+  @Props({ type: 'string' })
+  DocumentAuthority= '';
+
+
+
 }

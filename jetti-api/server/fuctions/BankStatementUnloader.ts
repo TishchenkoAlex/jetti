@@ -334,16 +334,16 @@ export class BankStatementUnloader {
     ,5 as N'Очередность'
     ,Obj.[info] as N'НазначениеПлатежа'
 
-    ,'02' as N'Налоги_СтатусСоставителя'
-    ,'' as N'Налоги_ПоказательТипа'
-    ,JSON_VALUE(Obj.doc, '$.TaxKPP') as N'Налоги_ПлательщикКПП'
-    ,TaxPaymentCode.code as N'Налоги_ПоказательКБК'
-    ,JSON_VALUE(Obj.doc, '$.TaxOfficeCode2') as N'Налоги_ОКАТО'
-    ,TaxBasisPayment.code as N'Налоги_ПоказательОснования'
-    ,TaxPaymentPeriod.code as N'Налоги_ПоказательПериода'
-    ,JSON_VALUE(Obj.doc, '$.TaxDocNumber') as N'Налоги_ПоказательНомера'
-    ,FORMAT (CAST(JSON_VALUE(Obj.doc, '$.TaxDocDate') as date), 'dd.MM.yyyy') as N'Налоги_ПоказательДаты'
-    ,'0' as N'Налоги_Код'
+    ,'02' as N'СтатусСоставителя'
+    ,'' as N'ПоказательТипа'
+    ,JSON_VALUE(Obj.doc, '$.TaxKPP') as N'ПлательщикКПП'
+    ,TaxPaymentCode.code as N'ПоказательКБК'
+    ,JSON_VALUE(Obj.doc, '$.TaxOfficeCode2') as N'ОКАТО'
+    ,TaxBasisPayment.code as N'ПоказательОснования'
+    ,TaxPaymentPeriod.code as N'ПоказательПериода'
+    ,JSON_VALUE(Obj.doc, '$.TaxDocNumber') as N'ПоказательНомера'
+    ,FORMAT (CAST(JSON_VALUE(Obj.doc, '$.TaxDocDate') as date), 'dd.MM.yyyy') as N'ПоказательДаты'
+    ,'0' as N'Код'
 
     ,N'1.02' as ВерсияФормата_ig_head
     ,'Windows' as Кодировка_ig_head

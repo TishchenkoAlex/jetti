@@ -1,3 +1,4 @@
+import { RegisterInfoRLSPeriod } from './RLS.period';
 import { RegisterInfoDepreciation } from './Depreciation';
 import { RegisterInfoExchangeRates } from './ExchangeRates';
 import { RegisterInfoPriceList } from './PriceList';
@@ -7,19 +8,23 @@ import { RegisterInfoSettings } from './Settings';
 import { RegisterInfoBudgetItemRule } from './BudgetItemRule';
 import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
+import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
 
 export type RegisterInfoTypes =
     'Register.Info.PriceList' |
+    'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
     'Register.Info.Settings' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
+    'Register.Info.RLS.Period' |
     'Register.Info.BudgetItemRule' |
     'Register.Info.DepartmentCompanyHistory' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
     RegisterInfoPriceList |
+    RegisterInfoSettlementsReconciliation |
     RegisterInfoExchangeRates |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
@@ -32,9 +37,11 @@ export interface IRegisteredRegisterInfo {
 
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
+    { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.Settings', Class: RegisterInfoSettings },
     { type: 'Register.Info.Depreciation', Class: RegisterInfoDepreciation },
+    { type: 'Register.Info.RLS.Period', Class: RegisterInfoRLSPeriod },
     { type: 'Register.Info.RLS', Class: RegisterInfoRLS },
     { type: 'Register.Info.BudgetItemRule', Class: RegisterInfoBudgetItemRule },
     { type: 'Register.Info.DepartmentCompanyHistory', Class: DepartmentCompanyHistory },

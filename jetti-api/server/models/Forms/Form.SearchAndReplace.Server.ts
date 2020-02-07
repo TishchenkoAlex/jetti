@@ -10,13 +10,25 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
   async Execute() {
     return this;
   }
+
+  async getExchangeData(id: string, tx: MSSQL): Promise<{ ExchangeCode: string, ExchangeBase: string } | null> {
+
+    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    let query = `select ExchangeCode, ExchangeBase from dbo.[Documents] where id = @p1`;
+    return await sdbq.oneOrNone<{ ExchangeCode: string, ExchangeBase: string } | null>(query, [id]);
+
+  }
   // tslint:disable
   async Search() {
+
+
+
     if (!this.OldValue) throw new Error('Searched value is not defined');
+    const sdbq = new MSSQL(this.user, TASKS_POOL);
+    await this.FillExchangeData(sdbq);
 
-    const sdbq = new MSSQL(TASKS_POOL, this.user);
+    this.NewValueExchangeBase
     const query = `
-
       select  COUNT(id) Records
       ,type Type
       ,'Documents.doc' Source
@@ -102,12 +114,34 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     return this;
   }
 
+  async FillExchangeData(tx: MSSQL) {
+
+    this.OldValueExchangeBase = '';
+    this.OldValueExchangeCode = '';
+    this.NewValueExchangeBase = '';
+    this.NewValueExchangeCode = '';
+    if (this.NewValue) {
+      const ExchangeData = await this.getExchangeData(this.NewValue, tx);
+      if (ExchangeData) {
+        this.NewValueExchangeBase = ExchangeData.ExchangeBase;
+        this.NewValueExchangeCode = ExchangeData.ExchangeCode;
+      }
+    }
+    if (this.OldValue) {
+      const ExchangeData = await this.getExchangeData(this.OldValue, tx);
+      if (ExchangeData) {
+        this.OldValueExchangeBase = ExchangeData.ExchangeBase;
+        this.OldValueExchangeCode = ExchangeData.ExchangeCode;
+      }
+    }
+  }
+
   async Replace() {
     if (!this.OldValue) throw new Error('Old value is not defined');
     if (!this.NewValue) throw new Error('New value is not defined');
     if (this.NewValue === this.OldValue) throw new Error('Bad params: The new value cannot be equal to the old value');
     this.user.isAdmin = true;
-    const sdbq = new MSSQL(TASKS_POOL, this.user);
+    const sdbq = new MSSQL(this.user, TASKS_POOL);
     const NewValue = await lib.doc.byId(this.NewValue, sdbq);
     const OldValue = await lib.doc.byId(this.OldValue, sdbq);
     if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);
@@ -119,7 +153,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Update];
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Insert];
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents.CheckAccessToCommonDocs];
-        update documents set doc = REPLACE(doc, @p1, @p2)
+        update documents set doc = REPLACE(doc, @p1, @p2), timestamp = getdate()
         where id in (select id from documents where contains(doc, @p1));
         RAISERROR('REPLACE DOC', 0 ,1) WITH NOWAIT;
         DROP TABLE IF EXISTS #Exchange;
@@ -144,7 +178,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         RAISERROR('parent', 0 ,1) WITH NOWAIT;
         update documents set [user] = @p2 where [user] = @p1;
         RAISERROR('[user]', 0 ,1) WITH NOWAIT;
-        update documents set deleted = 1 where id = @p1 and deleted <> 1;
+        update documents set deleted = 1, timestamp = getdate() where id = @p1 and deleted <> 1;
         RAISERROR('deleted', 0 ,1) WITH NOWAIT;
         update Accumulation set data = REPLACE(data, @p1, @p2)
         where id in (select id from Accumulation where contains(data, @p1));
