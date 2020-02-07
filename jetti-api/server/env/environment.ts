@@ -2,7 +2,7 @@ import { config as dotenv } from 'dotenv';
 import { ConnectionConfig } from 'tedious';
 
 dotenv();
-export type ConnectionConfigAndPool = ConnectionConfig & { pool: { min: number, max: number } };
+export type ConnectionConfigAndPool = ConnectionConfig & { pool: { min: number, max: number, idleTimeoutMillis: number } };
 
 export const DB_NAME = process.env.DB_NAME!;
 export const REDIS_DB_HOST = process.env.REDIS_DB_HOST!;
@@ -12,7 +12,7 @@ export const bpApiHost = 'https://bp.x100-group.com/JettiProcesses/hs';
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
 
-export const sqlConfig: ConnectionConfig & { pool: { min: number, max: number } } = {
+export const sqlConfig: ConnectionConfigAndPool = {
   server: process.env.DB_HOST!,
   authentication: {
     type: 'default',
@@ -25,16 +25,17 @@ export const sqlConfig: ConnectionConfig & { pool: { min: number, max: number } 
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 1000 * 60 * 2,
+    requestTimeout: 2 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
-    min: 10,
-    max: 1000
+    min: 0,
+    max: 1000,
+    idleTimeoutMillis: 20 * 60 * 1000
   }
 };
 
-export const sqlConfigTask: ConnectionConfig & { pool: { min: number, max: number } } = {
+export const sqlConfigTask: ConnectionConfigAndPool = {
   server: process.env.DB_HOST!,
   authentication: {
     type: 'default',
@@ -47,11 +48,12 @@ export const sqlConfigTask: ConnectionConfig & { pool: { min: number, max: numbe
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 1000 * 60 * 10,
+    requestTimeout: 20 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
-    min: 20,
-    max: 1000
+    min: 0,
+    max: 1000,
+    idleTimeoutMillis: 20 * 60 * 1000
   }
 };

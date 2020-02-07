@@ -39,6 +39,7 @@ export class SqlPool {
     },
     min: this.config.pool.min,
     max: this.config.pool.max,
+    idleTimeoutMillis: this.config.pool.idleTimeoutMillis
   });
 }
 
