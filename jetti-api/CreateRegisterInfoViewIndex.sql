@@ -28,7 +28,7 @@
         , ISNULL(JSON_VALUE(data, '$.Status'), '') "Status"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.Period'),127) "Period"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Document"')) "Document"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Operation"')) "Operation"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) "Amount"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountPaid')) "AmountPaid"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountBalance')) "AmountBalance"
@@ -90,6 +90,21 @@
     GRANT SELECT,DELETE ON [Register.Info.Depreciation] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.Depreciation] ON [dbo].[Register.Info.Depreciation](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.RLS.Period]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , ISNULL(JSON_VALUE(data, '$.user'), '') "user"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS.Period';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.RLS.Period] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.RLS.Period] ON [dbo].[Register.Info.RLS.Period](
       company,date,id
     )
     GO

@@ -1,4 +1,4 @@
-import { RegisterInfoRLSPeriod } from './RLS.period';
+import { RegisterInfoRLSPeriod } from './RLS.Period';
 import { RegisterInfoDepreciation } from './Depreciation';
 import { RegisterInfoExchangeRates } from './ExchangeRates';
 import { RegisterInfoPriceList } from './PriceList';

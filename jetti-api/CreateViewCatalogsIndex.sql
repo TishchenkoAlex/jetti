@@ -1281,34 +1281,34 @@
       GO
       --------------------------------------------------------------------------------------
       
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.DocTypes.v];
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PersonIdentity.v];
       GO
 
-      CREATE OR ALTER VIEW dbo.[Catalog.DocTypes.v] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.DocTypes'
+      WHERE [type] = 'Catalog.PersonIdentity'
     
       GO
 
-      CREATE UNIQUE CLUSTERED INDEX [Catalog.DocTypes.v] ON [Catalog.DocTypes.v](id);
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.PersonIdentity.v] ON [Catalog.PersonIdentity.v](id);
       
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.code.f] ON [Catalog.DocTypes.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.description.f] ON [Catalog.DocTypes.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.description] ON [Catalog.DocTypes.v](description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.code] ON [Catalog.DocTypes.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.user] ON [Catalog.DocTypes.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.DocTypes.v.company] ON [Catalog.DocTypes.v](company,id) INCLUDE([date]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.code.f] ON [Catalog.PersonIdentity.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.description.f] ON [Catalog.PersonIdentity.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.description] ON [Catalog.PersonIdentity.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.code] ON [Catalog.PersonIdentity.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.user] ON [Catalog.PersonIdentity.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.company] ON [Catalog.PersonIdentity.v](company,id) INCLUDE([date]);
 
-      GRANT SELECT ON dbo.[Catalog.DocTypes.v] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.PersonIdentity.v] TO jetti;
       GO
 
       ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
-        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.DocTypes.v];
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PersonIdentity.v];
       GO
 
-      RAISERROR('Catalog.DocTypes complete', 0 ,1) WITH NOWAIT;
+      RAISERROR('Catalog.PersonIdentity complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
