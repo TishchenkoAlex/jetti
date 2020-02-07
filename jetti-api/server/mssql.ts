@@ -1,41 +1,178 @@
-import * as sql from 'mssql';
+import { Connection, Request, ColumnValue, RequestError, ConnectionError, ISOLATION_LEVEL, TYPES } from 'tedious';
+import { Pool } from 'tarn';
 import { dateReviverUTC } from './fuctions/dateReviver';
-import { IJWTPayload } from './models/common-types';
+import { ConnectionConfigAndPool } from './env/environment';
+
+export class SqlPool {
+
+  constructor(public config: ConnectionConfigAndPool) { }
+
+  pool = new Pool<Connection>({
+    create: () => {
+      return new Promise<Connection>((resolve, reject) => {
+        const connection = new Connection(this.config);
+        connection.on('connect', ((error: ConnectionError) => {
+          if (error) {
+            console.error(`create: connection.on('connect') event, ConnectionError: ${error}`);
+            return reject(error);
+          }
+          return resolve(connection);
+        }));
+        connection.on('error', ((error: Error) => {
+          console.error(`create: connection.on('error') event, Error: ${error}`);
+          return reject(error);
+        }));
+      });
+    },
+    validate: connecion => {
+      return connecion['loggedIn'];
+    },
+    destroy: connecion => {
+      return new Promise<void>((resolve, reject) => {
+        connecion.on('end', () => resolve());
+        connecion.on('error', (error: Error) => {
+          console.error(`destroy: connection.on('error') event, Error: ${error}`);
+          reject(error);
+        });
+        connecion.close();
+      });
+    },
+    min: this.config.pool.min,
+    max: this.config.pool.max,
+  });
+}
 
 export class MSSQL {
 
-  private pool: sql.ConnectionPool | sql.Transaction;
-
-  constructor(public user: IJWTPayload, private GLOBAL_POOL: sql.ConnectionPool, transaction?: sql.Transaction) {
-    if (transaction instanceof sql.Transaction) this.pool = transaction;
-    else this.pool = GLOBAL_POOL;
-    if (!user) this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [] };
+  constructor(private sqlPool: SqlPool, public user?: any, private connection?: Connection) {
+    this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [], ...user };
   }
 
-  private async setSession(request: sql.Request, query: string) {
-    return await request.query(`
+  private setParams(params: any[], request: Request) {
+    for (let i = 0; i < params.length; i++) {
+      if (params[i] instanceof Date) {
+        request.addParameter(`p${i + 1}`, TYPES.DateTime2, params[i]);
+      } else if (typeof params[i] === 'number') {
+        request.addParameter(`p${i + 1}`, TYPES.Numeric, params[i]);
+      } else if (typeof params[i] === 'boolean') {
+        request.addParameter(`p${i + 1}`, TYPES.Bit, params[i]);
+      } else
+        request.addParameter(`p${i + 1}`, TYPES.NVarChar, params[i]);
+    }
+  }
+
+  private prepareSession(sql: string) {
+    return `
       SET NOCOUNT ON;
       EXEC sys.sp_set_session_context N'user_id', N'${this.user.email}';
       EXEC sys.sp_set_session_context N'isAdmin', N'${this.user.isAdmin}';
       EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(this.user.roles)}';
       SET NOCOUNT OFF;
-      ${query}
-    `);
+      ${sql}
+    `;
   }
 
-  private toJSON(value: any): any {
-    if (typeof value === 'string' && (
-      (value[0] === '{' && value[value.length - 1] === '}') ||
-      (value[0] === '[' && value[value.length - 1] === ']')
-    ))
-      try { return JSON.parse(value, dateReviverUTC); } catch { return value; }
-    else
-      return value;
+  manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
+    return (new Promise<T[]>(async (resolve, reject) => {
+      try {
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
+        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+          if (!this.connection) this.sqlPool.pool.release(connection);
+          if (error) return reject(error);
+          if (!rowCount) return resolve([]);
+          const result = rows.map(row => {
+            const data = {} as T;
+            row.forEach(col => data[col.metadata.colName] = col.value);
+            return this.complexObject(data);
+          });
+          return resolve(result);
+        });
+        this.setParams(params, request);
+        connection.execSql(request);
+      } catch (error) { return reject(error); }
+    }));
+  }
+
+  oneOrNone<T>(sql: string, params: any[] = []): Promise<T | null> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
+        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+          if (!this.connection) this.sqlPool.pool.release(connection);
+          if (error) return reject(error);
+          if (!rowCount) return resolve(null);
+          const data = {} as T;
+          rows[0].forEach(col => data[col.metadata.colName] = col.value);
+          const result = this.complexObject(data);
+          return resolve(result);
+        });
+        this.setParams(params, request);
+        connection.execSql(request);
+      } catch (error) { return reject(error); }
+    });
+  }
+
+  none(sql: string, params: any[] = []): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
+        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+          if (!this.connection) this.sqlPool.pool.release(connection);
+          if (error) return reject(error);
+          return resolve();
+        });
+        this.setParams(params, request);
+        connection.execSql(request);
+      } catch (error) { return reject(error); }
+    });
+  }
+
+  async tx(func: (tx: MSSQL, name?: string, isolationLevel?: ISOLATION_LEVEL) => Promise<void>,
+    name?: string, isolationLevel = ISOLATION_LEVEL.READ_COMMITTED) {
+    const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
+    await this.beginTransaction(connection, name, isolationLevel);
+    try {
+      await func(new MSSQL(this.sqlPool, this.user, connection), name, isolationLevel);
+      await this.commitTransaction(connection);
+    } catch (error) {
+      try { await this.rollbackTransaction(connection); } catch { }
+      throw new Error(error);
+    } finally {
+      if (!this.connection) this.sqlPool.pool.release(connection);
+    }
+  }
+
+  private beginTransaction(connection: Connection,
+    name?: string, isolationLevel: ISOLATION_LEVEL = ISOLATION_LEVEL.READ_COMMITTED): Promise<this> {
+    return new Promise(async (resolve, reject) => {
+      connection.beginTransaction(error => {
+        if (error) return reject(error);
+        return resolve(this);
+      }, name, isolationLevel);
+    });
+  }
+
+  private commitTransaction(connection: Connection): Promise<this> {
+    return new Promise(async (resolve, reject) => {
+      connection.commitTransaction(error => {
+        if (error) return reject(error);
+        return resolve(this);
+      });
+    });
+  }
+
+  private rollbackTransaction(connection: Connection): Promise<this> {
+    return new Promise(async (resolve, reject) => {
+      connection.rollbackTransaction(error => {
+        if (error) return reject(error);
+        return resolve(this);
+      });
+    });
   }
 
   private complexObject<T>(data: any) {
     if (!data) return data;
-    const row: T = Object.assign({});
+    const row = {};
     // tslint:disable-next-line:forin
     for (const k in data) {
       const value = this.toJSON(data[k]);
@@ -48,62 +185,15 @@ export class MSSQL {
     return row;
   }
 
-  private setParams(params: any[], request: sql.Request) {
-    for (let i = 0; i < params.length; i++) {
-      if (params[i] instanceof Date) {
-        request.input(`p${i + 1}`, sql.DateTime, params[i]);
-      } else
-        request.input(`p${i + 1}`, params[i]);
-    }
-  }
-
-  async oneOrNone<T>(text: string, params: any[] = []): Promise<T | null> {
-    const request = new sql.Request(<any>(this.pool));
-    this.setParams(params, request);
-    const response = await this.setSession(request, text);
-    return response.recordset.length ? this.complexObject<T>(response.recordset[0]) : null;
-  }
-
-  async manyOrNone<T>(text: string, params: any[] = []): Promise<T[]> {
-    const request = new sql.Request(<any>(this.pool));
-    this.setParams(params, request);
-    const response = await this.setSession(request, text);
-    if (response.recordset) {
-      return response.recordset.map(el => this.complexObject<T>(el)) || [];
-    } else return [];
-  }
-
-  async manyOrNoneFromJSON<T>(text: string, params: any[] = []): Promise<T[]> {
-    const request = new sql.Request(<any>(this.pool));
-    this.setParams(params, request);
-    const response = await request.query(`${text} FOR JSON PATH, INCLUDE_NULL_VALUES;`);
-    const data = response.recordset[0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B'];
-    return data ? JSON.parse(data, dateReviverUTC) : [];
-  }
-
-  async none(text: string, params: any[] = []) {
-    const request = new sql.Request(<any>(this.pool));
-    this.setParams(params, request);
-    await this.setSession(request, text);
-  }
-
-  async tx<T>(func: (tx: MSSQL) => Promise<T>) {
-    let transaction: sql.Transaction;
-    if (this.pool instanceof sql.ConnectionPool) {
-      transaction = new sql.Transaction(this.pool);
-    } else {
-      transaction = this.pool;
-    }
-    try {
-      await transaction.begin(sql.ISOLATION_LEVEL.READ_COMMITTED);
-      await func(new MSSQL(this.user, this.GLOBAL_POOL, transaction));
-      await transaction.commit();
-    } catch (err) {
-      console.error('SQL: error', err);
-      try {
-        await transaction.rollback();
-      } catch { }
-      throw new Error(err);
-    }
+  private toJSON(value: any): any {
+    if (typeof value === 'string' && (
+      (value[0] === '{' && value[value.length - 1] === '}') ||
+      (value[0] === '[' && value[value.length - 1] === ']')
+    ))
+      try { return JSON.parse(value, dateReviverUTC); } catch { return value; }
+    else
+      return value;
   }
 }
+
+

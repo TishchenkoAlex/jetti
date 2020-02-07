@@ -16,7 +16,7 @@ router.get('/register/account/movements/view/:id', async (req, res, next) => {
     const query = `SELECT * FROM "Register.Account.View" where "document.id" = '${id}'`;
 
     await sdb.tx(async tx => {
-      const data = await tx.manyOrNoneFromJSON<AccountRegister>(query);
+      const data = await tx.manyOrNone<AccountRegister>(query);
       res.json(data);
     });
   } catch (err) { next(err); }

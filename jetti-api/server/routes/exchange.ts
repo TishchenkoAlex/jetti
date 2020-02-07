@@ -48,7 +48,8 @@ router.post('/v1.0/hello', authHTTP, async (req: Request, res: Response, next: N
 
 router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
     await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc])
       VALUES (N'Invoice', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
@@ -58,7 +59,8 @@ router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response
 
 router.post('/v1.0/income/expense', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
     await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc])
       VALUES (N'Expense', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
@@ -68,7 +70,8 @@ router.post('/v1.0/income/expense', authHTTP, async (req: Request, res: Response
 
 router.patch('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
     await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc])
       VALUES (N'Employee', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
@@ -78,7 +81,8 @@ router.patch('/v1.0/Employee', authHTTP, async (req: Request, res: Response, nex
 
 router.post('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
     await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc])
       VALUES (N'Employee', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
@@ -88,7 +92,8 @@ router.post('/v1.0/Employee', authHTTP, async (req: Request, res: Response, next
 
 router.post('/v1.0/queue', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, TASKS_POOL);
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
     await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc])
       VALUES (N'Queue', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);

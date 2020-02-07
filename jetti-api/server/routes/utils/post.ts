@@ -1,4 +1,4 @@
-import { DocumentBase, Ref } from '../../models/document';
+import { Ref } from '../../models/document';
 import { INoSqlDocument } from '../../models/documents.factory';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
@@ -48,28 +48,28 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   let response: INoSqlDocument;
 
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
-      INSERT INTO Documents(
-        [id], [type], [date], [code], [description], [posted], [deleted],
-        [parent], [isfolder], [company], [user], [info], [doc])
-      SELECT
-        [id], [type], [date], [code], [description], [posted], [deleted],
-        [parent], [isfolder], [company], [user], [info], [doc]
-      FROM OPENJSON(@p1) WITH (
-        [id] UNIQUEIDENTIFIER,
-        [date] DATETIME,
-        [type] NVARCHAR(100),
-        [code] NVARCHAR(36),
-        [description] NVARCHAR(150),
-        [posted] BIT,
-        [deleted] BIT,
-        [parent] UNIQUEIDENTIFIER,
-        [isfolder] BIT,
-        [company] UNIQUEIDENTIFIER,
-        [user] UNIQUEIDENTIFIER,
-        [info] NVARCHAR(max),
-        [doc] NVARCHAR(max) N'$.doc' AS JSON
-      );
-      SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
+    INSERT INTO Documents(
+      [id], [type], [date], [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc])
+    SELECT
+      [id], [type], [date], [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc]
+    FROM OPENJSON(@p1) WITH (
+      [id] UNIQUEIDENTIFIER,
+      [date] DATETIME,
+      [type] NVARCHAR(100),
+      [code] NVARCHAR(36),
+      [description] NVARCHAR(150),
+      [posted] BIT,
+      [deleted] BIT,
+      [parent] UNIQUEIDENTIFIER,
+      [isfolder] BIT,
+      [company] UNIQUEIDENTIFIER,
+      [user] UNIQUEIDENTIFIER,
+      [info] NVARCHAR(max),
+      [doc] NVARCHAR(max) N'$.doc' AS JSON
+    );
+    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
 
   const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
   if (typeof afterSave === 'function') await afterSave(tx);
@@ -93,33 +93,33 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   let response: INoSqlDocument;
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
-      UPDATE Documents
-        SET
-          type = i.type, parent = i.parent,
-          date = i.date, code = i.code, description = i.description,
-          posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
-          "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
-          doc = i.doc
-        FROM (
-          SELECT *
-          FROM OPENJSON(@p1) WITH (
-            [id] UNIQUEIDENTIFIER,
-            [date] DATETIME,
-            [type] NVARCHAR(100),
-            [code] NVARCHAR(36),
-            [description] NVARCHAR(150),
-            [posted] BIT,
-            [deleted] BIT,
-            [isfolder] BIT,
-            [company] UNIQUEIDENTIFIER,
-            [user] UNIQUEIDENTIFIER,
-            [info] NVARCHAR(max),
-            [parent] UNIQUEIDENTIFIER,
-            [doc] NVARCHAR(max) N'$.doc' AS JSON
-          )
-        ) i
-        WHERE Documents.id = i.id;
-        SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
+    UPDATE Documents
+      SET
+        type = i.type, parent = i.parent,
+        date = i.date, code = i.code, description = i.description,
+        posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
+        "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
+        doc = i.doc
+      FROM (
+        SELECT *
+        FROM OPENJSON(@p1) WITH (
+          [id] UNIQUEIDENTIFIER,
+          [date] DATETIME,
+          [type] NVARCHAR(100),
+          [code] NVARCHAR(36),
+          [description] NVARCHAR(150),
+          [posted] BIT,
+          [deleted] BIT,
+          [isfolder] BIT,
+          [company] UNIQUEIDENTIFIER,
+          [user] UNIQUEIDENTIFIER,
+          [info] NVARCHAR(max),
+          [parent] UNIQUEIDENTIFIER,
+          [doc] NVARCHAR(max) N'$.doc' AS JSON
+        )
+      ) i
+    WHERE Documents.id = i.id;
+    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
 
   const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
   if (typeof afterSave === 'function') await afterSave(tx);
@@ -139,5 +139,5 @@ export async function setPostedSate(id: Ref, tx: MSSQL) {
 }
 
 export async function adminMode(mode: boolean, tx: MSSQL) {
-    await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
+  await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
 }

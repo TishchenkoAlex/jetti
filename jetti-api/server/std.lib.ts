@@ -106,7 +106,7 @@ async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
 }
 
 async function byCode(type: string, code: string, tx: MSSQL): Promise<string | null> {
-  const result = await tx.oneOrNone<any>(`SELECT id result FROM [${type}.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
+  const result = await tx.oneOrNone<{ result: string }>(`SELECT id result FROM [${type}.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 

@@ -1,8 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { Observable, of, iif } from 'rxjs';
-import { switchMap, catchError, mergeMap } from 'rxjs/operators';
+import { mergeMap, tap } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 import { ApiService } from './services/api.service';
 
@@ -26,22 +26,22 @@ export class AppMenuComponent {
   model$: Observable<MenuItem[]>;
 
   constructor(public app: AppComponent, private cd: ChangeDetectorRef, private api: ApiService) {
+
     this.model$ = this.app.auth.userProfile$.pipe(
       mergeMap(acc =>
         iif(() => acc.account === undefined,
           of([]),
-          this.api.SubSystemsMenu()
-        )));
+          iif(() => {
+            const menu = localStorage.getItem('SubSystemsMenu');
+            return menu && menu.length && menu.length > 2;
+          },
+            of(JSON.parse(localStorage.getItem('SubSystemsMenu'))),
+            this.api.SubSystemsMenu()),
+        )),
+      tap(sub => {
+        localStorage.setItem('SubSystemsMenu', JSON.stringify(sub));
+      }));
   }
-
-  /*   async private buildMenu() {
-      return [
-        { label: 'Dashboard', icon: 'fa fa-fw fa-home', routerLink: [''] },
-        ... await(this.api.SubSystemsMenu()),
-        { label: 'Utils', icon: 'fa fa-fw fa-wrench', routerLink: ['/'] },
-        { label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/'] }
-      ];
-    } */
 }
 
 @Component({

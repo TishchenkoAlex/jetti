@@ -17,7 +17,8 @@ import { CatalogOperationGroup } from '../models/Catalogs/Catalog.Operation.Grou
 
 export const router = express.Router();
 
-const sdba = new MSSQL({ email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] }, JETTI_POOL);
+const sdba = new MSSQL(JETTI_POOL,
+  { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
 export async function getUser(email: string): Promise<CatalogUser | null> {
   let user: CatalogUser | null = null;
   const userID = await lib.doc.byCode('Catalog.User', email, sdba);
@@ -38,14 +39,14 @@ router.post('/login', async (req, res, next) => {
     try {
       photoArraybuffer = (await instance.get('/v1.0/me/photos/48x48/$value', { responseType: 'arraybuffer' })).data;
       photo = Buffer.from(photoArraybuffer, 'binary').toString('base64');
-    } catch {};
+    } catch { }
 
     const payload: IJWTPayload = {
       email: me.userPrincipalName,
       description: me.displayName,
       isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {id: user.id, code: user.code, type: user.type, value: user.description},
+      env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
 
     const token = jwt.sign(payload, JTW_KEY, { expiresIn: '72h' });
@@ -63,7 +64,7 @@ router.get('/account', authHTTP, async (req, res, next) => {
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {id: user.id, code: user.code, type: user.type, value: user.description},
+      env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
     res.json(payload);
   } catch (err) { next(err); }
@@ -79,7 +80,7 @@ router.post('/refresh', authHTTP, async (req, res, next) => {
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
       roles: [],
-      env: {id: user.id, code: user.code, type: user.type, value: user.description},
+      env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
     const token = jwt.sign(new_payload, JTW_KEY, { expiresIn: '72h' });
     return res.json({ account: user, token });
@@ -164,9 +165,11 @@ export async function buildMenu(user: CatalogUser): Promise<MenuItem[]> {
         ...SubSystem.Documents.map(async el => {
           const Group = await lib.doc.byIdT<CatalogOperationGroup>(el.Group, sdba);
           if (Group) {
-            return { type: el.Document as DocTypes, icon: Group.icon,
-              routerLink: [`/${el.Document}/group/${Group.id}`], label: Group.menu };
-          } else  {
+            return {
+              type: el.Document as DocTypes, icon: Group.icon,
+              routerLink: [`/${el.Document}/group/${Group.id}`], label: Group.menu
+            };
+          } else {
             const prop = createDocument(el.Document as DocTypes).Prop() as DocumentOptions;
             return { type: prop.type, icon: prop.icon, routerLink: ['/' + prop.type], label: prop.menu };
           }

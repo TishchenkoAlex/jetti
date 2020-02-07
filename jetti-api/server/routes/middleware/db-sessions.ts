@@ -5,14 +5,14 @@ import { TASKS_POOL } from '../../sql.pool.tasks';
 
 export function jettiDB(req: Request, res: Response, next: NextFunction) {
   const user = (<any>req).user;
-  const sdb = new MSSQL(user, JETTI_POOL);
+  const sdb = new MSSQL(JETTI_POOL, user);
   (<any>req).sdb = sdb;
   next();
 }
 
 export function tasksDB(req: Request, res: Response, next: NextFunction) {
   const user = (<any>req).user;
-  const sdb = new MSSQL(user, TASKS_POOL);
+  const sdb = new MSSQL(TASKS_POOL, user);
   (<any>req).sdb = sdb;
   next();
 }
