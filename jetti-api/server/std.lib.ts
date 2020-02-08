@@ -313,7 +313,7 @@ async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<str
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
-  // const sdb = new MSSQL({ email: '', isAdmin: true, env: {}, description: '', roles: []}, TASKS_POOL);
+  // const sdb = new MSSQL(TASKS_POOL, { email: '', isAdmin: true, env: {}, description: '', roles: []} );
   await tx.none(`
     EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
 }

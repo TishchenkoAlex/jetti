@@ -6,7 +6,7 @@ import { TASKS_POOL } from '../../sql.pool.tasks';
 
 export default async function (job: Queue.Job) {
   const params = job.data;
-  const sdbq = new MSSQL(params.user, TASKS_POOL);
+  const sdbq = new MSSQL(TASKS_POOL, params.user);
 
   await lib.util.adminMode(true, sdbq);
   try {
