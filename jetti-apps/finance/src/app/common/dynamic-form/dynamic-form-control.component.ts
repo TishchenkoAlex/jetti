@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output, EventEmitter, isDevMode } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { FormControlInfo } from './dynamic-form-base';
@@ -54,7 +54,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
             return func(doc, value, api, body);
             `);
           const patch = await func(this.form.getRawValue(), value, this.api, funcBody);
-          this.form.patchValue(patch || {});
+          this.form.patchValue(patch || {}, patchOptionsNoEvents);
           this.cd.markForCheck();
         }
 
