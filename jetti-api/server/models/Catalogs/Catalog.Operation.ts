@@ -6,14 +6,13 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Правила операций',
   dimensions: [
-    { Group: 'Catalog.Operation.Group' }
   ],
   prefix: 'RULE-',
   relations: [
     { name: 'Operations', type: 'Document.Operation', field: 'Operation' }
   ],
   copyTo: [
-    {type: 'Document.Operation', icon: '', label: 'Operation', order: 1 }
+    { type: 'Document.Operation', icon: '', label: 'Operation', order: 1 }
   ],
   hierarchy: 'folders'
 })
@@ -63,13 +62,13 @@ class Parameter {
   @Props({ type: 'boolean', required: true })
   required = false;
 
-  @Props({ type: 'javascript', label: 'change script', hiddenInList: true, style: {width: '550px'} })
+  @Props({ type: 'javascript', label: 'change script', hiddenInList: true, style: { width: '550px' } })
   change = '';
 
-  @Props({ type: 'json', hiddenInList: true, style: {width: '550px'} })
+  @Props({ type: 'json', hiddenInList: true, style: { width: '550px' } })
   tableDef = '';
 
-  @Props({ type: 'json', hiddenInList: true, style: {width: '550px'} })
+  @Props({ type: 'json', hiddenInList: true, style: { width: '550px' } })
   Props = '';
 }
 
@@ -77,7 +76,7 @@ class CopyTo {
   @Props({ type: 'Catalog.Operation', required: true, style: { width: '400px' } })
   Operation: Ref = null;
 
-  @Props({ type: 'javascript', label: 'script', hiddenInList: true, style: {width: '550px'}  })
+  @Props({ type: 'javascript', label: 'script', hiddenInList: true, style: { width: '550px' } })
   script = '';
 
   @Props({ type: 'number', required: true })
@@ -91,7 +90,7 @@ class Command {
   @Props({ type: 'string', required: true })
   label = '';
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   icon = '';
 
   @Props({ type: 'number', required: true })

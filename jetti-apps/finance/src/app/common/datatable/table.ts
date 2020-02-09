@@ -1,24 +1,4 @@
-// tslint:disable:max-line-length
-// tslint:disable:component-class-suffix
-// tslint:disable:radix
-// tslint:disable:use-life-cycle-interface
-// tslint:disable:no-shadowed-variable
-// tslint:disable:no-input-rename
-// tslint:disable:use-host-property-decorator
-// tslint:disable:directive-class-suffix
-// tslint:disable:directive-selector
-// tslint:disable:member-ordering
-// tslint:disable:no-output-on-prefix
-// tslint:disable:no-inferrable-types
-// tslint:disable:curly
-// tslint:disable:triple-equals
-// tslint:disable:comment-format
-// tslint:disable:one-line
-// tslint:disable:prefer-const
-// tslint:disable:quotemark
-// tslint:disable:no-trailing-whitespace
-// tslint:disable:semicolon
-// tslint:disable:no-string-throw
+// tslint:disable
 
 import { CommonModule } from '@angular/common';
 import { AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ContentChildren, Directive, ElementRef, EventEmitter, HostListener, Injectable, Input, NgModule, NgZone, OnDestroy, OnInit, Optional, Output, QueryList, TemplateRef, ViewChild } from '@angular/core';
@@ -1300,7 +1280,6 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
       filters: this.filters,
       globalFilter: this.filters && this.filters['global'] ? this.filters['global'].value : null,
       multiSortMeta: this.multiSortMeta,
-      initialized: !!this.initialized // tishchenko
     };
   }
 
@@ -1402,7 +1381,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
   }
 
   isEditingCellValid() {
-    return true; // (this.editingCell && DomHandler.find(this.editingCell, '.ng-invalid.ng-dirty').length === 0);
+    return true; // Tishchenko (this.editingCell && DomHandler.find(this.editingCell, '.ng-invalid.ng-dirty').length === 0);
   }
 
   bindDocumentEditListener() {

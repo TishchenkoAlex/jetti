@@ -2,15 +2,16 @@
 
   <div *ngIf="showTree" style="margin-right: 4px;">
     <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)" [showCommands]="false" [id]="selection"
-      [scrollHeight]="'409px'"></j-tree-list>
+      [scrollHeight]="'445px'">
+    </j-tree-list>
   </div>
   <div style="display: flex; flex-direction: column;">
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button"
-          (click)="open()" [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
+        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" (click)="open()"
+          [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
         <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
         <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
@@ -24,7 +25,7 @@
         sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection"
         [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'415px'"
         [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
-        [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true" [resizableColumns] = "true">
+        [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true" [resizableColumns]="true">
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
             <col>
@@ -34,8 +35,8 @@
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
             <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
-            <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" [pSortableColumn]="column.field" *ngFor="let column of tbl.columns"
-              [ngStyle]="column.style">
+            <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" [pSortableColumn]="column.field"
+              *ngFor="let column of tbl.columns" [ngStyle]="column.style">
               {{column.label}}
               <p-sortIcon [field]="column.field"></p-sortIcon>
             </th>
