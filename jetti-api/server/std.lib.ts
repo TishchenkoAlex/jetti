@@ -48,6 +48,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
@@ -86,6 +87,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
+    salaryCompanyByCompany: salaryCompanyByCompany,
     bankStatementUnloadById: bankStatementUnloadById,
     adminMode: adminMode,
     closeMonth: closeMonth,
@@ -160,6 +162,28 @@ async function Descendants(id: string, tx: MSSQL): Promise<{ id: Ref, parent: Re
   if (!id) return null;
   return await tx.manyOrNone<{ id: Ref, parent: Ref }>(`SELECT id, parent FROM dbo.[Descendants](@p1,'')`, [id]);
 
+}
+
+async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string | null> {
+  if (!company) return null;
+  const CompanyParentId = await lib.doc.Ancestors(company, tx, 1);
+  let CodeCompanySalary = '';
+  switch (CompanyParentId) {
+    case 'E5850830-02D2-11EA-A524-E592E08C23A5':
+      CodeCompanySalary = 'SALARY-RUSSIA';
+      break;
+    case 'FE302460-0489-11EA-941F-EBDB19162587':
+      CodeCompanySalary = 'SALARY-UKRAINE';
+      break;
+    case '7585EDB0-3626-11EA-A819-EB0BBE912314':
+      CodeCompanySalary = 'SALARY-CRAUD';
+      break;
+    case '9C226AA0-FAFA-11E9-B75B-A35013C043AE':
+      CodeCompanySalary = 'SALARY-KAZAKHSTAN';
+      break;
+    default:
+  };
+  return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
 }
 
 function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocument | null {

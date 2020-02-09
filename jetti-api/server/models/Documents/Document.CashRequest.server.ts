@@ -81,6 +81,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'returnToStatusPrepared':
         await this.returnToStatusPrepared(tx);
         return this;
+      case 'FillSalaryBalanceByPersons':
+        await this.FillSalaryBalanceByPersons(tx);
+        return this;
       default:
         return {};
     }
@@ -110,6 +113,34 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
     this.Status = 'PREPARED';
     await updateDocument(this, tx);
+  }
+
+  async FillSalaryBalanceByPersons(tx: MSSQL) {
+    if (this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
+    const query = `DROP TABLE IF EXISTS #Person;
+
+    SELECT id personId INTO #Person FROM
+      [dbo].[Catalog.Person] 
+    WHERE [Department.id] = @p1;
+    SELECT 
+      Person
+      ,-SUM(Amount) Salary
+    FROM [dbo].[Register.Accumulation.Salary] register 
+    WHERE Person in (select personId from #Person) 
+      and currency = @p2
+      and date <= @p3
+      AND company = @p4
+    group BY Person 
+    HAVING SUM(Amount) < 0`;
+    const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
+    const salaryBalance = await tx.manyOrNone<{ Person, Salary }>(query, [this.Department, this.сurrency, this.date, CompanyEmployee]);
+    this.PayRolls = [];
+    this.Amount = 0;
+    salaryBalance.forEach(el => {
+      this.PayRolls.push({ Employee: el.Person, Salary: el.Salary, Tax: 0, BankAccount: null });
+      this.Amount += el.Salary;
+    })
+    
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {

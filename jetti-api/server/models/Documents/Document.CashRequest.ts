@@ -18,7 +18,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { name: 'Operations', type: 'Document.Operation', field: 'parent' },
   ],
   commands: [
-    { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 }
+    { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 },
+    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: 'Заполнить остатками заработной платы', order: 2 },
   ],
 })
 export class DocumentCashRequest extends DocumentBase {
