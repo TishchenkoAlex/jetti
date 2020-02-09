@@ -28,6 +28,12 @@ export class RegisterInfoSettlementsReconciliation extends RegisterInfo {
   @Props({ type: 'Document.Operation' })
   Operation: Ref = null;
 
+  @Props({ type: 'string' })
+  OperationDescription = '';
+
+  @Props({ type: 'string' })
+  Comment = 0;
+
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
