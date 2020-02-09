@@ -36,7 +36,7 @@ export const configSchema = new Map([
       menu: Prop.menu,
       prefix: Prop.prefix,
       dimensions: Prop.dimensions,
-      QueryObject: SQLGenegator.QueryObject(Props, el.type),
+      // QueryObject: SQLGenegator.QueryObject(Props, el.type),
       QueryList: SQLGenegator.QueryList(Props, el.type),
       Props: Props,
       Prop: Prop,

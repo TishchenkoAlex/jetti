@@ -10,7 +10,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   params.command = params.command || 'first';
 
   const cs = configSchema.get(params.type);
-  let { QueryList, Props, Prop } = cs!;
+  let { QueryList, Props } = cs!;
 
   let row: DocumentBase | null = null;
   let query = '';
