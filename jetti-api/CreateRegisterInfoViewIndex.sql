@@ -30,6 +30,8 @@
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.Period'),127) "Period"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Operation"')) "Operation"
         , ISNULL(JSON_VALUE(data, '$.OperationDescription'), '') "OperationDescription"
+        , ISNULL(JSON_VALUE(data, '$.OperationInDocNumber'), '') "OperationInDocNumber"
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.OperationInDocDate'),127) "OperationInDocDate"
         , ISNULL(JSON_VALUE(data, '$.Comment'), '') "Comment"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) "Amount"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountPaid')) "AmountPaid"

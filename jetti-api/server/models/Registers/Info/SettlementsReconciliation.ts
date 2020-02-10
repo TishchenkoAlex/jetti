@@ -32,6 +32,12 @@ export class RegisterInfoSettlementsReconciliation extends RegisterInfo {
   OperationDescription = '';
 
   @Props({ type: 'string' })
+  OperationInDocNumber = '';
+
+  @Props({ type: 'date' })
+  OperationInDocDate = '';
+
+  @Props({ type: 'string' })
   Comment = 0;
 
   @Props({ type: 'number', resource: true })

@@ -124,14 +124,14 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     WHERE [Department.id] = @p1;
     SELECT 
       Person
-      ,-SUM(Amount) Salary
+      ,SUM(Amount) Salary
     FROM [dbo].[Register.Accumulation.Salary] register 
     WHERE Person in (select personId from #Person) 
       and currency = @p2
       and date <= @p3
       AND company = @p4
     group BY Person 
-    HAVING SUM(Amount) < 0`;
+    HAVING SUM(Amount) > 0`;
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
     const salaryBalance = await tx.manyOrNone<{ Person, Salary }>(query, [this.Department, this.сurrency, this.date, CompanyEmployee]);
     this.PayRolls = [];
