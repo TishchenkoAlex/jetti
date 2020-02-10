@@ -13,7 +13,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Company', required: true, dimension: true })
   KorrCompany: Ref = null;
 
-  @Props({ type: 'Catalog.Department'})
+  @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
   @Props({ type: 'Catalog.Person', required: true, dimension: true })
@@ -22,7 +22,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Person', required: true, dimension: true })
   Employee: Ref = null;
 
-  @Props({ type: 'enum', resource: true, value: ['INCOME','EXPENSE','PAID'] })
+  @Props({ type: 'enum', resource: true, value: ['INCOME', 'EXPENSE', 'PAID'] })
   SalaryKind = 'INCOME';
 
   @Props({ type: 'Catalog.Salary.Analytics', required: true, dimension: true })
@@ -37,7 +37,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
-  constructor (init: Partial<RegisterAccumulationSalary>) {
+  constructor(init: Partial<RegisterAccumulationSalary>) {
     super(init);
     Object.assign(this, init);
   }

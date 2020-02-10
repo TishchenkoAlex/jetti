@@ -345,7 +345,7 @@
     AS
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Person, Employee, SalaryKind, Analytics
+        d.exchangeRate, currency, KorrCompany, Department, Person, Employee, SalaryKind, Analytics
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -354,6 +354,7 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [KorrCompany] UNIQUEIDENTIFIER N'$.KorrCompany'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
