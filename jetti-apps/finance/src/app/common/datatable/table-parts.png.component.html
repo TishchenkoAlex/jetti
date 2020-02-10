@@ -9,14 +9,15 @@
 </p-toolbar>
 
 <p-table [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selection"
-  dataKey="index" [scrollable]="true" (onEditComplete)="onEditComplete($event)" (onEditCancel)="onEditCancel($event)"
-  (onEditInit)="onEditInit($event)" scrollHeight="37vh">
+  (sortFunction)="customSort($event)" [customSort]="true" dataKey="index" [scrollable]="true" (onEditComplete)="onEditComplete($event)"
+  (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)" scrollHeight="37vh">
 
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 50px">#</th>
-      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle">
+      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle" [pSortableColumn]="col.field" pReorderableColumn>
         {{col.label}}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
       <th></th>
     </tr>
@@ -25,7 +26,7 @@
   <ng-template pTemplate="body" let-rowData>
     <tr [pSelectableRow]="rowData">
       <td style="width: 50px; text-align: right;">
-            {{rowData.index + 1}}
+        {{rowData.index + 1}}
       </td>
       <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field">
         <p-cellEditor>
@@ -34,8 +35,10 @@
           </ng-template>
           <ng-template pTemplate="output">
             <span [ngSwitch]="col.type">
-              <span *ngSwitchCase="'date'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy' }}</span>
-              <span *ngSwitchCase="'datetime'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy HH:mm:ss' }}</span>
+              <span
+                *ngSwitchCase="'date'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy' }}</span>
+              <span
+                *ngSwitchCase="'datetime'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy HH:mm:ss' }}</span>
               <span *ngSwitchCase="'number'">{{getControl(rowData.index).get(col.field)?.value | number:'1.2-2'}}</span>
               <span *ngSwitchCase="'script'">{{getControl(rowData.index).get(col.field)?.value}}</span>
               <span *ngSwitchCase="'boolean'">
