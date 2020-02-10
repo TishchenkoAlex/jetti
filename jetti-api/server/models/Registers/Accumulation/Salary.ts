@@ -10,6 +10,9 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
+  @Props({ type: 'Catalog.Company', required: true, dimension: true })
+  KorrCompany: Ref = null;
+
   @Props({ type: 'Catalog.Department'})
   Department: Ref = null;
 
