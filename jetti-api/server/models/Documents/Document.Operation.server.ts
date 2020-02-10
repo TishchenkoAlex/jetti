@@ -405,17 +405,19 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       this['CashRegister'] = CashOrBank.id;
       this.f1 = this['CashRegister'];
       let knowEmployee: TypesCashRecipient[] = [];
-      AmountBalance.forEach(el => {
-        sourceDoc.PayRolls.filter(pr => (pr.Employee as any === el.CashRecipient)).forEach(pr => {
-          if (knowEmployee.indexOf(el.CashRecipient) === -1) {
-            knowEmployee.push(el.CashRecipient);
-            this['PayRolls'].push({
-              Employee: el.CashRecipient,
-              Amount: el.Amount
-            })
-          }
-        })
-      })
+
+      for (const row of sourceDoc.PayRolls) {
+        const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any));
+        for (const emp of EmployeeBalance) {
+          if (knowEmployee.indexOf(emp.CashRecipient) === -1)
+            knowEmployee.push(emp.CashRecipient);
+          this['PayRolls'].push({
+            Employee: emp.CashRecipient,
+            Amount: emp.Amount
+          })
+        }
+      }
+
     } else if (CashOrBank.type === 'Catalog.BankAccount') {
       this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
       this.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC';
@@ -423,40 +425,44 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       this.f1 = this['BankAccount'];
       let knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
       if (params) {
-        (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>).forEach(el => {
-          sourceDoc.PayRolls.filter(pr => (pr.Employee as any === el.CashRecipient
-            && pr.BankAccount as any === el.BankAccountPerson
-          )).forEach(pr => {
-            if (knowEmployee.indexOf({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson }) === -1) {
-              knowEmployee.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson });
+        const AmountBalance = (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>);
+        for (const row of sourceDoc.PayRolls) {
+          const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any && row.BankAccount as any === el.BankAccountPerson));
+          for (const emp of EmployeeBalance) {
+            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1) {
+              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
               this['PayRolls'].push({
-                Employee: el.CashRecipient,
-                Amount: el.Amount,
-                Tax: pr.Tax,
-                BankAccount: pr.BankAccount
+                Employee: emp.CashRecipient,
+                Amount: emp.Amount,
+                Tax: row.Tax,
+                BankAccount: row.BankAccount
               })
             }
-          })
-        })
+          }
+        }
       }
       else {
         let knowEmployee: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
-        AmountBalance.forEach(el => {
-          sourceDoc.PayRolls.filter(pr => (pr.Employee as any === el.CashRecipient
-            && pr.BankAccount as any === el.BankAccountPerson)).forEach(pr => {
 
-              if (knowEmployee.indexOf({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson }) === -1) {
-                knowEmployee.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson });
-                this['PayRolls'].push({
-                  Employee: el.CashRecipient,
-                  Amount: el.Amount,
-                  Tax: pr.Tax,
-                  BankAccount: pr.BankAccount
-                })
-              }
+        for (const row of sourceDoc.PayRolls) {
+          const EmployeeBalance = AmountBalance.filter(el => (
+            row.Employee as any === el.CashRecipient
+            && row.BankAccount as any === el.BankAccountPerson
+          ));
+
+          for (const emp of EmployeeBalance) {
+            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1)
+              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
+            this['PayRolls'].push({
+              Employee: emp.CashRecipient,
+              Amount: emp.Amount,
+              Tax: row.Tax,
+              BankAccount: row.BankAccount
             })
-        })
+          }
+        }
       }
+
       this.Amount = 0;
       for (const row of this['PayRolls']) this.Amount += row.Amount;
       // this['PayRolls'].forEach(el => {this.Amount+=el.Amount});

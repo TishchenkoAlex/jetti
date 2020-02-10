@@ -8,6 +8,7 @@ import { cloneFormGroup, patchOptionsNoEvents } from '../../common/dynamic-form/
 import { ApiService } from '../../services/api.service';
 import { EditableColumn } from '../datatable/table';
 import { DocService } from '../doc.service';
+import { SortEvent, FilterUtils } from 'primeng/api';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,7 +34,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     this.columns = this.control.controls.map((el) => <ColumnDef>{
       field: el.key, type: el.controlType, label: el.label, hidden: el.hidden, onChange: el.onChange, onChangeServer: el.onChangeServer,
       order: el.order, style: el.style, required: el.required, readOnly: el.readOnly, totals: el.totals, value: el.value, control: el,
-      headerStyle: { ...el.style, 'text-align' : 'center'}
+      headerStyle: { ...el.style, 'text-align': 'center' }
     });
     this.control.controls.forEach(v => v.showLabel = false);
     this.showTotals = this.control.controls.findIndex(v => v.totals > 0) !== -1;
@@ -45,9 +46,9 @@ export class TablePartsComponent implements OnInit, OnDestroy {
         this.cd.detectChanges();
       });
 
-      // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
-      // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
-      // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe( () => {this.delete(); });
+    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe( () => {this.add(); });
+    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe( () => {this.copy(); });
+    // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe( () => {this.delete(); });
   }
 
   getControl(i: number) {
@@ -110,9 +111,53 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     }
   }
 
+  search(searchedValue: string) {
+    this.dataSource = this.formGroup.getRawValue();
+    if (!searchedValue) return;
+    searchedValue = searchedValue.toLowerCase();
+    const dataSourceFiltred = this.dataSource.filter(el => {
+      for (const key of Object.keys(el)) {
+        let curVal = el[key];
+        if (curVal && curVal.type && curVal.type.includes('.')) curVal = curVal.value;
+        if (curVal && curVal.toString().toLowerCase().includes(searchedValue)) return true;
+      }
+      return false;
+    });
+    this.dataSource = [...dataSourceFiltred];
+
+  }
+
   onEditComplete(event) { }
-  onEditInit(event) {  }
+  onEditInit(event) { }
   onEditCancel(event) { }
+
+  customSort(event: SortEvent) {
+    const rows = [...event.data];
+    rows.sort((data1, data2) => {
+      let value1 = data1[event.field];
+      let value2 = data2[event.field];
+      let result = null;
+
+      if (value1 && value1.type && value1.type.indexOf('.') !== -1) {
+        value1 = value1.value;
+        value2 = value2.value;
+      }
+
+      if (value1 == null && value2 != null)
+        result = -1;
+      else if (value1 != null && value2 == null)
+        result = 1;
+      else if (value1 == null && value2 == null)
+        result = 0;
+      else if (typeof value1 === 'string' && typeof value2 === 'string')
+        result = value1.localeCompare(value2);
+      else
+        result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+
+      return (event.order * result);
+    });
+    this.formGroup.setValue(rows);
+  }
 
   calcTotals(field: string): number {
     return (this.formGroup.value as any[]).map(v => v[field]).reduce((a, b) => a + b, 0);
