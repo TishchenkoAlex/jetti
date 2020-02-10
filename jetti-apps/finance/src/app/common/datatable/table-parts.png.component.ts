@@ -8,7 +8,7 @@ import { cloneFormGroup, patchOptionsNoEvents } from '../../common/dynamic-form/
 import { ApiService } from '../../services/api.service';
 import { EditableColumn } from '../datatable/table';
 import { DocService } from '../doc.service';
-import { SortEvent } from 'primeng/api';
+import { SortEvent, FilterUtils } from 'primeng/api';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,6 +109,22 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.formGroup.length; i++) {
       this.formGroup.at(i).get('index')!.patchValue(i, { emitEvent: false });
     }
+  }
+
+  search(searchedValue: string) {
+    this.dataSource = this.formGroup.getRawValue();
+    if (!searchedValue) return;
+    searchedValue = searchedValue.toLowerCase();
+    const dataSourceFiltred = this.dataSource.filter(el => {
+      for (const key of Object.keys(el)) {
+        let curVal = el[key];
+        if (curVal && curVal.type && curVal.type.includes('.')) curVal = curVal.value;
+        if (curVal && curVal.toString().toLowerCase().includes(searchedValue)) return true;
+      }
+      return false;
+    });
+    this.dataSource = [...dataSourceFiltred];
+
   }
 
   onEditComplete(event) { }

@@ -6,15 +6,24 @@
     <button pButton type="button" icon="pi pi-trash" class="ui-button-danger" (click)="delete()"
       *ngIf="selection?.length > 0"></button>
   </div>
+  <div class="ui-toolbar-group-right">
+    <div class="ui-inputgroup">
+    <input #searchKeyword type="text" placeholder="Keyword"
+      style="width:auto">
+      <button pButton type="button" icon="pi pi-search" class="ui-button-success" (click)="search(searchKeyword.value)"></button>
+      <button pButton type="button" icon="pi pi-ban" class="ui-button-danger" (click)="searchKeyword.value = ''; search(searchKeyword.value)"></button>
+  </div>
+  </div>
 </p-toolbar>
 
-<p-table [columns]="columns" [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selection"
-  (sortFunction)="customSort($event)" [customSort]="true" dataKey="index" [scrollable]="true" (onEditComplete)="onEditComplete($event)"
-  (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)" scrollHeight="37vh" [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand" >
+<p-table #tablePart [columns]="columns" [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true"
+  [(selection)]="selection" (sortFunction)="customSort($event)" [customSort]="true" dataKey="index" [scrollable]="true"
+  (onEditComplete)="onEditComplete($event)" (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)"
+  scrollHeight="37vh" [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand">
 
   <ng-template pTemplate="colgroup" let-columns>
     <colgroup>
-      <col  style="width: 50px">
+      <col style="width: 50px">
       <col *ngFor="let col of columns" [style.width]="col.width">
     </colgroup>
   </ng-template>
@@ -22,7 +31,8 @@
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th style="width: 50px">#</th>
-      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
+      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle" [pSortableColumn]="col.field" pResizableColumn
+        pReorderableColumn>
         {{col.label}}
         <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
@@ -35,7 +45,8 @@
       <td style="width: 50px; text-align: right;">
         {{rowData.index + 1}}
       </td>
-      <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field" class="ui-resizable-column">
+      <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field"
+        class="ui-resizable-column">
         <p-cellEditor>
           <ng-template pTemplate="input">
             <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
@@ -62,7 +73,7 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="footer"  let-columns>
+  <ng-template pTemplate="footer" let-columns>
     <tr *ngIf="showTotals" style="height: 24px">
       <th style="width: 50px"></th>
       <th *ngFor="let col of columns" [ngStyle]="col.style">
