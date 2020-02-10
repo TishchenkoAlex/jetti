@@ -8,18 +8,25 @@
   </div>
 </p-toolbar>
 
-<p-table [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selection"
+<p-table [columns]="columns" [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selection"
   (sortFunction)="customSort($event)" [customSort]="true" dataKey="index" [scrollable]="true" (onEditComplete)="onEditComplete($event)"
-  (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)" scrollHeight="37vh">
+  (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)" scrollHeight="37vh" [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand" >
 
-  <ng-template pTemplate="header">
+  <ng-template pTemplate="colgroup" let-columns>
+    <colgroup>
+      <col  style="width: 50px">
+      <col *ngFor="let col of columns" [style.width]="col.width">
+    </colgroup>
+  </ng-template>
+
+  <ng-template pTemplate="header" let-columns>
     <tr>
       <th style="width: 50px">#</th>
-      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle" [pSortableColumn]="col.field" pReorderableColumn>
+      <th *ngFor="let col of columns" [ngStyle]="col.headerStyle" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
         {{col.label}}
         <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
-      <th></th>
+      <th pResizableColumn></th>
     </tr>
   </ng-template>
 
@@ -28,7 +35,7 @@
       <td style="width: 50px; text-align: right;">
         {{rowData.index + 1}}
       </td>
-      <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field">
+      <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field" class="ui-resizable-column">
         <p-cellEditor>
           <ng-template pTemplate="input">
             <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
@@ -51,11 +58,11 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td></td>
+      <td class="ui-resizable-column"></td>
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="footer">
+  <ng-template pTemplate="footer"  let-columns>
     <tr *ngIf="showTotals" style="height: 24px">
       <th style="width: 50px"></th>
       <th *ngFor="let col of columns" [ngStyle]="col.style">
