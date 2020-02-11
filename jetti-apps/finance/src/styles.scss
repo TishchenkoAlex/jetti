@@ -22,12 +22,14 @@ html, body {
   overflow-y: visible !important;
 } */
 
-.ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-state-active {
+.ui-tabview-nav li.ui-state-active {
   background-color: white !important;
+  outline: 0px; /* Отменяем голубой ареол вокруг */
 }
 
 .ui-tabview-nav li.ui-state-active .ui-tabview-title {
   font-weight: bold !important;
+  cursor: pointer !important;
 }
 
 .ui-table .ui-table-tbody > tr > td {
