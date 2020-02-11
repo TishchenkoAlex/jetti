@@ -64,10 +64,16 @@
         appendTo="body" [disableControl]="suggest.disabled">
         <ng-template let-data pTemplate="item">
           <div fxLayout="row" fxLayoutGap="5px" style="align-content: center; align-items: center;">
-            <i *ngIf="data.isfolder" class="pi pi-folder"></i>
-            <i *ngIf="!data.isfolder" class="pi pi-list"></i>
-            <div>{{data.value}}</div>
-            <div>({{data.code}})</div>
+          <i *ngIf="!data.isfolder && !data.deleted" class="fa fa-check-square" style="color: #5cb85c"></i>
+          <i *ngIf="!data.isfolder && data.deleted" class="fa fa-minus-square" style="color: #d9534f"></i>
+          <i *ngIf="data.isfolder && data.deleted" class="fa fa-folder" style="color: #d9534f"></i>
+          <i *ngIf="data.isfolder && !data.deleted" class="fa fa-folder" style="color: #5cb85c"></i>
+
+            <div *ngIf="data.deleted"><s style="color: #d9534f">{{data.value}}</s></div>
+            <div *ngIf="data.deleted"><s style="color: #d9534f">({{data.code}})</s></div>
+
+            <div *ngIf="!data.deleted">{{data.value}}</div>
+            <div *ngIf="!data.deleted">({{data.code}})</div>
           </div>
         </ng-template>
       </p-autoComplete>

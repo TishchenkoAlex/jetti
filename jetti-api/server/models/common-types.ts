@@ -103,6 +103,7 @@ export interface ISuggest {
   type: AllTypes;
   code: string;
   value: string;
+  deleted: boolean;
 }
 
 export function calculateDescription(description: string, date: Date | string, code: string, group = '') {

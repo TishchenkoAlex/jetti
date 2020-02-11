@@ -401,11 +401,12 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.f3 = this['Department'];
 
     if (CashOrBank.type === 'Catalog.CashRegister') {
-      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
-      this.Operation = 'ABA074C0-41BF-11EA-A3C3-75A64D409CDC';
+      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';// Расходный кассовый ордер
+      this.Operation = 'ABA074C0-41BF-11EA-A3C3-75A64D409CDC'; // Из кассы - выплата зарплаты (ВЕДОМОСТЬ В КАССУ)
       this['CashRegister'] = CashOrBank.id;
       this.f1 = this['CashRegister'];
-      const knowEmployee: TypesCashRecipient[] = [];
+      this['SalaryKind'] = 'PAID';
+      let knowEmployee: TypesCashRecipient[] = [];
 
       for (const row of sourceDoc.PayRolls) {
         const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any));
@@ -420,8 +421,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       }
 
     } else if (CashOrBank.type === 'Catalog.BankAccount') {
-      this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
-      this.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC';
+      this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      this.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC'; // С р/с - выплата зарплаты (ВЕДОМОСТЬ В БАНК)
       this['BankAccount'] = CashOrBank.id;
       this.f1 = this['BankAccount'];
       const knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
