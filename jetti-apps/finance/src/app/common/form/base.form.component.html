@@ -47,7 +47,8 @@
         [disabled]="(lds.busy$ | async)"></button> -->
 
               <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
-                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="print()"></button>
+                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
+                (click)="print()"></button>
               <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
                 tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
             </div>
@@ -59,20 +60,26 @@
               *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
               <div fxFlex>
                 <j-control
-                  *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
+                  *ngIf="v[i+0] && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].order !== 777 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
                   [control]="v[i+0]" [form]="form"></j-control>
               </div>
               <div fxFlex>
                 <j-control
-                  *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
+                  *ngIf="v[i+1] && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+0].order !== 777 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
                   [control]="v[i+1]" [form]="form"></j-control>
               </div>
               <div fxFlex>
                 <j-control
-                  *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
+                  *ngIf="v[i+2] && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+0].order !== 777 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
                   [control]="v[i+2]" [form]="form"></j-control>
               </div>
             </div>
+
+            <p-fieldset *ngIf="hasFieldset" legend="Ещё..." [toggleable]="true">
+              <div *ngFor="let control of v">
+                <j-control *ngIf="control.order === 777" [control]="control" [form]="form"></j-control>
+              </div>
+            </p-fieldset>
 
             <div *ngFor="let control of v">
               <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'"
