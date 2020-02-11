@@ -156,7 +156,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   }
 
   select(row: DocumentBase) {
-    const selection: ISuggest = { id: row.id, type: row.type, code: row.code, value: row.description };
+    const selection: ISuggest = { id: row.id, type: row.type, code: row.code, value: row.description, deleted: row.deleted };
     this.Select.emit(selection);
   }
 

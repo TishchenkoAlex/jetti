@@ -47,7 +47,7 @@
         [disabled]="(lds.busy$ | async)"></button> -->
 
               <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
-                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
+                pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="print()"></button>
               <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
                 tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
             </div>
