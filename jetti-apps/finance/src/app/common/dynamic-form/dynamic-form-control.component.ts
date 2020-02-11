@@ -54,7 +54,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
             return func(doc, value, api, body);
             `);
           const patch = await func(this.form.getRawValue(), value, this.api, funcBody);
-          this.form.patchValue(patch || {}, patchOptionsNoEvents);
+          this.form.patchValue(patch || {});
           this.cd.markForCheck();
         }
 
