@@ -49,13 +49,14 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
   async beforePostCashRequest(CashRequest: DocumentCashRequestServer, tx: MSSQL) {
     if (CashRequest.Operation === 'Выплата заработной платы') {
       const rest = await CashRequest.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
-      let Errors: { Employee, BankAccount, Amount: number }[] = [];
+      const Errors: { Employee, BankAccount, Amount: number }[] = [];
       rest.forEach(el => {
         (this['PayRolls'] as Array<{ Employee, BankAccount, Amount: number }>)
-          .filter(pr => (pr.Employee === el.CashRecipient && (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount) && el.Amount < pr.Amount))
+          .filter(pr => (pr.Employee === el.CashRecipient &&
+            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount) && el.Amount < pr.Amount))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount })
-          })
+            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount });
+          });
       });
       if (Errors.length) {
         let ErrorText = '';
@@ -165,22 +166,22 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
 
     switch (sourceDoc.Operation) {
       case 'Оплата поставщику':
-        await this.baseOnCashRequestОплатаПоставщику(sourceDoc, tx, params)
+        await this.baseOnCashRequestОплатаПоставщику(sourceDoc, tx, params);
         break;
       case 'Перечисление налогов и взносов':
-        await this.baseOnCashRequestПеречислениеНалоговИВзносов(sourceDoc, tx, params)
+        await this.baseOnCashRequestПеречислениеНалоговИВзносов(sourceDoc, tx, params);
         break;
       case 'Оплата по кредитам и займам полученным':
-        await this.baseOnCashRequestОплатаПоКредитамИЗаймамПолученным(sourceDoc, tx, params)
+        await this.baseOnCashRequestОплатаПоКредитамИЗаймамПолученным(sourceDoc, tx, params);
         break;
       case 'Оплата ДС в другую организацию':
-        await this.baseOnCashRequestОплатаДСВДругуюОрганизацию(sourceDoc, tx, params)
+        await this.baseOnCashRequestОплатаДСВДругуюОрганизацию(sourceDoc, tx, params);
         break;
       case 'Выплата заработной платы':
-        await this.baseOnCashRequestВыплатаЗаработнойПлаты(sourceDoc, tx, params)
+        await this.baseOnCashRequestВыплатаЗаработнойПлаты(sourceDoc, tx, params);
         break;
       case 'Выплата заработной платы без ведомости':
-        await this.baseOnCashRequestВыплатаЗаработнойПлатыБезВедомости(sourceDoc, tx, params)
+        await this.baseOnCashRequestВыплатаЗаработнойПлатыБезВедомости(sourceDoc, tx, params);
         break;
       default:
         break;
@@ -200,13 +201,13 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
     this.Operation = '8D128C20-3E20-11EA-A722-63A01E818155';
     `TaxKPP
-    TaxPaymentCode 
+    TaxPaymentCode
     TaxOfficeCode2
     TaxPayerStatus
     TaxBasisPayment
     TaxDocNumber
     TaxDocDate
-    TaxPaymentPeriod`.split('\n').forEach(el => { this[el.trim()] = sourceDoc[el.trim()] });
+    TaxPaymentPeriod`.split('\n').forEach(el => { this[el.trim()] = sourceDoc[el.trim()]; });
     this['Supplier'] = sourceDoc.CashRecipient;
     this['BankAccount'] = CashOrBank.id;
     this.f1 = this['CashRegister'];
@@ -270,13 +271,13 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.f2 = this['SalaryAnalytics'];
     this.f3 = this['Employee'];
     if (CashOrBank.type === 'Catalog.CashRegister') {
-      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';// Расходный кассовый ордер
-      this.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A';//Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+      this.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A'; // Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
       this['CashRegister'] = CashOrBank.id;
       this.f1 = this['CashRegister'];
     } else if (CashOrBank.type === 'Catalog.BankAccount') {
-      this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; //4.1 - Списание безналичных ДС
-      this.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; //С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      this.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      this.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
       this['BankAccount'] = CashOrBank.id;
       this['BankAccountPerson'] = sourceDoc.CashRecipientBankAccount;
       this.f1 = this['BankAccount'];
@@ -400,12 +401,12 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.f3 = this['Department'];
 
     if (CashOrBank.type === 'Catalog.CashRegister') {
-      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';// Расходный кассовый ордер
+      this.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
       this.Operation = 'ABA074C0-41BF-11EA-A3C3-75A64D409CDC'; // Из кассы - выплата зарплаты (ВЕДОМОСТЬ В КАССУ)
       this['CashRegister'] = CashOrBank.id;
       this.f1 = this['CashRegister'];
       this['SalaryKind'] = 'PAID';
-      let knowEmployee: TypesCashRecipient[] = [];
+      const knowEmployee: TypesCashRecipient[] = [];
 
       for (const row of sourceDoc.PayRolls) {
         const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any));
@@ -415,7 +416,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           this['PayRolls'].push({
             Employee: emp.CashRecipient,
             Amount: emp.Amount
-          })
+          });
         }
       }
 
@@ -424,11 +425,13 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       this.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC'; // С р/с - выплата зарплаты (ВЕДОМОСТЬ В БАНК)
       this['BankAccount'] = CashOrBank.id;
       this.f1 = this['BankAccount'];
-      let knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+      const knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
       if (params) {
-        const AmountBalance = (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>);
+        const AmountBalance =
+          (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>);
         for (const row of sourceDoc.PayRolls) {
-          const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any && row.BankAccount as any === el.BankAccountPerson));
+          const EmployeeBalance = AmountBalance
+            .filter(el => (el.CashRecipient === row.Employee as any && row.BankAccount as any === el.BankAccountPerson));
           for (const emp of EmployeeBalance) {
             if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1) {
               knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
@@ -437,13 +440,12 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
                 Amount: emp.Amount,
                 Tax: row.Tax,
                 BankAccount: row.BankAccount
-              })
+              });
             }
           }
         }
-      }
-      else {
-        let knowEmployee: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+      } else {
+        const knowEmployee: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
 
         for (const row of sourceDoc.PayRolls) {
           const EmployeeBalance = AmountBalance.filter(el => (
@@ -459,7 +461,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
               Amount: emp.Amount,
               Tax: row.Tax,
               BankAccount: row.BankAccount
-            })
+            });
           }
         }
       }
