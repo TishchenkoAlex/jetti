@@ -14,23 +14,6 @@ html, body {
   padding: 70px 8px 0px 8px;
   margin: 0;
 }
-.ui-tabview-nav {
-  background: 0 !important;
-}
-/* .ui-tabview-panels {
-  height: 100%;
-  overflow-y: visible !important;
-} */
-
-.ui-tabview-nav li.ui-state-active {
-  background-color: white !important;
-  outline: 0px; /* Отменяем голубой ареол вокруг */
-}
-
-.ui-tabview-nav li.ui-state-active .ui-tabview-title {
-  font-weight: bold !important;
-  cursor: pointer !important;
-}
 
 .ui-table .ui-table-tbody > tr > td {
   height: 27px;
@@ -47,6 +30,7 @@ html, body {
   overflow: hidden;
   /* Обрезаем содержимое */
   text-overflow: ellipsis;
+
 }
 
 body .ui-table .ui-table-thead > tr > th, 
@@ -56,11 +40,15 @@ body .ui-table .ui-table-tfoot > tr > td {
 }
 
 .ui-inputtext {
-    padding: 0.343em 0.343em !important
+  padding: 0.343em 0.343em !important;
 }
 
-.ui-dropdown .ui-inputtext {
-  padding: 0.170em 0.170em !important;
+.ui-dropdown label.ui-dropdown-label {
+  display: flex !important;
+  align-items: center !important;
+  font-size: 1em !important;
+  padding: 0.343em 0.343em !important;
+  margin: 0!important;
 }
 
 .ui-table .ui-table-tbody> tr > td.ui-editing-cell input {
@@ -72,7 +60,7 @@ body .ui-table .ui-table-tfoot > tr > td {
 }
 
 .tabViewClassInForm .ui-table .ui-table-tbody > tr > td.ui-editing-cell {
-  padding: 0
+  padding: 0;
 }
 
 .tabViewClassInForm {
@@ -148,6 +136,24 @@ body .ui-tabview.ui-tabview-right .ui-tabview-nav li {
 
 .tabViewClassInForm .ui-tabview-panels {
   border-top: none !important;
+}
+
+.ui-tabview-nav {
+  background: 0 !important;
+}
+/* .ui-tabview-panels {
+  height: 100%;
+  overflow-y: visible !important;
+} */
+
+.ui-tabview-nav li.ui-state-active {
+  background-color: white !important;
+  outline: 0px; /* Отменяем голубой ареол вокруг */
+}
+
+.ui-tabview-nav li.ui-state-active .ui-tabview-title {
+  font-weight: bold !important;
+  cursor: pointer !important;
 }
 
 .ui-column-filter {
@@ -334,4 +340,25 @@ body .ui-treetable .ui-treetable-thead > tr > th, body .ui-treetable .ui-treetab
 
 .ui-tooltip {
   pointer-events: none !important;
+}
+
+.ui-state-highlight {
+  outline: 0px;
+}
+
+.ui-table .ui-sortable-column.ui-state-highlight {
+  background-color: inherit !important;
+  border-top-color: #dddddd !important;
+  border-bottom-color: #dddddd !important;
+  color: inherit !important;
+  font-weight: bolder !important
+}
+
+.ui-sortable-column-icon {
+  color: inherit !important;
+  font-weight: normal !important;
+}
+
+body .ui-table .ui-table-thead > tr > th, body .ui-table .ui-table-tfoot > tr > td {
+  font-weight: normal !important;
 }
