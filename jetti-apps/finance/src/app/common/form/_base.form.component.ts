@@ -85,7 +85,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
   get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
   get hasTables() { return this.tables.length > 0; }
-  get hasFieldset() { return false } //this.v.filter(el => (el.order === 777)).length > 0}
+  get hasFieldset() { return this.v.filter(el => (el.order === 777)).length > 0}
   get description() { return <FormControl>this.form.get('description'); }
   get isPosted() { return <boolean>!!this.form.get('posted').value; }
   get isDeleted() { return <boolean>!!this.form.get('deleted').value; }
@@ -172,7 +172,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   refresh() {
     this.dss.getViewModel$(this.type, this.viewModel.id).pipe(take(1)).subscribe(formGroup => {
       this.Next(formGroup);
-      this.onOpen();
+      setTimeout(() => this.onOpen());
     });
   }
 

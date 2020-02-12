@@ -21,7 +21,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   ]
 })
 export class DocumentOperation extends DocumentBase {
-  @Props({ type: 'Types.Document', hiddenInList: true, order: -1, readOnly: true })
+  @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
   @Props({

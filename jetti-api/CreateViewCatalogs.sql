@@ -763,6 +763,7 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Balance.v].description, '') [Balance.value], d.[Balance] [Balance.id], [Balance.v].type [Balance.type]
       
         , ISNULL(l5.description, d.description) [LoanTypes.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LoanTypes.Level4]
@@ -780,6 +781,7 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Balance.v] [Balance.v] WITH (NOEXPAND) ON [Balance.v].id = d.[Balance]
     
       GO
       GRANT SELECT ON dbo.[Catalog.LoanTypes] TO jetti;

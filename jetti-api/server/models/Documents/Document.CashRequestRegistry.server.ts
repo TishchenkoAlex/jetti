@@ -54,6 +54,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     let Operation: DocumentOperation | null;
     let BankAccountSupplier, currentCR, addBaseOnParams, LinkedDocument;
 
+    if (this.Operation === 'Выплата заработной платы') {
+      const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))]; 
+      if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)') ;
+    }
+
     for (const row of rowsWithAmount) {
       if (currentCR === row.CashRequest) continue;
       addBaseOnParams = [];

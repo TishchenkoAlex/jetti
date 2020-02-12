@@ -45,7 +45,7 @@ export class BankStatementUnloader {
     WITH (
         Employee VARCHAR(200) N'$.Employee',
         BankAccount VARCHAR(200) N'$.BankAccount',
-        Amount FLOAT N'$.Amount');
+        Amount MONEY N'$.Amount');
     SELECT 
       ISNULL(JSON_VALUE(person.doc,'$.LastName'),'') N'Фамилия',
       ISNULL(JSON_VALUE(person.doc,'$.FirstName'),'') N'Имя',
@@ -577,7 +577,7 @@ export class BankStatementUnloader {
     result += `\n\t<ВидЗачисления>01</ВидЗачисления>`;
     result += `\n\t<КонтрольныеСуммы>`;
     result += `\n\t\t<КоличествоЗаписей>${rowIndex - 1}</КоличествоЗаписей>`;
-    result += `\n\t\t<СуммаИтого>${amount}</СуммаИтого>`;
+    result += `\n\t\t<СуммаИтого>${amount.toFixed()}</СуммаИтого>`;
     result += `\n\t</КонтрольныеСуммы>`;
     result += `\n</СчетаПК>`;
     return result.trim();
@@ -678,7 +678,7 @@ export class BankStatementUnloader {
   private static getShortDocNumber(docNumber: string): string {
     if (docNumber.split('-').length === 2) {
       const docNumberArr = docNumber.split('-');
-      return Number(docNumberArr[1]).toString();
+      return docNumberArr[1];
     }
     return docNumber;
   }

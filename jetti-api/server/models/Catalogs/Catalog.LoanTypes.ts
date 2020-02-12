@@ -12,4 +12,7 @@ export class CatalogLoanTypes extends DocumentBase {
   @Props({ type: 'Catalog.LoanTypes', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Balance' })
+  Balance: Ref = null;
+
 }

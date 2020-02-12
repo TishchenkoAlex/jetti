@@ -75,9 +75,19 @@
               </div>
             </div>
 
-            <p-fieldset *ngIf="hasFieldset" legend="Ещё..." [toggleable]="true">
-              <div *ngFor="let control of v">
-                <j-control *ngIf="control.order === 777" [control]="control" [form]="form"></j-control>
+            <br *ngIf="hasFieldset">
+            <p-fieldset *ngIf="hasFieldset" legend="Ещё..." [toggleable]="true" collapsed = true>
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+                *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
+                <div fxFlex>
+                  <j-control *ngIf="v[i+0] && v[i+0].order === 777" [control]="v[i+0]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control *ngIf="v[i+1] && v[i+1].order === 777" [control]="v[i+1]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control *ngIf="v[i+2] && v[i+2].order === 777" [control]="v[i+2]" [form]="form"></j-control>
+                </div>
               </div>
             </p-fieldset>
 

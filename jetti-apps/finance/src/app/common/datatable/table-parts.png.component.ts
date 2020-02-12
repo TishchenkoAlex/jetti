@@ -157,6 +157,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
       return (event.order * result);
     });
     this.formGroup.setValue(rows);
+    this.formGroup.markAsDirty();
   }
 
   calcTotals(field: string): number {
