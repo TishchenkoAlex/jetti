@@ -47,7 +47,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async Create(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
+    if (this.Status !== 'APPROVED') throw new Error(`Создание возможно только в документе со статусом "APPROVED"!`);
     await lib.doc.postById(this.id, tx);
     const rowsWithAmount = this.CashRequests.filter(c => (c.Amount > 0));
 

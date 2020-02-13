@@ -71,6 +71,10 @@
                 <input [ngModel]="filters[column.field]?.value" pInputText
                   (ngModelChange)="update(column, $event, 'like')">
               </div>
+              <div *ngSwitchCase="'enum'">
+                <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value"
+                  (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
+              </div>
               <div *ngSwitchDefault>
                 <j-autocomplete-png [checkValue]="false"
                   [type]="filters[column.field]?.value?.type || column.type || 'string'"
@@ -104,6 +108,7 @@
                   <i *ngIf="!rowData[column.field]" class="far fa-square" [id]="column.field"></i>
                 </span>
                 <span *ngSwitchCase="'string'" [id]="column.field">{{rowData[column.field]}}</span>
+                <span *ngSwitchCase="'enum'" [id]="column.field">{{rowData[column.field]}}</span>
                 <span *ngSwitchDefault [id]="column.field">{{rowData[column.field]?.value}}</span>
               </span>
             </td>

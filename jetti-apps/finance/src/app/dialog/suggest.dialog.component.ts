@@ -69,14 +69,19 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
     [...data, ...dimensions].forEach(el => {
       const field = Object.keys(el)[0]; const type = el[field];
+      let value = schema[field] && schema[field].value;
+      if (type === 'enum') {
+        value = [{ label: '', value: null }, ...(value || [] as string[]).map((el: any) => ({ label: el, value: el }))];
+      }
       columns.push({
         field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
         hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
         order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
-        value: schema[field] && schema[field].value,
+        value: value,
         headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align': 'center' }
       });
     });
+
     this.columns = [...columns.filter(c => !c.hidden)];
     if (this.doc) {
       this.showTree = (this.doc.Prop() as DocumentOptions).hierarchy === 'folders';

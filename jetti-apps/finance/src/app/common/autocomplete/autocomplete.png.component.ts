@@ -139,9 +139,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
         this.cd.markForCheck();
       });
 
-      // this.hotkeys.addShortcut({ keys: 'Shift.F4', description: 'Clear' }).subscribe( () => {this.handleReset(new Event('keypress')); });
-      // this.hotkeys.addShortcut({ keys: 'F4', description: 'Choise' }).subscribe( () => {this.handleSearch(new Event('keypress')); });
-      // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.handleOpen(new Event('keypress')); });
+    // this.hotkeys.addShortcut({ keys: 'Shift.F4', description: 'Clear' }).subscribe( () => {this.handleReset(new Event('keypress')); });
+    // this.hotkeys.addShortcut({ keys: 'F4', description: 'Choise' }).subscribe( () => {this.handleSearch(new Event('keypress')); });
+    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.handleOpen(new Event('keypress')); });
   }
 
   getSuggests(text: string) {
@@ -186,12 +186,15 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
     if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
     if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
+    let company;
     if (this.type.startsWith('Document.')) {
       const doc = this.formControl && this.formControl.root.value;
-      if (doc && doc.company.id) {
-        result.filter.push({ left: 'company', center: '=', right: doc.company });
-      }
+      if (doc && doc.company.id) company = doc.company
+    } else if (this.type === 'Types.Document') {
+      const doc = this.formControl && this.formControl.root['controls'];
+      if (doc && doc.company && doc.company.value && doc.company.value.id) company = doc.company.value.id
     }
+    if (company) result.filter.push({ left: 'company', center: '=', right: company });
     return result;
   }
 

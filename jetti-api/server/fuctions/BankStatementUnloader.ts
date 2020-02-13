@@ -19,6 +19,7 @@ export class BankStatementUnloader {
       bank.code N'БИК',
       ISNULL(JSON_VALUE(comp.doc,'$.Code1'),'') N'ИНН',
       comp.description N'НаименованиеОрганизации',
+      BankAccount.code N'РасчетныйСчетОрганизации',
       FORMAT (CAST(JSON_VALUE(sp.doc,'$.OpenDate') as date), 'dd.MM.yyyy') N'ДатаДоговора',
       sp.code N'НомерДоговора',
       FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаФормирования',
@@ -30,6 +31,7 @@ export class BankStatementUnloader {
       ISNULL(JSON_VALUE(sp.doc,'$.BankBranchOffice'),'') ig_BankBranchOffice
     from [dbo].[Documents] doc 
       inner join [dbo].[Documents] sp on JSON_VALUE(doc.doc,N'$.SalaryProject') = sp.id
+      inner join [dbo].[Documents] BankAccount on JSON_VALUE(doc.doc,N'$.BankAccount') = BankAccount.id
       inner join [dbo].[Documents] comp on sp.company = comp.id
       inner join [dbo].[Documents] bank on JSON_VALUE(sp.doc,N'$.bank') = bank.id
       inner join [dbo].[Documents] currency on JSON_VALUE(doc.doc,N'$.currency') = currency.id
@@ -142,7 +144,7 @@ export class BankStatementUnloader {
     ,Obj.[info] as N'НазначениеПлатежа'
 
     ,N'1.02' as ВерсияФормата_ig_head
-    ,'Windows' as Кодировка_ig_head
+    ,'UTF-8' as Кодировка_ig_head
     ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
     ,'' as N'Получатель_ig_head'
     ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
@@ -206,7 +208,7 @@ export class BankStatementUnloader {
         ,Obj.[info] as N'НазначениеПлатежа'
 
         ,N'1.02' as ВерсияФормата_ig_head
-        ,'Windows' as Кодировка_ig_head
+        ,'UTF-8' as Кодировка_ig_head
         ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
         ,'' as N'Получатель_ig_head'
         ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
@@ -271,7 +273,7 @@ export class BankStatementUnloader {
     ,Obj.[info] as N'НазначениеПлатежа'
 
     ,N'1.02' as ВерсияФормата_ig_head
-    ,'Windows' as Кодировка_ig_head
+    ,'UTF-8' as Кодировка_ig_head
     ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
     ,'' as N'Получатель_ig_head'
     ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
@@ -336,17 +338,17 @@ export class BankStatementUnloader {
 
     ,'02' as N'СтатусСоставителя'
     ,'' as N'ПоказательТипа'
-    ,JSON_VALUE(Obj.doc, '$.TaxKPP') as N'ПлательщикКПП'
+    ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxKPP') = '' THEN '0' ELSE ISNULL(JSON_VALUE(Obj.doc, '$.TaxKPP'),'0') END as N'ПлательщикКПП'
     ,TaxPaymentCode.code as N'ПоказательКБК'
     ,JSON_VALUE(Obj.doc, '$.TaxOfficeCode2') as N'ОКАТО'
     ,TaxBasisPayment.code as N'ПоказательОснования'
     ,TaxPaymentPeriod.code as N'ПоказательПериода'
-    ,JSON_VALUE(Obj.doc, '$.TaxDocNumber') as N'ПоказательНомера'
-    ,FORMAT (CAST(JSON_VALUE(Obj.doc, '$.TaxDocDate') as date), 'dd.MM.yyyy') as N'ПоказательДаты'
+    ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxDocNumber') = '' THEN '0' ELSE ISNULL(JSON_VALUE(Obj.doc, '$.TaxDocNumber'),'0') END as N'ПоказательНомера'
+    ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxDocDate') = '' THEN '0' ELSE ISNULL(FORMAT (CAST(JSON_VALUE(Obj.doc, '$.TaxDocDate') as date), 'dd.MM.yyyy'),'0') END as N'ПоказательДаты'
     ,'0' as N'Код'
 
     ,N'1.02' as ВерсияФормата_ig_head
-    ,'Windows' as Кодировка_ig_head
+    ,'UTF-8' as Кодировка_ig_head
     ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
     ,'' as N'Получатель_ig_head'
     ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
@@ -416,7 +418,7 @@ export class BankStatementUnloader {
     ,Obj.[info] as N'НазначениеПлатежа'
 
     ,N'1.02' as ВерсияФормата_ig_head
-    ,'Windows' as Кодировка_ig_head
+    ,'UTF-8' as Кодировка_ig_head
     ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
     ,'' as N'Получатель_ig_head'
     ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
@@ -577,7 +579,7 @@ export class BankStatementUnloader {
     result += `\n\t<ВидЗачисления>01</ВидЗачисления>`;
     result += `\n\t<КонтрольныеСуммы>`;
     result += `\n\t\t<КоличествоЗаписей>${rowIndex - 1}</КоличествоЗаписей>`;
-    result += `\n\t\t<СуммаИтого>${amount.toFixed()}</СуммаИтого>`;
+    result += `\n\t\t<СуммаИтого>${amount.toFixed(2)}</СуммаИтого>`;
     result += `\n\t</КонтрольныеСуммы>`;
     result += `\n</СчетаПК>`;
     return result.trim();
