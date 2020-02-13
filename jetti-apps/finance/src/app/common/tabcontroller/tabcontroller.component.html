@@ -3,7 +3,7 @@
   [activeIndex]="(tabStore.state$ | async).selectedIndex" 
   (onClose)="handleClose($event)" 
   (onChange)="selectedIndexChange($event)">
-  <p-tabPanel #tp *ngFor="let tab of (tabStore.state$ | async).tabs" header="{{ tab.header | bcEllipsis:25 }}"
+  <p-tabPanel #tp *ngFor="let tab of (tabStore.state$ | async).tabs" header="{{ tab.header | bcEllipsis:40 }}"
     [leftIcon]="tab.icon" [closable]="tab.type !== 'home'">
     <ng-template pTemplate="content">
       <div class="card" style="padding: 0; margin: 0">
