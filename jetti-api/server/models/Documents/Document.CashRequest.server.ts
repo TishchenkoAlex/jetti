@@ -1,3 +1,4 @@
+import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
 import { lib } from '../../std.lib';
 import { IServerDocument, DocumentBaseServer } from '../documents.factory.server';
@@ -14,6 +15,7 @@ import { DeleteProcess } from '../../routes/bp';
 import { updateDocument } from '../../routes/utils/post';
 import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
 import { TypesCashRecipient } from '../Types/Types.CashRecipient';
+import { CatalogPerson } from '../Catalogs/Catalog.Person';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -278,4 +280,356 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     where parent =  @p1`;
     return await tx.manyOrNone<{ id: string, description: string }>(query, [this.id]);
   }
+
+  async beforePostDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL) {
+    if (this.Operation === 'Выплата заработной платы') {
+      const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+      const Errors: { Employee, BankAccount, Amount: number }[] = [];
+      rest.forEach(el => {
+        (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number }>)
+          .filter(pr => (pr.Employee === el.CashRecipient &&
+            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount) && el.Amount < pr.Amount))
+          .forEach(er => {
+            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount });
+          });
+      });
+      if (Errors.length) {
+        let ErrorText = '';
+        const query = `
+        SELECT Description Employee FROM dbo.Documents WHERE id = @p1
+        SELECT Description BankAccount FROM dbo.Documents WHERE id = @p2`;
+        for (const err of Errors) {
+          const descriptions = await tx.oneOrNone<{ Employee: string, BankAccount: string }>(query, [err.Employee, err.BankAccount]);
+          ErrorText += `\n\t ${descriptions!.Employee} ${descriptions!.BankAccount ? 'по ' + descriptions!.BankAccount : ''} на ${err.Amount.toFixed(2)}`;
+        }
+        throw new Error(`${docOperation.description} не может быть проведен, первышение остатка по заявке для: ${ErrorText}`);
+      }
+    } else {
+      const rest = await this.getAmountBalance(tx);
+      if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description}`);
+    }
+  }
+
+  async FillDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    docOperation.company = this.company;
+    docOperation.currency = this.сurrency;
+    docOperation.parent = this.id;
+    docOperation.date = new Date();
+    docOperation.Amount = this.Amount;
+    docOperation['CashFlow'] = this.CashFlow;
+    docOperation['Department'] = this.Department;
+    docOperation.info = this.info;
+
+    switch (this.Operation) {
+      case 'Оплата поставщику':
+        await this.FillOperationОплатаПоставщику(docOperation, tx, params);
+        break;
+      case 'Перечисление налогов и взносов':
+        await this.FillOperationПеречислениеНалоговИВзносов(docOperation, tx, params);
+        break;
+      case 'Оплата по кредитам и займам полученным':
+        await this.FillOperationОплатаПоКредитамИЗаймамПолученным(docOperation, tx, params);
+        break;
+      case 'Оплата ДС в другую организацию':
+        await this.FillOperationОплатаДСВДругуюОрганизацию(docOperation, tx, params);
+        break;
+      case 'Выплата заработной платы':
+        await this.FillOperationВыплатаЗаработнойПлаты(docOperation, tx, params);
+        break;
+      case 'Выплата заработной платы без ведомости':
+        await this.FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation, tx, params);
+        break;
+      default:
+        break;
+    }
+  }
+
+
+  async FillOperationПеречислениеНалоговИВзносов(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    let CashOrBank;
+
+    if (docOperation['BankAccount']) {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    } else {
+      CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    }
+    docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+    docOperation.Operation = '8D128C20-3E20-11EA-A722-63A01E818155';
+    `TaxKPP
+    TaxPaymentCode
+    TaxOfficeCode2
+    TaxPayerStatus
+    TaxBasisPayment
+    TaxDocNumber
+    TaxDocDate
+    TaxPaymentPeriod`.split('\n').forEach(el => { docOperation[el.trim()] = this[el.trim()]; });
+    docOperation['Supplier'] = this.CashRecipient;
+    docOperation['BankAccount'] = CashOrBank.id;
+    docOperation.f1 = docOperation['CashRegister'];
+    docOperation.f2 = docOperation['Supplier'];
+    docOperation.f3 = docOperation['CashFlow'];
+
+  }
+
+  async FillOperationОплатаПоставщику(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+    let CashOrBank;
+
+    if (docOperation['BankAccount']) {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    } else {
+      CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    }
+    let CashRecipientBankAccount;
+
+    docOperation['Contract'] = this.Contract;
+    CashRecipientBankAccount = this.CashRecipientBankAccount;
+    if (!CashRecipientBankAccount) {
+      const query = `
+      SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${this.CashRecipient}'`;
+      const queryResult = await tx.oneOrNone<{ id: Ref }>(query);
+      if (queryResult) CashRecipientBankAccount = queryResult.id;
+    }
+    if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
+    docOperation['Supplier'] = this.CashRecipient;
+    docOperation['BankConfirm'] = false;
+
+    if (!CashOrBank) throw new Error('Источник оплат не заполнен в заявке на ДС');
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      docOperation.Operation = '770FA450-BB58-11E7-8996-53A59C675CDA'; // касса
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
+      docOperation['CashRegister'] = CashOrBank.id;
+      docOperation.f1 = docOperation['CashRegister'];
+      docOperation.f2 = docOperation['Supplier'];
+      docOperation.f3 = docOperation['CashFlow'];
+    } else {
+      docOperation.Operation = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9'; // С р/с -  оплата поставщику (БЕЗНАЛИЧНЫЕ)
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+      docOperation['TaxAssignmentCode'] = this.TaxAssignmentCode; // КНП для Казахстана
+      docOperation['BankAccountSupplier'] = CashRecipientBankAccount;
+      docOperation['BankAccount'] = CashOrBank.id;
+      docOperation.f1 = docOperation['BankAccount'];
+      docOperation.f2 = docOperation['Supplier'];
+      docOperation.f3 = docOperation['CashFlow'];
+    }
+  }
+
+  async FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+    let CashOrBank;
+    CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (docOperation['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    }
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    docOperation.Amount = await this.getAmountBalance(tx);
+    docOperation['SalaryAnalytics'] = this.SalaryAnalitics;
+    docOperation['Employee'] = this.CashRecipient;
+    docOperation.f2 = docOperation['SalaryAnalytics'];
+    docOperation.f3 = docOperation['Employee'];
+    docOperation['BankConfirm'] = false;
+
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+      docOperation.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A'; // Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      docOperation['CashRegister'] = CashOrBank.id;
+      docOperation.f1 = docOperation['CashRegister'];
+    } else if (CashOrBank.type === 'Catalog.BankAccount') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      docOperation.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      docOperation['BankAccount'] = CashOrBank.id;
+      docOperation['BankAccountPerson'] = this.CashRecipientBankAccount;
+      docOperation.f1 = docOperation['BankAccount'];
+    }
+
+  }
+
+  async FillOperationОплатаПоКредитамИЗаймамПолученным(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    let CashOrBank, CashRecipientBankAccount;
+
+    if (docOperation['BankAccount']) {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    } else {
+      CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    }
+
+    if (!CashOrBank) throw new Error(`Не указан источник ДС в ${this.description}`);
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      // касса
+      docOperation.Operation = 'DBBCB3D0-1749-11EA-92AC-8B4BF8464BD9';
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
+      docOperation['Counterpartie'] = this.CashRecipient;
+      docOperation['CashRegister'] = this.CashOrBank;
+      docOperation['PaymentKind'] = this.PaymentKind;
+      docOperation['Loan'] = this.Loan;
+      docOperation.f1 = docOperation['CashRegister'];
+      docOperation.f2 = docOperation['Counterpartie'];
+      docOperation.f3 = docOperation['Loan'];
+    } else { // bank
+      CashRecipientBankAccount = this.CashRecipientBankAccount;
+      if (!CashRecipientBankAccount) {
+        const query = `
+        SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${this.CashRecipient}'`;
+        const queryResult = await tx.oneOrNone<{ id: Ref }>(query);
+        if (queryResult) CashRecipientBankAccount = queryResult.id;
+      }
+      if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
+      if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+
+      docOperation['BankConfirm'] = false;
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
+      docOperation.Operation = '54AA5310-102E-11EA-AA50-31ECFB22CD33';
+      docOperation['Counterpartie'] = this.CashRecipient;
+      docOperation['BankAccount'] = CashOrBank.id;
+      docOperation['BankAccountSupplier'] = CashRecipientBankAccount;
+      docOperation['PaymentKind'] = this.PaymentKind;
+      docOperation['Loan'] = this.Loan;
+      docOperation.f1 = docOperation['BankAccount'];
+      docOperation.f2 = docOperation['Counterpartie'];
+      docOperation.f3 = docOperation['Loan'];
+    }
+  }
+
+  async FillOperationОплатаДСВДругуюОрганизацию(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    let CashOrBank;
+    const CashOrBankIn = (await lib.doc.byId(this.CashOrBankIn, tx));
+    if (!CashOrBankIn) throw new Error('Приемник оплат не заполнен в заявке на ДС');
+    if (docOperation['BankAccount']) {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    } else {
+      CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    }
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+
+    if (CashOrBank.type === 'Catalog.CashRegister') throw new Error('Создание платежного документа из кассы не поддерживается, обратитесь к разработчику');
+    // docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+    //   if (CashOrBankIn!.type === 'Catalog.CashRegister') {
+    //     docOperation.Operation = '1B411A80-DBF6-11E9-9DD5-EB2F495F92A0'; // Из кассы - в другую кассу (в путь)
+    //     docOperation['CashRegisterOUT'] = CashOrBank.id;
+    //     docOperation['CashRegisterIN'] = CashOrBankIn.id;
+    //     docOperation.f1 = docOperation['CashRegisterOUT'];
+    //     docOperation.f2 = docOperation['CashRegisterIN'];
+    //     // const CashRecipient = (await lib.doc.byId(this.CashRecipient, tx));
+    //     // if (CashRecipient!.type = 'Catalog.Person') {
+    //     //   docOperation['Person'] = CashRecipient!.id;
+    //     //   docOperation.f3 = docOperation['Person'];
+    //     // }
+    //   } else {
+    //     docOperation.Operation = 'A6D6678C-BBA3-11E7-8E9F-1B4E8C03A1F5'; // Из кассы - на расчетный счет (в путь)
+    //     docOperation['BankAccount'] = CashOrBankIn.id;
+    //     docOperation['CashRegister'] = CashOrBank.id;
+    //     docOperation.f1 = docOperation['CashRegister'];
+    //     docOperation.f2 = docOperation['BankAccount'];
+    //   }
+    // } else {
+    docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // Списание безналичных ДС
+    if (CashOrBankIn!.type === 'Catalog.CashRegister') throw new Error('Создание платежного документа в кассу не поддерживается, обратитесь к разработчику');
+    //   docOperation.Operation = '369E2910-36CA-11EA-A774-7FBAF34E4AFA'; // С р/с - в кассу (в путь)
+    //   docOperation['BankAccountOut'] = CashOrBank.id;
+    //   docOperation['CashRegisterIn'] = CashOrBankIn.id;
+    //   docOperation['BankConfirm'] = false;
+    //   docOperation.f1 = docOperation['BankAccountOut'];
+    //   docOperation.f2 = docOperation['CashRegisterIn'];
+    // } else {
+    docOperation.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
+    docOperation['BankAccountOut'] = CashOrBank.id;
+    docOperation['BankAccountTransit'] = CashOrBankIn.id;
+    docOperation['BankConfirm'] = false;
+    docOperation.f1 = docOperation['BankAccountOut'];
+    docOperation.f2 = docOperation['BankAccountTransit'];
+    // }
+    // }
+
+  }
+
+  async FillOperationВыплатаЗаработнойПлаты(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+    let CashOrBank;
+    CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (docOperation['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
+      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    }
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    let AmountBalance: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
+    if (!params) AmountBalance = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+    docOperation['SalaryProject'] = this.SalaryProject;
+    docOperation['PayRolls'] = [];
+    docOperation['SalaryAnalytics'] = this.SalaryAnalitics;
+    docOperation.f2 = docOperation['SalaryAnalytics'];
+    docOperation.f3 = docOperation['Department'];
+    docOperation['BankConfirm'] = false;
+
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+      docOperation.Operation = 'ABA074C0-41BF-11EA-A3C3-75A64D409CDC'; // Из кассы - выплата зарплаты (ВЕДОМОСТЬ В КАССУ)
+      docOperation['CashRegister'] = CashOrBank.id;
+      docOperation.f1 = docOperation['CashRegister'];
+      docOperation['SalaryKind'] = 'PAID';
+      const knowEmployee: TypesCashRecipient[] = [];
+
+      for (const row of this.PayRolls) {
+        const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any));
+        for (const emp of EmployeeBalance) {
+          if (knowEmployee.indexOf(emp.CashRecipient) === -1)
+            knowEmployee.push(emp.CashRecipient);
+          docOperation['PayRolls'].push({
+            Employee: emp.CashRecipient,
+            Amount: emp.Amount
+          });
+        }
+      }
+
+    } else if (CashOrBank.type === 'Catalog.BankAccount') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      docOperation.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC'; // С р/с - выплата зарплаты (ВЕДОМОСТЬ В БАНК)
+      docOperation['BankAccount'] = CashOrBank.id;
+      docOperation.f1 = docOperation['BankAccount'];
+      const knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+      if (params) {
+        const AmountBalance =
+          (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>);
+        for (const row of this.PayRolls) {
+          const EmployeeBalance = AmountBalance
+            .filter(el => (el.CashRecipient === row.Employee as any && row.BankAccount as any === el.BankAccountPerson));
+          for (const emp of EmployeeBalance) {
+            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1) {
+              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
+              docOperation['PayRolls'].push({
+                Employee: emp.CashRecipient,
+                Amount: emp.Amount,
+                Tax: row.Tax,
+                BankAccount: row.BankAccount
+              });
+            }
+          }
+        }
+      } else {
+        const knowEmployee: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+
+        for (const row of this.PayRolls) {
+          const EmployeeBalance = AmountBalance.filter(el => (
+            row.Employee as any === el.CashRecipient
+            && row.BankAccount as any === el.BankAccountPerson
+          ));
+
+          for (const emp of EmployeeBalance) {
+            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1)
+              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
+            docOperation['PayRolls'].push({
+              Employee: emp.CashRecipient,
+              Amount: emp.Amount,
+              Tax: row.Tax,
+              BankAccount: row.BankAccount
+            });
+          }
+        }
+      }
+
+      docOperation.Amount = 0;
+      for (const row of docOperation['PayRolls']) docOperation.Amount += row.Amount;
+      // docOperation['PayRolls'].forEach(el => {docOperation.Amount+=el.Amount});
+    }
+  }
+
 }

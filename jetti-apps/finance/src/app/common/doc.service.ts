@@ -39,7 +39,7 @@ export class DocService {
   private readonly _do$ = new Subject<DocumentBase>();
   do$ = this._do$.asObservable();
 
-  private readonly _showDialog$ = new Subject<{uuid: string, doc: DocumentBase}>();
+  private readonly _showDialog$ = new Subject<{ uuid: string, doc: DocumentBase }>();
   showDialog$ = this._showDialog$.asObservable();
 
   private readonly _workflow$ = new Subject<DocumentBase>();
@@ -103,7 +103,25 @@ export class DocService {
   }
 
   showDialog(uuid: string, doc: DocumentBase) {
-    this._showDialog$.next({uuid, doc});
+    this._showDialog$.next({ uuid, doc });
+  }
+
+  download = (data, filename, type = 'text/xml') => {
+    var file = new Blob([data], { type: type });
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+      window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+      var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
+    }
   }
 
 }

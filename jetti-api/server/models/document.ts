@@ -31,7 +31,7 @@ export interface PropOptions {
 
 export interface Relation { name: string; type: DocTypes; field: string; }
 export interface CopyTo { type: DocTypes; label: string; Operation?: Ref; icon: string; order: number; }
-export interface Command { method: string; label: string; icon: string; order: number; }
+export interface Command { method: string; label: string; icon: string; order: number; clientModule?: string }
 
 export interface DocumentOptions {
   type: DocTypes;

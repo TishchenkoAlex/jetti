@@ -1,3 +1,4 @@
+import { Command } from './../document';
 import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
@@ -9,9 +10,20 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   commands: [
     { method: 'Fill', icon: 'pi pi-plus', label: 'Заполнить', order: 1 },
     { method: 'Create', icon: 'pi pi-plus', label: 'Создать документы', order: 2 },
-    { method: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст', order: 3 }
+    {
+      method: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст', order: 3, clientModule:
+        `return { afterExecution: () => { 
+          const savedValue = this.form.get('info').value;
+          if (!savedValue) return;
+          const vals = this.form; 
+          const fileName = 'exchange_' + vals.get('code').value + '_' + vals.get('date').value.toLocaleDateString()+ '_' + vals.get('company').value.value + '.' + (savedValue.startsWith('<?xml version=') ? 'xml' : 'txt');
+          this.ds.download(savedValue, fileName);
+        }
+      }`
+    }
   ],
 })
+
 export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
@@ -59,11 +71,6 @@ export class DocumentCashRequestRegistry extends DocumentBase {
     }
   })
   CashRequests: CashRequest[] = [new CashRequest()];
-
-  // @Props({
-  //   type: 'table', required: false, order: 2, label: 'Bank statements texts',
-  // })
-  // BankStatements: BankStatement[] = [new BankStatement()];
 
 }
 

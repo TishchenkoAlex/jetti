@@ -63,7 +63,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     return (m && m['commands'] as Command[] || []).map(c => (
       <MenuItem>{
         label: c.label, icon: c.icon,
-        command: () => this.commandOnSever(c.method)
+        command: () => this.commandOnSever(c.method, c.clientModule)
       }));
   }));
   copyTo$ = this.metadata$.pipe(map(m => {
@@ -85,7 +85,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
   get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
   get hasTables() { return this.tables.length > 0; }
-  get hasFieldset() { return this.v.filter(el => (el.order === 777)).length > 0}
+  get hasFieldset() { return this.v.filter(el => (el.order === 777)).length > 0 }
   get description() { return <FormControl>this.form.get('description'); }
   get isPosted() { return <boolean>!!this.form.get('posted').value; }
   get isDeleted() { return <boolean>!!this.form.get('deleted').value; }
@@ -217,7 +217,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
   copy() {
     this.beforeCopy();
-    this.ds.openSnackBar('success','заголовок', 'текст сообщения');
+    this.ds.openSnackBar('success', 'заголовок', 'текст сообщения');
     return this.router.navigate(
       [this.viewModel.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
   }
@@ -281,7 +281,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     if (func) {
       const method = func[methodName];
       if (method) {
-        method().catch(e => {this.ds.openSnackBar('error',`On execute method \"${methodName}\"`,e); })
+        method().catch(e => { this.ds.openSnackBar('error', `On execute method \"${methodName}\"`, e); })
       }
     }
   }
@@ -300,12 +300,18 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       { queryParams: { base: this.id, Operation } });
   }
 
-  commandOnSever(method: string) {
+  commandOnSever(method: string, clientModule?: string) {
     this.ds.api.onCommand(this.viewModel, method, {}).then((value: IViewModel) => {
       const form = getFormGroup(value.schema, value.model, true);
       form['metadata'] = value.metadata;
       this.Next(form);
       this.form.markAsDirty();
+
+      if (clientModule ) {
+        const func = new Function('', clientModule).bind(this)();
+        const method = func['afterExecution'];
+        if (method) method();
+      }
     });
   }
 
