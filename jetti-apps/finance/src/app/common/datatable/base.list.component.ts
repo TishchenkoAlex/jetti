@@ -53,6 +53,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   get id() { return this.selection && this.selection[0] && this.selection[0].id; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; }
 
+  queryParamsGoto: string;
   group = '';
   columns: ColumnDef[] = [];
   selection: any[] = [];
@@ -73,6 +74,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if (!this.type) this.type = this.route.snapshot.params.type;
     if (!this.group) this.group = this.route.snapshot.params.group;
     if (!this.settings) this.settings = this.data.settings;
+    this.queryParamsGoto = this.route.snapshot.queryParams.goto;
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
@@ -151,13 +153,14 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _update(col: ColumnDef | undefined, event, center) {
+  private _update(col: ColumnDef | undefined, event, center, id = null) {
     if (!col) return;
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.id = null;
+    this.id = id;
     this.prepareDataSource(this.multiSortMeta);
-    this.last();
+    if (this.id) this.goto(this.id)
+    else this.last();
   }
   update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
@@ -169,6 +172,10 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
     this.multiSortMeta = event.multiSortMeta;
     this.prepareDataSource();
+    if (this.queryParamsGoto) {
+      this.goto(this.queryParamsGoto);
+      return;
+    }
     if (this.id) this.dataSource.sort();
     else this.isCatalog ? this.first() : this.last();
   }
@@ -190,7 +197,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Quick filter', icon: 'pi pi-search',
-        command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null)
+        command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null, this.id)
       },
       ...(this.data.metadata.copyTo || []).map(el => {
         const { label, icon } = el;

@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, Input } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { BaseDocListComponent } from './../../common/datatable/base.list.component';
@@ -39,11 +40,12 @@ export class OperationListComponent implements OnInit {
 
   @ViewChild(BaseDocListComponent, { static: true }) super: BaseDocListComponent;
 
-  constructor(public appAuth: AuthService) {  }
+  constructor(public appAuth: AuthService, public route: ActivatedRoute) { }
 
   ngOnInit() {
+    if (this.route.snapshot.queryParams.goto) return;
     this.appAuth.userProfile$.pipe(take(1)).subscribe(u => {
-      this.super.settings.filter.push({left: 'user', center: '=', right: u.account.env});
+      this.super.settings.filter.push({ left: 'user', center: '=', right: u.account.env });
     });
   }
 
