@@ -1,7 +1,8 @@
+import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
 import { lib } from '../../std.lib';
-import { IServerDocument, DocumentBaseServer } from '../documents.factory.server';
+import { IServerDocument, DocumentBaseServer, createDocumentServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
 import { PostResult } from '../post.interfaces';
 import { Ref } from '../document';
@@ -12,10 +13,12 @@ import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { DeleteProcess } from '../../routes/bp';
-import { updateDocument } from '../../routes/utils/post';
+import { updateDocument, insertDocument } from '../../routes/utils/post';
 import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
 import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
+import { createDocument } from '../documents.factory';
+import { DocumentOperation } from './Document.Operation';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -86,6 +89,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'FillSalaryBalanceByPersons':
         await this.FillSalaryBalanceByPersons(tx);
         return this;
+      case 'CloseCashRequest':
+        await this.CloseCashRequest(tx);
+        return this;
       default:
         return {};
     }
@@ -114,6 +120,31 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       this.workflowID = '';
     }
     this.Status = 'PREPARED';
+    await updateDocument(this, tx);
+  }
+  async CloseCashRequest(tx: MSSQL) {
+
+    if (this.Status === 'CLOSED') throw new Error(`Заявка уже закрыта`);
+    if (await this.getAmountBalance(tx) !== 0) {
+      const Operation = createDocument<DocumentOperation>('Document.Operation');
+      Operation.Group = 'A92DFE20-151D-11EA-A72F-6785F1E54D13';
+      Operation.Operation = '6A374EA0-4F57-11EA-821D-9904759DD7D7'; // ЗАКРЫТИЕ - Заявки на расход ДС
+
+      const OperationServer = await createDocumentServer<DocumentOperationServer>('Document.Operation', Operation!, tx);
+      OperationServer.company = this.company;
+      OperationServer.currency = this.сurrency;
+      OperationServer.Group = 'A92DFE20-151D-11EA-A72F-6785F1E54D13';
+      OperationServer.Operation = '6A374EA0-4F57-11EA-821D-9904759DD7D7';
+      OperationServer['CashRequest'] = this.id;
+      OperationServer.parent = this.id;
+      OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
+
+      const Fill: () => Promise<void> = OperationServer['serverModule']['Fill'];
+      await Fill();
+      await insertDocument(OperationServer, tx);
+      await lib.doc.postById(OperationServer.id, tx);
+    }
+    this.Status = 'CLOSED';
     await updateDocument(this, tx);
   }
 
@@ -176,7 +207,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       this.PayRolls.push({ Employee: el.Employee, Salary: el.Salary, Tax: 0, BankAccount: null });
       this.Amount += el.Salary;
     })
-    
+
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
@@ -316,6 +347,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async beforePostDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL) {
+    if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
     if (this.Operation === 'Выплата заработной платы') {
       const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
       const Errors: { Employee, BankAccount, Amount: number }[] = [];

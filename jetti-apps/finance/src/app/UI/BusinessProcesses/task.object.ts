@@ -18,6 +18,7 @@ export interface ITask {
   TaskID: number;
   ProcessID: string;
   Subdivision: string;
+  Company: string;
   ItemName: string;
   Summ: number;
   AutorName: string;

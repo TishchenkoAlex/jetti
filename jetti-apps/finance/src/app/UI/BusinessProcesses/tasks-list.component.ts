@@ -61,6 +61,7 @@ export class TaskListComponent implements OnInit {
       { field: 'TaskDate', header: 'Дата', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
       // { field: 'TaskName', header: 'Задача', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
       // {field: 'ProcessID', header: 'Процесс №'},
+      { field: 'Company', header: 'Организация', type: 'string', style: { 'text-align': 'center', 'width': '12em' } },
       { field: 'Subdivision', header: 'Подразделение', type: 'string', style: { 'text-align': 'center', 'width': '12em' } },
       { field: 'ItemName', header: 'Статья ДДС', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
       { field: 'Summ', header: 'Сумма', type: 'number', style: { 'text-align': 'right', 'width': '8em' } },

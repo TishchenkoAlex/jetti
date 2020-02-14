@@ -105,9 +105,9 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     this.selection = selectRow ? [selectRow] : [];
   }
 
-  private renum() {
+  private renum(fieldName = 'index') {
     for (let i = 0; i < this.formGroup.length; i++) {
-      this.formGroup.at(i).get('index')!.patchValue(i, { emitEvent: false });
+      this.formGroup.at(i).get(fieldName)!.patchValue(i, { emitEvent: false });
     }
   }
 
@@ -132,6 +132,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   onEditCancel(event) { }
 
   customSort(event: SortEvent) {
+    event.data = this.formGroup.getRawValue();
     const rows = [...event.data];
     rows.sort((data1, data2) => {
       let value1 = data1[event.field];
@@ -156,6 +157,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
       return (event.order * result);
     });
+    this.selection = [];
     this.formGroup.setValue(rows);
     this.formGroup.markAsDirty();
   }

@@ -40,10 +40,10 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
+  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
       <td style="width: 50px; text-align: right;">
-        {{rowData.index + 1}}
+        {{rowIndex + 1}}
       </td>
       <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field"
         class="ui-resizable-column">

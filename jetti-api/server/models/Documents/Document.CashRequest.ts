@@ -23,6 +23,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   commands: [
     { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 },
     { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: 'Заполнить остатками заработной платы', order: 2 },
+    { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
   ],
 })
 export class DocumentCashRequest extends DocumentBase {
@@ -51,6 +52,7 @@ export class DocumentCashRequest extends DocumentBase {
       'AWAITING',
       'APPROVED',
       'REJECTED',
+      'CLOSED',
     ]
   })
   Status = 'PREPARED';
