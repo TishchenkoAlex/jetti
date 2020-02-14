@@ -293,7 +293,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   print() {
-    this.OpenReport();
+    window.open('https://bi.x100-group.com/ReportServer/Pages/ReportViewer.aspx?/Jetti/Print/ActSalary&rs:Command=Render&rc:Parameters=false&document='+this.id, '_blank');
   }
 
   OpenReport() {

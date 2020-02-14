@@ -47,6 +47,8 @@ export class BPApi {
     let body = {};
     if (BaseType === 'Document.CashRequest') {
       body = {
+        'CompanyDescription': Base.company.value,
+        'CompanyID': Base.company.id,
         'SubdivisionID': Base.Department.id,
         'Sum': Base.Amount,
         'ItemID': Base.CashFlow.id,
