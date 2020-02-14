@@ -63,6 +63,9 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true })
   сurrency: Ref = null;
 
+  @Props({ type: 'Catalog.User', hiddenInList: false, readOnly: true })
+  user: Ref = null;
+
   @Props({
     type: 'table', required: false, order: 1, label: 'Cash requests',
     onChange: function (doc: CashRequest, value: CashRequest[]) {
