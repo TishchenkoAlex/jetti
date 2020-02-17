@@ -349,7 +349,7 @@ export class SQLGenegator {
 
     query += `
       FROM [${type}.v] d WITH (NOEXPAND)
-        LEFT JOIN [${type}.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company${LeftJoin}
     `;
