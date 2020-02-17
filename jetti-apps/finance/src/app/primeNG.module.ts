@@ -25,6 +25,7 @@ import { SplitButtonModule } from 'primeng/splitbutton';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import { TreeTableModule } from 'primeng/treetable';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
@@ -43,7 +44,7 @@ import { TableModule } from './common/datatable/table';
     DialogModule,
     // SidebarModule,
     TooltipModule,
-    // AccordionModule,
+    AccordionModule,
     FieldsetModule,
     // MessagesModule,
     // MessageModule,

@@ -51,8 +51,7 @@
           <j-control [control]="vk.code" [form]="form"></j-control>
           <j-control [control]="vk.Status" [form]="form"></j-control>
           <j-control [control]="vk.Operation" [form]="form" (change)="onOperationChanges($event)"></j-control>
-          <j-control [control]="vk.CashKind"
-            [form]="form" (change)='onCashKindChange($event)'></j-control>
+          <j-control [control]="vk.CashKind" [form]="form" (change)='onCashKindChange($event)'></j-control>
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
@@ -168,15 +167,12 @@
         <j-control [control]="vk.workflow" [form]="form"></j-control>
         <j-control [control]="vk.workflowID" [form]="form"></j-control>
       </div>
-
-      <!-- <j-control [control]="vk['paymantInfo']" [form]="Form"></j-control> -->
     </p-panel>
 
   </form>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #accumulation *ngIf="isDoc && isPosted">
-    <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
-    <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-accumulation-list>
+  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #movements *ngIf="isDoc && isPosted">
+    <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel"></j-register-movements-list>
   </p-panel>
 
   <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value" #bp>
@@ -193,6 +189,11 @@
       </p-panel>
     </div>
   </div>
+
+  <p-panel [toggleable]="true" [collapsed]="true" header="Связанные документы" #descendants
+    *ngIf="(isNew$ | async) === false">
+    <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
+  </p-panel>
 
   <p-panel [toggleable]="true" [collapsed]="true" header="История" #history *ngIf="(isNew$ | async) === false">
     <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>

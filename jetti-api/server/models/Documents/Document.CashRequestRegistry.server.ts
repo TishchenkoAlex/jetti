@@ -155,7 +155,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         , CRT.BankAccountPerson
         , CAST(0 AS MONEY) AS AmountRequest
         , DATEDIFF(DAY, GETDATE(), DocCR.[PayDay]) AS Delayed
-        , CAST(0 AS MONEY) AS Amount
+        , CRT.[AmountBalance] AS Amount
         , CAST(0 AS BIT) AS Confirm
         , CRT.[CashRecipient] AS CashRecipient
         , DocCR.[company.id] AS company
@@ -174,11 +174,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
     const CashRequests = await tx.manyOrNone<CashRequest>(query,
       [this.company, this.CashFlow, this.сurrency, this.Operation ? this.Operation : 'Оплата поставщику']);
-    const rowAmountName = this.Operation === 'Выплата заработной платы' ? 'AmountBalance' : 'Amount';
+    // const rowAmountName = this.Operation === 'Выплата заработной платы' ? 'AmountBalance' : 'Amount';
     for (const row of CashRequests) {
       this.CashRequests.push({
         BankAccountPerson: row.BankAccountPerson,
-        Amount: row[rowAmountName],
+        Amount: row.Amount,
         AmountBalance: row.AmountBalance,
         AmountPaid: row.AmountPaid,
         AmountRequest: row.AmountBalance,

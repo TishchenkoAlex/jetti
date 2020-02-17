@@ -152,57 +152,64 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     if (this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
     const query = `
     DROP TABLE IF EXISTS #Person;
-    
-        SELECT id personId INTO #Person FROM
-          [dbo].[Catalog.Person] 
-        
-      WHERE [Department.id] = @p1;
-    
-      SELECT PersonID Employee
-      ,SUM(Salary) Salary FROM (
-        SELECT 
-          Person PersonID
-          ,SUM(Amount) Salary
-        FROM [dbo].[Register.Accumulation.Salary] register 
-    WHERE Person in (select personId from #Person) 
-          and currency = @p2
-          and date <= @p3
-          AND company = @p4
-    group BY Person 
-    HAVING SUM(Amount) > 0
-    
-    UNION
-    
-    SELECT  
-      res.PersonID
-        ,SUM(res.Amount)
+
+    SELECT id personId
+    INTO #Person
+    FROM
+        [dbo].[Catalog.Person]
+
+    WHERE [Department.id] = @p1;
+
+    SELECT PersonID Employee
+          ,SUM(Salary) Salary
     FROM (
-         select 
-        ft.CashRecipient PersonID,
-        -IIF(d.[type] = 'Document.Operation' 
-        and JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
-        and CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount             
-    from [dbo].[Register.Accumulation.CashToPay] ft
-    LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
-         where ft.CashRecipient in (select personId from #Person)
-        and ft.currency = @p2
-        and ft.date <= @p3
-        and ft.company = @p4
-            and ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
-         group by
-            ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
-         HAVING
-        IIF(d.[type] = 'Document.Operation' 
-        and JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
-        and CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0
-            ) as res        
-    group by
-         PersonID) as fin group by
-         PersonID`;
+        SELECT
+            Person PersonID,
+            SUM(Amount) Salary
+        FROM [dbo].[Register.Accumulation.Salary] register
+        WHERE Person in (SELECT personId FROM #Person)
+            AND currency = @p2
+            AND date <= @p3
+            AND company = @p4
+        GROUP BY Person
+        HAVING SUM(Amount) > 0
+
+        UNION
+
+        SELECT
+            res.PersonID
+            , SUM(res.Amount)
+            FROM (
+                SELECT
+                    ft.CashRecipient PersonID,
+                    -IIF(d.[type] = 'Document.Operation' 
+                AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
+                AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
+                FROM [dbo].[Register.Accumulation.CashToPay] ft
+                    LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
+                WHERE ft.CashRecipient IN (SELECT personId from #Person)
+                    AND ft.currency = @p2
+                    AND ft.date <= @p3
+                    AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
+                GROUP BY
+                    ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
+                HAVING
+                IIF(d.[type] = 'Document.Operation' 
+                AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
+                AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0) as res
+            GROUP BY
+            PersonID) as fin 
+    LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
+    GROUP BY
+        PersonID, p.Person
+    HAVING SUM(Salary) > 0
+    ORDER BY
+        p.Person`;
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query, [this.Department, this.сurrency, this.date, CompanyEmployee]);
     this.PayRolls = [];
     this.Amount = 0;
+    this.PayDay = new Date;
     salaryBalance.forEach(el => {
       this.PayRolls.push({ Employee: el.Employee, Salary: el.Salary, Tax: 0, BankAccount: null });
       this.Amount += el.Salary;

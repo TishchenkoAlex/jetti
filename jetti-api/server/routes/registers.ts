@@ -9,6 +9,45 @@ import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
 
+router.get('/register/movements/list/:id', async (req, res, next) => {
+  try {
+    const sdb = SDB(req);
+    const query = `SELECT *
+    FROM (
+        SELECT COUNT(id) records, r.type N'type', 'Accumulation' kind
+            FROM [dbo].[Accumulation] r
+            WHERE r.document = @p1
+            group by r.type
+        UNION
+            SELECT COUNT(id) records, r.type N'type', 'Info'
+            FROM [dbo].[Register.Info] r
+            WHERE r.document = @p1
+            group by r.type
+        UNION
+            SELECT COUNT(date) records, N'Register.Account' N'type', 'Account'
+            FROM [dbo].[Register.Account] r
+            WHERE r.document = @p1) as res
+    where res.[records] > 0
+    order by res.[type]`;
+
+    const getRegisterFromQueryResult = (queryResult, kind, creationFunc: Function): [] => {
+      return queryResult.filter(el => el.kind === kind).map(r => {
+        const Register = creationFunc({ type: r.type });
+        const description = (Register.Prop()).description;
+        return ({ type: r.type, description: `${description} [${r.records}]`, kind: r.kind });
+      })
+    }
+
+    const result = await sdb.manyOrNone<{ records: number, kind: string, type: RegisterAccumulationTypes | RegisterInfoTypes | string }>(query, [req.params.id]);
+    const listAccumulation = getRegisterFromQueryResult(result, 'Accumulation', createRegisterAccumulation);
+    const listInfo = getRegisterFromQueryResult(result, 'Info', createRegisterInfo);
+    const listAccount = getRegisterFromQueryResult(result, 'Account', ({ some }) => {return { description: 'Хозрасчетный' }});
+    const reslist = listAccumulation.concat(listInfo, listAccount);
+    res.json(reslist);
+  }
+  catch (err) { next(err); }
+});
+
 router.get('/register/account/movements/view/:id', async (req, res, next) => {
   try {
     const sdb = SDB(req);

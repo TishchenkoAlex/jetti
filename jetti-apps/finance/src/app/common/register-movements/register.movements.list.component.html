@@ -1,0 +1,10 @@
+<p-accordion [multiple]="true" *ngFor="let item of movementsList$ | async">
+    <p-accordionTab [header]="item.description" [ngSwitch]="item.kind">
+        <ng-template pTemplate="content">
+            <j-register-accumulation *ngSwitchCase="'Accumulation'" [doc]="doc" [register]="item.type">
+            </j-register-accumulation>
+            <j-register-info *ngSwitchCase="'Info'" [doc]="doc" [register]="item.type"></j-register-info>
+            <j-register-account *ngSwitchCase="'Account'" [doc]="doc"></j-register-account>
+        </ng-template>
+    </p-accordionTab>
+</p-accordion>

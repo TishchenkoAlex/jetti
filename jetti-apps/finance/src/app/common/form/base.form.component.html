@@ -128,11 +128,10 @@
             <j-control *ngIf="vk.module" [control]="vk.module" [form]="form"></j-control>
           </p-panel>
 
-          <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #accumulation
+          <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #movements
             *ngIf="isDoc && (isPosted$ | async)">
-            <j-register-movement *ngIf="!accumulation.collapsed" [doc]="viewModel"></j-register-movement>
-            <j-register-accumulation-list *ngIf="!accumulation.collapsed" [doc]="viewModel">
-            </j-register-accumulation-list>
+            <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel">
+            </j-register-movements-list>
           </p-panel>
 
           <div *ngIf="(isFolder$ | async) === false">
@@ -145,6 +144,11 @@
               </p-panel>
             </div>
           </div>
+
+          <p-panel [toggleable]="true" [collapsed]="true" [header]="'Descendants ' + (isCatalog ? 'objects' : 'documents')" #descendants
+            *ngIf="isDoc && (isNew$ | async) === false">
+            <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
+          </p-panel>
 
           <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false">
             <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>

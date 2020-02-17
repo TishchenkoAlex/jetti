@@ -9,11 +9,12 @@ import { DocService } from 'src/app/common/doc.service';
 import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
 import { Router } from '@angular/router';
 import { ITask } from './task.object';
+import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
 
 @Component({
   templateUrl: 'tasks-list.component.html',
   selector: 'bp-tasks-list',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('rowExpansionTrigger', [
       state('void', style({
@@ -66,9 +67,9 @@ export class TaskListComponent implements OnInit {
       { field: 'ItemName', header: 'Статья ДДС', type: 'string', style: { 'text-align': 'center', 'width': '15em' } },
       { field: 'Summ', header: 'Сумма', type: 'number', style: { 'text-align': 'right', 'width': '8em' } },
       // { field: 'AutorName', header: 'Автор', type: 'string', style: {'text-align': 'center', 'width' : '15em'} },
-      { field: 'UserDecision', header: 'Решение', type: 'string', style: { 'text-align': 'center', 'width': '8em' } },
-      { field: 'ControlDate', header: 'Cрок', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
-      { field: 'HoursRemaining', header: 'Остаток, ч', type: 'string', style: { 'text-align': 'center', 'width': '5em' } },
+      // { field: 'UserDecision', header: 'Решение', type: 'string', style: { 'text-align': 'center', 'width': '8em' } },
+      // { field: 'ControlDate', header: 'Cрок', type: 'date', style: { 'text-align': 'center', 'width': '10em' } },
+      // { field: 'HoursRemaining', header: 'Остаток, ч', type: 'string', style: { 'text-align': 'center', 'width': '5em' } },
       { field: 'Comment', header: 'Комментарий', type: 'string', style: { 'text-align': 'center', 'width': '12em' } }
     ];
     this.columnsLength = this.columns.length;

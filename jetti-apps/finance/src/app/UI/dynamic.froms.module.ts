@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseTreeListComponent } from '../common/datatable/base.tree-list.component';
 import { PipesModule } from '../common/pipes';
 import { RegisterAccumulationComponent } from '../common/register-movements/register.accumulation.component';
-import { RegisterAccumulationListComponent } from '../common/register-movements/register.accumulation.list.component';
+import { RegisterMovementsListComponent } from '../common/register-movements/register.movements.list.component';
 import { RegisterInfoComponent } from '../common/register-movements/register.info.component';
 import { TabsStore } from '../common/tabcontroller/tabs.store';
 import { PrimeNGModule } from '../primeNG.module';
@@ -18,7 +18,7 @@ import { DynamicFormControlComponent } from './../common/dynamic-form/dynamic-fo
 import { DynamicFormService } from './../common/dynamic-form/dynamic-form.service';
 import { BaseDocFormComponent } from './../common/form/base.form.component';
 import { BaseFormComponent } from './../common/forms/base.form.component';
-import { RegisterMovementComponent } from './../common/register-movements/register-movement.component';
+import { RegisterAccountMovementsComponent } from '../common/register-movements/register-account.component';
 import { TabControllerComponent } from './../common/tabcontroller/tabcontroller.component';
 import { SuggestDialogComponent } from './../dialog/suggest.dialog.component';
 import { HomeComponent } from './../home/home.component';
@@ -26,6 +26,7 @@ import { MaterialModule } from './../material.module';
 import { OperationListComponent } from './Operation/operation.list.component';
 import { DisableControlDirective } from '../common/directives/disabled-control';
 import { HistoryComponent } from '../common/history/history.component';
+import { DescendantsComponent } from '../common/descendants/descendants.component';
 
 @NgModule({
   declarations: [
@@ -48,14 +49,15 @@ import { HistoryComponent } from '../common/history/history.component';
     TablePartsComponent,
     SuggestDialogComponent,
 
-    RegisterMovementComponent,
+    RegisterAccountMovementsComponent,
     RegisterAccumulationComponent,
-    RegisterAccumulationListComponent,
+    RegisterMovementsListComponent,
     RegisterInfoComponent,
 
     OperationListComponent,
 
     HistoryComponent,
+    DescendantsComponent
 
   ],
   imports: [
@@ -92,14 +94,15 @@ import { HistoryComponent } from '../common/history/history.component';
     TablePartsComponent,
     SuggestDialogComponent,
 
-    RegisterMovementComponent,
+    RegisterAccountMovementsComponent,
     RegisterAccumulationComponent,
-    RegisterAccumulationListComponent,
+    RegisterMovementsListComponent,
     RegisterInfoComponent,
 
     OperationListComponent,
 
     HistoryComponent,
+    DescendantsComponent
   ],
   providers: [
     DynamicFormService,

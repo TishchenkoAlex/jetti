@@ -217,7 +217,6 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
   copy() {
     this.beforeCopy();
-    this.ds.openSnackBar('success', 'заголовок', 'текст сообщения');
     return this.router.navigate(
       [this.viewModel.type, v1().toUpperCase()], { queryParams: { copy: this.id } });
   }
@@ -329,6 +328,11 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       this.save();
       this.router.navigate([doc.type, doc.id]);
     });
+  }
+
+  throwError(title: string, message: string) {
+    this.ds.openSnackBar('error', title, message);
+    throw new Error(`${title}: ${message}`);
   }
 
   ngOnDestroy() {

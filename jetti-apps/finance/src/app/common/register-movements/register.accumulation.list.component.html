@@ -1,9 +1,0 @@
-<div *ngFor="let item of accumulationList$ | async">
-    <h5 style="margin-bottom: 0px">{{item.description}}</h5>
-    <j-register-accumulation [doc]="doc" [register]="item.type"></j-register-accumulation>
-</div>
-
-<div *ngFor="let item of infoList$ | async">
-    <h5 style="margin-bottom: 0px">{{item.description}}</h5>
-    <j-register-info [doc]="doc" [register]="item.type"></j-register-info>
-</div>

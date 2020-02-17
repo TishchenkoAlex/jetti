@@ -424,6 +424,48 @@ router.get('/getHistoryById/:id', async (req: Request, res: Response, next: Next
   } catch (err) { next(err); }
 });
 
+router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const query = `
+      select
+      res.id,
+      res.type,
+      res.date,
+      res.code,
+      res.description,
+      res.posted,
+      res.deleted,
+      CAST(ISNULL(res.amount, 0) AS money) amount,
+      ISNULL(res.info,'') info,
+      ISNULL(us.[User],'') N'user',
+      comp.Company company
+  from
+      (select
+        id, type, date, code, description, posted, deleted, company as companyID, JSON_VALUE(doc, N'$.Amount') amount, JSON_VALUE(doc, N'$.info') info, [user] as userID
+      from Documents
+      where id in (
+      select id
+          from Documents
+          where parent = @p1
+      union
+      select id
+          from Documents
+          where contains(doc, @p1)
+      UNION
+      SELECT parent
+          from Documents
+          WHERE id = @p1)
+      ) res
+      left join [Catalog.User] us on us.id = userID
+      left join [Catalog.Company] comp on comp.id = companyID
+  order by res.date, res.type, res.description`;
+      res.json(await tx.manyOrNone(query, [req.params.id]));
+    });
+  } catch (err) { next(err); }
+});
+
 // Get formControlRef
 router.get('/formControlRef/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

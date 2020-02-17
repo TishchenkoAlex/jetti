@@ -18,7 +18,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { type: 'Document.Operation', icon: '', label: 'Платежный документ', order: 1 }
   ],
   relations: [
-    { name: 'Operations', type: 'Document.Operation', field: 'parent' },
+    { name: 'Операции', type: 'Document.Operation', field: 'parent' },
   ],
   commands: [
     { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 },

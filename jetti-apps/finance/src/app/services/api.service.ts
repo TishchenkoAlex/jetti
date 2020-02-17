@@ -102,6 +102,11 @@ export class ApiService {
     return (this.http.delete<DocumentBase>(query));
   }
 
+  getDocRegisterMovementsList(id: string): Observable<[{ records: number, kind: string, type: string }]> {
+    const query = `${environment.api}register/movements/list/${id}`;
+    return (this.http.get(query) as Observable<[{ records: number, kind: string, type: string }]>);
+  }
+
   getDocAccountMovementsView(id: string): Observable<AccountRegister[]> {
     const query = `${environment.api}register/account/movements/view/${id}`;
     return (this.http.get<AccountRegister[]>(query));
@@ -216,6 +221,11 @@ export class ApiService {
   restoreObjectFromHistory(id: Ref, type: DocTypes): Observable<IViewModel> {
     const query = `${environment.api}restore/${type}/${id}`;
     return (this.http.get(query) as Observable<IViewModel>);
+  }
+
+  getDescedantsObjects(id: Ref): Observable<any[]> {
+    const query = `${environment.api}getDescedantsObjects/${id}`;
+    return (this.http.get(query) as Observable<any[]>);
   }
 
   SubSystemsMenu() {

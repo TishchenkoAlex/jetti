@@ -1,0 +1,55 @@
+<p-table #table [value]="descendantsListSub$ | async" columnResizeMode="expand" [(selection)]="selection"
+selectionMode="single" dataKey="id">
+<ng-template pTemplate="header">
+  <tr>
+    <th [ngStyle]="{'width': '30px', 'text-align': 'center'}"></th>
+
+    <th *ngIf="isCatalog" style="text-align: center; width: 200px">Type
+    </th>
+    <th *ngIf="isDoc" style="text-align: center; width: 450px">Document
+    </th>
+    <th *ngIf="isCatalog" style="text-align: center; width: 450px">Object
+    </th>
+    <th style="text-align: center; width: 250px">Company
+    </th>
+    <th *ngIf="isDoc" style="text-align: center; width: 100px">Amount
+    </th>
+    <th style="text-align: center; width: 150px">User
+    </th>
+    <th *ngIf="isDoc" style="width: 100%">Info
+    </th>
+  </tr>
+</ng-template>
+
+<ng-template pTemplate="body" let-rowData>
+  <tr [pSelectableRow]="rowData" (dblclick)="openDescedant(rowData)">
+    <td class="ui-resizable-column" style="text-align: center;">
+      <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
+        style="color: #5cb85c"></i>
+      <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
+      <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="far fa-square"
+        style="color: #f0ad4e"></i>
+      <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
+      <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
+    </td>
+    <td *ngIf="isCatalog" class="ui-resizable-column" style="text-align: left;">
+      {{rowData.type }}
+    </td>
+    <td class="ui-resizable-column" style="text-align: left;">
+      {{rowData.description }}
+    </td>
+    <td class="ui-resizable-column" style="text-align: center;">
+      {{rowData.company }}
+    </td>
+    <td *ngIf="isDoc" class="ui-resizable-column" style="text-align: right;">
+      {{rowData.amount | number:'1.2-4' }}
+    </td>
+    <td class="ui-resizable-column" style="text-align: center;">
+      {{rowData.user }}
+    </td>
+    <td *ngIf="isDoc" class="ui-resizable-column" style="text-align: left;">
+      {{rowData.info }}
+    </td>
+  </tr>
+</ng-template>
+<p-table>

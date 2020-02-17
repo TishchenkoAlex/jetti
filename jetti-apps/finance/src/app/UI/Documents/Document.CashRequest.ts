@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { _baseDocFormComponent } from 'src/app/common/form/_base.form.component';
+import { _baseDocFormComponent, IFormEventsModel } from 'src/app/common/form/_base.form.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingService } from 'src/app/common/loading.service';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -10,13 +10,12 @@ import { DynamicFormService } from 'src/app/common/dynamic-form/dynamic-form.ser
 import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { take } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
-import { CatalogCurrency } from '../../../../../../jetti-api/server/models/Catalogs/Catalog.Currency';
 
 @Component({
   selector: 'doc-CashRequest',
   templateUrl: 'Document.CashRequest.html'
 })
-export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
+export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy, IFormEventsModel {
   get readonlyMode() { return !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
@@ -194,12 +193,31 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   }
 
+  beforePost() {
+    const oper = this.getValue('Operation');
+    const CashRecipient = this.getValue('CashRecipient');
+    if ((!CashRecipient || !CashRecipient.value) && `Оплата поставщику
+    Перечисление налогов и взносов
+    Оплата ДС в другую организацию
+    Выдача ДС подотчетнику
+    Оплата по кредитам и займам полученным
+    Выдача займа контрагенту
+    Возврат оплаты клиенту`.includes(oper)) this.throwError('Ошибка', 'Не указан получатель');
+    const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
+    if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
+    const info = this.getValue('info');
+    if (info) {
+      const curlength = (info as string).split('\n')[0].length;
+      if (curlength > 120) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов` );
+    }
+  }
+
   onOpen() {
 
     if (this.isNew) {
       this.setValue('Status', 'PREPARED');
       this.setValue('workflowID', '');
-      if (this.getValue('Amount') === 0) this.setValue('Amount', null); //, { onlySelf: false, emitEvent: false } );
+      if (this.getValue('Amount') === 0) this.setValue('Amount', null);
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
     }
 
@@ -212,8 +230,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.FillTaxRate(false);
       this.FillCurrencyShortName(false);
     }
-
-
   }
 
   refresh() {
@@ -293,7 +309,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   print() {
-    window.open('https://bi.x100-group.com/ReportServer/Pages/ReportViewer.aspx?/Jetti/Print/ActSalary&rs:Command=Render&rc:Parameters=false&document='+this.id, '_blank');
+    window.open('https://bi.x100-group.com/ReportServer/Pages/ReportViewer.aspx?/Jetti/Print/ActSalary&rs:Command=Render&rc:Parameters=false&document=' + this.id, '_blank');
   }
 
   OpenReport() {
