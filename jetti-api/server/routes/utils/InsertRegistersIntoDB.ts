@@ -38,11 +38,12 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
   }
 
   for (const rec of Registers.Info) {
+    const date = rec.date ? rec.date : doc.date;
     const data = { ...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
     delete data.type; delete data.company; delete data.document; delete data.date;
     query += `
       INSERT INTO "Register.Info" (date, type, company, document, data)
-      VALUES ('${new Date(rec.date || doc.date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',
+      VALUES ('${new Date(date).toJSON()}', N'${rec.type}', N'${rec.company || doc.company}',
     '${doc.id}', JSON_QUERY(N'${JSON.stringify(data).replace(/\'/g, '\'\'')}'));`;
   }
   query = query.replace(/\'undefined\'/g, 'NULL').replace(/\'null\'/g, 'NULL');
