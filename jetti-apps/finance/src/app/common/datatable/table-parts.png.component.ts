@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
 import { merge, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
@@ -8,7 +8,13 @@ import { cloneFormGroup, patchOptionsNoEvents } from '../../common/dynamic-form/
 import { ApiService } from '../../services/api.service';
 import { EditableColumn } from '../datatable/table';
 import { DocService } from '../doc.service';
-import { SortEvent, FilterUtils } from 'primeng/api';
+import { SortEvent } from 'primeng/api';
+
+const TablePartValidator: ValidatorFn = (c: AbstractControl) => {
+  let res = null;
+  if (!(c.value instanceof Object ? c.value.value : c.value)) res = { 'required': true };
+  return res;
+};
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,7 +82,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
   add() {
     const newFormGroup = cloneFormGroup(this.formGroup['sample']);
-    Object.values(newFormGroup.controls).forEach(c => { if (c.validator) { c.setErrors({ 'required': true }, { emitEvent: false }); } });
+    Object.values(newFormGroup.controls).forEach(c => { if (c.validator) { c.setValidators(TablePartValidator)} });
     this.addCopy(newFormGroup);
     setTimeout(() => {
       const rows = this.editableColumns.toArray();

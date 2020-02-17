@@ -9,7 +9,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 })
 export class CatalogBalanceAnalytics extends DocumentBase {
 
-  @Props({ type: 'Catalog.Balance', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Balance', hiddenInList: false, order: -1 })
   parent: Ref = null;
 
 }

@@ -167,7 +167,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
             Person PersonID,
             SUM(Amount) Salary
         FROM [dbo].[Register.Accumulation.Salary] register
-        WHERE Person in (SELECT personId FROM #Person)
+        WHERE (Person in (SELECT personId FROM #Person) or @p1 is NULL)
             AND currency = @p2
             AND date <= @p3
             AND company = @p4
@@ -202,7 +202,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
     GROUP BY
         PersonID, p.Person
-    HAVING SUM(Salary) > 0
+    HAVING SUM(Salary) >= 20
     ORDER BY
         p.Person`;
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
