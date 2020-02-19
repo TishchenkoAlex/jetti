@@ -37,7 +37,7 @@
         LEFT JOIN [Catalog.Account.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Account.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Account.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -70,7 +70,7 @@
         LEFT JOIN [Catalog.Balance.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Balance.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Balance.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -101,7 +101,7 @@
         LEFT JOIN [Catalog.Balance.Analytics.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Balance.Analytics.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Balance.Analytics.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -136,7 +136,7 @@
         LEFT JOIN [Catalog.BankAccount.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.BankAccount.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.BankAccount.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -170,7 +170,7 @@
         LEFT JOIN [Catalog.CashFlow.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.CashFlow.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.CashFlow.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -204,7 +204,7 @@
         LEFT JOIN [Catalog.CashRegister.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.CashRegister.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.CashRegister.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -238,7 +238,7 @@
         LEFT JOIN [Catalog.Currency.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Currency.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Currency.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -284,7 +284,7 @@
         LEFT JOIN [Catalog.Company.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Company.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Company.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -320,7 +320,7 @@
         LEFT JOIN [Catalog.Country.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Country.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Country.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -365,7 +365,7 @@
         LEFT JOIN [Catalog.Counterpartie.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Counterpartie.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Counterpartie.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -402,7 +402,7 @@
         LEFT JOIN [Catalog.Counterpartie.BankAccount.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Counterpartie.BankAccount.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Counterpartie.BankAccount.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -451,7 +451,7 @@
         LEFT JOIN [Catalog.Contract.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Contract.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Contract.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -488,7 +488,7 @@
         LEFT JOIN [Catalog.BusinessDirection.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.BusinessDirection.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.BusinessDirection.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -520,7 +520,7 @@
         LEFT JOIN [Catalog.Salary.Analytics.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Salary.Analytics.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Salary.Analytics.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -556,7 +556,7 @@
         LEFT JOIN [Catalog.Department.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Department.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Department.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -592,7 +592,7 @@
         LEFT JOIN [Catalog.Expense.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Expense.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Expense.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -626,7 +626,7 @@
         LEFT JOIN [Catalog.Expense.Analytics.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Expense.Analytics.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Expense.Analytics.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -659,7 +659,7 @@
         LEFT JOIN [Catalog.Income.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Income.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Income.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -707,7 +707,7 @@
         LEFT JOIN [Catalog.Loan.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Loan.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Loan.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -745,7 +745,7 @@
         LEFT JOIN [Catalog.LoanRepaymentProcedure.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.LoanRepaymentProcedure.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.LoanRepaymentProcedure.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -777,7 +777,7 @@
         LEFT JOIN [Catalog.LoanTypes.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.LoanTypes.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.LoanTypes.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -812,7 +812,7 @@
         LEFT JOIN [Catalog.Manager.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Manager.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Manager.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -860,7 +860,7 @@
         LEFT JOIN [Catalog.Person.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Person.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Person.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -896,7 +896,7 @@
         LEFT JOIN [Catalog.PriceType.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.PriceType.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.PriceType.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -934,7 +934,7 @@
         LEFT JOIN [Catalog.Product.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Product.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Product.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -971,7 +971,7 @@
         LEFT JOIN [Catalog.ProductCategory.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.ProductCategory.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.ProductCategory.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1003,7 +1003,7 @@
         LEFT JOIN [Catalog.ProductKind.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.ProductKind.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.ProductKind.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1035,7 +1035,7 @@
         LEFT JOIN [Catalog.Storehouse.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Storehouse.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Storehouse.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1070,7 +1070,7 @@
         LEFT JOIN [Catalog.Operation.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Operation.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Operation.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1105,7 +1105,7 @@
         LEFT JOIN [Catalog.Operation.Group.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Operation.Group.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Operation.Group.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1136,7 +1136,7 @@
         LEFT JOIN [Catalog.Operation.Type.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Operation.Type.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Operation.Type.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1167,7 +1167,7 @@
         LEFT JOIN [Catalog.Unit.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Unit.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Unit.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1201,7 +1201,7 @@
         LEFT JOIN [Catalog.User.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.User.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.User.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1234,7 +1234,7 @@
         LEFT JOIN [Catalog.UsersGroup.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.UsersGroup.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.UsersGroup.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1265,7 +1265,7 @@
         LEFT JOIN [Catalog.Role.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Role.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Role.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1297,7 +1297,7 @@
         LEFT JOIN [Catalog.SubSystem.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.SubSystem.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.SubSystem.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1328,7 +1328,7 @@
         LEFT JOIN [Catalog.JobTitle.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.JobTitle.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.JobTitle.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1359,7 +1359,7 @@
         LEFT JOIN [Catalog.PersonIdentity.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.PersonIdentity.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.PersonIdentity.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1390,7 +1390,7 @@
         LEFT JOIN [Catalog.Brand.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Brand.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Brand.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1422,7 +1422,7 @@
         LEFT JOIN [Catalog.GroupObjectsExploitation.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.GroupObjectsExploitation.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.GroupObjectsExploitation.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1455,7 +1455,7 @@
         LEFT JOIN [Catalog.ObjectsExploitation.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.ObjectsExploitation.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.ObjectsExploitation.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1493,7 +1493,7 @@
         LEFT JOIN [Catalog.Catalog.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Catalog.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Catalog.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1524,7 +1524,7 @@
         LEFT JOIN [Catalog.BudgetItem.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.BudgetItem.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.BudgetItem.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1556,7 +1556,7 @@
         LEFT JOIN [Catalog.Scenario.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Scenario.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Scenario.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1593,7 +1593,7 @@
         LEFT JOIN [Catalog.AcquiringTerminal.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.AcquiringTerminal.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.AcquiringTerminal.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1632,7 +1632,7 @@
         LEFT JOIN [Catalog.Bank.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Bank.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Bank.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1667,7 +1667,7 @@
         LEFT JOIN [Catalog.Person.BankAccount.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.Person.BankAccount.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.Person.BankAccount.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1701,7 +1701,7 @@
         LEFT JOIN [Catalog.BusinessRegion.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.BusinessRegion.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.BusinessRegion.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1733,7 +1733,7 @@
         LEFT JOIN [Catalog.TaxRate.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxRate.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxRate.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1765,7 +1765,7 @@
         LEFT JOIN [Catalog.TaxAssignmentCode.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxAssignmentCode.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxAssignmentCode.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1798,7 +1798,7 @@
         LEFT JOIN [Catalog.TaxPaymentCode.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxPaymentCode.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxPaymentCode.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1830,7 +1830,7 @@
         LEFT JOIN [Catalog.TaxBasisPayment.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxBasisPayment.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxBasisPayment.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1861,7 +1861,7 @@
         LEFT JOIN [Catalog.TaxPaymentPeriod.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxPaymentPeriod.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxPaymentPeriod.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1893,7 +1893,7 @@
         LEFT JOIN [Catalog.TaxPayerStatus.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxPayerStatus.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxPayerStatus.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1928,7 +1928,7 @@
         LEFT JOIN [Catalog.TaxOffice.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.TaxOffice.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.TaxOffice.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -1965,7 +1965,7 @@
         LEFT JOIN [Catalog.ReatailClient.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.ReatailClient.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.ReatailClient.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2002,7 +2002,7 @@
         LEFT JOIN [Catalog.SalaryProject.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Catalog.SalaryProject.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Catalog.SalaryProject.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2035,7 +2035,7 @@
         LEFT JOIN [Document.ExchangeRates.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.ExchangeRates.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.ExchangeRates.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2075,7 +2075,7 @@
         LEFT JOIN [Document.Invoice.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.Invoice.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.Invoice.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2118,7 +2118,7 @@
         LEFT JOIN [Document.Operation.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.Operation.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.Operation.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2157,7 +2157,7 @@
         LEFT JOIN [Document.PriceList.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.PriceList.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.PriceList.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2191,7 +2191,7 @@
         LEFT JOIN [Document.Settings.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.Settings.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.Settings.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2231,7 +2231,7 @@
         LEFT JOIN [Document.UserSettings.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.UserSettings.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.UserSettings.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2265,7 +2265,7 @@
         LEFT JOIN [Document.WorkFlow.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.WorkFlow.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.WorkFlow.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2331,7 +2331,7 @@
         LEFT JOIN [Document.CashRequest.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.CashRequest.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.CashRequest.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
@@ -2389,7 +2389,7 @@
         LEFT JOIN [Document.CashRequestRegistry.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
         LEFT JOIN [Document.CashRequestRegistry.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
-        LEFT JOIN [Document.CashRequestRegistry.v] [parent] WITH (NOEXPAND) ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]

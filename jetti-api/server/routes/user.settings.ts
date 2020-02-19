@@ -1,8 +1,10 @@
+import { Ref } from './../models/document';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { IJWTPayload } from '../models/common-types';
 import { FormListSettings, UserDefaultsSettings } from './../models/user.settings';
 import { SDB } from './middleware/db-sessions';
+import { lib } from '../std.lib';
 
 export const router = express.Router();
 
@@ -57,6 +59,30 @@ router.get('/user/roles', async (req: Request, res: Response, next: NextFunction
     const user = User(req);
     const sdb = SDB(req);
     const result = ['Admin'];
+    res.json(result);
+  } catch (err) { next(err); }
+});
+
+router.get('/user/permissions/roles', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let result: { id: Ref, description: string }[] = [];
+    const user = User(req) as any;
+    if (user.env) {
+      const sdb = SDB(req);
+      result = await lib.util.getUserRoles(sdb);
+    }
+    res.json(result);
+  } catch (err) { next(err); }
+});
+
+router.get('/user/permissions/roles/isAvailable/:role', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let result = false;
+    const user = User(req) as any;
+    if (user.env) {
+      const sdb = SDB(req);
+      result = await lib.util.isRoleAvailable(req.params.role, sdb);
+    }
     res.json(result);
   } catch (err) { next(err); }
 });

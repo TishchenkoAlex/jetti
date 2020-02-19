@@ -59,7 +59,7 @@ class Parameter {
   @Props({ type: 'number', required: true })
   order: number | null = null;
 
-  @Props({ type: 'boolean', required: true })
+  @Props({ type: 'boolean' })
   required = false;
 
   @Props({ type: 'javascript', label: 'change script', hiddenInList: true, style: { width: '550px' } })

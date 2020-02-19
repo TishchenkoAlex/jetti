@@ -151,6 +151,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , ISNULL(JSON_VALUE(data, '$.TypeFranchise'), '') "TypeFranchise"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.DepartmentCompanyHistory] TO JETTI;
