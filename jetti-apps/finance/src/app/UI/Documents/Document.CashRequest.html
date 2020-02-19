@@ -1,6 +1,7 @@
 <div *ngIf="vk.id">
   <form novalidate [formGroup]="form" cdkTrapFocus>
-    <p-panel #mp [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]')"
+    <p-panel #mp
+      [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]').concat(isSuperUser ? ' *GODMODE' : '')"
       [toggleable]="true">
       <p-toolbar *ngIf="!isHistory">
         <div class="ui-toolbar-group-left">
@@ -10,7 +11,7 @@
             *ngIf="!readonlyMode && !isDeleted"></button>
           <button pButton type="button" id="Post" icon="fa fa-check" pTooltip="Post" tooltipPosition="top"
             showDelay="2000" class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
-            (click)="post()" *ngIf="!isDeleted && isDoc"></button>
+            (click)="post()" *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
           <button pButton type="button" id="unPost" icon="far fa-square" pTooltip="Unpost" tooltipPosition="top"
             showDelay="2000" class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
             (click)="unPost()" *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
@@ -38,7 +39,7 @@
           <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
             tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
           <button pButton type="button" id="StartProcess" label="Start agreement" class="ui-button-danger"
-            *ngIf="!readonlyMode && isPosted" (click)="StartProcess()"
+            *ngIf="!readonlyMode && isPosted && !form.get('workflowID').value" (click)="StartProcess()"
             [disabled]="!form.valid || (lds.busy$ | async)"></button>
         </div>
 
@@ -58,8 +59,7 @@
           <j-control [control]="vk.company" [form]="form"></j-control>
           <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form">
           </j-control>
-          <j-control *ngIf="form.get('Operation').value !== 'Оплата ДС в другую организацию'" [control]="vk.CashFlow"
-            [form]="form"></j-control>
+          <j-control [control]="vk.CashFlow" [form]="form"></j-control>
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">

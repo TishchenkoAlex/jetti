@@ -1,4 +1,3 @@
-import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
 import { lib } from '../../std.lib';
@@ -101,23 +100,29 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return this;
   }
 
+  async isSuperuser(tx: MSSQL) {
+    return await lib.util.isRoleAvailable('Администратор заявок на расход ДС',tx);
+  }
+
   async returnToStatusPrepared(tx: MSSQL) {
     if (this.Status === 'PREPARED') return;
-    if (!this.user) throw new Error(`Не заполнен автор документа`);
-    const mail = tx.user.email;
-    if (!mail) throw new Error(`Не заполнен адрес электронной почты текущего пользователя`);
-    const currentUser = await lib.doc.byCode('Catalog.User', mail, tx);
-    if (!currentUser) throw new Error(`Не удалось опеределить текущего пользователя`);
-    if (currentUser !== this.user) throw new Error(`Операция разрешена только автору документа`);
-    const relatedDocs = await this.getRelatedDocuments(tx);
-    if (relatedDocs.length) {
-      let relatedDocsString = '';
-      relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
-      throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
-    }
-    if (this.workflowID) {
-      await DeleteProcess(this.workflowID);
-      this.workflowID = '';
+    if (!(await this.isSuperuser(tx))) {
+      if (!this.user) throw new Error(`Не заполнен автор документа`);
+      const mail = tx.user.email;
+      if (!mail) throw new Error(`Не заполнен адрес электронной почты текущего пользователя`);
+      const currentUser = await lib.doc.byCode('Catalog.User', mail, tx);
+      if (!currentUser) throw new Error(`Не удалось опеределить текущего пользователя`);
+      if (currentUser !== this.user) throw new Error(`Операция разрешена только автору документа`);
+      const relatedDocs = await this.getRelatedDocuments(tx);
+      if (relatedDocs.length) {
+        let relatedDocsString = '';
+        relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
+        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
+      }
+      if (this.workflowID) {
+        await DeleteProcess(this.workflowID);
+        this.workflowID = '';
+      }
     }
     this.Status = 'PREPARED';
     await updateDocument(this, tx);
@@ -149,7 +154,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async FillSalaryBalanceByPersons(tx: MSSQL) {
-    if (this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
+    if (!(await this.isSuperuser(tx)) && this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
     const query = `
     DROP TABLE IF EXISTS #Person;
 
@@ -160,19 +165,26 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
     WHERE [Department.id] = @p1;
 
-    SELECT PersonID Employee
-          ,SUM(Salary) Salary
-    FROM (
-        SELECT
+	DROP TABLE IF EXISTS #Salary;
+	SELECT
             Person PersonID,
             SUM(Amount) Salary
-        FROM [dbo].[Register.Accumulation.Salary] register
-        WHERE (Person in (SELECT personId FROM #Person) or @p1 is NULL)
+			INTO #Salary 
+        FROM [dbo].[Register.Accumulation.Salary] register 
+        WHERE (1=1) 
+			AND (Person in (SELECT personId FROM #Person) or @p1 is NULL)
             AND currency = @p2
             AND date <= @p3
             AND company = @p4
+	
         GROUP BY Person
-        HAVING SUM(Amount) > 0
+        HAVING SUM(Amount) > 0;
+
+
+    SELECT PersonID Employee
+          ,SUM(Salary) Salary
+    FROM (
+        SELECT * FROM #Salary
 
         UNION
 
@@ -187,7 +199,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
                 AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
                 FROM [dbo].[Register.Accumulation.CashToPay] ft
                     LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
-                WHERE ft.CashRecipient IN (SELECT personId from #Person)
+                WHERE (1=1) 
+					AND (ft.CashRecipient IN (SELECT personId from #Person) or (@p1 is NULL and ft.CashRecipient IN (SELECT personId from #Salary)))
                     AND ft.currency = @p2
                     AND ft.date <= @p3
                     AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
@@ -202,7 +215,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
     GROUP BY
         PersonID, p.Person
-    HAVING SUM(Salary) >= 20
+    HAVING SUM(Salary) >= 20 AND not PersonID is NULL
     ORDER BY
         p.Person`;
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
@@ -223,7 +236,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async beforeDelete(tx: MSSQL): Promise<this> {
-    if (this.Status === 'APPROVED' && this.posted) {
+    if (!(await this.isSuperuser(tx)) && this.Status === 'APPROVED' && this.posted) {
       const rest = await this.getAmountBalance(tx);
       if (this.Amount !== rest) throw new Error(`${this.description} не может быть удален:\n оплачено ${this.Amount - rest}`);
     }
@@ -354,6 +367,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async beforePostDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL) {
+    if (await this.isSuperuser(tx)) return;
     if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
     if (this.Operation === 'Выплата заработной платы') {
       const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
@@ -606,6 +620,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     //   docOperation.f1 = docOperation['BankAccountOut'];
     //   docOperation.f2 = docOperation['CashRegisterIn'];
     // } else {
+    docOperation['CashFlow'] = this.CashFlow;
     docOperation.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
     docOperation['BankAccountOut'] = CashOrBank.id;
     docOperation['BankAccountTransit'] = CashOrBankIn.id;

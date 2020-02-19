@@ -27,12 +27,12 @@ export class ApiService {
     return (this.http.get<T>(query)).toPromise();
   }
 
-  ancestors(id: string, level: number): Promise<Ref | null>{
+  ancestors(id: string, level: number): Promise<Ref | null> {
     const query = `${environment.api}ancestors/${id}/${level}`;
     return (this.http.get<Ref | null>(query)).toPromise();
   }
 
-  descendants(id: string, level: number): Promise<{ id: Ref, parent: Ref }[]>{
+  descendants(id: string, level: number): Promise<{ id: Ref, parent: Ref }[]> {
     const query = `${environment.api}descendants/${id}/${level}`;
     return (this.http.get<{ id: Ref, parent: Ref }[]>(query)).toPromise();
   }
@@ -61,7 +61,7 @@ export class ApiService {
 
   getSuggests(docType: string, filter: string, filters: FormListFilter[]): Observable<ISuggest[]> {
     const query = `${environment.api}suggest/${docType}?filter=${filter}`;
-    return this.http.post<ISuggest[]>(query, {filters });
+    return this.http.post<ISuggest[]>(query, { filters });
   }
 
   postDoc(doc: DocumentBase): Observable<DocumentBase> {
@@ -152,6 +152,16 @@ export class ApiService {
     return (this.http.get(query) as Observable<UserDefaultsSettings>);
   }
 
+  getUserRoles(): Promise<{ id: Ref, description: string }[]> {
+    const query = `${environment.api}user/permissions/roles`;
+    return this.http.get<{ id: Ref, description: string }[]>(query).toPromise();
+  }
+
+  isRoleAvailable(role: string): Promise<boolean> {
+    const query = `${environment.api}user/permissions/roles/isAvailable/${role}`;
+    return this.http.get<boolean>(query).toPromise();
+  }
+
   setUserDefaultsSettings(value: UserDefaultsSettings) {
     const query = `${environment.api}user/settings/defaults`;
     return (this.http.post(query, value) as Observable<boolean>);
@@ -173,7 +183,7 @@ export class ApiService {
     const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}command/${doc.type}/${command}`;
     const callConfig = { doc: apiDoc, args: args };
-    return this.http.post<{[x: string]: any}>(query, callConfig).toPromise();
+    return this.http.post<{ [x: string]: any }>(query, callConfig).toPromise();
   }
 
   jobAdd(data: any, opts?: any) {
@@ -205,7 +215,7 @@ export class ApiService {
   execute(type: FormTypes, method: string, doc: FormBase) {
     const apiDoc = viewModelToFlatDocument(doc as any);
     const query = `${environment.api}form/${type}/${method}`;
-    return this.http.post<{[x: string]: any}>(query, apiDoc);
+    return this.http.post<{ [x: string]: any }>(query, apiDoc);
   }
 
   batchActual() {

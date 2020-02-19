@@ -1,3 +1,4 @@
+import { getUsersPermissions } from './fuctions/UsersPermissions';
 import * as moment from 'moment';
 import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
@@ -52,6 +53,8 @@ export interface JTL {
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
+    getUserRoles: (tx: MSSQL) => Promise<{ id: Ref, description: string }[]>,
+    isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () => Promise<string>
   };
@@ -91,6 +94,8 @@ export const lib: JTL = {
     bankStatementUnloadById: bankStatementUnloadById,
     adminMode: adminMode,
     closeMonth: closeMonth,
+    getUserRoles,
+    isRoleAvailable,
     GUID,
     closeMonthErrors,
 
@@ -334,6 +339,14 @@ export async function movementsByDoc<T extends RegisterAccumulation>(type: Regis
 
 async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<string> {
   return await BankStatementUnloader.getBankStatementAsString(docsID, tx);
+}
+
+async function getUserRoles(tx: MSSQL): Promise<({ id: Ref, description: string }[])> {
+  return (await getUsersPermissions(tx)).Roles;
+}
+
+async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
+  return !!(await getUsersPermissions(tx)).Roles.filter(e => e.description === role).length;
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {

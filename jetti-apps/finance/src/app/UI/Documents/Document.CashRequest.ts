@@ -16,7 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: 'Document.CashRequest.html'
 })
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy, IFormEventsModel {
-  get readonlyMode() { return !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return !this.isSuperUser && !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
     private bpApi: BPApi, public dss: DynamicFormService, private api: ApiService) {
@@ -26,11 +26,13 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   currencyShortName = '';
   taxRate = -1;
   isKAZAKHSTAN = false;
+  isSuperUser = false;
 
   ngOnInit() {
     super.ngOnInit();
-
+    if (this.isHistory) return;
     this.onOpen();
+
   }
 
   getValue(fieldName: string): any {
@@ -208,28 +210,38 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     const info = this.getValue('info');
     if (info) {
       const curlength = (info as string).split('\n')[0].length;
-      if (curlength > 120) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов` );
+      if (curlength > 120) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
     }
   }
 
   onOpen() {
 
-    if (this.isNew) {
-      this.setValue('Status', 'PREPARED');
-      this.setValue('workflowID', '');
-      if (this.getValue('Amount') === 0) this.setValue('Amount', null);
-      if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
-    }
+    this.api.isRoleAvailable('Администратор заявок на расход ДС').then(isRoleAvailable => {
+      this.isSuperUser = isRoleAvailable;
 
-    if (this.readonlyMode) {
-      this.form.disable({ emitEvent: false });
-      this.form.get('info').enable({ emitEvent: false });
-    } else {
-      this.onCashKindChange(this.getValue('CashKind'));
-      this.onOperationChanges(this.getValue('Operation'));
-      this.FillTaxRate(false);
-      this.FillCurrencyShortName(false);
-    }
+      if (this.isSuperUser) {
+        this.form.enable({ emitEvent: false });
+        this.vk.Status.readOnly = false;
+      }
+
+      if (this.isNew) {
+        this.setValue('Status', 'PREPARED');
+        this.setValue('workflowID', '');
+        if (this.getValue('Amount') === 0) this.setValue('Amount', null);
+        if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
+      }
+
+      if (this.readonlyMode) {
+        this.form.disable({ emitEvent: false });
+        this.form.get('info').enable({ emitEvent: false });
+      } else {
+        this.onCashKindChange(this.getValue('CashKind'));
+        this.onOperationChanges(this.getValue('Operation'));
+        this.FillTaxRate(false);
+        this.FillCurrencyShortName(false);
+      }
+    });
+
   }
 
   refresh() {
