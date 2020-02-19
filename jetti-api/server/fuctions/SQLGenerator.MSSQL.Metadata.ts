@@ -224,7 +224,7 @@ export class SQLGenegatorMetadata {
     --GO
 
     --CREATE SECURITY POLICY [rls].[companyAccessPolicy]
-      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty] 
+      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty]
       --WITH (STATE = ON);
     --GO
     `;
@@ -254,7 +254,7 @@ export class SQLGenegatorMetadata {
       GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];
       GO
 
