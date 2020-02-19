@@ -4,7 +4,7 @@
     --GO
 
     --CREATE SECURITY POLICY [rls].[companyAccessPolicy]
-      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty] 
+      --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty]
       --WITH (STATE = ON);
     --GO
     
@@ -34,7 +34,7 @@
       GRANT SELECT ON dbo.[Catalog.Account.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Account.v];
       GO
 
@@ -67,7 +67,7 @@
       GRANT SELECT ON dbo.[Catalog.Balance.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.v];
       GO
 
@@ -98,7 +98,7 @@
       GRANT SELECT ON dbo.[Catalog.Balance.Analytics.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.Analytics.v];
       GO
 
@@ -133,7 +133,7 @@
       GRANT SELECT ON dbo.[Catalog.BankAccount.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BankAccount.v];
       GO
 
@@ -164,7 +164,7 @@
       GRANT SELECT ON dbo.[Catalog.CashFlow.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashFlow.v];
       GO
 
@@ -198,7 +198,7 @@
       GRANT SELECT ON dbo.[Catalog.CashRegister.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashRegister.v];
       GO
 
@@ -230,7 +230,7 @@
       GRANT SELECT ON dbo.[Catalog.Currency.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Currency.v];
       GO
 
@@ -276,7 +276,7 @@
       GRANT SELECT ON dbo.[Catalog.Company.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.v];
       GO
 
@@ -308,7 +308,7 @@
       GRANT SELECT ON dbo.[Catalog.Country.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Country.v];
       GO
 
@@ -352,7 +352,7 @@
       GRANT SELECT ON dbo.[Catalog.Counterpartie.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.v];
       GO
 
@@ -388,7 +388,7 @@
       GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.BankAccount.v];
       GO
 
@@ -433,7 +433,7 @@
       GRANT SELECT ON dbo.[Catalog.Contract.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.v];
       GO
 
@@ -464,7 +464,7 @@
       GRANT SELECT ON dbo.[Catalog.BusinessDirection.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessDirection.v];
       GO
 
@@ -496,7 +496,7 @@
       GRANT SELECT ON dbo.[Catalog.Salary.Analytics.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Salary.Analytics.v];
       GO
 
@@ -532,7 +532,7 @@
       GRANT SELECT ON dbo.[Catalog.Department.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.v];
       GO
 
@@ -565,7 +565,7 @@
       GRANT SELECT ON dbo.[Catalog.Expense.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.v];
       GO
 
@@ -597,7 +597,7 @@
       GRANT SELECT ON dbo.[Catalog.Expense.Analytics.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.Analytics.v];
       GO
 
@@ -629,7 +629,7 @@
       GRANT SELECT ON dbo.[Catalog.Income.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Income.v];
       GO
 
@@ -676,7 +676,7 @@
       GRANT SELECT ON dbo.[Catalog.Loan.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Loan.v];
       GO
 
@@ -707,7 +707,7 @@
       GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanRepaymentProcedure.v];
       GO
 
@@ -739,7 +739,7 @@
       GRANT SELECT ON dbo.[Catalog.LoanTypes.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanTypes.v];
       GO
 
@@ -773,7 +773,7 @@
       GRANT SELECT ON dbo.[Catalog.Manager.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Manager.v];
       GO
 
@@ -821,7 +821,7 @@
       GRANT SELECT ON dbo.[Catalog.Person.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.v];
       GO
 
@@ -854,7 +854,7 @@
       GRANT SELECT ON dbo.[Catalog.PriceType.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PriceType.v];
       GO
 
@@ -891,7 +891,7 @@
       GRANT SELECT ON dbo.[Catalog.Product.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.v];
       GO
 
@@ -922,7 +922,7 @@
       GRANT SELECT ON dbo.[Catalog.ProductCategory.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductCategory.v];
       GO
 
@@ -954,7 +954,7 @@
       GRANT SELECT ON dbo.[Catalog.ProductKind.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductKind.v];
       GO
 
@@ -986,7 +986,7 @@
       GRANT SELECT ON dbo.[Catalog.Storehouse.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Storehouse.v];
       GO
 
@@ -1020,7 +1020,7 @@
       GRANT SELECT ON dbo.[Catalog.Operation.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.v];
       GO
 
@@ -1054,7 +1054,7 @@
       GRANT SELECT ON dbo.[Catalog.Operation.Group.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Group.v];
       GO
 
@@ -1085,7 +1085,7 @@
       GRANT SELECT ON dbo.[Catalog.Operation.Type.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Type.v];
       GO
 
@@ -1116,7 +1116,7 @@
       GRANT SELECT ON dbo.[Catalog.Unit.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Unit.v];
       GO
 
@@ -1150,7 +1150,7 @@
       GRANT SELECT ON dbo.[Catalog.User.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.User.v];
       GO
 
@@ -1181,7 +1181,7 @@
       GRANT SELECT ON dbo.[Catalog.UsersGroup.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.UsersGroup.v];
       GO
 
@@ -1212,7 +1212,7 @@
       GRANT SELECT ON dbo.[Catalog.Role.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Role.v];
       GO
 
@@ -1244,7 +1244,7 @@
       GRANT SELECT ON dbo.[Catalog.SubSystem.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SubSystem.v];
       GO
 
@@ -1275,7 +1275,7 @@
       GRANT SELECT ON dbo.[Catalog.JobTitle.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.v];
       GO
 
@@ -1306,7 +1306,7 @@
       GRANT SELECT ON dbo.[Catalog.PersonIdentity.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PersonIdentity.v];
       GO
 
@@ -1337,7 +1337,7 @@
       GRANT SELECT ON dbo.[Catalog.Brand.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Brand.v];
       GO
 
@@ -1369,7 +1369,7 @@
       GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.GroupObjectsExploitation.v];
       GO
 
@@ -1402,7 +1402,7 @@
       GRANT SELECT ON dbo.[Catalog.ObjectsExploitation.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ObjectsExploitation.v];
       GO
 
@@ -1439,7 +1439,7 @@
       GRANT SELECT ON dbo.[Catalog.Catalog.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Catalog.v];
       GO
 
@@ -1470,7 +1470,7 @@
       GRANT SELECT ON dbo.[Catalog.BudgetItem.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BudgetItem.v];
       GO
 
@@ -1502,7 +1502,7 @@
       GRANT SELECT ON dbo.[Catalog.Scenario.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Scenario.v];
       GO
 
@@ -1538,7 +1538,7 @@
       GRANT SELECT ON dbo.[Catalog.AcquiringTerminal.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v];
       GO
 
@@ -1574,7 +1574,7 @@
       GRANT SELECT ON dbo.[Catalog.Bank.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v];
       GO
 
@@ -1609,7 +1609,7 @@
       GRANT SELECT ON dbo.[Catalog.Person.BankAccount.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.BankAccount.v];
       GO
 
@@ -1640,7 +1640,7 @@
       GRANT SELECT ON dbo.[Catalog.BusinessRegion.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v];
       GO
 
@@ -1672,7 +1672,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxRate.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v];
       GO
 
@@ -1704,7 +1704,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxAssignmentCode.v];
       GO
 
@@ -1737,7 +1737,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxPaymentCode.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentCode.v];
       GO
 
@@ -1768,7 +1768,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxBasisPayment.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxBasisPayment.v];
       GO
 
@@ -1799,7 +1799,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentPeriod.v];
       GO
 
@@ -1831,7 +1831,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxPayerStatus.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPayerStatus.v];
       GO
 
@@ -1866,7 +1866,7 @@
       GRANT SELECT ON dbo.[Catalog.TaxOffice.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxOffice.v];
       GO
 
@@ -1903,7 +1903,7 @@
       GRANT SELECT ON dbo.[Catalog.ReatailClient.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ReatailClient.v];
       GO
 
@@ -1940,7 +1940,7 @@
       GRANT SELECT ON dbo.[Catalog.SalaryProject.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SalaryProject.v];
       GO
 
@@ -1970,7 +1970,7 @@
       GRANT SELECT ON dbo.[Document.ExchangeRates.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v];
       GO
 
@@ -2009,7 +2009,7 @@
       GRANT SELECT ON dbo.[Document.Invoice.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v];
       GO
 
@@ -2046,7 +2046,7 @@
       GRANT SELECT ON dbo.[Document.Operation.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v];
       GO
 
@@ -2078,7 +2078,7 @@
       GRANT SELECT ON dbo.[Document.PriceList.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.PriceList.v];
       GO
 
@@ -2110,7 +2110,7 @@
       GRANT SELECT ON dbo.[Document.Settings.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Settings.v];
       GO
 
@@ -2147,7 +2147,7 @@
       GRANT SELECT ON dbo.[Document.UserSettings.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.UserSettings.v];
       GO
 
@@ -2179,7 +2179,7 @@
       GRANT SELECT ON dbo.[Document.WorkFlow.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.WorkFlow.v];
       GO
 
@@ -2243,7 +2243,7 @@
       GRANT SELECT ON dbo.[Document.CashRequest.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequest.v];
       GO
 
@@ -2279,7 +2279,7 @@
       GRANT SELECT ON dbo.[Document.CashRequestRegistry.v] TO jetti;
       GO
 
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] 
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
         ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequestRegistry.v];
       GO
 
