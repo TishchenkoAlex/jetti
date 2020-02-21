@@ -64,7 +64,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         const contractId = await tx.oneOrNone<{ id: string }>(query, [value.id, this.сurrency, this.company]);
         if (!contractId) { this.Contract = null; return this; }
         this.Contract = contractId!.id;
-        return this;
+        return this.onValueChanged('Contract', { id: this.Contract }, tx);
       case 'Contract':
         if (!value.id) { this.CashRecipientBankAccount = null; return this; }
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);

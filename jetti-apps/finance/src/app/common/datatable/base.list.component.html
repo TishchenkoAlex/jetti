@@ -6,7 +6,7 @@
 
   <div style="display: flex; flex-direction: column; overflow-x: auto">
     <ng-content></ng-content>
-    <p-toolbar>
+    <p-toolbar *ngIf="!readonly">
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>

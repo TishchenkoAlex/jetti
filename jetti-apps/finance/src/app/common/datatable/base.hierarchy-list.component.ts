@@ -1,15 +1,19 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { TreeNode } from 'primeng/api';
+import { TreeNode, SortMeta, FilterMetadata } from 'primeng/api';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map, switchMap, tap, take } from 'rxjs/operators';
+import { filter, map, switchMap, tap, take, debounceTime } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { ITree } from '../../../../../../jetti-api/server/models/common-types';
-import { DocumentBase } from '../../../../../../jetti-api/server/models/document';
+import { DocumentBase, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { DocService } from '../../common/doc.service';
 import { ApiService } from '../../services/api.service';
 import { LoadingService } from '../loading.service';
+import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
+import { FormListOrder, FormListFilter, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
+import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
+import { ApiDataSource } from './api.datasource.v2';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,45 +23,76 @@ import { LoadingService } from '../loading.service';
 export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   @Output() selectionChange = new EventEmitter();
   @Input() type: DocTypes;
+  @Input() id: string;
   @Input() showCommands = true;
   @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
+  @Input() settings: FormListSettings = new FormListSettings();
+  
   treeNodes$: Observable<TreeNode[]>;
   treeNodes: TreeNode[] = [];
   selection: TreeNode;
+  columns: ColumnDef[] = [];
+  doc: DocumentBase | undefined;
+  dataSource: ApiDataSource;
+  multiSortMeta: SortMeta[] = [];
+  filters: { [s: string]: FilterMetadata } = {};
 
-  private paginator = new Subject<DocumentBase>();
+  get isDoc() { return this.type.startsWith('Document.'); }
+  get isCatalog() { return this.type.startsWith('Catalog.'); }
+
   private _docSubscription$: Subscription = Subscription.EMPTY;
+  private _debonceSubscription$: Subscription = Subscription.EMPTY;
+  private debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   // tslint:disable-next-line: max-line-length
   constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
+    const columns: ColumnDef[] = [];
+    const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
+    this.dataSource = new ApiDataSource(this.ds.api, this.type, 20, true);
 
-    this._docSubscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$]).pipe(
-      filter(doc => doc && doc.type === this.type)).
-      subscribe(doc => this.paginator.next(doc));
+    try { this.doc = createDocument(this.type); } catch { }
+    const schema = this.doc ? this.doc.Props() : {};
+    const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
+    [...data, ...dimensions].forEach(el => {
+      const field = Object.keys(el)[0]; const type = el[field];
+      let value = schema[field] && schema[field].value;
+      if (type === 'enum') {
+        value = [{ label: '', value: null }, ...(value || [] as string[]).map((el: any) => ({ label: el, value: el }))];
+      }
+      columns.push({
+        field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
+        hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
+        order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
+        value: value,
+        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align': 'center' }
+      });
+    });
 
-    this.treeNodes$ = this.paginator.pipe(
-      switchMap(doc => {
-        return this.api.tree(this.type).pipe(
-          map(tree => <TreeNode[]>[{
-            label: '(All)',
-            data: { id: undefined, description: '(All)', type: this.type, value: null, code: null },
-            expanded: true,
-            expandedIcon: 'fa fa-folder-open',
-            collapsedIcon: 'fa fa-folder',
-            children: this.buildTreeNodes(tree, null),
-          }]),
-          tap(treeNodes => {
-            this.treeNodes = treeNodes;
-          }));
+    this.columns = [...columns.filter(c => !c.hidden)];
+
+    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
+      .subscribe(event => this._update(event.col, event.event, event.center));
+
+    this.setSortOrder();
+    this.setFilters();
+    this.prepareDataSource();
+
+    this.TreeNodesBuild();
+
+
+  }
+
+
+  TreeNodesBuild() {
+    const id = this.selection && (this.selection.parent || !!this.treeNodes.filter(e => !e.data.hlevel).length) ? this.selection.data.id : '';
+    this.treeNodes$ = this.api.getDocList(this.type, id, 'first', 1000, 0, this.dataSource.formListSettings.order, this.dataSource.formListSettings.filter, true).pipe(
+      map(tree => <TreeNode[]>this.buildTreeNodes(tree.data, null)),
+      tap(treeNodes => {
+        // treeNodes.filter(node => !!node.children.length).forEach(el => el.data.description += ` [${el.children.length}]`);
+        this.treeNodes = treeNodes;
       }));
-    setTimeout(() => this.paginator.next());
-
-    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe(() => { this.add(); });
-    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe(() => { this.open(); });
-    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe(() => { this.copy(); });
-    // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe(() => { this.delete(); });
   }
 
   private findDoc(tree: TreeNode[], id: string): TreeNode | undefined {
@@ -70,22 +105,60 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setFilters() {
+    this.settings.filter
+      .filter(c => !(c.right === null || c.right === undefined))
+      .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
+  }
+
+  private setSortOrder() {
+    this.multiSortMeta = this.settings.order
+      .filter(e => !!e.order)
+      .map(e => <SortMeta>{ field: e.field, order: e.order === 'asc' ? 1 : -1 });
+    if (this.multiSortMeta.length === 0) {
+      if (this.isCatalog) this.multiSortMeta.push({ field: 'description', order: 1 });
+      if (this.isDoc) this.multiSortMeta.push({ field: 'date', order: 1 });
+    }
+  }
+
   setSelection(id: string) {
     this.selection = this.findDoc(this.treeNodes, id);
     this.cd.markForCheck();
   }
 
-  private buildTreeNodes(tree: ITree[], parent: string | null): TreeNode[] {
-    return tree.filter(el => el.parent === parent).map(el => {
+  private buildTreeNodes(tree: any[], parent: string | null): TreeNode[] {
+    return tree.filter(el => el.hparent === parent).map(el => {
       return <TreeNode>{
-        label: el.description,
-        data: { id: el.id, description: el.description, type: this.type, value: el.description, code: null },
+        data: el,
         expanded: true,
-        expandedIcon: 'fa fa-folder-open',
-        collapsedIcon: 'fa fa-folder',
+        expandedIcon: 'pi pi-folder-open',
+        collapsedIcon: 'pi pi-folder',
         children: this.buildTreeNodes(tree, el.id) || [],
       };
     });
+  }
+
+  prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
+    this.dataSource.id = this.id;
+    const order = multiSortMeta
+      .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
+    const Filter = Object.keys(this.filters)
+      .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
+    this.dataSource.formListSettings = { filter: Filter, order };
+  }
+
+  private _update(col: ColumnDef, event, center) {
+    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
+    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+    this.prepareDataSource(this.multiSortMeta);
+    this.dataSource.sort();
+  }
+  update(col: ColumnDef, event, center = 'like') {
+    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) { event = null; }
+    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+    this.prepareDataSource(this.multiSortMeta);
+    this.TreeNodesBuild();
+    // this.debonce$.next({ col, event, center });
   }
 
   add() {
@@ -110,7 +183,12 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   onNodeSelect(event) {
-    this.selectionChange.emit(event.node);
+    if (event.node.data.isfolder) this.TreeNodesBuild();
+  }
+
+  onLazyLoad(event) {
+    this.multiSortMeta = event.multiSortMeta;
+    this.treeNodes.sort();
   }
 
   ngOnDestroy() {

@@ -170,7 +170,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     FROM #CashRequestBalance AS CRT
       LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and CRT.BankAccountPerson = sa.BankAccountPerson
       INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and DocCR.[CashKind] <> 'CASH'
-    ORDER BY Delayed, CashRequest, CashRecipient, AmountBalance DESC`;
+    ORDER BY Delayed, CashRequest, AmountBalance DESC, CashRecipient`;
 
     const CashRequests = await tx.manyOrNone<CashRequest>(query,
       [this.company, this.CashFlow, this.сurrency, this.Operation ? this.Operation : 'Оплата поставщику']);

@@ -110,7 +110,8 @@ const RolesQuery = `
   ) AS Roles
   INNER JOIN #UserOrGroup ON #UserOrGroup.id = CAST(JSON_VALUE(doc, N'$.UserOrGroup') AS UNIQUEIDENTIFIER)
   WHERE (1=1) AND
-    type = 'Document.UserSettings';
+  posted = 1 AND
+  type = 'Document.UserSettings';
 
   DROP TABLE IF EXISTS #Subsystems;
   SELECT SubSystem INTO #Subsystems FROM Documents r

@@ -216,6 +216,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   onOpen() {
 
+    this.api.isRoleAvailable('Только просмотр').then(isRoleAvailable => {});
+    
     this.api.isRoleAvailable('Администратор заявок на расход ДС').then(isRoleAvailable => {
       this.isSuperUser = isRoleAvailable;
 
@@ -229,14 +231,14 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         this.setValue('workflowID', '');
         if (this.getValue('Amount') === 0) this.setValue('Amount', null);
         if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
+        this.onCashKindChange(this.getValue('CashKind'));
+        this.onOperationChanges(this.getValue('Operation'));
       }
 
       if (this.readonlyMode) {
         this.form.disable({ emitEvent: false });
         this.form.get('info').enable({ emitEvent: false });
       } else {
-        this.onCashKindChange(this.getValue('CashKind'));
-        this.onOperationChanges(this.getValue('Operation'));
         this.FillTaxRate(false);
         this.FillCurrencyShortName(false);
       }

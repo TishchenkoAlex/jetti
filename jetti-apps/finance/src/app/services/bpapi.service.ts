@@ -49,6 +49,7 @@ export class BPApi {
       body = {
         'CompanyDescription': Base.company.value,
         'CompanyID': Base.company.id,
+        'CashRecipientDescription': Base.CashRecipient.value,
         'SubdivisionID': Base.Department.id,
         'Sum': Base.Amount,
         'ItemID': Base.CashFlow.id,

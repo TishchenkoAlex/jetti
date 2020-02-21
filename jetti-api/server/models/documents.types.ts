@@ -8,6 +8,7 @@ export type CatalogTypes =
   'Catalog.CashFlow' |
   'Catalog.CashRegister' |
   'Catalog.Company' |
+  'Catalog.Company.Group' |
   'Catalog.Country' |
   'Catalog.Counterpartie' |
   'Catalog.Currency' |

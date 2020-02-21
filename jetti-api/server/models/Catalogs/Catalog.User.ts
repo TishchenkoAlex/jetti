@@ -19,6 +19,9 @@ export class CatalogUser extends DocumentBase {
   @Props({ type: 'boolean'})
   isAdmin = false;
 
+  @Props({ type: 'boolean'})
+  isDisabled = false;
+
   @Props({ type: 'Catalog.Person' })
   Person: Ref = null;
 

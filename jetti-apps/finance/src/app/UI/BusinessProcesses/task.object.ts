@@ -19,6 +19,7 @@ export interface ITask {
   ProcessID: string;
   Subdivision: string;
   Company: string;
+  CashRecipient: string,
   ItemName: string;
   Summ: number;
   AutorName: string;
