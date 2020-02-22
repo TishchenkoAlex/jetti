@@ -143,10 +143,9 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   } else {
     const filter = filterBuilder(params.filter);
     if (params.withHierarchy) {
-      QueryList = addHierarchyToQuery(QueryList, params.type, params.id, filter, orderbyBefore );
+      QueryList = addHierarchyToQuery(QueryList, params.type, params.id, filter, orderbyBefore);
       query = `${QueryList}`;
-    }
-    else if (params.command === 'last')
+    } else if (params.command === 'last')
       query = `${tempTabe}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyBefore}) d ${orderbyAfter}`;
     else
       query = `${tempTabe}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyAfter}`;
@@ -159,17 +158,17 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
 function getHierarchyQuery(type: AllDocTypes, id: string): { queryText: string, orderText: string } {
 
-  if (!id) { //top level
+  if (!id) { // top level
     return {
       queryText: `
     DROP TABLE IF EXISTS #Hierarchy;
     SELECT doc.id, doc.parent hparent, 0 hlevel INTO #Hierarchy
     FROM Documents doc
-    WHERE doc.parent is NULL and type = '@p1'; 
+    WHERE doc.parent is NULL and type = '@p1';
     SELECT
         h.hparent, h.hlevel, d.description value, `.replace('@p1', type),
       orderText: 'order by isfolder desc'
-    }
+    };
 
   } else {
     return {
@@ -180,7 +179,7 @@ function getHierarchyQuery(type: AllDocTypes, id: string): { queryText: string, 
     SELECT id, [parent.id], description, LevelUp
     INTO #Tree
     FROM dbo.[Ancestors]('@p1');
-    
+
     SELECT res.id, res.parent hparent, MIN(res.LevelUp) hlevel  INTO #Hierarchy
     from (
       SELECT doc.id id, doc.parent parent, doc.isfolder, doc.description, tree.LevelUp
@@ -208,7 +207,7 @@ function getHierarchyQuery(type: AllDocTypes, id: string): { queryText: string, 
 function addHierarchyToQuery(queryText: string, type: AllDocTypes, id: string, filter?: string, order?: string): string {
   const HierarchyQuery = getHierarchyQuery(type, id);
   let result = queryText.replace('SELECT', `${HierarchyQuery.queryText}`);
-  return `${result}\nINNER JOIN #Hierarchy h ON d.id = h.id\n${HierarchyQuery.orderText}`
+  return `${result}\nINNER JOIN #Hierarchy h ON d.id = h.id\n${HierarchyQuery.orderText}`;
 }
 
 function listPostProcess(data: any[], params: DocListRequestBody) {
