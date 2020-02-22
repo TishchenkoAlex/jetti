@@ -40,6 +40,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   isCopy: boolean;
   isHistory: boolean;
+  readonly: boolean;
   navigateCommands: MenuItem[] = [];
 
   private readonly _form$ = new BehaviorSubject<FormGroup>(undefined);
@@ -130,6 +131,15 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     this.isCopy = !!this.route.snapshot.queryParams.copy;
     this.isHistory = !!this.route.snapshot.queryParams.history;
 
+    if (!this.isHistory) {
+      this.ds.api.isRoleAvailable('Только просмотр').then(readonly => {
+        if (readonly) {
+          this.form.disable(patchOptionsNoEvents);
+          this.readonly = true
+        }
+      });
+    }
+
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
       .subscribe(doc => {
@@ -164,7 +174,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       this.Next(form);
     });
 
-    if (this.isHistory) this.form.disable({ emitEvent: false });
+    if (this.isHistory) this.form.disable(patchOptionsNoEvents);
     this.navigateCommands.push(<MenuItem>{ label: 'Show in list', command: () => this.goto() });
     this.navigateCommands.push(<MenuItem>{ label: 'Used in...', command: () => this.usedIn() });
   }
@@ -306,7 +316,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       this.Next(form);
       this.form.markAsDirty();
 
-      if (clientModule ) {
+      if (clientModule) {
         const func = new Function('', clientModule).bind(this)();
         const method = func['afterExecution'];
         if (method) method();

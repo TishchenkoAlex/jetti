@@ -4,11 +4,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   type: 'Document.CashRequest',
   description: 'Заявка на расходование ДС',
   dimensions: [
+    { company: 'Catalog.Company' },
     { Operation: 'enum' },
     { Status: 'enum' },
-    { CashFlow: 'Catalog.User' },
-    { CashOrBank: 'Types.CashOrBank' },
-    { CashRecipient: 'Types.CashRecipient' },
     { Amount: 'number' },
   ],
   icon: 'far fa-file-alt',

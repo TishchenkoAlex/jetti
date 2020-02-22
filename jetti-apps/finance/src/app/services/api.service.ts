@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, take } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
 import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem } from '../../../../../jetti-api/server/models/common-types';
@@ -43,9 +43,10 @@ export class ApiService {
   }
 
   getDocList(type: AllDocTypes, id: string, command: string,
-    count = 10, offset = 0, order: FormListOrder[] = [], filter: FormListFilter[] = []): Observable<DocListResponse> {
+    count = 10, offset = 0, order: FormListOrder[] = [],
+    filter: FormListFilter[] = [], withHierarchy = false): Observable<DocListResponse> {
     const query = `${environment.api}list`;
-    const body: DocListRequestBody = { id, type, command, count, offset, order, filter };
+    const body: DocListRequestBody = { id, type, command, count, offset, order, filter, withHierarchy };
     return this.http.post<DocListResponse>(query, body);
   }
 
@@ -206,10 +207,20 @@ export class ApiService {
     return this.http.get<ITree[]>(query);
   }
 
+  hierarchyList(type: AllDocTypes, id: string = 'top', columns: any[] = []) {
+    const query = `${environment.api}hierarchyList/${type}/${id}`;
+    const result = this.http.get<any[]>(query);
+    if (columns.length) {
+      result.pipe(take(1)).subscribe(hierarchyList => {
+        this.getDocList(type, '', 'first').toPromise().then( docList => {
+          console.log('columns',columns);
+          console.log('docList',docList);
+          console.log("result", hierarchyList)
+        });
+      })
+    }
 
-  hierarchyList(type: AllDocTypes, parentId?: string) {
-    const query = `${environment.api}hierarchyList/${type}${parentId ? '/' + parentId : ''}`;
-    return this.http.get<ITree[]>(query);
+    return result
   }
 
   execute(type: FormTypes, method: string, doc: FormBase) {

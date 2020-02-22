@@ -7,7 +7,7 @@ import { FormListFilter, FormListOrder, FormListSettings } from './user.settings
 export interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }
 
 export interface DocListRequestBody {
-  id: string; type: AllDocTypes; command: string; count: number; offset: number;
+  id: string; type: AllDocTypes; command: string; count: number; offset: number; withHierarchy: boolean;
   filter: FormListFilter[];
   order: FormListOrder[];
 }

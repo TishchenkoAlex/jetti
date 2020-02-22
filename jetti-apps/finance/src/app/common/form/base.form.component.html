@@ -3,9 +3,9 @@
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp
-          [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ', [posted]' : ', [unposted]')"
+          [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ' [posted]' : ' [unposted]') + (readonly ? ' [readonly]' : '')"
           [toggleable]="true">
-          <p-toolbar *ngIf="!isHistory">
+          <p-toolbar *ngIf="!readonly && !isHistory">
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="PostClose" icon="fa fa-check-square" label="Post&Close"
                 pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"

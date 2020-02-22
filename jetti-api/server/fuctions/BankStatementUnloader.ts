@@ -11,6 +11,8 @@ export class BankStatementUnloader {
   static country = '';
   static operation = '';
 
+  static countryKAZAKHSTANId = '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
+
   private static getQueryTextSalaryProjectCommon() {
     return `
     select 
@@ -64,7 +66,7 @@ export class BankStatementUnloader {
   private static async getQueryTextCommon(): Promise<string> {
 
     switch (this.country) {
-      case '9C226AA0-FAFA-11E9-B75B-A35013C043AE': //KAZAKHSTAN
+      case this.countryKAZAKHSTANId: //KAZAKHSTAN
         return await this.getQueryTextCommonKAZAKHSTAN();
       case 'E5850830-02D2-11EA-A524-E592E08C23A5': //RUSSIA
       case 'FE302460-0489-11EA-941F-EBDB19162587': //UKRAINE - Украина
@@ -678,8 +680,12 @@ export class BankStatementUnloader {
   }
 
   private static getShortDocNumber(docNumber: string): string {
+
     if (docNumber.split('-').length === 2) {
-      const docNumberArr = docNumber.split('-');
+      let docNumberArr = docNumber.split('-');
+      if (this.country = this.countryKAZAKHSTANId) {
+        return Number(docNumberArr[1]).toString();  // казахстан без лид. нулей
+      }
       return docNumberArr[1];
     }
     return docNumber;

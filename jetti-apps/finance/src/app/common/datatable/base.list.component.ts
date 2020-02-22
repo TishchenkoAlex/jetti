@@ -69,6 +69,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
   });
   dataSource: ApiDataSource;
+  readonly = false;
 
   ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
@@ -135,6 +136,10 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
+
+    this.ds.api.isRoleAvailable('Только просмотр').then(readonly => {
+      this.readonly = readonly;
+    });
   }
 
   private setFilters() {
