@@ -14,6 +14,7 @@ import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
 import { FormListOrder, FormListFilter, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { ApiDataSource } from './api.datasource.v2';
+import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   @Input() showCommands = true;
   @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
   @Input() settings: FormListSettings = new FormListSettings();
-  
+  locale = calendarLocale; dateFormat = dateFormat;
   treeNodes$: Observable<TreeNode[]>;
   treeNodes: TreeNode[] = [];
   selection: TreeNode;

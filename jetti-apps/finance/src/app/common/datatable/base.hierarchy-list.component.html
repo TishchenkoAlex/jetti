@@ -4,7 +4,7 @@
     <p-toolbar>
       <div class="ui-toolbar-group-left">
         <button id="select" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning" pButton
-          type="button" [disabled]="!selection" (click)="sl.select(selection)"></button>
+          type="button" [disabled]="!selection"></button>
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
         <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" (click)="open()"
