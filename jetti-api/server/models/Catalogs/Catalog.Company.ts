@@ -30,6 +30,9 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', required: true })
   prefix = '';
 
+  @Props({ type: 'Catalog.Company.Group', required: true })
+  Group: Ref = null;
+
   @Props({ type: 'Catalog.Company' })
   Intercompany: Ref = null;
 
@@ -57,13 +60,15 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', required: false })// Код Бенефициара (для Казахастана)
   BC = '';
 
-  @Props({ type: 'enum', required: true, value: [
-    'UTC',
-    'Central European Standard Time',
-    'Russian Standard Time',
-    'E. Europe Standard Time',
-    'US Eastern Standard Time'
-    ]})
+  @Props({
+    type: 'enum', required: true, value: [
+      'UTC',
+      'Central European Standard Time',
+      'Russian Standard Time',
+      'E. Europe Standard Time',
+      'US Eastern Standard Time'
+    ]
+  })
   timeZone = 'UTC';
 
   @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
