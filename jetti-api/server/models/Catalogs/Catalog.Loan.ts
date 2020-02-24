@@ -24,7 +24,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'date', label: 'Close date' })
   CloseDay: Date | null = null;
 
-  @Props({ type: 'Types.CounterpartieOrPerson', required: true })
+  @Props({ type: 'Types.CompanyOrCounterpartieOrPerson', required: true })
   owner: Ref = null;
 
   @Props({

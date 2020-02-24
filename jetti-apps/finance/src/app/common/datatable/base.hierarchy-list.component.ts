@@ -4,7 +4,7 @@ import { TreeNode, SortMeta, FilterMetadata } from 'primeng/api';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, switchMap, tap, take, debounceTime } from 'rxjs/operators';
 import { v1 } from 'uuid';
-import { ITree } from '../../../../../../jetti-api/server/models/common-types';
+import { ITree, ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { DocService } from '../../common/doc.service';
@@ -23,11 +23,15 @@ import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
 })
 export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   @Output() selectionChange = new EventEmitter();
+  @Output() Select = new EventEmitter<ISuggest>();
+  @Output() Close = new EventEmitter();
   @Input() type: DocTypes;
   @Input() id: string;
   @Input() showCommands = true;
   @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
   @Input() settings: FormListSettings = new FormListSettings();
+
+
   locale = calendarLocale; dateFormat = dateFormat;
   treeNodes$: Observable<TreeNode[]>;
   treeNodes: TreeNode[] = [];
@@ -76,12 +80,9 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
       .subscribe(event => this._update(event.col, event.event, event.center));
 
-    this.setSortOrder();
     this.setFilters();
     this.prepareDataSource();
-
     this.TreeNodesBuild();
-
 
   }
 
@@ -109,17 +110,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   private setFilters() {
     this.settings.filter
       .filter(c => !(c.right === null || c.right === undefined))
-      .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
-  }
-
-  private setSortOrder() {
-    this.multiSortMeta = this.settings.order
-      .filter(e => !!e.order)
-      .map(e => <SortMeta>{ field: e.field, order: e.order === 'asc' ? 1 : -1 });
-    if (this.multiSortMeta.length === 0) {
-      if (this.isCatalog) this.multiSortMeta.push({ field: 'description', order: 1 });
-      if (this.isDoc) this.multiSortMeta.push({ field: 'date', order: 1 });
-    }
+      .forEach(f => this.filters[f.left.replace('.id', '')] = { matchMode: f.center, value: f.right });
   }
 
   setSelection(id: string) {
@@ -190,6 +181,49 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   onLazyLoad(event) {
     this.multiSortMeta = event.multiSortMeta;
     this.treeNodes.sort();
+  }
+
+  customSort(event) {
+    event.data.sort((data1, data2) => {
+      const isFolder1 = data1.data.isfolder;
+      const isFolder2 = data2.data.isfolder;
+
+      if (isFolder1 && !isFolder2)
+        return event.order * 1;
+      else if (!isFolder1 && isFolder2)
+        return event.order * -1;
+
+      const level1 = data1.data.hlevel;
+      const level2 = data2.data.hlevel;
+
+      if (level1 < level2)
+        return event.order * 1;
+      else if (level1 > level2)
+        return event.order * -1;
+
+      let value1 = data1.data[event.field];
+      let value2 = data2.data[event.field];
+
+      let result = null;
+
+      if (value1 && value1.type && value1.type.indexOf('.') !== -1) {
+        value1 = value1.value;
+        value2 = value2.value;
+      }
+
+      if (value1 == null && value2 != null)
+        result = -1;
+      else if (value1 != null && value2 == null)
+        result = 1;
+      else if (value1 == null && value2 == null)
+        result = 0;
+      else if (typeof value1 === 'string' && typeof value2 === 'string')
+        result = value1.localeCompare(value2);
+      else
+        result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+
+      return (event.order * result);
+    });
   }
 
   ngOnDestroy() {

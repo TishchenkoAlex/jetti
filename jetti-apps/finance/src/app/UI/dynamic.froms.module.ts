@@ -21,6 +21,7 @@ import { BaseFormComponent } from './../common/forms/base.form.component';
 import { RegisterAccountMovementsComponent } from '../common/register-movements/register-account.component';
 import { TabControllerComponent } from './../common/tabcontroller/tabcontroller.component';
 import { SuggestDialogComponent } from './../dialog/suggest.dialog.component';
+import { SuggestDialogHierarchyComponent } from './../dialog/suggest.dialog.hierarchy.component';
 import { HomeComponent } from './../home/home.component';
 import { MaterialModule } from './../material.module';
 import { OperationListComponent } from './Operation/operation.list.component';
@@ -48,6 +49,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
 
     TablePartsComponent,
     SuggestDialogComponent,
+    SuggestDialogHierarchyComponent,
 
     RegisterAccountMovementsComponent,
     RegisterAccumulationComponent,
@@ -93,6 +95,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
 
     TablePartsComponent,
     SuggestDialogComponent,
+    SuggestDialogHierarchyComponent,
 
     RegisterAccountMovementsComponent,
     RegisterAccumulationComponent,

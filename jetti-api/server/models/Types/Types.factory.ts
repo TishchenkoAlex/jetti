@@ -10,6 +10,7 @@ import { TypesCashOrBank } from './Types.CashOrBank';
 import { TypesCashRecipient } from './Types.CashRecipient';
 import { TypesCounterpartieOrPerson } from './Types.CounterpartieOrPerson';
 import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpartieBankAccount';
+import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -33,4 +34,5 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
   { type: 'Types.CounterpartieOrPerson', Class: TypesCounterpartieOrPerson },
   { type: 'Types.PersonOrCounterpartieBankAccount', Class: TypesPersonOrCounterpartieBankAccount },
+  { type: 'Types.CompanyOrCounterpartieOrPerson', Class: TypesCompanyOrCounterpartieOrPerson },
 ];

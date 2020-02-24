@@ -1,4 +1,4 @@
-<div [ngStyle]="{'display': 'flex'}" [id]="type">
+<div [ngStyle]="{'display':'flex'}" [class]="'scroll-' + type" [id]="type">
 
   <div style="display: flex; flex-direction: column;">
     <p-toolbar>
@@ -13,12 +13,12 @@
           [disabled]="(lds.busy$ | async)" *ngIf="selection"></button>
       </div>
     </p-toolbar>
-    <div>
+
+    <div *ngIf="hierarchy">
       <p-treeTable #treeTable [value]="treeNodes$ | async" selectionMode="single" dataKey="id" [(selection)]="selection"
         (onNodeSelect)="onNodeSelect($event)" [multiSortMeta]="multiSortMeta" [filterDelay]="500" [columns]="columns"
         [scrollable]="true" [reorderableColumns]="true" (onLazyLoad)="onLazyLoad($event)" [resizableColumns]="true"
-        [customSort] = "true" (sortFunction)="customSort($event)" scrollHeight="37vh"
-        columnResizeMode="expand">
+        [customSort]="true" (sortFunction)="customSort($event)" scrollHeight="37vh" columnResizeMode="expand">
 
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
@@ -29,10 +29,10 @@
 
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
-            <th [ttSortableColumn]="column.field" ttResizableColumn
-              *ngFor="let column of columns" [ngStyle]="column.style">
+            <th [ttSortableColumn]="column.field" ttResizableColumn *ngFor="let column of columns"
+              [ngStyle]="column.style">
               {{column.label}}
-              <p-treeTableSortIcon  [field]="column.field"></p-treeTableSortIcon >
+              <p-treeTableSortIcon [field]="column.field"></p-treeTableSortIcon>
             </th>
           </tr>
           <tr cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
@@ -115,3 +115,103 @@
         </ng-template>
       </p-treeTable>
     </div>
+
+    <div *ngIf="!hierarchy">
+      <p-table #tbl [value]="dataSource.result$ | async" selectionMode="single" dataKey="id" [lazy]="true"
+        sortMode="multiple" [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect"
+        [scrollHeight]="'415px'" [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)"
+        [multiSortMeta]="multiSortMeta" [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true"
+        [resizableColumns]="true">
+        <ng-template pTemplate="colgroup" let-columns>
+          <colgroup>
+            <col>
+            <col *ngFor="let column of tbl.columns">
+          </colgroup>
+        </ng-template>
+        <ng-template #ttt pTemplate="header" let-columns>
+          <tr>
+            <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
+            <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" [pSortableColumn]="column.field"
+              *ngFor="let column of tbl.columns" [ngStyle]="column.style">
+              {{column.label}}
+              <p-sortIcon [field]="column.field"></p-sortIcon>
+            </th>
+          </tr>
+          <tr cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
+            <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
+            <th *ngFor="let column of tbl.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
+              class="ui-fluid ui-column-filter">
+              <div *ngSwitchCase="'boolean'">
+                <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
+                  (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
+              </div>
+              <div *ngSwitchCase="'number'">
+                <input [ngModel]="filters[column.field]?.value" pInputText type="numeric"
+                  (ngModelChange)="update(column, $event, '>=')">
+              </div>
+              <div *ngSwitchCase="'date'">
+                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
+                  readonlyInput="true" [appendTo]="'body'" [locale]="locale"
+                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
+                  [yearNavigator]="true" yearRange="2010:2030">
+                </p-calendar>
+              </div>
+              <div *ngSwitchCase="'datetime'">
+                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
+                  readonlyInput="true" [appendTo]="'body'" [locale]="locale"
+                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
+                  [yearNavigator]="true" yearRange="2010:2030">
+                </p-calendar>
+              </div>
+              <div *ngSwitchCase="'string'">
+                <input [ngModel]="filters[column.field]?.value" pInputText
+                  (ngModelChange)="update(column, $event, 'like')">
+              </div>
+              <div *ngSwitchCase="'enum'">
+                <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value"
+                  (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
+              </div>
+              <div *ngSwitchDefault>
+                <j-autocomplete-png [checkValue]="false"
+                  [type]="filters[column.field]?.value?.type || column.type || 'string'"
+                  [ngModel]="filters[column.field]?.value" [showOpen]="false" [showFind]="false" [showClear]="true"
+                  (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
+                </j-autocomplete-png>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData>
+          <tr [pSelectableRow]="rowData" (dblclick)="select(rowData)" [class]="'scrollTo-' + type">
+            <td class="ui-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
+              <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
+                style="color: #5cb85c"></i>
+              <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
+              <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="far fa-square"
+                style="color: #f0ad4e"></i>
+              <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
+              <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
+            </td>
+            <td *ngFor="let column of tbl.columns" [ngStyle]="column.style" [class]="'scrollTo-' + type">
+              <span [ngSwitch]="column.type" [id]="column.field">
+                <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
+                <span *ngSwitchCase="'datetime'"
+                  [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy HH:mm:ss'}}</span>
+                <span *ngSwitchCase="'number'" [id]="column.field">{{rowData[column.field] | number:'1.2-4'}}</span>
+                <span *ngSwitchCase="'boolean'" [id]="column.field">
+                  <i *ngIf="rowData[column.field]" class="fa fa-check-square" [id]="column.field"></i>
+                  <i *ngIf="!rowData[column.field]" class="far fa-square" [id]="column.field"></i>
+                </span>
+                <span *ngSwitchCase="'string'" [id]="column.field">{{rowData[column.field]}}</span>
+                <span *ngSwitchCase="'enum'" [id]="column.field">{{rowData[column.field]}}</span>
+                <span *ngSwitchDefault [id]="column.field">{{rowData[column.field]?.value}}</span>
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+  </div>
+</div>

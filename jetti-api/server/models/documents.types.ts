@@ -110,6 +110,7 @@ export type ComplexTypes =
   'Types.CashRecipient' |
   'Types.CounterpartieOrPerson' |
   'Types.PersonOrCounterpartieBankAccount' |
+  'Types.CompanyOrCounterpartieOrPerson' |
   'Types.ExpenseOrBalance';
 
 export type IncomeExpenseTypes =
