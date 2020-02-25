@@ -298,7 +298,7 @@ router.get('/getObjectPropertyById/:id/:valuePath', async (req: Request, res: Re
     const sdb = SDB(req);
     const isGUID = (val: string): boolean => {
       return val.length === 36 && val.split('-').length === 5 && val.split('-')[0].length === 8;
-    }
+    };
     await sdb.tx(async tx => {
       let ob = await lib.doc.byId(req.params.id, tx);
       if (ob) {
@@ -413,12 +413,12 @@ router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next:
   try {
     const tx = SDB(req);
     let result;
-    if (req.params.id === 'top') { //top level
+    if (req.params.id === 'top') { // top level
       const query = `
       SELECT doc.id, doc.parent, doc.isfolder, doc.description, 0 level, doc.deleted
       FROM Documents doc
       WHERE doc.parent is NULL and type = @p1
-      order by doc.isfolder desc, description`
+      order by doc.isfolder desc, description`;
       result = await tx.manyOrNone(query, [req.params.type]);
     } else {
       const query = `
@@ -427,7 +427,7 @@ router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next:
       SELECT id, [parent.id], description, LevelUp
       INTO #Tree
       FROM dbo.[Ancestors](@p1);
-      
+
       SELECT res.id, res.parent, res.isfolder, res.description, MIN(res.LevelUp) level, doc.deleted
       from (
         SELECT doc.id id, doc.parent parent, doc.isfolder, doc.description, tree.LevelUp
@@ -445,7 +445,7 @@ router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next:
           FROM Documents doc
           WHERE doc.parent = @p1) res LEFT JOIN Documents doc on doc.id = res.id
       GROUP BY res.id, res.parent, res.isfolder, res.description, doc.deleted
-      
+
       order by MIN(LevelUp), res.isfolder desc, res.description`;
       result = await tx.manyOrNone(query, [req.params.id]);
     }
