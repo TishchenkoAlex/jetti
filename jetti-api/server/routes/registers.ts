@@ -124,3 +124,19 @@ router.get('/register/info/:type/:id', async (req: Request, res: Response, next:
   } catch (err) { next(err); }
 });
 
+router.post('/register/info/byFilter/:type', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const type = req.params.type as RegisterInfoTypes;
+    let query = createRegisterInfo({ type }).QueryList()
+    const filter = req.body;
+    let filterText = '';
+    query = query.replace('SELECT','SELECT r.document docId, ')
+    filter.forEach(element => filterText += ` AND ${element.key} = '${element.value}'`);
+    await sdb.tx(async tx => {
+      const result = await tx.manyOrNone<RegisterInfo>(query + filterText);
+      res.json(result);
+    });
+  } catch (err) { next(err); }
+});
+

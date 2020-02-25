@@ -1,3 +1,4 @@
+import { RegisterInfoTypes } from './Registers/Info/factory';
 import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './documents.factory';
@@ -29,7 +30,7 @@ export interface PropOptions {
   storageType?: StorageType;
 }
 
-export interface Relation { name: string; type: DocTypes; field: string; }
+export interface Relation { name: string; type: DocTypes | RegisterInfoTypes; field: string; }
 export interface CopyTo { type: DocTypes; label: string; Operation?: Ref; icon: string; order: number; }
 export interface Command { method: string; label: string; icon: string; order: number; clientModule?: string }
 

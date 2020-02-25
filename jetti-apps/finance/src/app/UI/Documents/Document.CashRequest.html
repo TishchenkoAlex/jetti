@@ -56,7 +56,7 @@
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <j-control [control]="vk.company" [form]="form"></j-control>
+          <j-control [control]="vk.company" [form]="form" (change)='onCompanyChanges($event)'></j-control>
           <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form">
           </j-control>
           <j-control [control]="vk.CashFlow" [form]="form"></j-control>

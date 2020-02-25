@@ -42,6 +42,32 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
         if (company) {
           this.сurrency = company.currency;
+          let query = '';
+          switch (this.CashKind) {
+            case 'BANK':
+              query = `
+              SELECT TOP 1 id
+              FROM [dbo].[Catalog.BankAccount]
+              WHERE
+              [currency.id] = @p1
+              and [company.id] = @p2
+              ORDER BY isDefault desc`;
+              const bankAccount = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
+              if (bankAccount) this.CashOrBank = bankAccount.id;
+              break;
+            case 'CASH':
+              query = `
+              SELECT TOP 1 id
+              FROM [dbo].[Catalog.CashRegister]
+              WHERE
+              [currency.id] = @p1
+              and [company.id] = @p2`;
+              const CashRegister = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
+              if (CashRegister) this.CashOrBank = CashRegister.id;
+              break;
+            default:
+              break;
+          }
           this.tempCompanyParent = company.parent;
           const TaxOffice = await lib.doc.byIdT<CatalogTaxOffice>(company.TaxOffice, tx);
           this.TaxOfficeCode2 = (TaxOffice ? TaxOffice.Code2 : null) as any;
@@ -101,7 +127,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async isSuperuser(tx: MSSQL) {
-    return await lib.util.isRoleAvailable('Администратор заявок на расход ДС',tx);
+    return await lib.util.isRoleAvailable('Администратор заявок на расход ДС', tx);
   }
 
   async returnToStatusPrepared(tx: MSSQL) {

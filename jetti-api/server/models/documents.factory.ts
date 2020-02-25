@@ -1,3 +1,4 @@
+import { CatalogContractIntercompany } from './Catalogs/Catalog.Contract.Intercompany';
 import { CatalogPersonIdentity } from './Catalogs/Catalog.PersonIdentity';
 import { CatalogLoanRepaymentProcedure } from './Catalogs/Catalog.LoanRepaymentProcedure';
 import { CatalogCountry } from './Catalogs/Catalog.Country';
@@ -133,6 +134,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Counterpartie', Class: CatalogCounterpartie },
   { type: 'Catalog.Counterpartie.BankAccount', Class: CatalogCounterpartieBankAccount },
   { type: 'Catalog.Contract', Class: CatalogContract },
+  { type: 'Catalog.Contract.Intercompany', Class: CatalogContractIntercompany},
   { type: 'Catalog.BusinessDirection', Class: CatalogBusinessDirection },
   { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
@@ -159,7 +161,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
   { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
-
+  
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
   { type: 'Catalog.Forms', Class: CatalogForms },

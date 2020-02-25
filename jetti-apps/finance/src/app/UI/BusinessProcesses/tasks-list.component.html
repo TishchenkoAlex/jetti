@@ -12,7 +12,7 @@
   </p-toolbar>
 
   <p-table #Tasklist [columns]="columns" [value]="Tasks$ | async" dataKey="TaskID" sortMode="multiple" dataKey="TaskID"
-    [resizableColumns]="true" [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision']">
+    [resizableColumns]="true" [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision','CashRecipient', 'Company']">
     <ng-template pTemplate="colgroup" let-columns>
       <colgroup>
         <col>

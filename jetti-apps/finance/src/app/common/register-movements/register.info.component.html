@@ -1,17 +1,19 @@
 <!-- <div style="max-height: 500px; overflow: auto; "> -->
-<p-table [value]="movements$ | async" selectionMode="single" [resizableColumns]="true" [autoLayout]="false" [(selection)]="selection">
+<p-table [value]="movements$ | async" selectionMode="single" [resizableColumns]="true" [autoLayout]="false"
+  [(selection)]="selection">
   <ng-template pTemplate="header">
     <tr>
       <th pResizableColumn style="width: 24px; text-align: center"></th>
       <th pResizableColumn pSortableColumn="date" style="width: 110px; text-align: center">date</th>
       <th pResizableColumn pSortableColumn="company" style="width: 150px; text-align: center">company</th>
-      <th pResizableColumn [pSortableColumn]="column" *ngFor="let column of (additionalColumns$ | async)" style="text-align: center; width: 200px">{{column}}
+      <th pResizableColumn [pSortableColumn]="column" *ngFor="let column of (additionalColumns$ | async)"
+        style="text-align: center; width: 200px">{{column}}
       </th>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
+    <tr [pSelectableRow]="rowData" (dblclick)="open(rowData)">
       <td style="width: 24px; text-align: center"><i class="fa fa-info-circle" style="color: #5cb85c"></i></td>
       <td style="width: 110px; text-align: center">{{rowData.date | date: 'dd.MM.y HH:mm:ss'}}</td>
       <td style="width: 150px; text-align: center">{{rowData.company.value}}</td>

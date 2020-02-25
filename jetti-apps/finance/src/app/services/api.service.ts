@@ -37,6 +37,17 @@ export class ApiService {
     return (this.http.get<{ id: Ref, parent: Ref }[]>(query)).toPromise();
   }
 
+  isCountryByCompany(companyId: string, countryCode: string): Promise<boolean> {
+    return this.getObjectPropertyById(companyId, 'Country.code').then(code => {
+      return code && code === countryCode
+    });
+  }
+
+  getObjectPropertyById(id: string, valuePath: string): Promise<any> {
+    const query = `${environment.api}getObjectPropertyById/${id}/${valuePath}`;
+    return (this.http.get(query)).toPromise();
+  }
+
   formControlRef(id: string): Promise<RefValue> {
     const query = `${environment.api}formControlRef/${id}`;
     return (this.http.get<RefValue>(query)).toPromise();
@@ -133,6 +144,11 @@ export class ApiService {
     return (this.http.get(query) as Observable<RegisterInfo[]>);
   }
 
+  getRegisterInfoMovementsByFilter(type: string, filter: { key: string, value: any }[]) {
+    const query = `${environment.api}/register/info/byFilter/${type}`;
+    return (this.http.post(query, filter) as Observable<RegisterInfo[]>);
+  }
+
   getOperationsGroups(): Observable<IComplexObject[]> {
     const query = `${environment.api}operations/groups`;
     return (this.http.get<IComplexObject[]>(query));
@@ -212,9 +228,9 @@ export class ApiService {
     const result = this.http.get<any[]>(query);
     if (columns.length) {
       result.pipe(take(1)).subscribe(hierarchyList => {
-        this.getDocList(type, '', 'first').toPromise().then( docList => {
-          console.log('columns',columns);
-          console.log('docList',docList);
+        this.getDocList(type, '', 'first').toPromise().then(docList => {
+          console.log('columns', columns);
+          console.log('docList', docList);
           console.log("result", hierarchyList)
         });
       })

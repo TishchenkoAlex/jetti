@@ -57,3 +57,26 @@ export const sqlConfigTask: ConnectionConfigAndPool = {
     idleTimeoutMillis: 20 * 60 * 1000
   }
 };
+
+export const sqlConfigExchange: ConnectionConfigAndPool = {
+  server: 'SRV-SSIS-01',
+  authentication: {
+    type: 'default',
+    options: {
+      userName: process.env.DB_USER,
+      password: process.env.DB_PASSWORD
+    }
+  },
+  options: {
+    encrypt: false,
+    database: 'Exchange',
+    port: DB_PORT,
+    requestTimeout: 2 * 60 * 1000,
+    rowCollectionOnRequestCompletion: true,
+  },
+  pool: {
+    min: 0,
+    max: 1000,
+    idleTimeoutMillis: 20 * 60 * 1000
+  }
+};

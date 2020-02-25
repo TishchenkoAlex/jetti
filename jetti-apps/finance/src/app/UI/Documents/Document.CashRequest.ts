@@ -25,7 +25,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   currencyShortName = '';
   taxRate = -1;
-  isKAZAKHSTAN = false;
+  countryCode = '';
   isSuperUser = false;
 
   ngOnInit() {
@@ -46,8 +46,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   async FillisKAZAKHSTAN() {
     let comp = this.getValue('company').value;
     if (!comp) return false;
-    comp = await this.api.ancestors(comp, 1);
-    return comp === '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
+    comp = await this.api.byId(comp)
+    return comp.Country === '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
   }
 
   old_onOperationChanges(operation: string) {
@@ -95,10 +95,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       Выдача займа контрагенту`.indexOf(operation) !== -1;
 
     this.form.markAsTouched();
-  }
-
-  onCompanyChanges(event) {
-    this.FillisKAZAKHSTAN();
   }
 
   onOperationChanges(operation: string) {
@@ -208,7 +204,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
     if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
     const info = this.getValue('info');
-    if (info) {
+    if (info && this.countryCode !== 'UKR') {
       const curlength = (info as string).split('\n')[0].length;
       if (curlength > 120) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
     }
@@ -216,8 +212,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   onOpen() {
 
-    this.api.isRoleAvailable('Только просмотр').then(isRoleAvailable => {});
-    
     this.api.isRoleAvailable('Администратор заявок на расход ДС').then(isRoleAvailable => {
       this.isSuperUser = isRoleAvailable;
 
@@ -241,6 +235,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       } else {
         this.FillTaxRate(false);
         this.FillCurrencyShortName(false);
+        this.FillCountryCode();
       }
     });
 
@@ -253,6 +248,14 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     });
   }
 
+  async FillCountryCode(FillTaxInfo = false, showError = false) {
+    this.countryCode = '';
+    const company = this.getValue('company');
+    if (!company || !company.id) return;
+    this.countryCode = await this.ds.api.getObjectPropertyById(company.id, 'Country.code');
+    if (!this.countryCode && showError) super.throwError('Не определена страна!', `Не определена страна организации ${company.value}`)
+    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
+  }
 
   async FillCurrencyShortName(FillTaxInfo?: boolean) {
     const Currency = this.getValue('сurrency');
@@ -274,7 +277,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
   }
 
-  FillTaxInfo(Amount) {
+  FillTaxInfo(Amount: number) {
     if (this.taxRate === -1 || !this.currencyShortName) return;
     let info = this.getValue('info');
     if (!info || !Amount) return;
@@ -282,10 +285,14 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (infoArr.length === 0) return;
     let Tax = Amount - Amount / (this.taxRate * 0.01 + 1);
     let newInfo = [];
-    let taxInfo = this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)';
+    let taxInfo = '';
+    if (this.countryCode === 'UKR') {
+      taxInfo = this.taxRate ? `В т.ч. ПДВ (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без податку (ПДВ)';
+    } else {
+      taxInfo = this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)';
+    }
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`Сумма ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}. ${taxInfo}`);
-    // newInfo.push(this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)');
+    newInfo.push(`${this.countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}. ${taxInfo}`);
     this.setValue('info', newInfo.join('\n'));
   }
 
@@ -304,6 +311,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         { onlySelf: false, emitEvent: false }
       );
     }
+  }
+
+  async onCompanyChanges(event) {
+    this.FillCountryCode(true, true);
   }
 
   StartProcess() {
@@ -329,4 +340,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   OpenReport() {
     window.open('https://bi.x100-group.com/Reports/report/Jetti/Cash/CashRequest?rs:Command=Render', '_blank');
   }
+}
+
+const newFormValue = (type = '', id = null, code = null, value = null) => {
+  return { id: id, code: code, type: type, value: value };
 }

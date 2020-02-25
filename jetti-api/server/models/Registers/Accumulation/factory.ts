@@ -1,3 +1,4 @@
+import { RegisterAccumulationIntercompany } from './Intercompany';
 import { RegisterAccumulationSalary } from './Salary';
 import { RegisterAccumulationBalanceReport } from './Balance.Reports';
 import { RegisterAccumulationAccountablePersons } from './AccountablePersons';
@@ -26,6 +27,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Cash' |
   'Register.Accumulation.Cash.Transit' |
   'Register.Accumulation.Inventory' |
+  'Register.Accumulation.Intercompany' |
   'Register.Accumulation.Loan' |
   'Register.Accumulation.PL' |
   'Register.Accumulation.Sales' |
@@ -51,7 +53,8 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.Salary', Class: RegisterAccumulationSalary },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },
   { type: 'Register.Accumulation.CashToPay', Class: RegisterAccumulationCashToPay },
-  { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover }
+  { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover },
+  { type: 'Register.Accumulation.Intercompany', Class: RegisterAccumulationIntercompany },
 ];
 
 export function createRegisterAccumulation(init: Partial<RegisterAccumulation>) {

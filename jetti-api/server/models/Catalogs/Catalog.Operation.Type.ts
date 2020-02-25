@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Хозяйственная операция',
   icon: 'fa fa-list',
   menu: 'Хозяйственные операции',
-  prefix: 'OPERT-'
+  prefix: 'OPERT-',
+  hierarchy: 'folders'
 })
 export class CatalogOperationType extends DocumentBase {
 

@@ -1,3 +1,4 @@
+import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUsersPermissions } from './fuctions/UsersPermissions';
 import * as moment from 'moment';
 import { RefValue } from './models/common-types';
@@ -56,7 +57,8 @@ export interface JTL {
     getUserRoles: (tx: MSSQL) => Promise<{ id: Ref, description: string }[]>,
     isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
-    GUID: () => Promise<string>
+    GUID: () => Promise<string>,
+    exchangeDB: () => MSSQL
   };
 }
 
@@ -98,7 +100,7 @@ export const lib: JTL = {
     isRoleAvailable,
     GUID,
     closeMonthErrors,
-
+    exchangeDB
   }
 };
 
@@ -365,6 +367,10 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
+}
+
+function exchangeDB() {
+  return new MSSQL(EXCHANGE_POOL);
 }
 
 global['lib'] = lib;
