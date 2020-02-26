@@ -270,7 +270,7 @@ export class DocumentCashRequest extends DocumentBase {
   tempCompanyParent: Ref = null;
 
   @Props({ type: 'string', hiddenInList: true })
-  tempSalaryKind = 'PAID'
+  tempSalaryKind = 'PAID';
 
   @Props({
     type: 'table', required: false, order: 1,

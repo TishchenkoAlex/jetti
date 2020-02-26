@@ -23,6 +23,9 @@ import { router as form } from './routes/form';
 import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
+import { initGlobal } from './fuctions/initGlobals';
+
+initGlobal();
 
 const root = './';
 const app = express();
