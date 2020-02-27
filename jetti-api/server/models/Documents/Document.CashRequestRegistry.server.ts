@@ -55,7 +55,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     let BankAccountSupplier, currentCR, addBaseOnParams, LinkedDocument;
 
     if (this.Operation === 'Выплата заработной платы') {
-      const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))]; 
+      const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
       if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)') ;
     }
 
@@ -93,7 +93,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (this.Operation === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount']) OperationServer['Amount'] = row.Amount;
       if (LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
-      rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => { el.LinkedDocument = OperationServer.id });
+      rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => { el.LinkedDocument = OperationServer.id; });
     }
     // this.Post(true, tx);
     await updateDocument(this, tx);
@@ -114,7 +114,6 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     const query = `
     DROP TABLE IF EXISTS #CashRequestBalance;
     DROP TABLE IF EXISTS #SalaryAmount;
-    
     SELECT
         Balance.[currency] AS сurrency,
         Balance.[CashRequest] AS CashRequest,
@@ -132,7 +131,6 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     GROUP BY
         Balance.[currency], Balance.[CashRequest],Balance.[CashRecipient], Balance.[OperationType],Balance.[BankAccountPerson]
     HAVING SUM(Balance.[Amount]) > 0;
-    
     SELECT
         Balance.[CashRequest] AS CashRequest,
         Balance.[CashRecipient] AS CashRecipient,
@@ -140,12 +138,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         SUM(Balance.[Amount]) AS Amount
     INTO #SalaryAmount
     FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
-    WHERE Balance.document in (SELECT cr.CashRequest 
-      FROM #CashRequestBalance cr 
+    WHERE Balance.document in (SELECT cr.CashRequest
+      FROM #CashRequestBalance cr
       WHERE cr.OperationType = N'Выплата заработной платы')
     GROUP BY
         Balance.[CashRequest],Balance.[CashRecipient],Balance.[BankAccountPerson] ;
-         
     SELECT
         CRT.[CashRequest] AS CashRequest
         , CAST(ISNULL(sa.Amount,DocCR.[Amount]) AS MONEY) AS CashRequestAmount
@@ -163,8 +160,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         , DocCR.[CashOrBankIn.id] AS BankAccountIn
         , DocCR.[CashRecipientBankAccount.id] AS CashRecipientBankAccount
         , (SELECT COUNT(*) FROM [dbo].[Catalog.Counterpartie.BankAccount] AS CBA
-    WHERE CBA.[owner.id] = DocCR.[CashRecipient.id] 
-      AND CBA.[currency.id] = DocCR.[сurrency.id] 
+    WHERE CBA.[owner.id] = DocCR.[CashRecipient.id]
+      AND CBA.[currency.id] = DocCR.[сurrency.id]
       AND CBA.[deleted] = 0) AS CountOfBankAccountCashRecipient
         , null as LinkedDocument
     FROM #CashRequestBalance AS CRT

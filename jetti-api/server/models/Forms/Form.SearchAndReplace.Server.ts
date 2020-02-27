@@ -14,7 +14,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
   async getExchangeData(id: string, tx: MSSQL): Promise<{ ExchangeCode: string, ExchangeBase: string } | null> {
 
     const sdbq = new MSSQL(TASKS_POOL, this.user);
-    let query = `select ExchangeCode, ExchangeBase from dbo.[Documents] where id = @p1`;
+    const query = `select ExchangeCode, ExchangeBase from dbo.[Documents] where id = @p1`;
     return await sdbq.oneOrNone<{ ExchangeCode: string, ExchangeBase: string } | null>(query, [id]);
 
   }
@@ -148,8 +148,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
 
     let query = `
     BEGIN TRANSACTION
-    DECLARE @p1 VARCHAR(36) = '@p1Val' ;
-    DECLARE @p2 VARCHAR(36) = '@p2Val';
+
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Update];
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Insert];
         ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents.CheckAccessToCommonDocs];
@@ -161,16 +160,19 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         RAISERROR('#Exchange', 0 ,1) WITH NOWAIT;
         IF (select ExchangeBase from #Exchange) <> ''
         BEGIN
-            update documents set
-                ExchangeBase = (select ExchangeBase from #Exchange),
-                ExchangeCode = (select ExchangeCode from #Exchange)
-            where id = @p2;
-            RAISERROR('set ExchangeBase', 0 ,1) WITH NOWAIT;
-            update documents set
-                ExchangeBase = '',
-                ExchangeCode = ''
-            where id = @p1;
-            RAISERROR('clear ExchangeBase', 0 ,1) WITH NOWAIT;
+            if ((select top 1 coalesce(d.ExchangeCode,'') from Documents d where d.id=@p2)='' or @p3=1)
+            begin
+                update documents set
+                    ExchangeBase = (select ExchangeBase from #Exchange),
+                    ExchangeCode = (select ExchangeCode from #Exchange)
+                where id = @p2;
+                RAISERROR('set ExchangeBase', 0 ,1) WITH NOWAIT;
+                update documents set
+                    ExchangeBase = null,
+                    ExchangeCode = null
+                where id = @p1;
+                RAISERROR('clear ExchangeBase', 0 ,1) WITH NOWAIT;
+            end
         END
         update documents set company = @p2 where company = @p1;
         RAISERROR('company', 0 ,1) WITH NOWAIT;
@@ -195,8 +197,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         ALTER TABLE [dbo].[Documents] ENABLE TRIGGER [Documents.CheckAccessToCommonDocs];
     COMMIT;`;
 
-    query = query.replace('@p1Val', this.OldValue).replace('@p2Val', this.NewValue)
-    await sdbq.manyOrNone(query);
+    await sdbq.manyOrNone(query,[this.OldValue, this.NewValue, this.ReplaceExchangeCode]);
     return this;
   }
 }

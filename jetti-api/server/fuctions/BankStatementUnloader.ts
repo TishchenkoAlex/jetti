@@ -11,11 +11,11 @@ export class BankStatementUnloader {
   static country = '';
   static operation = '';
 
-  static countryKAZAKHSTANId = '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
+  static countryKAZAKHSTANId = '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; // KAZAKHSTAN
 
   private static getQueryTextSalaryProjectCommon() {
     return `
-    select 
+    select
       doc.id N'ИдПервичногоДокумента',
       FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаРеестра',
       bank.code N'БИК',
@@ -31,13 +31,13 @@ export class BankStatementUnloader {
       ISNULL(JSON_QUERY(doc.doc,'$.PayRolls'),'') ig_PayRolls,
       ISNULL(JSON_VALUE(sp.doc,'$.BankBranch'),'') ig_ОтделениеБанка,
       ISNULL(JSON_VALUE(sp.doc,'$.BankBranchOffice'),'') ig_BankBranchOffice
-    from [dbo].[Documents] doc 
+    from [dbo].[Documents] doc
       inner join [dbo].[Documents] sp on JSON_VALUE(doc.doc,N'$.SalaryProject') = sp.id
       inner join [dbo].[Documents] BankAccount on JSON_VALUE(doc.doc,N'$.BankAccount') = BankAccount.id
       inner join [dbo].[Documents] comp on sp.company = comp.id
       inner join [dbo].[Documents] bank on JSON_VALUE(sp.doc,N'$.bank') = bank.id
       inner join [dbo].[Documents] currency on JSON_VALUE(doc.doc,N'$.currency') = currency.id
-    where doc.id in (@p1)`
+    where doc.id in (@p1)`;
   }
 
   private static getQueryTextSalaryEmployees() {
@@ -50,7 +50,7 @@ export class BankStatementUnloader {
         Employee VARCHAR(200) N'$.Employee',
         BankAccount VARCHAR(200) N'$.BankAccount',
         Amount MONEY N'$.Amount');
-    SELECT 
+    SELECT
       ISNULL(JSON_VALUE(person.doc,'$.LastName'),'') N'Фамилия',
       ISNULL(JSON_VALUE(person.doc,'$.FirstName'),'') N'Имя',
       ISNULL(JSON_VALUE(person.doc,'$.MiddleName'),'') N'Отчество',
@@ -60,16 +60,16 @@ export class BankStatementUnloader {
       N'ig_КодВалюты' N'rp_КодВалюты'
     FROM #PayRolls pr
       left join [dbo].[Documents] person on person.id = pr.Employee
-      left join [dbo].[Documents] ba on ba.id = pr.BankAccount;`
+      left join [dbo].[Documents] ba on ba.id = pr.BankAccount;`;
   }
 
   private static async getQueryTextCommon(): Promise<string> {
 
     switch (this.country) {
-      case this.countryKAZAKHSTANId: //KAZAKHSTAN
+      case this.countryKAZAKHSTANId: // KAZAKHSTAN
         return await this.getQueryTextCommonKAZAKHSTAN();
-      case 'E5850830-02D2-11EA-A524-E592E08C23A5': //RUSSIA
-      case 'FE302460-0489-11EA-941F-EBDB19162587': //UKRAINE - Украина
+      case 'E5850830-02D2-11EA-A524-E592E08C23A5': // RUSSIA
+      case 'FE302460-0489-11EA-941F-EBDB19162587': // UKRAINE - Украина
         return await this.getQueryTextCommonRUSSIA();
       default:
         const comp = await lib.doc.byId(this.country, this.tx);
@@ -82,16 +82,16 @@ export class BankStatementUnloader {
   private static async getQueryTextCommonRUSSIA() {
 
     switch (this.operation) {
-      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': //С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
         return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
       case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
-        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов()
+        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
       case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
-        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов()
+        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов();
       case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
-        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть()
+        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
       case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
-        return this.getQueryTextCommonRUSSIAОплатаПоставщику()
+        return this.getQueryTextCommonRUSSIAОплатаПоставщику();
       default:
         const operation = await lib.doc.byId(this.operation, this.tx);
         throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
@@ -100,16 +100,16 @@ export class BankStatementUnloader {
 
   private static async getQueryTextCommonKAZAKHSTAN() {
     switch (this.operation) {
-      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': //С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
         return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
       case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
-        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов()
+        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
       case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
-        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов()
+        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов();
       case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
-        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть()
+        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
       case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
-        return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику()
+        return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику();
       default:
         const operation = await lib.doc.byId(this.operation, this.tx);
         throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
@@ -160,7 +160,6 @@ export class BankStatementUnloader {
     ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
     ,Obj.[date] as ObjDate_ig
     ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
-    
     FROM [dbo].[Documents] as Obj
     LEFT JOIN (
     SELECT
@@ -177,7 +176,7 @@ export class BankStatementUnloader {
     LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 
   private static getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть() {
@@ -241,7 +240,7 @@ export class BankStatementUnloader {
         LEFT JOIN [dbo].[Documents] as CompIn on CompIn.id = BAIn.company and CompIn.[type] = 'Catalog.Company'
         LEFT JOIN [dbo].[Documents] as BankIn on BankIn.id = JSON_VALUE(BAIn.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
         WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '433D63DE-D849-11E7-83D2-2724888A9E4F' -- С р/с - на расчетный счет  (в путь)
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
 
   }
 
@@ -306,7 +305,7 @@ export class BankStatementUnloader {
     LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '54AA5310-102E-11EA-AA50-31ECFB22CD33' -- С р/с - Выдача/Возврат кредитов и займов (Контрагент)
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 
   private static getQueryTextCommonRUSSIAперечислениеНалоговИВзносов() {
@@ -384,8 +383,7 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as TaxBasisPayment on TaxBasisPayment.id = JSON_VALUE(Obj.doc, '$.TaxBasisPayment') and TaxBasisPayment.[type] = 'Catalog.TaxBasisPayment'
     LEFT JOIN [dbo].[Documents] as TaxPaymentPeriod on TaxPaymentPeriod.id = JSON_VALUE(Obj.doc, '$.TaxPaymentPeriod') and TaxPaymentPeriod.[type] = 'Catalog.TaxPaymentPeriod'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '8D128C20-3E20-11EA-A722-63A01E818155' -- перечисление налогов и взносов
-    
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
 
   }
 
@@ -451,7 +449,7 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BankPers on BankPers.id = JSON_VALUE(BAEmp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = 'E47A8910-4599-11EA-AAE2-A1796B9A826A' -- С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
 
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 
   private static getQueryTextCommonKAZAKHSTANОплатаПоставщику() {
@@ -511,7 +509,7 @@ export class BankStatementUnloader {
     LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
-    order by Obj.company, BAComp.[code], Obj.[date]`
+    order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 
   private static async executeQuery(query: string, params: any[] = []) {
@@ -539,7 +537,6 @@ export class BankStatementUnloader {
   }
 
   private static async getSalaryProjectEmployeesDataFromJSON(EmployeesDataJSON: string): Promise<[{ key: string, value }][]> {
-    //return await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployees().replace(/@p1/g, EmployeesDataJSON), []);
     return await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployees(), [EmployeesDataJSON]);
   }
 
@@ -564,7 +561,7 @@ export class BankStatementUnloader {
     let rowIndex = 1;
     let amount = 0;
     for (const row of employees) {
-      result += `\n\t\t<Сотрудник Нпп="${rowIndex}">`
+      result += `\n\t\t<Сотрудник Нпп="${rowIndex}">`;
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1 || !row[prop] || (prop.search('rp_') !== -1 && !common[row[prop]])) continue;
         if (prop.search('rp_') !== -1) {
@@ -573,7 +570,7 @@ export class BankStatementUnloader {
           result += `\n\t\t\t<${prop}>${row[prop]}</${prop}>`;
         }
       }
-      result += `\n\t\t</Сотрудник>`
+      result += `\n\t\t</Сотрудник>`;
       amount += row['Сумма'];
       rowIndex++;
     }
@@ -666,14 +663,14 @@ export class BankStatementUnloader {
     return this.isSalaryProject ?
       await this.BankStatementDataAsSalaryProjectBankStatementString(BankStatementData)
       :
-      await this.BankStatementDataAsCommonBankStatementString(BankStatementData)
+      await this.BankStatementDataAsCommonBankStatementString(BankStatementData);
   }
 
   private static getHeaderText(StatementData): string {
     let result = '1CClientBankExchange';
     for (const prop of Object.keys(StatementData)) {
-      if (prop.search('_ig_head') === -1) continue
-      result += `\n${prop.replace('_ig_head', '')}=${StatementData[prop]}`
+      if (prop.search('_ig_head') === -1) continue;
+      result += `\n${prop.replace('_ig_head', '')}=${StatementData[prop]}`;
     }
 
     return result;
@@ -682,8 +679,8 @@ export class BankStatementUnloader {
   private static getShortDocNumber(docNumber: string): string {
 
     if (docNumber.split('-').length === 2) {
-      let docNumberArr = docNumber.split('-');
-      if (this.country = this.countryKAZAKHSTANId) {
+      const docNumberArr = docNumber.split('-');
+      if (this.country === this.countryKAZAKHSTANId) {
         return Number(docNumberArr[1]).toString();  // казахстан без лид. нулей
       }
       return docNumberArr[1];

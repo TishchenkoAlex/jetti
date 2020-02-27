@@ -39,10 +39,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.Department = null;
         this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-
+        let query = '';
         if (company) {
           this.сurrency = company.currency;
-          let query = '';
           switch (this.CashKind) {
             case 'BANK':
               query = `
@@ -79,7 +78,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.CashRecipientBankAccount = null;
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
-        const query = `
+        query = `
           SELECT TOP 1 id
           FROM dbo.[Catalog.Contract]
           WHERE
@@ -195,14 +194,13 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 	SELECT
             Person PersonID,
             SUM(Amount) Salary
-			INTO #Salary 
-        FROM [dbo].[Register.Accumulation.Salary] register 
-        WHERE (1=1) 
+			INTO #Salary
+        FROM [dbo].[Register.Accumulation.Salary] register
+        WHERE (1=1)
 			AND (Person in (SELECT personId FROM #Person) or @p1 is NULL)
             AND currency = @p2
             AND date <= @p3
             AND company = @p4
-	
         GROUP BY Person
         HAVING SUM(Amount) > 0;
 
@@ -220,12 +218,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
             FROM (
                 SELECT
                     ft.CashRecipient PersonID,
-                    -IIF(d.[type] = 'Document.Operation' 
-                AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
+                    -IIF(d.[type] = 'Document.Operation'
+                AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
                 AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
                 FROM [dbo].[Register.Accumulation.CashToPay] ft
                     LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
-                WHERE (1=1) 
+                WHERE (1=1)
 					AND (ft.CashRecipient IN (SELECT personId from #Person) or (@p1 is NULL and ft.CashRecipient IN (SELECT personId from #Salary)))
                     AND ft.currency = @p2
                     AND ft.date <= @p3
@@ -233,11 +231,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
                 GROUP BY
                     ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
                 HAVING
-                IIF(d.[type] = 'Document.Operation' 
-                AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E') 
+                IIF(d.[type] = 'Document.Operation'
+                AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
                 AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0) as res
             GROUP BY
-            PersonID) as fin 
+            PersonID) as fin
     LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
     GROUP BY
         PersonID, p.Person
@@ -252,7 +250,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     salaryBalance.forEach(el => {
       this.PayRolls.push({ Employee: el.Employee, Salary: el.Salary, Tax: 0, BankAccount: null });
       this.Amount += el.Salary;
-    })
+    });
 
   }
 
@@ -647,6 +645,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     //   docOperation.f2 = docOperation['CashRegisterIn'];
     // } else {
     docOperation['CashFlow'] = this.CashFlow;
+    docOperation['CashFlow'] = this.ContractIntercompany;
     docOperation.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
     docOperation['BankAccountOut'] = CashOrBank.id;
     docOperation['BankAccountTransit'] = CashOrBankIn.id;
@@ -665,8 +664,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     }
     if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
-    let AmountBalance: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
-    if (!params) AmountBalance = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+    let AmountBalancFromDoc: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
+    if (!params) AmountBalancFromDoc = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
     docOperation['SalaryProject'] = this.SalaryProject;
     docOperation['PayRolls'] = [];
     docOperation['SalaryAnalytics'] = this.SalaryAnalitics;
@@ -680,13 +679,13 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       docOperation['CashRegister'] = CashOrBank.id;
       docOperation.f1 = docOperation['CashRegister'];
       docOperation['SalaryKind'] = 'PAID';
-      const knowEmployee: TypesCashRecipient[] = [];
+      const knowEmployee1: TypesCashRecipient[] = [];
 
       for (const row of this.PayRolls) {
-        const EmployeeBalance = AmountBalance.filter(el => (el.CashRecipient === row.Employee as any));
+        const EmployeeBalance = AmountBalancFromDoc.filter(el => (el.CashRecipient === row.Employee as any));
         for (const emp of EmployeeBalance) {
-          if (knowEmployee.indexOf(emp.CashRecipient) === -1)
-            knowEmployee.push(emp.CashRecipient);
+          if (knowEmployee1.indexOf(emp.CashRecipient) === -1)
+            knowEmployee1.push(emp.CashRecipient);
           docOperation['PayRolls'].push({
             Employee: emp.CashRecipient,
             Amount: emp.Amount
@@ -699,7 +698,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       docOperation.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC'; // С р/с - выплата зарплаты (ВЕДОМОСТЬ В БАНК)
       docOperation['BankAccount'] = CashOrBank.id;
       docOperation.f1 = docOperation['BankAccount'];
-      const knowEmployee: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+      const knowEmployee2: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
       if (params) {
         const AmountBalance =
           (params as Array<{ CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>);
@@ -707,8 +706,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           const EmployeeBalance = AmountBalance
             .filter(el => (el.CashRecipient === row.Employee as any && row.BankAccount as any === el.BankAccountPerson));
           for (const emp of EmployeeBalance) {
-            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1) {
-              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
+            if (knowEmployee2.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1) {
+              knowEmployee2.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
               docOperation['PayRolls'].push({
                 Employee: emp.CashRecipient,
                 Amount: emp.Amount,
@@ -719,17 +718,17 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           }
         }
       } else {
-        const knowEmployee: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
+        const knowEmployee3: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount }[] = [];
 
         for (const row of this.PayRolls) {
-          const EmployeeBalance = AmountBalance.filter(el => (
+          const EmployeeBalance = AmountBalancFromDoc.filter(el => (
             row.Employee as any === el.CashRecipient
             && row.BankAccount as any === el.BankAccountPerson
           ));
 
           for (const emp of EmployeeBalance) {
-            if (knowEmployee.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1)
-              knowEmployee.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
+            if (knowEmployee3.indexOf({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson }) === -1)
+              knowEmployee3.push({ CashRecipient: emp.CashRecipient, BankAccountPerson: emp.BankAccountPerson });
             docOperation['PayRolls'].push({
               Employee: emp.CashRecipient,
               Amount: emp.Amount,

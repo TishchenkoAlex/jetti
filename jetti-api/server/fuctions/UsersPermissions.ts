@@ -1,9 +1,9 @@
 import { lib } from './../std.lib';
 import { CatalogUser } from './../models/Catalogs/Catalog.User';
 import { DocumentTypes, CatalogTypes } from './../models/documents.types';
-import { MSSQL } from "../mssql";
-import { JETTI_POOL } from "../sql.pool.jetti";
-import { Ref } from "../models/document";
+import { MSSQL } from '../mssql';
+import { JETTI_POOL } from '../sql.pool.jetti';
+import { Ref } from '../models/document';
 
 const sdba = new MSSQL(JETTI_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
@@ -17,19 +17,35 @@ export class UserPermissions {
     Catalogs: { DocType: CatalogTypes, read: boolean, write: boolean }[];
 }
 
+class UserPermissionsRow {
+    id: Ref;
+    kind: string;
+    description: string;
+    DocType: DocumentTypes | CatalogTypes | null;
+    read: boolean | null;
+    write: boolean | null;
+}
+
 export const getUsersPermissions = async (tx: MSSQL): Promise<UserPermissions> => {
 
     const result = new UserPermissions;
-    const userId = await lib.doc.byCode('Catalog.User', tx.user.email, tx);
-    result.User = (await lib.doc.byIdT<CatalogUser>(userId as any, tx))!;
-    const PermissionsData = await tx.manyOrNone<{ id: Ref, kind: string, description: string, DocType: DocumentTypes | CatalogTypes | null, read: boolean | null, write: boolean | null }>(PermissionsQuery, [result.User.id, result.User.isAdmin]);
+    const userId = await lib.doc.byCode('Catalog.User', (tx.user.email as string).substring(0, 36), tx);
+    if (!userId) throw new Error('Unknow user: ' + tx.user.email);
+    const user = await lib.doc.byIdT<CatalogUser>(userId as any, tx);
+    if (!user) throw new Error('Unknow user: ' + tx.user.email);
+    result.User = user;
+    const PermissionsData = await tx.manyOrNone<UserPermissionsRow>(PermissionsQuery, [result.User.id, result.User.isAdmin]);
     result.Subsystems = PermissionsData.filter(e => e.kind === 'Subsystem').map(k => ({ id: k.id, description: k.description }));
     result.UserGroups = PermissionsData.filter(e => e.kind === 'UserOrGroup' && e.id !== userId).map(k => k.id);
     result.Roles = PermissionsData.filter(e => e.kind === 'Role').map(k => ({ id: k.id, description: k.description }));
-    result.Documents = PermissionsData.filter(e => e.kind === 'Document').map(k => ({ DocType: k.DocType as DocumentTypes, read: !!k.read, write: !!k.write }));
-    result.Catalogs = PermissionsData.filter(e => e.kind === 'Catalog').map(k => ({ DocType: k.DocType as CatalogTypes, read: !!k.read, write: !!k.write }));
+    result.Documents = PermissionsData.filter(e => e.kind === 'Document').map(k => (
+        { DocType: k.DocType as DocumentTypes, read: !!k.read, write: !!k.write }
+    ));
+    result.Catalogs = PermissionsData.filter(e => e.kind === 'Catalog').map(k => (
+        { DocType: k.DocType as CatalogTypes, read: !!k.read, write: !!k.write }
+    ));
     return result;
-}
+};
 
 const PermissionsQuery = `
 DROP TABLE IF EXISTS #UserOrGroup;
@@ -131,4 +147,4 @@ from #Catalogs;
 SELECT 'Document' kind, *
 from #Documents;
 SELECT 'Role' kind, [Role] id, description
-from #Roles;`
+from #Roles;`;

@@ -43,60 +43,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     this.form.get(fieldName).setValue(value, options);
   }
 
-  async FillisKAZAKHSTAN() {
-    let comp = this.getValue('company').value;
-    if (!comp) return false;
-    comp = await this.api.byId(comp)
-    return comp.Country === '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; //KAZAKHSTAN
-  }
-
-  old_onOperationChanges(operation: string) {
-
-    // 'Оплата поставщику',
-    // 'Перечисление налогов и взносов',
-    // 'Оплата ДС в другую организацию',
-    // 'Выдача ДС подотчетнику',
-    // 'Оплата по кредитам и займам полученным',
-    // 'Прочий расход ДС',
-    // 'Выдача займа контрагенту',
-    // 'Возврат оплаты клиенту'
-    // 'Выплата заработной платы'
-    this.vk['PayRollKind'].required = operation === 'Выплата заработной платы';
-    this.vk['CashOrBankIn'].required = operation === 'Оплата ДС в другую организацию';
-    this.vk['BalanceAnalytics'].required = operation === 'Перечисление налогов и взносов';
-
-    this.vk['PaymentKind'].required =
-      `Выплата заработной платы
-      Оплата по кредитам и займам полученным`.indexOf(operation) !== -1;
-
-    this.vk['CashOrBank'].required =
-      `Выплата заработной платы
-      Оплата ДС в другую организацию`.indexOf(operation) !== -1;
-
-    this.vk['CashRecipient'].required =
-      `Оплата поставщику
-      Перечисление налогов и взносов
-      Оплата ДС в другую организацию
-      Выдача ДС подотчетнику
-      Оплата по кредитам и займам полученным
-      Выдача займа контрагенту
-      Возврат оплаты клиенту`.indexOf(operation) !== -1;
-
-    this.vk['Contract'].required =
-      `Оплата поставщику
-      Возврат оплаты клиенту`.indexOf(operation) !== -1;
-
-    this.vk['ExpenseOrBalance'].required =
-      `Перечисление налогов и взносов
-      Прочий расход ДС`.indexOf(operation) !== -1;
-
-    this.vk['Loan'].required =
-      `Оплата по кредитам и займам полученным
-      Выдача займа контрагенту`.indexOf(operation) !== -1;
-
-    this.form.markAsTouched();
-  }
-
   onOperationChanges(operation: string) {
 
     // 'Оплата поставщику',
@@ -144,14 +90,14 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     TaxBasisPayment
     TaxPaymentPeriod`.split('\n').forEach(el => { this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов' });
 
-    this.vk['CashRecipient'].required = operation !== 'Выплата заработной платы';
     this.vk['CashOrBank'].required = operation === 'Выплата заработной платы';
-
     this.form.markAsTouched();
-    const CashRecipient = this.getValue('CashRecipient');
+    
+    let CashRecipient = null;
 
     switch (operation) {
       case 'Оплата ДС в другую организацию':
+        CashRecipient = this.getValue('CashRecipient');
         const CashOrBankIn = this.getValue('CashOrBankIn');
         if (!CashOrBankIn || CashOrBankIn.type !== 'Catalog.BankAccount') {
           this.setValue('CashOrBankIn',
@@ -177,6 +123,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         };
         break;
       case 'Выплата заработной платы без ведомости':
+        CashRecipient = this.getValue('CashRecipient');
         if (!CashRecipient || CashRecipient.type !== 'Catalog.Person') {
           this.setValue('CashRecipient',
             { id: null, code: null, type: 'Catalog.Person', value: null },
@@ -210,35 +157,32 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     }
   }
 
-  onOpen() {
+  async onOpen() {
 
-    this.api.isRoleAvailable('Администратор заявок на расход ДС').then(isRoleAvailable => {
-      this.isSuperUser = isRoleAvailable;
+    this.isSuperUser = await this.api.isRoleAvailable('Администратор заявок на расход ДС');
 
-      if (this.isSuperUser) {
-        this.form.enable({ emitEvent: false });
-        this.vk.Status.readOnly = false;
-      }
+    if (this.isSuperUser) {
+      this.form.enable({ emitEvent: false });
+      this.vk.Status.readOnly = false;
+    }
 
-      if (this.isNew) {
-        this.setValue('Status', 'PREPARED');
-        this.setValue('workflowID', '');
-        if (this.getValue('Amount') === 0) this.setValue('Amount', null);
-        if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику');
-        this.onCashKindChange(this.getValue('CashKind'));
-        this.onOperationChanges(this.getValue('Operation'));
-      }
+    if (this.isNew) {
+      this.setValue('Status', 'PREPARED', { emitEvent: false });
+      this.setValue('workflowID', '', { emitEvent: false });
+      if (this.getValue('Amount') === 0) this.setValue('Amount', null, { emitEvent: false });
+      if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику', { emitEvent: false });
+      if (!this.getValue('CashOrBank').value) this.onCashKindChange(this.getValue('CashKind'));
+      this.onOperationChanges(this.getValue('Operation'));
+    }
 
-      if (this.readonlyMode) {
-        this.form.disable({ emitEvent: false });
-        this.form.get('info').enable({ emitEvent: false });
-      } else {
-        this.FillTaxRate(false);
-        this.FillCurrencyShortName(false);
-        this.FillCountryCode();
-      }
-    });
-
+    if (this.readonlyMode) {
+      this.form.disable({ emitEvent: false });
+      this.form.get('info').enable({ emitEvent: false });
+    } else {
+      this.FillTaxRate(false);
+      this.FillCurrencyShortName(false);
+      this.FillCountryCode();
+    }
   }
 
   refresh() {

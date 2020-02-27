@@ -128,6 +128,18 @@ export class DocumentCashRequest extends DocumentBase {
   })
   Contract: Ref = null;
 
+  @Props({
+    type: 'Catalog.Contract.Intercompany',
+    hiddenInList: true,
+    required: false,
+    label: 'Договор',
+    owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'KorrCompany' },
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
+  ContractIntercompany: Ref = null;
+
   @Props({ type: 'Catalog.CashFlow', label: 'Статья ДДС', required: true })
   CashFlow: Ref = null;
 

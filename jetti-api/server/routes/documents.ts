@@ -427,7 +427,6 @@ router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next:
       SELECT id, [parent.id], description, LevelUp
       INTO #Tree
       FROM dbo.[Ancestors](@p1);
-
       SELECT res.id, res.parent, res.isfolder, res.description, MIN(res.LevelUp) level, doc.deleted
       from (
         SELECT doc.id id, doc.parent parent, doc.isfolder, doc.description, tree.LevelUp
@@ -445,7 +444,6 @@ router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next:
           FROM Documents doc
           WHERE doc.parent = @p1) res LEFT JOIN Documents doc on doc.id = res.id
       GROUP BY res.id, res.parent, res.isfolder, res.description, doc.deleted
-
       order by MIN(LevelUp), res.isfolder desc, res.description`;
       result = await tx.manyOrNone(query, [req.params.id]);
     }
