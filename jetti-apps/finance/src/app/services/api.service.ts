@@ -39,7 +39,7 @@ export class ApiService {
 
   isCountryByCompany(companyId: string, countryCode: string): Promise<boolean> {
     return this.getObjectPropertyById(companyId, 'Country.code').then(code => {
-      return code && code === countryCode
+      return code && code === countryCode;
     });
   }
 
@@ -231,12 +231,12 @@ export class ApiService {
         this.getDocList(type, '', 'first').toPromise().then(docList => {
           console.log('columns', columns);
           console.log('docList', docList);
-          console.log("result", hierarchyList)
+          console.log('result', hierarchyList);
         });
-      })
+      });
     }
 
-    return result
+    return result;
   }
 
   execute(type: FormTypes, method: string, doc: FormBase) {

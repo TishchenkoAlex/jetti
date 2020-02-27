@@ -189,7 +189,7 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
       CodeCompanySalary = 'SALARY-KAZAKHSTAN';
       break;
     default:
-  };
+  }
   return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
 }
 
@@ -372,8 +372,3 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
 function exchangeDB() {
   return new MSSQL(EXCHANGE_POOL);
 }
-
-global['lib'] = lib;
-global['DOC'] = lib.doc;
-global['byCode'] = lib.doc.byCode;
-global['moment'] = moment;
