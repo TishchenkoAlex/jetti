@@ -25,7 +25,7 @@ export const sqlConfig: ConnectionConfigAndPool = {
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 2 * 60 * 1000,
+    requestTimeout: 5 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
