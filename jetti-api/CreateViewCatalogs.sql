@@ -501,6 +501,49 @@
       GO
       
 
+      CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "ContractIntercompany", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([KorrCompany.v].description, '') [KorrCompany.value], d.[KorrCompany] [KorrCompany.id], [KorrCompany.v].type [KorrCompany.type]
+        , d.[Status] [Status]
+        , d.[StartDate] [StartDate]
+        , d.[EndDate] [EndDate]
+        , d.[Amount] [Amount]
+        , ISNULL([CashFlow.v].description, '') [CashFlow.value], d.[CashFlow] [CashFlow.id], [CashFlow.v].type [CashFlow.type]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , d.[isDefault] [isDefault]
+        , d.[notAccounting] [notAccounting]
+      
+        , ISNULL(l5.description, d.description) [ContractIntercompany.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ContractIntercompany.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ContractIntercompany.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [ContractIntercompany.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [ContractIntercompany.Level1]
+      FROM [Catalog.Contract.Intercompany.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Contract.Intercompany.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Contract.Intercompany.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Contract.Intercompany.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Contract.Intercompany.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Contract.Intercompany.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Company.v] [KorrCompany.v] WITH (NOEXPAND) ON [KorrCompany.v].id = d.[KorrCompany]
+        LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.Contract.Intercompany] TO jetti;
+      GO
+      
+
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] AS
         
       SELECT
@@ -680,6 +723,7 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Account.v].description, '') [Account.value], d.[Account] [Account.id], [Account.v].type [Account.type]
+        , ISNULL([BudgetItem.v].description, '') [BudgetItem.value], d.[BudgetItem] [BudgetItem.id], [BudgetItem.v].type [BudgetItem.type]
       
         , ISNULL(l5.description, d.description) [Income.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Income.Level4]
@@ -698,6 +742,7 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Account.v] [Account.v] WITH (NOEXPAND) ON [Account.v].id = d.[Account]
+        LEFT JOIN dbo.[Catalog.BudgetItem.v] [BudgetItem.v] WITH (NOEXPAND) ON [BudgetItem.v].id = d.[BudgetItem]
     
       GO
       GRANT SELECT ON dbo.[Catalog.Income] TO jetti;
@@ -2327,6 +2372,7 @@
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([CashRecipient.v].description, '') [CashRecipient.value], d.[CashRecipient] [CashRecipient.id], [CashRecipient.v].type [CashRecipient.type]
         , ISNULL([Contract.v].description, '') [Contract.value], d.[Contract] [Contract.id], [Contract.v].type [Contract.type]
+        , ISNULL([ContractIntercompany.v].description, '') [ContractIntercompany.value], d.[ContractIntercompany] [ContractIntercompany.id], [ContractIntercompany.v].type [ContractIntercompany.type]
         , ISNULL([CashFlow.v].description, '') [CashFlow.value], d.[CashFlow] [CashFlow.id], [CashFlow.v].type [CashFlow.type]
         , ISNULL([SalaryProject.v].description, '') [SalaryProject.value], d.[SalaryProject] [SalaryProject.id], [SalaryProject.v].type [SalaryProject.type]
         , ISNULL([Loan.v].description, '') [Loan.value], d.[Loan] [Loan.id], [Loan.v].type [Loan.type]
@@ -2373,6 +2419,7 @@
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Documents] [CashRecipient.v] ON [CashRecipient.v].id = d.[CashRecipient]
         LEFT JOIN dbo.[Catalog.Contract.v] [Contract.v] WITH (NOEXPAND) ON [Contract.v].id = d.[Contract]
+        LEFT JOIN dbo.[Catalog.Contract.Intercompany.v] [ContractIntercompany.v] WITH (NOEXPAND) ON [ContractIntercompany.v].id = d.[ContractIntercompany]
         LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
         LEFT JOIN dbo.[Catalog.SalaryProject.v] [SalaryProject.v] WITH (NOEXPAND) ON [SalaryProject.v].id = d.[SalaryProject]
         LEFT JOIN dbo.[Catalog.Loan.v] [Loan.v] WITH (NOEXPAND) ON [Loan.v].id = d.[Loan]

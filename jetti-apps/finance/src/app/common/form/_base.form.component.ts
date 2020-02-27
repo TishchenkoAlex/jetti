@@ -86,7 +86,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
   get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
   get hasTables() { return this.tables.length > 0; }
-  get hasFieldset() { return this.v.filter(el => (el.order === 777)).length > 0 }
+  get hasFieldset() { return this.v.filter(el => (el.order === 777)).length > 0; }
   get description() { return <FormControl>this.form.get('description'); }
   get isPosted() { return <boolean>!!this.form.get('posted').value; }
   get isDeleted() { return <boolean>!!this.form.get('deleted').value; }
@@ -135,7 +135,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       this.ds.api.isRoleAvailable('Только просмотр').then(readonly => {
         if (readonly) {
           this.form.disable(patchOptionsNoEvents);
-          this.readonly = true
+          this.readonly = true;
         }
       });
     }
@@ -168,7 +168,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     });
 
     this._form$.next(this.data);
-    this.onOpen()
+    this.onOpen();
 
     this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
       this.Next(form);
@@ -223,7 +223,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   delete() { this.beforeDelete(); this.ds.delete(this.viewModel.id); }
   post(close = false) { this.beforePost(); const doc = this.viewModel; this.ds.post(doc as DocumentBase, close); }
   unPost() { this.beforeUnPost(); this.ds.unpost(this.viewModel as DocumentBase); }
-  postClose() { this.post(true) }
+  postClose() { this.post(true); }
 
   copy() {
     this.beforeCopy();
@@ -290,7 +290,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     if (func) {
       const method = func[methodName];
       if (method) {
-        method().catch(e => { this.ds.openSnackBar('error', `On execute method \"${methodName}\"`, e); })
+        method().catch(e => { this.ds.openSnackBar('error', `On execute method \"${methodName}\"`, e); });
       }
     }
   }
@@ -318,8 +318,8 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
       if (clientModule) {
         const func = new Function('', clientModule).bind(this)();
-        const method = func['afterExecution'];
-        if (method) method();
+        const afterExecution = func['afterExecution'];
+        if (afterExecution) afterExecution();
       }
     });
   }

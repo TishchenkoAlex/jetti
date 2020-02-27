@@ -27,8 +27,11 @@ export class FormSearchAndReplace extends FormBase {
   @Props({ type: 'string', label: 'New value exchange base', readOnly: true })
   NewValueExchangeBase = '';
 
+  @Props({ type: 'boolean', label: 'Replace exchange code' })
+  ReplaceExchangeCode = false;
+
   @Props({
-    type: 'table',  label: 'Search result', readOnly: true,
+    type: 'table', label: 'Search result', readOnly: true,
   })
   SearchResult: SearchResult[] = [new SearchResult()];
 

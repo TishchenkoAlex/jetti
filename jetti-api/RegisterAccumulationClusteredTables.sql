@@ -1137,4 +1137,73 @@
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Intercompany];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.Intercompany]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
+        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Intercompany';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Intercompany.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.Intercompany]
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
+        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Intercompany';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency], [Amount], [AmountInBalance], [AmountInAccounting]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.id] ON [Register.Accumulation.Intercompany](id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     

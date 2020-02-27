@@ -463,4 +463,32 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
     
+    CREATE OR ALTER VIEW [Register.Accumulation.Intercompany]
+    AS
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, Intercompany, LegalCompanySender, LegalCompanyRecipient, Contract, OperationType, currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
+        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Intercompany';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
+    GO
+    
     
