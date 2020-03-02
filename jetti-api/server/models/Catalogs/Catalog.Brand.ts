@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Бренд',
   icon: 'fa fa-list',
   menu: 'Бренды',
-  prefix: 'BRAND-'
+  prefix: 'BRAND-',
+  hierarchy: 'folders'
 })
 export class CatalogBrand extends DocumentBase {
 

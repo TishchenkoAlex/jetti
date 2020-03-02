@@ -588,6 +588,9 @@
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ClosingDate'),127) [ClosingDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."StoreBrand"')) [StoreBrand]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."StoreFormat"')), '') [StoreFormat]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Department'
     

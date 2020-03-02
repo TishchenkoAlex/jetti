@@ -38,4 +38,13 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Person' })
   Manager: Ref = null;
 
+  @Props({ type: 'Catalog.Brand' })
+  Brand: Ref = null;
+
+  @Props({ type: 'Catalog.Department.Kind' })
+  kind: Ref = null;
+
+  @Props({ type: 'string', required: false })
+  Address = '';
+
 }

@@ -1,3 +1,4 @@
+import { CatalogDepartmentKind } from './Catalogs/Catalog.Department.Kind';
 import { CatalogContractIntercompany } from './Catalogs/Catalog.Contract.Intercompany';
 import { CatalogPersonIdentity } from './Catalogs/Catalog.PersonIdentity';
 import { CatalogLoanRepaymentProcedure } from './Catalogs/Catalog.LoanRepaymentProcedure';
@@ -138,6 +139,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.BusinessDirection', Class: CatalogBusinessDirection },
   { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
+  { type: 'Catalog.Department.Kind', Class: CatalogDepartmentKind },
   { type: 'Catalog.Expense', Class: CatalogExpense },
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
   { type: 'Catalog.Income', Class: CatalogIncome },
@@ -161,7 +163,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
   { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
-  
+
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
   { type: 'Catalog.Forms', Class: CatalogForms },
