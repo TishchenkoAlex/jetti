@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Бизнес направление договора',
   icon: 'fa fa-list',
   menu: 'Бизнес направления',
-  prefix: 'BD-'
+  prefix: 'BD-',
+  hierarchy: 'folders',
 })
 export class CatalogBusinessDirection extends DocumentBase {
 

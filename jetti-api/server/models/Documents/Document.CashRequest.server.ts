@@ -22,6 +22,7 @@ import { DocumentOperation } from './Document.Operation';
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+    let query = '';
     switch (prop) {
       case 'company':
         this.CashOrBank = null;
@@ -39,7 +40,6 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.Department = null;
         this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
-        let query = '';
         if (company) {
           this.сurrency = company.currency;
           switch (this.CashKind) {
