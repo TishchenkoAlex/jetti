@@ -549,7 +549,7 @@ export class BankStatementUnloader {
     for (const row of bankStatementData) {
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1) continue;
-        result += ` ${prop}=\"${prop === 'НомерДоговора' ? this.getShortDocNumber(row[prop]) : row[prop]}\" `;
+        result += ` ${prop}=\"${prop === 'НомерДоговора' ? this.getShortDocNumber(row[prop], true) : row[prop]}\" `;
       }
     }
 
@@ -612,7 +612,7 @@ export class BankStatementUnloader {
           switch (prop) {
             case 'Номер':
             case 'НомерДокумента':
-              val = this.getShortDocNumber(val);
+              val = this.getShortDocNumber(val, false);
               break;
             case 'НазначениеПлатежа':
               // НазначениеПлатежа1
@@ -676,11 +676,11 @@ export class BankStatementUnloader {
     return result;
   }
 
-  private static getShortDocNumber(docNumber: string): string {
+  private static getShortDocNumber(docNumber: string, withZeros: boolean): string {
 
     if (docNumber.split('-').length === 2) {
       const docNumberArr = docNumber.split('-');
-      if (this.country === this.countryKAZAKHSTANId) {
+      if (!withZeros || this.country === this.countryKAZAKHSTANId) {
         return Number(docNumberArr[1]).toString();  // казахстан без лид. нулей
       }
       return docNumberArr[1];

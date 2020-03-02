@@ -180,3 +180,21 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.CompanyResponsiblePersons]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) "companyOrGroup"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) "User"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.CompanyResponsiblePersons] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.CompanyResponsiblePersons] ON [dbo].[Register.Info.CompanyResponsiblePersons](
+      company,date,id
+    )
+    GO
+    

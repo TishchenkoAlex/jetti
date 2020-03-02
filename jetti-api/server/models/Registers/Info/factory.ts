@@ -1,3 +1,4 @@
+import { RegisterInfoCompanyResponsiblePersons } from './CompanyResponsiblePersons';
 import { RegisterInfoRLSPeriod } from './RLS.Period';
 import { RegisterInfoDepreciation } from './Depreciation';
 import { RegisterInfoExchangeRates } from './ExchangeRates';
@@ -20,11 +21,13 @@ export type RegisterInfoTypes =
     'Register.Info.RLS.Period' |
     'Register.Info.BudgetItemRule' |
     'Register.Info.DepartmentCompanyHistory' |
+    'Register.Info.CompanyResponsiblePersons' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
     RegisterInfoPriceList |
     RegisterInfoSettlementsReconciliation |
+    RegisterInfoCompanyResponsiblePersons |
     RegisterInfoExchangeRates |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
@@ -46,6 +49,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.BudgetItemRule', Class: RegisterInfoBudgetItemRule },
     { type: 'Register.Info.DepartmentCompanyHistory', Class: DepartmentCompanyHistory },
     { type: 'Register.Info.CounterpartiePriceList', Class: RegisterInfoCounterpartiePriceList },
+    { type: 'Register.Info.CompanyResponsiblePersons', Class: RegisterInfoCompanyResponsiblePersons },
 ];
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {

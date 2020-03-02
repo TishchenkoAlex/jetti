@@ -1,3 +1,4 @@
+import { x100DATA_POOL } from './sql.pool.x100-DATA';
 import { Ref } from './models/document';
 import { MSSQL } from './mssql';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
@@ -17,8 +18,9 @@ export interface Ix100Lib {
   util: {
     salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
-    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
-    exchangeDB: () => MSSQL
+    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>,
+    exchangeDB: () => MSSQL,
+    x100DataDB: () => MSSQL
   };
 }
 
@@ -36,7 +38,8 @@ export const x100: Ix100Lib = {
     salaryCompanyByCompany,
     bankStatementUnloadById,
     closeMonthErrors,
-    exchangeDB
+    exchangeDB,
+    x100DataDB
   }
 };
 
@@ -93,4 +96,8 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
 
 function exchangeDB() {
   return new MSSQL(EXCHANGE_POOL);
+}
+
+function x100DataDB() {
+  return new MSSQL(x100DATA_POOL);
 }

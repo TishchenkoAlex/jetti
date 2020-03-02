@@ -32,7 +32,7 @@ export interface PropOptions {
 
 export interface Relation { name: string; type: DocTypes | RegisterInfoTypes; field: string; }
 export interface CopyTo { type: DocTypes; label: string; Operation?: Ref; icon: string; order: number; }
-export interface Command { method: string; label: string; icon: string; order: number; clientModule?: string }
+export interface Command { method: string; label: string; icon: string; order: number; clientModule?: string; }
 
 export interface DocumentOptions {
   type: DocTypes;
@@ -85,7 +85,7 @@ export class DocumentBase {
   @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }})
   company: Ref = null;
 
-  @Props({ type: 'Catalog.User', hiddenInList: true, order: -1, readOnly: true })
+  @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
   user: Ref = null;
 
   @Props({ type: 'boolean', hidden: true, hiddenInList: true })

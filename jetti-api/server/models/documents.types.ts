@@ -50,7 +50,7 @@ export type CatalogTypes =
   'Catalog.Bank' |
   'Catalog.Counterpartie.BankAccount' |
   'Catalog.Contract' |
-  'Catalog.LoanRepaymentProcedure' |  
+  'Catalog.LoanRepaymentProcedure' |
   'Catalog.LoanTypes' |
   'Catalog.BusinessDirection' |
   'Catalog.JobTitle' |
@@ -112,6 +112,7 @@ export type ComplexTypes =
   'Types.CounterpartieOrPerson' |
   'Types.PersonOrCounterpartieBankAccount' |
   'Types.CompanyOrCounterpartieOrPerson' |
+  'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalance';
 
 export type IncomeExpenseTypes =
