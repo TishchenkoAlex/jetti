@@ -28,6 +28,12 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Salary.Analytics', required: true, dimension: true })
   Analytics: Ref = null;
 
+  @Props({ type: 'Types.Catalog', required: false, dimension: true })
+  PL: Ref = null;
+
+  @Props({ type: 'Types.Catalog', required: false, dimension: true })
+  PLAnalytics: Ref = null;
+
   @Props({ type: 'number', resource: true })
   Amount = 0;
 

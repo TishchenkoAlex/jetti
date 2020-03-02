@@ -25,7 +25,7 @@ export const sqlConfig: ConnectionConfigAndPool = {
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 2 * 60 * 1000,
+    requestTimeout: 5 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
@@ -59,7 +59,7 @@ export const sqlConfigTask: ConnectionConfigAndPool = {
 };
 
 export const sqlConfigExchange: ConnectionConfigAndPool = {
-  server: 'SRV-SSIS-01',
+  server: '35.204.185.201',
   authentication: {
     type: 'default',
     options: {
@@ -71,7 +71,7 @@ export const sqlConfigExchange: ConnectionConfigAndPool = {
     encrypt: false,
     database: 'Exchange',
     port: DB_PORT,
-    requestTimeout: 2 * 60 * 1000,
+    requestTimeout: 20 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
@@ -80,3 +80,4 @@ export const sqlConfigExchange: ConnectionConfigAndPool = {
     idleTimeoutMillis: 20 * 60 * 1000
   }
 };
+

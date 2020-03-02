@@ -14,7 +14,10 @@ router.post('/login', async (req, res, next) => {
     const { email, password } = req.body;
     if (!email) { return res.status(401).json({ message: 'Auth failed: user name required' }); }
     if (!password) { return res.status(401).json({ message: 'Auth failed: password required' }); }
-    if (!(email === 'setka.service.account@sushi-master.net')) {
+    if (!(
+      email === 'exchange@sushi-master.net' ||
+      email === 'setka.service.account@sushi-master.net'
+    )) {
       return res.status(401).json({ message: 'Auth failed: wrong user name' });
     }
     if (password !== process.env.EXCHANGE_ACCESS_KEY) { return res.status(401).json({ message: 'Auth failed: wrong password' }); }

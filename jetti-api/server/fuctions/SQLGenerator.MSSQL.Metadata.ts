@@ -517,7 +517,7 @@ export class SQLGenegatorMetadata {
     CREATE OR ALTER VIEW [${type}]
     AS
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate${fields}
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')

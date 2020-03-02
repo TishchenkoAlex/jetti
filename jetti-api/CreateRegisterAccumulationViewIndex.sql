@@ -426,6 +426,8 @@
         , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.SalaryKind')) "SalaryKind" 
 
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) "Analytics"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) "PL"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PLAnalytics"')) "PLAnalytics"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1, -1) "Amount"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, 1,  null) "Amount.In"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) * IIF(kind = 1, null,  1) "Amount.Out"

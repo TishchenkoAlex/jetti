@@ -78,8 +78,8 @@ if (process.env.NODE_ENV !== 'production') {
   script = SQLGenegatorMetadata.CreateViewCatalogs();
   fs.writeFile('CreateViewCatalogs.sql', script, (err) => { });
 
-  script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-  fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
+  /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
 
   script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
   fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => { });
