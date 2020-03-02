@@ -6,7 +6,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Пользователи',
   prefix: 'USR-',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  relations: [
+    { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: '[User].id' },
+  ],
 })
 export class CatalogUser extends DocumentBase {
 

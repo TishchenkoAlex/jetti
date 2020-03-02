@@ -8,6 +8,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   hierarchy: 'folders',
   relations: [
     { name: 'company', type: 'Catalog.Company', field: 'company' },
+    { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: 'companyOrGroup.id' },
   ],
 })
 export class CatalogCompanyGroup extends DocumentBase {

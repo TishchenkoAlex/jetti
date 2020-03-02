@@ -11,6 +11,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'company' },
     { name: 'Cash registers', type: 'Catalog.CashRegister', field: 'company' },
     { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'company' },
+    { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: 'companyOrGroup.id' },
   ],
 })
 export class CatalogCompany extends DocumentBase {

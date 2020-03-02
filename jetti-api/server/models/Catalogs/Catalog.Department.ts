@@ -12,6 +12,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'Department' },
     { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'Department' },
     { name: 'Company history', type: 'Register.Info.DepartmentCompanyHistory', field: 'Department.id' },
+    { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: 'Department.id' },
   ],
   dimensions: [
     { company: 'Catalog.Company' }
