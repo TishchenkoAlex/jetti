@@ -1,6 +1,4 @@
-import { buildSubcountQueryList } from '../../fuctions/SQLGenerator.MSSQL';
-import { DocumentBase, DocumentOptions, JDocument, Props, Ref } from '../document';
-import { RegisteredForms } from '../Forms/form.factory';
+import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
   type: 'Catalog.Department.Kind',
