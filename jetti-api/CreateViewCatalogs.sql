@@ -620,8 +620,8 @@
         , d.[ClosingDate] [ClosingDate]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
-        , ISNULL([StoreBrand.v].description, '') [StoreBrand.value], d.[StoreBrand] [StoreBrand.id], [StoreBrand.v].type [StoreBrand.type]
-        , d.[StoreFormat] [StoreFormat]
+        , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
+        , ISNULL([kind.v].description, '') [kind.value], d.[kind] [kind.id], [kind.v].type [kind.type]
         , d.[Address] [Address]
       
         , ISNULL(l5.description, d.description) [Department.Level5]
@@ -643,7 +643,8 @@
         LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
         LEFT JOIN dbo.[Catalog.TaxOffice.v] [TaxOffice.v] WITH (NOEXPAND) ON [TaxOffice.v].id = d.[TaxOffice]
         LEFT JOIN dbo.[Catalog.Person.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
-        LEFT JOIN dbo.[Catalog.Brand.v] [StoreBrand.v] WITH (NOEXPAND) ON [StoreBrand.v].id = d.[StoreBrand]
+        LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
+        LEFT JOIN dbo.[Catalog.Department.Kind.v] [kind.v] WITH (NOEXPAND) ON [kind.v].id = d.[kind]
     
       GO
       GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
