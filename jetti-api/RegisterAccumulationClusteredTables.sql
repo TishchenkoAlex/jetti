@@ -1210,4 +1210,75 @@
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Acquiring];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
+    INTO [Register.Accumulation.Acquiring]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
+        , [PayDay] DATE N'$.PayDay'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Acquiring';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Acquiring.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.Acquiring]
+      SELECT
+        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
+        , [PayDay] DATE N'$.PayDay'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Acquiring';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Acquiring] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AuthorizationCode]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring](id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     
