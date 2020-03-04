@@ -6,7 +6,10 @@ import { CatalogBankAccount } from './Catalog.BankAccount';
   description: 'Договор контрагента',
   icon: 'fa fa-list',
   menu: 'Договоры контрагента',
-  prefix: 'CONTR-'
+  prefix: 'CONTR-',
+  dimensions: [
+    { company: 'Catalog.Company' }
+  ]
 })
 export class CatalogContract extends DocumentBase {
 

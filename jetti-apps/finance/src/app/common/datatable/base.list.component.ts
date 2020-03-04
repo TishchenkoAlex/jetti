@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/auth/auth.service';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
@@ -37,7 +38,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
-    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService) { }
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, public auth: AuthService) { }
 
   private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
   private _docSubscription$: Subscription = Subscription.EMPTY;
@@ -136,10 +137,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
-
-    this.ds.api.isRoleAvailable('Только просмотр').then(readonly => {
-      this.readonly = readonly;
-    });
+    this.readonly = this.auth.isRoleAvailable('Readonly');
   }
 
   private setFilters() {
@@ -164,7 +162,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
     this.id = id;
     this.prepareDataSource(this.multiSortMeta);
-    if (this.id) this.goto(this.id)
+    if (this.id) this.goto(this.id);
     else this.last();
   }
   update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {

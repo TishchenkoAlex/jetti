@@ -169,16 +169,6 @@ export class ApiService {
     return (this.http.get(query) as Observable<UserDefaultsSettings>);
   }
 
-  getUserRoles(): Promise<{ id: Ref, description: string }[]> {
-    const query = `${environment.api}user/permissions/roles`;
-    return this.http.get<{ id: Ref, description: string }[]>(query).toPromise();
-  }
-
-  isRoleAvailable(role: string): Promise<boolean> {
-    const query = `${environment.api}user/permissions/roles/isAvailable/${role}`;
-    return this.http.get<boolean>(query).toPromise();
-  }
-
   setUserDefaultsSettings(value: UserDefaultsSettings) {
     const query = `${environment.api}user/settings/defaults`;
     return (this.http.post(query, value) as Observable<boolean>);

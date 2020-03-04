@@ -11,7 +11,7 @@ const sdba = new MSSQL(JETTI_POOL,
 export class UserPermissions {
     User: CatalogUser;
     Subsystems: { id: Ref, description: string }[];
-    Roles: { id: Ref, description: string }[];
+    Roles: string[];
     UserGroups: Ref[];
     Documents: { DocType: DocumentTypes, read: boolean, write: boolean }[];
     Catalogs: { DocType: CatalogTypes, read: boolean, write: boolean }[];
@@ -26,18 +26,18 @@ class UserPermissionsRow {
     write: boolean | null;
 }
 
-export const getUsersPermissions = async (tx: MSSQL): Promise<UserPermissions> => {
+export const getUserPermissions = async (user: CatalogUser): Promise<UserPermissions> => {
 
     const result = new UserPermissions;
-    const userId = await lib.doc.byCode('Catalog.User', (tx.user.email as string).substring(0, 36), tx);
-    if (!userId) throw new Error('Unknow user: ' + tx.user.email);
-    const user = await lib.doc.byIdT<CatalogUser>(userId as any, tx);
-    if (!user) throw new Error('Unknow user: ' + tx.user.email);
+    // const userId = await lib.doc.byCode('Catalog.User', (tx.user.email as string).substring(0, 36), tx);
+    // if (!userId) throw new Error('Unknow user: ' + tx.user.email);
+    // const user = await lib.doc.byIdT<CatalogUser>(userId as any, tx);
+    // if (!user) throw new Error('Unknow user: ' + tx.user.email);
     result.User = user;
-    const PermissionsData = await tx.manyOrNone<UserPermissionsRow>(PermissionsQuery, [result.User.id, result.User.isAdmin]);
+    const PermissionsData = await sdba.manyOrNone<UserPermissionsRow>(PermissionsQuery, [result.User.id, result.User.isAdmin]);
     result.Subsystems = PermissionsData.filter(e => e.kind === 'Subsystem').map(k => ({ id: k.id, description: k.description }));
-    result.UserGroups = PermissionsData.filter(e => e.kind === 'UserOrGroup' && e.id !== userId).map(k => k.id);
-    result.Roles = PermissionsData.filter(e => e.kind === 'Role').map(k => ({ id: k.id, description: k.description }));
+    result.UserGroups = PermissionsData.filter(e => e.kind === 'UserOrGroup' && e.id !== user.id).map(k => k.id);
+    result.Roles = PermissionsData.filter(e => e.kind === 'Role').map(k => k.description);
     result.Documents = PermissionsData.filter(e => e.kind === 'Document').map(k => (
         { DocType: k.DocType as DocumentTypes, read: !!k.read, write: !!k.write }
     ));
@@ -45,6 +45,10 @@ export const getUsersPermissions = async (tx: MSSQL): Promise<UserPermissions> =
         { DocType: k.DocType as CatalogTypes, read: !!k.read, write: !!k.write }
     ));
     return result;
+};
+
+export const getUserRoles = async (user: CatalogUser): Promise<string[]> => {
+    return (await getUserPermissions(user)).Roles;
 };
 
 const PermissionsQuery = `

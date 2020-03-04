@@ -53,6 +53,11 @@ export class AuthService {
       }));
   }
 
+  public isRoleAvailable(roleName: string): boolean {
+    const token = this.tokenPayload as { roles: string[] };
+    return token.roles.indexOf(roleName) !== -1;
+  }
+
   private init(loginResponse: ILoginResponse) {
     if (loginResponse.token && loginResponse.account) {
       if (loginResponse.photo !== null) localStorage.setItem('photo', loginResponse.photo);

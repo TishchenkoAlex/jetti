@@ -74,6 +74,7 @@ import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
 import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
+import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -149,7 +150,8 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Manager', Class: CatalogManager },
   { type: 'Catalog.Person', Class: CatalogPerson },
   { type: 'Catalog.PriceType', Class: CatalogPriceType },
-  { type: 'Catalog.Product', Class: CatalogProduct },
+  { type: 'Catalog.PriceType', Class: CatalogPriceType },
+  { type: 'Catalog.PlanningScenario', Class: CatalogPlanningScenario },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategory },
   { type: 'Catalog.ProductKind', Class: CatalogProductKind },
   { type: 'Catalog.Storehouse', Class: CatalogStorehouse },

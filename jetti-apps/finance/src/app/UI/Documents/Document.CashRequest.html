@@ -56,7 +56,7 @@
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <j-control [control]="vk.company" [form]="form" (change)='onCompanyChanges($event)'></j-control>
+          <j-control [control]="vk.company" [form]="form"></j-control>
           <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form">
           </j-control>
           <j-control [control]="vk.CashFlow" [form]="form"></j-control>
@@ -115,11 +115,11 @@
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <j-control [control]="vk.Amount" [form]="form" (change)='FillTaxInfo($event)'></j-control>
-          <j-control [control]="vk['сurrency']" [form]="form" (change)='FillCurrencyShortName(true)'></j-control>
+          <j-control [control]="vk.Amount" [form]="form"></j-control>
+          <j-control [control]="vk['сurrency']" [form]="form"></j-control>
           <j-control
             *ngIf="form.get('Operation').value  !== 'Выплата заработной платы' && form.get('Operation').value  !== 'Выплата заработной платы без ведомости'"
-            [control]="vk.TaxRate" [form]="form" (change)='FillTaxRate(true)'></j-control>
+            [control]="vk.TaxRate" [form]="form"></j-control>
           <j-control [control]="vk.PayDay" [form]="form"></j-control>
         </div>
 

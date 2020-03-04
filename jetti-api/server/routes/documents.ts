@@ -294,28 +294,7 @@ router.get('/byId/:id', async (req: Request, res: Response, next: NextFunction) 
 
 router.get('/getObjectPropertyById/:id/:valuePath', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let result: any = null;
-    const sdb = SDB(req);
-    const isGUID = (val: string): boolean => {
-      return val.length === 36 && val.split('-').length === 5 && val.split('-')[0].length === 8;
-    };
-    await sdb.tx(async tx => {
-      let ob = await lib.doc.byId(req.params.id, tx);
-      if (ob) {
-        const path = req.params.valuePath.split('.');
-        let curVal: any = null;
-        let i = 0;
-        for (i = 0; i < path.length; i++) {
-          if (!ob) break;
-          curVal = ob[path[i]];
-          if (curVal && isGUID(curVal.toString())) ob = await lib.doc.byId(curVal, tx);
-          else ob = null;
-        }
-        if (i === path.length) result = curVal;
-        if (result && isGUID(result.toString())) result = await lib.doc.byId(result, tx);
-      }
-      res.json(result);
-    });
+    res.json(await lib.util.getObjectPropertyById(req.params.id, req.params.valuePath, SDB(req)));
   } catch (err) { next(err); }
 });
 

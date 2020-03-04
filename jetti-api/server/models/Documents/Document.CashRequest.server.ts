@@ -18,6 +18,7 @@ import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
 import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
+import { getUser } from '../../routes/auth';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -116,6 +117,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CloseCashRequest':
         await this.CloseCashRequest(tx);
         return this;
+      case 'FillTaxInfo':
+        await this.FillTaxInfo(tx);
+        return this;
       default:
         return {};
     }
@@ -126,7 +130,33 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async isSuperuser(tx: MSSQL) {
-    return await lib.util.isRoleAvailable('Администратор заявок на расход ДС', tx);
+    const user = await getUser(tx.user.email);
+    return user && await lib.util.isRoleAvailable('Cash request admin', user);
+  }
+
+  async FillTaxInfo(tx: MSSQL) {
+      if (!this.company) throw Error('Не заполнена страна');
+      if (!this.сurrency) throw Error('Не заполнена валюта');
+      if (!this.TaxRate) throw Error('Не заполнена ставка НДС');
+      if (!this.Amount) throw Error('Не заполнена сумма');
+      if (!this.info.trim()) throw Error('Не заполнен комментарий');
+      const countryCode = await lib.util.getObjectPropertyById(this.company, 'Country.code', tx);
+      if (!countryCode) throw Error('Не определена страна организации');
+      const currencyShortName =  await lib.util.getObjectPropertyById(this.сurrency, 'ShortName', tx);
+      if (!currencyShortName) throw Error('Не определено краткое наименование валюты');
+      const taxRate =  await lib.util.getObjectPropertyById(this.TaxRate, 'Rate', tx);
+      const infoArr = String(this.info).trim().split('\n');
+      const Tax = this.Amount - this.Amount / (taxRate * 0.01 + 1);
+      const newInfo: string[] = [];
+      let taxInfo = '';
+      if (countryCode === 'UKR') {
+        taxInfo = taxRate ? `В т.ч. ПДВ (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
+      } else {
+        taxInfo = taxRate ? `В т.ч. НДС (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
+      }
+      newInfo.push(infoArr[0].trim());
+      newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(this.Amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
+      this.info = newInfo.join('\n');
   }
 
   async returnToStatusPrepared(tx: MSSQL) {

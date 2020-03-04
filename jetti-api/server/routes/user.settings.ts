@@ -62,27 +62,3 @@ router.get('/user/roles', async (req: Request, res: Response, next: NextFunction
     res.json(result);
   } catch (err) { next(err); }
 });
-
-router.get('/user/permissions/roles', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let result: { id: Ref, description: string }[] = [];
-    const user = User(req) as any;
-    if (user.env) {
-      const sdb = SDB(req);
-      result = await lib.util.getUserRoles(sdb);
-    }
-    res.json(result);
-  } catch (err) { next(err); }
-});
-
-router.get('/user/permissions/roles/isAvailable/:role', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let result = false;
-    const user = User(req) as any;
-    if (user.env) {
-      const sdb = SDB(req);
-      result = await lib.util.isRoleAvailable(req.params.role, sdb);
-    }
-    res.json(result);
-  } catch (err) { next(err); }
-});

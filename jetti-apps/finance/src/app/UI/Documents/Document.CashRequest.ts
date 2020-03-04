@@ -23,16 +23,12 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     super(router, route, auth, ds, tabStore, dss, cd);
   }
 
-  currencyShortName = '';
-  taxRate = -1;
-  countryCode = '';
   isSuperUser = false;
 
   ngOnInit() {
     super.ngOnInit();
     if (this.isHistory) return;
     this.onOpen();
-
   }
 
   getValue(fieldName: string): any {
@@ -92,7 +88,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
     this.vk['CashOrBank'].required = operation === 'Выплата заработной платы';
     this.form.markAsTouched();
-    
+
     let CashRecipient = null;
 
     switch (operation) {
@@ -151,15 +147,18 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
     if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
     const info = this.getValue('info');
-    if (info && this.countryCode !== 'UKR') {
+    if (info) {
       const curlength = (info as string).split('\n')[0].length;
-      if (curlength > 120) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
+      if (curlength > 120) this.api.isCountryByCompany(this.getValue("company").id, 'UKR').then(isUKR => {
+        if (!isUKR) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
+      })
     }
   }
 
+
   async onOpen() {
 
-    this.isSuperUser = await this.api.isRoleAvailable('Администратор заявок на расход ДС');
+    this.isSuperUser = this.auth.isRoleAvailable('Cash request admin');
 
     if (this.isSuperUser) {
       this.form.enable({ emitEvent: false });
@@ -178,10 +177,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (this.readonlyMode) {
       this.form.disable({ emitEvent: false });
       this.form.get('info').enable({ emitEvent: false });
-    } else {
-      this.FillTaxRate(false);
-      this.FillCurrencyShortName(false);
-      this.FillCountryCode();
     }
   }
 
@@ -190,54 +185,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.Next(formGroup);
       this.onOpen();
     });
-  }
-
-  async FillCountryCode(FillTaxInfo = false, showError = false) {
-    this.countryCode = '';
-    const company = this.getValue('company');
-    if (!company || !company.id) return;
-    this.countryCode = await this.ds.api.getObjectPropertyById(company.id, 'Country.code');
-    if (!this.countryCode && showError) super.throwError('Не определена страна!', `Не определена страна организации ${company.value}`)
-    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
-  }
-
-  async FillCurrencyShortName(FillTaxInfo?: boolean) {
-    const Currency = this.getValue('сurrency');
-    this.currencyShortName = '';
-    if (Currency.value) {
-      const CurrencyObject = await this.api.byId(Currency.id);
-      if (CurrencyObject) this.currencyShortName = CurrencyObject['ShortName'];
-    }
-    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
-  }
-
-  async FillTaxRate(FillTaxInfo?: boolean) {
-    const TaxRate = this.getValue('TaxRate');
-    this.taxRate = -1;
-    if (TaxRate.value) {
-      const TaxRateObject = await this.api.byId(TaxRate.id);
-      if (TaxRateObject) this.taxRate = TaxRateObject['Rate'];
-    }
-    if (FillTaxInfo) this.FillTaxInfo(this.getValue('Amount'));
-  }
-
-  FillTaxInfo(Amount: number) {
-    if (this.taxRate === -1 || !this.currencyShortName) return;
-    let info = this.getValue('info');
-    if (!info || !Amount) return;
-    let infoArr = String(info).trim().split('\n');
-    if (infoArr.length === 0) return;
-    let Tax = Amount - Amount / (this.taxRate * 0.01 + 1);
-    let newInfo = [];
-    let taxInfo = '';
-    if (this.countryCode === 'UKR') {
-      taxInfo = this.taxRate ? `В т.ч. ПДВ (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без податку (ПДВ)';
-    } else {
-      taxInfo = this.taxRate ? `В т.ч. НДС (${this.taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${this.currencyShortName}.` : 'Без налога (НДС)';
-    }
-    newInfo.push(infoArr[0].trim());
-    newInfo.push(`${this.countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(Amount.toFixed(2)).replace('.', '-')} ${this.currencyShortName}. ${taxInfo}`);
-    this.setValue('info', newInfo.join('\n'));
   }
 
   onCashKindChange(event) {
@@ -255,10 +202,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         { onlySelf: false, emitEvent: false }
       );
     }
-  }
-
-  async onCompanyChanges(event) {
-    this.FillCountryCode(true, true);
   }
 
   StartProcess() {

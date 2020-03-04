@@ -26,6 +26,7 @@ export type CatalogTypes =
   'Catalog.Person.BankAccount' |
   'Catalog.Person' |
   'Catalog.PriceType' |
+  'Catalog.PlanningScenario' |
   'Catalog.Product' |
   'Catalog.Storehouse' |
   'Catalog.Salary.Analytics' |

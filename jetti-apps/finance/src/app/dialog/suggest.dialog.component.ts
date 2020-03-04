@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/auth/auth.service';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { SortMeta } from 'primeng/components/common/sortmeta';
@@ -42,6 +43,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   selection: any[] = [];
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
+  readonly = false;
 
   get sid() { return { id: this.selection && this.selection.length ? this.selection[0].id : '', type: this.type }; }
   set sid(value: { id: string, type?: DocTypes }) {
@@ -59,9 +61,10 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   private debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   constructor(private api: ApiService, public ds: DocService, public lds: LoadingService,
-    public route: ActivatedRoute, public router: Router) { }
+    public route: ActivatedRoute, public router: Router, private auth: AuthService) { }
 
   ngOnInit() {
+    this.readonly = this.auth.isRoleAvailable('Readonly');
     const columns: ColumnDef[] = [];
     const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     try { this.doc = createDocument(this.type); } catch { }

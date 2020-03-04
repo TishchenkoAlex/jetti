@@ -130,15 +130,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
     this.isCopy = !!this.route.snapshot.queryParams.copy;
     this.isHistory = !!this.route.snapshot.queryParams.history;
-
-    if (!this.isHistory) {
-      this.ds.api.isRoleAvailable('Только просмотр').then(readonly => {
-        if (readonly) {
-          this.form.disable(patchOptionsNoEvents);
-          this.readonly = true;
-        }
-      });
-    }
+    this.readonly = !this.isHistory && this.auth.isRoleAvailable('Readonly');
 
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))
@@ -174,7 +166,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
       this.Next(form);
     });
 
-    if (this.isHistory) this.form.disable(patchOptionsNoEvents);
+    if (this.isHistory || this.readonly) this.form.disable(patchOptionsNoEvents);
     this.navigateCommands.push(<MenuItem>{ label: 'Show in list', command: () => this.goto() });
     this.navigateCommands.push(<MenuItem>{ label: 'Used in...', command: () => this.usedIn() });
   }

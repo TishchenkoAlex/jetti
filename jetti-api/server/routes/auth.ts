@@ -1,3 +1,4 @@
+import { getUserRoles } from './../fuctions/UsersPermissions';
 import * as express from 'express';
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
@@ -45,7 +46,7 @@ router.post('/login', async (req, res, next) => {
       email: me.userPrincipalName,
       description: me.displayName,
       isAdmin: user.isAdmin === true ? true : false,
-      roles: [],
+      roles: await getUserRoles(user),
       env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
 
@@ -63,7 +64,7 @@ router.get('/account', authHTTP, async (req, res, next) => {
       email: user.code,
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
-      roles: [],
+      roles: await getUserRoles(user),
       env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
     res.json(payload);
@@ -79,7 +80,7 @@ router.post('/refresh', authHTTP, async (req, res, next) => {
       email: user.id,
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
-      roles: [],
+      roles: await getUserRoles(user),
       env: { id: user.id, code: user.code, type: user.type, value: user.description },
     };
     const token = jwt.sign(new_payload, JTW_KEY, { expiresIn: '72h' });

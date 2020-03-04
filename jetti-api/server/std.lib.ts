@@ -1,5 +1,6 @@
+import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
-import { getUsersPermissions } from './fuctions/UsersPermissions';
+import { getUserPermissions } from './fuctions/UsersPermissions';
 import * as moment from 'moment';
 import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
@@ -54,10 +55,11 @@ export interface JTL {
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
-    getUserRoles: (tx: MSSQL) => Promise<{ id: Ref, description: string }[]>,
-    isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
+    getUserRoles: (user: CatalogUser) => Promise<string[]>,
+    isRoleAvailable: (role: string, user: CatalogUser) => Promise<boolean>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () => Promise<string>,
+    getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
     exchangeDB: () => MSSQL
   };
 }
@@ -100,6 +102,7 @@ export const lib: JTL = {
     isRoleAvailable,
     GUID,
     closeMonthErrors,
+    getObjectPropertyById,
     exchangeDB
   }
 };
@@ -343,12 +346,12 @@ async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<str
   return await BankStatementUnloader.getBankStatementAsString(docsID, tx);
 }
 
-async function getUserRoles(tx: MSSQL): Promise<({ id: Ref, description: string }[])> {
-  return (await getUsersPermissions(tx)).Roles;
+async function getUserRoles(user: CatalogUser): Promise<string[]> {
+  return (await getUserPermissions(user)).Roles;
 }
 
-async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
-  return !!(await getUsersPermissions(tx)).Roles.filter(e => e.description === role).length;
+async function isRoleAvailable(role: string, user: CatalogUser): Promise<boolean> {
+  return !!(await getUserPermissions(user)).Roles.filter(e => e === role).length;
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
@@ -367,6 +370,29 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
+}
+
+async function getObjectPropertyById(id: Ref, propPath: string, tx: MSSQL) {
+
+  const isGUID = (val: string): boolean => {
+    return val.length === 36 && val.split('-').length === 5 && val.split('-')[0].length === 8;
+  };
+
+  let curVal, result: any = null;
+  let ob = await lib.doc.byId(id, tx);
+  if (!ob) return result;
+  const path = propPath.split('.');
+  let i = 0;
+  for (i = 0; i < path.length; i++) {
+    if (!ob) break;
+    curVal = ob[path[i]];
+    if (curVal && isGUID(curVal.toString())) ob = await byId(curVal, tx);
+    else ob = null;
+  }
+  if (i === path.length) result = curVal;
+  if (result && isGUID(result.toString())) result = await byId(result, tx);
+  return result;
+
 }
 
 function exchangeDB() {

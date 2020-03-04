@@ -11,7 +11,7 @@
     </j-hierarchy-list>
   </div> -->
   <div style="display: flex; flex-direction: column;">
-    <p-toolbar>
+    <p-toolbar *ngIf="!readonly">
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>

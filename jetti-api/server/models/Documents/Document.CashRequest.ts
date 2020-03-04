@@ -19,9 +19,10 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { name: 'Операции', type: 'Document.Operation', field: 'parent' },
   ],
   commands: [
-    { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 1 },
-    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: 'Заполнить остатками заработной платы', order: 2 },
-    { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
+    { method: 'FillTaxInfo', icon: 'pi pi-plus', label: 'Сформировать назначение платежа', order: 1 },
+    { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 2 },
+    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: 'Заполнить остатками заработной платы', order: 3 },
+    { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 4 },
   ],
 })
 export class DocumentCashRequest extends DocumentBase {
@@ -34,9 +35,6 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'string', label: 'Комментарий', hiddenInList: true, order: -1, controlType: 'textarea' })
   info = '';
-
-  // @Props({ type: 'string', label: 'Назначение платежа', hiddenInList: true, order: -1, controlType: 'textarea'})
-  // paymantInfo = '';
 
   @Props({ type: 'Types.Document', label: 'Основание', hiddenInList: true, order: -1 })
   parent: Ref = null;
