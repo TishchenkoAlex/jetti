@@ -73,16 +73,16 @@ let script = '';
 
 if (process.env.NODE_ENV !== 'production') {
   script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
-  fs.writeFile('CreateViewCatalogsIndex.sql', script, (err) => { });
+  fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 
   script = SQLGenegatorMetadata.CreateViewCatalogs();
-  fs.writeFile('CreateViewCatalogs.sql', script, (err) => { });
+  fs.writeFile('CatalogsView.sql', script, (err) => { });
 
   /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
     fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
 
   script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-  fs.writeFile('CreateRegisterInfoViewIndex.sql', script, (err) => { });
+  fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
 
   script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
   fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
