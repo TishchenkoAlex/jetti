@@ -1003,34 +1003,34 @@
       GO
       --------------------------------------------------------------------------------------
       
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PlanningScenarios.v];
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PlanningScenario.v];
       GO
 
-      CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenarios.v] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.PlanningScenarios'
+      WHERE [type] = 'Catalog.PlanningScenario'
     
       GO
 
-      CREATE UNIQUE CLUSTERED INDEX [Catalog.PlanningScenarios.v] ON [Catalog.PlanningScenarios.v](id);
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.PlanningScenario.v] ON [Catalog.PlanningScenario.v](id);
       
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.code.f] ON [Catalog.PlanningScenarios.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.description.f] ON [Catalog.PlanningScenarios.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.description] ON [Catalog.PlanningScenarios.v](description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.code] ON [Catalog.PlanningScenarios.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.user] ON [Catalog.PlanningScenarios.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenarios.v.company] ON [Catalog.PlanningScenarios.v](company,id) INCLUDE([date]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.code.f] ON [Catalog.PlanningScenario.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.description.f] ON [Catalog.PlanningScenario.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.description] ON [Catalog.PlanningScenario.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.code] ON [Catalog.PlanningScenario.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.user] ON [Catalog.PlanningScenario.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.company] ON [Catalog.PlanningScenario.v](company,id) INCLUDE([date]);
 
-      GRANT SELECT ON dbo.[Catalog.PlanningScenarios.v] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.PlanningScenario.v] TO jetti;
       GO
 
       ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PlanningScenarios.v];
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PlanningScenario.v];
       GO
 
-      RAISERROR('Catalog.PlanningScenarios complete', 0 ,1) WITH NOWAIT;
+      RAISERROR('Catalog.PlanningScenario complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
