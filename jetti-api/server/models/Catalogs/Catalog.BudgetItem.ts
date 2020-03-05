@@ -12,4 +12,13 @@ export class CatalogBudgetItem extends DocumentBase {
   @Props({ type: 'Catalog.BudgetItem', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
+  @Props({ type: 'enum', value: [
+    '+',
+    '-',
+    '*',
+    '/',
+    '~',
+  ]})
+  UnaryOperator = '';
+
 }
