@@ -150,7 +150,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Manager', Class: CatalogManager },
   { type: 'Catalog.Person', Class: CatalogPerson },
   { type: 'Catalog.PriceType', Class: CatalogPriceType },
-  { type: 'Catalog.PriceType', Class: CatalogPriceType },
+  { type: 'Catalog.Product', Class: CatalogProduct },
   { type: 'Catalog.PlanningScenario', Class: CatalogPlanningScenario },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategory },
   { type: 'Catalog.ProductKind', Class: CatalogProductKind },
