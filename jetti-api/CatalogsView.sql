@@ -1022,60 +1022,69 @@
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.PriceType] AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Product] AS
         
       SELECT
-        d.id, d.type, d.date, d.code, d.description "PriceType", d.posted, d.deleted, d.isfolder, d.timestamp
+        d.id, d.type, d.date, d.code, d.description "Product", d.posted, d.deleted, d.isfolder, d.timestamp
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , d.[TaxInclude] [TaxInclude]
+        , ISNULL([ProductKind.v].description, '') [ProductKind.value], d.[ProductKind] [ProductKind.id], [ProductKind.v].type [ProductKind.type]
+        , ISNULL([ProductCategory.v].description, '') [ProductCategory.value], d.[ProductCategory] [ProductCategory.id], [ProductCategory.v].type [ProductCategory.type]
+        , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
+        , ISNULL([Unit.v].description, '') [Unit.value], d.[Unit] [Unit.id], [Unit.v].type [Unit.type]
+        , ISNULL([Expense.v].description, '') [Expense.value], d.[Expense] [Expense.id], [Expense.v].type [Expense.type]
+        , ISNULL([Analytics.v].description, '') [Analytics.value], d.[Analytics] [Analytics.id], [Analytics.v].type [Analytics.type]
       
-        , ISNULL(l5.description, d.description) [PriceType.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PriceType.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PriceType.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [PriceType.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [PriceType.Level1]
-      FROM [Catalog.PriceType.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.PriceType.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.PriceType.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.PriceType.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.PriceType.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.PriceType.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+        , ISNULL(l5.description, d.description) [Product.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Product.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Product.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Product.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Product.Level1]
+      FROM [Catalog.Product.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Product.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Product.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Product.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Product.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Product.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.ProductKind.v] [ProductKind.v] WITH (NOEXPAND) ON [ProductKind.v].id = d.[ProductKind]
+        LEFT JOIN dbo.[Catalog.ProductCategory.v] [ProductCategory.v] WITH (NOEXPAND) ON [ProductCategory.v].id = d.[ProductCategory]
+        LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
+        LEFT JOIN dbo.[Catalog.Unit.v] [Unit.v] WITH (NOEXPAND) ON [Unit.v].id = d.[Unit]
+        LEFT JOIN dbo.[Catalog.Expense.v] [Expense.v] WITH (NOEXPAND) ON [Expense.v].id = d.[Expense]
+        LEFT JOIN dbo.[Catalog.Expense.Analytics.v] [Analytics.v] WITH (NOEXPAND) ON [Analytics.v].id = d.[Analytics]
     
       GO
-      GRANT SELECT ON dbo.[Catalog.PriceType] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.Product] TO jetti;
       GO
       
 
-      CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenarios] AS
+      CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario] AS
         
       SELECT
-        d.id, d.type, d.date, d.code, d.description "PlanningScenarios", d.posted, d.deleted, d.isfolder, d.timestamp
+        d.id, d.type, d.date, d.code, d.description "PlanningScenario", d.posted, d.deleted, d.isfolder, d.timestamp
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
-        , ISNULL(l5.description, d.description) [PlanningScenarios.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PlanningScenarios.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PlanningScenarios.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [PlanningScenarios.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [PlanningScenarios.Level1]
-      FROM [Catalog.PlanningScenarios.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.PlanningScenarios.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.PlanningScenarios.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.PlanningScenarios.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.PlanningScenarios.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.PlanningScenarios.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+        , ISNULL(l5.description, d.description) [PlanningScenario.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PlanningScenario.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PlanningScenario.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [PlanningScenario.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [PlanningScenario.Level1]
+      FROM [Catalog.PlanningScenario.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.PlanningScenario.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.PlanningScenario.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.PlanningScenario.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.PlanningScenario.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.PlanningScenario.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -1083,7 +1092,7 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
     
       GO
-      GRANT SELECT ON dbo.[Catalog.PlanningScenarios] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.PlanningScenario] TO jetti;
       GO
       
 
