@@ -18,4 +18,7 @@ export class CatalogIncome extends DocumentBase {
   @Props({ type: 'Catalog.BudgetItem' })
   BudgetItem: Ref = null;
 
+  @Props({ type: 'enum' , value: ['FINRES', 'INVEST', 'NOTASSIGN']})
+  Assign = 'FINRES';
+
 }
