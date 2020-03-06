@@ -13,6 +13,9 @@ export class RegisterInfoRLSPeriod extends RegisterInfo {
   @Props({ type: 'Catalog.Company', required: true, unique: true, order: 2 })
   company: Ref = null;
 
+  @Props({ type: 'enum', value: ['ALL', 'INVENTORY'] })
+  partition = '';
+
   constructor(init: Partial<RegisterInfoRLSPeriod>) {
     super(init);
     Object.assign(this, init);
