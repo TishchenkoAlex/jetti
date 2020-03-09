@@ -24,7 +24,7 @@
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.2.0",
     "tarn": "^2.0.0",
-    "tedious": "^8.0.1",
+    "tedious": "^8.1.1",
     "uuid": "^7.0.2"
   },
   "engines": {
