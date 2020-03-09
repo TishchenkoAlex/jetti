@@ -43,7 +43,7 @@ export interface DocumentOptions {
   prefix?: string;
   commands?: Command[];
   presentation?: 'code' | 'description';
-  hierarchy?: 'folders' | 'elements';
+  hierarchy?: 'folders' | 'elements' | 'all';
   copyTo?: CopyTo[];
   relations?: Relation[];
   module?: string;
@@ -138,6 +138,7 @@ export class DocumentBase {
     const p = this.Prop() as DocumentOptions;
     if (p && p.hierarchy === 'folders') this.targetProp(proto, 'parent').storageType = 'folders';
     else if (p && p.hierarchy === 'elements') this.targetProp(proto, 'parent').storageType = 'elements';
+    else if (p && p.hierarchy === 'all') this.targetProp(proto, 'parent').storageType = 'all';
     else this.targetProp(proto, 'parent').storageType = 'elements';
 
     const result: { [x: string]: PropOptions } = {};
