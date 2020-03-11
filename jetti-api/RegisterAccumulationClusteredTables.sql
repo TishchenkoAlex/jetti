@@ -924,7 +924,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Depreciation];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [BusinessOperation], [currency], [Department], [OE]
+      d.exchangeRate, [OperationType], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -933,7 +933,7 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [BusinessOperation] UNIQUEIDENTIFIER N'$.BusinessOperation'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OE] UNIQUEIDENTIFIER N'$.OE'
@@ -952,7 +952,7 @@
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [BusinessOperation], [currency], [Department], [OE]
+        d.exchangeRate, [OperationType], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -960,7 +960,7 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [BusinessOperation] UNIQUEIDENTIFIER N'$.BusinessOperation'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OE] UNIQUEIDENTIFIER N'$.OE'
@@ -976,7 +976,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [BusinessOperation], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation](id) WITH (MAXDOP=4);
 

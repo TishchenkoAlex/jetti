@@ -377,7 +377,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, BusinessOperation, currency, Department, OE
+        d.exchangeRate, OperationType, currency, Department, OE
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -385,7 +385,7 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [BusinessOperation] UNIQUEIDENTIFIER N'$.BusinessOperation'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OE] UNIQUEIDENTIFIER N'$.OE'
