@@ -931,7 +931,7 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [BusinessOperation] NVARCHAR(250) N'$.BusinessOperation'
+        , [BusinessOperation] UNIQUEIDENTIFIER N'$.BusinessOperation'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OE] UNIQUEIDENTIFIER N'$.OE'
@@ -958,7 +958,7 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [BusinessOperation] NVARCHAR(250) N'$.BusinessOperation'
+        , [BusinessOperation] UNIQUEIDENTIFIER N'$.BusinessOperation'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OE] UNIQUEIDENTIFIER N'$.OE'

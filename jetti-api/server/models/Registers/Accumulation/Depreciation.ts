@@ -7,8 +7,8 @@ import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulat
 })
 export class RegisterAccumulationDepreciation extends RegisterAccumulation {
 
-  @Props({ type: 'string', required: true, dimension: true })
-  BusinessOperation = '';
+  @Props({ type: 'Catalog.Operation.Type', dimension: true })
+  OperationType: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
