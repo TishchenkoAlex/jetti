@@ -21,8 +21,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   commands: [
     { method: 'FillTaxInfo', icon: 'pi pi-plus', label: 'Сформировать назначение платежа', order: 1 },
     { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 2 },
-    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: 'Заполнить остатками заработной платы', order: 3 },
-    { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 4 },
+    { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
+    { method: 'FillSalaryBalanceByDepartment', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению', order: 4 },
+    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам', order: 5 },
   ],
 })
 export class DocumentCashRequest extends DocumentBase {
