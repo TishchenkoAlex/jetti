@@ -146,13 +146,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     Возврат оплаты клиенту`.includes(oper)) this.throwError('Ошибка', 'Не указан получатель');
     const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
     if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
-    const info = this.getValue('info');
-    if (info) {
-      const curlength = (info as string).split('\n')[0].length;
-      if (curlength > 120) this.api.isCountryByCompany(this.getValue("company").id, 'UKR').then(isUKR => {
-        if (!isUKR) this.throwError('Ошибка', `Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
-      })
-    }
   }
 
 

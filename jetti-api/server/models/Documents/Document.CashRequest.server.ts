@@ -138,6 +138,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async FillTaxInfo(tx: MSSQL) {
+    if (`Выплата заработной платы
+        Выплата заработной платы без ведомости`.indexOf(this.Operation) !== -1) return;
     if (!this.company) throw Error('Не заполнена компания');
     if (!this.сurrency) throw Error('Не заполнена валюта');
     if (!this.TaxRate) throw Error('Не заполнена ставка НДС');
@@ -288,7 +290,7 @@ ORDER BY
         p.Person`;
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
     let persons = '';
-    if (byPersons) persons = this.PayRolls.map(el => el.Employee ).join(',');
+    if (byPersons) persons = this.PayRolls.map(el => el.Employee).join(',');
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query,
       [byPersons ? null : this.Department,
       this.сurrency,
@@ -327,12 +329,19 @@ ORDER BY
 
   async onPost(tx: MSSQL) {
 
-    this.FillTaxInfo(tx);
+    if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
+      throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
+
+    if (this.info) {
+      const curlength = (this.info as string).split('\n')[0].length;
+      if (curlength > 120 && await lib.util.getObjectPropertyById(this.company as any, 'county.code', tx) !== 'UKR')
+        throw Error(`Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
+    }
+
+    await this.FillTaxInfo(tx);
+
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient) {
-      throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
-    }
     if (this.Status === 'PREPARED' || this.Status === 'REJECTED') {
       return Registers;
     }
