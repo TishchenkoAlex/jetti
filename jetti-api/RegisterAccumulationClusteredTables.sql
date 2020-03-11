@@ -69,7 +69,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.id] ON [Register.Accumulation.AccountablePersons](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.AccountablePersons.id] ON [Register.Accumulation.AccountablePersons](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
@@ -144,7 +144,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
@@ -219,7 +219,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.id] ON [Register.Accumulation.AR](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.AR.id] ON [Register.Accumulation.AR](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
@@ -284,7 +284,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.id] ON [Register.Accumulation.Bank](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Bank.id] ON [Register.Accumulation.Bank](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
@@ -339,7 +339,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
@@ -404,7 +404,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
@@ -469,7 +469,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.id] ON [Register.Accumulation.Cash](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Cash.id] ON [Register.Accumulation.Cash](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
@@ -536,7 +536,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
@@ -615,7 +615,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
@@ -690,7 +690,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.id] ON [Register.Accumulation.Loan](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Loan.id] ON [Register.Accumulation.Loan](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
@@ -747,7 +747,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount], [Info]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
@@ -838,7 +838,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
@@ -913,7 +913,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
@@ -978,7 +978,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [BusinessOperation], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1055,7 +1055,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1138,7 +1138,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [Register.Accumulation.BudgetItemTurnover](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [Register.Accumulation.BudgetItemTurnover](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1207,7 +1207,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.id] ON [Register.Accumulation.Intercompany](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Intercompany.id] ON [Register.Accumulation.Intercompany](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1278,7 +1278,7 @@
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring] (
       id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AuthorizationCode]
     ) WITH (MAXDOP=4);
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring](id) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
