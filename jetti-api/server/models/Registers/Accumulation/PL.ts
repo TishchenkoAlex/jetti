@@ -18,7 +18,10 @@ export class RegisterAccumulationPL extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  constructor (init: Partial<RegisterAccumulationPL>) {
+  @Props({ type: 'string' })
+  Info = '';
+
+  constructor(init: Partial<RegisterAccumulationPL>) {
     super(init);
     Object.assign(this, init);
   }

@@ -702,7 +702,7 @@
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Department], [PL], [Analytics]
-      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.PL]
     FROM [Accumulation] r
     CROSS APPLY OPENJSON (data, N'$')
@@ -712,6 +712,7 @@
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
+        , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
     WHERE r.type = N'Register.Accumulation.PL';
     GO
@@ -725,7 +726,7 @@
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Department], [PL], [Analytics]
-      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -734,6 +735,7 @@
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
+        , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
         WHERE r.type = N'Register.Accumulation.PL';
     END
@@ -743,7 +745,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount], [Info]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL](id) WITH (MAXDOP=4);
 
