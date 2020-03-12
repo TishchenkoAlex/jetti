@@ -138,7 +138,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async FillTaxInfo(tx: MSSQL) {
-    if (`Выплата заработной платы
+    if (this.ManualInfo || `Выплата заработной платы
         Выплата заработной платы без ведомости`.indexOf(this.Operation) !== -1) return;
     if (!this.company) throw Error('Не заполнена компания');
     if (!this.сurrency) throw Error('Не заполнена валюта');
@@ -514,7 +514,7 @@ ORDER BY
         await this.FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation, tx, params);
         break;
       default:
-        break;
+        throw new Error(`Не реализовано создание документа для вида операции ${this.Operation}`);
     }
   }
 

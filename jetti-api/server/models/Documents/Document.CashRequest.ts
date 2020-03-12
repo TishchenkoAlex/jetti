@@ -277,6 +277,9 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
 
+  @Props({ type: 'boolean', label: 'Ручной ввод назначения платежа' })
+  ManualInfo = false;
+
   @Props({ type: 'Catalog.Company', hiddenInList: true })
   tempCompanyParent: Ref = null;
 

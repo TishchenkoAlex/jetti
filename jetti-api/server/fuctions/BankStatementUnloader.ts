@@ -633,7 +633,7 @@ export class BankStatementUnloader {
               continue;
             case 'ПолучательИНН':
             case 'ПолучательБИН_ИИН':
-              if ((String(val).length < 10) || (String(val).length > 12)) {
+              if ((String(val).trim().length < 10) || (String(val).trim().length > 12)) {
                 throw new Error(`Неверно заполнен ИНН получателя ${row['Получатель']} в документе ${row['Номер']}`);
               }
               break;
