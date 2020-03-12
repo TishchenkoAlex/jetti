@@ -327,7 +327,7 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   try {
     const doc = (await lib.doc.byId(id, tx))!;
     const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-    if (!doc.posted) return serverDoc;
+    // if (!doc.posted) return serverDoc;
     serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
     await updateDocument(serverDoc, tx);
