@@ -2164,6 +2164,43 @@
       GO
       
 
+      CREATE OR ALTER VIEW dbo.[Catalog.ResourceSpecification] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "ResourceSpecification", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[Status] [Status]
+        , d.[FullDescription] [FullDescription]
+        , d.[StartDate] [StartDate]
+        , d.[EndDate] [EndDate]
+        , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
+      
+        , ISNULL(l5.description, d.description) [ResourceSpecification.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ResourceSpecification.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ResourceSpecification.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [ResourceSpecification.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [ResourceSpecification.Level1]
+      FROM [Catalog.ResourceSpecification.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.ResourceSpecification.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.ResourceSpecification.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.ResourceSpecification.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.ResourceSpecification.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.ResourceSpecification.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePerson.v] WITH (NOEXPAND) ON [ResponsiblePerson.v].id = d.[ResponsiblePerson]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.ResourceSpecification] TO jetti;
+      GO
+      
+
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] AS
         
       SELECT
@@ -2467,6 +2504,7 @@
         , d.[TaxOfficeCode2] [TaxOfficeCode2]
         , ISNULL([BalanceAnalytics.v].description, '') [BalanceAnalytics.value], d.[BalanceAnalytics] [BalanceAnalytics.id], [BalanceAnalytics.v].type [BalanceAnalytics.type]
         , d.[workflowID] [workflowID]
+        , d.[ManualInfo] [ManualInfo]
         , ISNULL([tempCompanyParent.v].description, '') [tempCompanyParent.value], d.[tempCompanyParent] [tempCompanyParent.id], [tempCompanyParent.v].type [tempCompanyParent.type]
         , d.[tempSalaryKind] [tempSalaryKind]
       
