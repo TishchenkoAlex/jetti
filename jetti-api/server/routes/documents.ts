@@ -309,7 +309,7 @@ router.post('/valueChanges/:type/:property', async (req: Request, res: Response,
         const property: string = req.params.property;
         const type: DocTypes = req.params.type as DocTypes;
 
-        doc[property] = typeof value === 'object' ? value.id : value;
+        doc[property] = typeof value === 'object' && value !== null ? value.id : value;
         const serverDoc = await createDocumentServer(type, doc, tx);
 
         const OnChange: (value: RefValue) => Promise<DocumentBaseServer> = serverDoc['serverModule'][property + '_OnChangeServer'];

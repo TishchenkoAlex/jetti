@@ -22,6 +22,9 @@ export class RegisterAccumulationIntercompany extends RegisterAccumulation {
   @Props({ type: 'Catalog.Operation.Type' })
   OperationType: Ref = null;
 
+  @Props({ type: 'Types.Catalog' })
+  Analytics: Ref = null;
+
   @Props({ type: 'Catalog.Currency' })
   currency: Ref = null;
 
