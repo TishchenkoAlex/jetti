@@ -8,7 +8,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AccountablePersons];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -20,9 +20,9 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [currency] CHAR(36) N'$.currency'
+        , [Employee] CHAR(36) N'$.Employee'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -39,7 +39,7 @@
       DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -50,9 +50,9 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [currency] CHAR(36) N'$.currency'
+        , [Employee] CHAR(36) N'$.Employee'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -79,7 +79,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AP];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -91,10 +91,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [AO] CHAR(36) N'$.AO'
+        , [Supplier] CHAR(36) N'$.Supplier'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -112,7 +112,7 @@
       DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AP]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -123,10 +123,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [AO] CHAR(36) N'$.AO'
+        , [Supplier] CHAR(36) N'$.Supplier'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -154,7 +154,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AR];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -166,10 +166,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [AO] CHAR(36) N'$.AO'
+        , [Customer] CHAR(36) N'$.Customer'
         , [PayDay] DATE N'$.PayDay'
         , [AR] MONEY N'$.AR'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -187,7 +187,7 @@
       DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AR]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -198,10 +198,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [AO] CHAR(36) N'$.AO'
+        , [Customer] CHAR(36) N'$.Customer'
         , [PayDay] DATE N'$.PayDay'
         , [AR] MONEY N'$.AR'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -229,7 +229,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Bank];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -239,10 +239,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [BankAccount] CHAR(36) N'$.BankAccount'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -257,7 +257,7 @@
       DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -266,10 +266,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [BankAccount] CHAR(36) N'$.BankAccount'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -294,7 +294,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Balance];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.Balance]
@@ -302,9 +302,9 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance';
@@ -317,16 +317,16 @@
       DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance';
@@ -349,7 +349,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Balance.Report];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -359,10 +359,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -377,7 +377,7 @@
       DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Balance.Report]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -386,10 +386,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -414,7 +414,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Cash];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -424,10 +424,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [CashRegister] CHAR(36) N'$.CashRegister'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -442,7 +442,7 @@
       DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -451,10 +451,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] CHAR(36) N'$.currency'
+        , [CashRegister] CHAR(36) N'$.CashRegister'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -479,7 +479,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Cash.Transit];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -489,11 +489,11 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Sender] UNIQUEIDENTIFIER N'$.Sender'
-        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [CompanyRecipient] CHAR(36) N'$.CompanyRecipient'
+        , [currency] CHAR(36) N'$.currency'
+        , [Sender] CHAR(36) N'$.Sender'
+        , [Recipient] CHAR(36) N'$.Recipient'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -508,7 +508,7 @@
       DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -517,11 +517,11 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Sender] UNIQUEIDENTIFIER N'$.Sender'
-        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [CompanyRecipient] CHAR(36) N'$.CompanyRecipient'
+        , [currency] CHAR(36) N'$.currency'
+        , [Sender] CHAR(36) N'$.Sender'
+        , [Recipient] CHAR(36) N'$.Recipient'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -546,7 +546,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Inventory];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -555,19 +555,19 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [Expense] UNIQUEIDENTIFIER N'$.Expense'
-        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
-        , [Income] UNIQUEIDENTIFIER N'$.Income'
-        , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
-        , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
-        , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
-        , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
-        , [BalanceOutAnalytics] UNIQUEIDENTIFIER N'$.BalanceOutAnalytics'
-        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
-        , [SKU] UNIQUEIDENTIFIER N'$.SKU'
-        , [batch] UNIQUEIDENTIFIER N'$.batch'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [Expense] CHAR(36) N'$.Expense'
+        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
+        , [Income] CHAR(36) N'$.Income'
+        , [IncomeAnalytics] CHAR(36) N'$.IncomeAnalytics'
+        , [BalanceIn] CHAR(36) N'$.BalanceIn'
+        , [BalanceInAnalytics] CHAR(36) N'$.BalanceInAnalytics'
+        , [BalanceOut] CHAR(36) N'$.BalanceOut'
+        , [BalanceOutAnalytics] CHAR(36) N'$.BalanceOutAnalytics'
+        , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [SKU] CHAR(36) N'$.SKU'
+        , [batch] CHAR(36) N'$.batch'
+        , [Department] CHAR(36) N'$.Department'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
     ) AS d
@@ -581,7 +581,7 @@
       DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -589,19 +589,19 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [Expense] UNIQUEIDENTIFIER N'$.Expense'
-        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
-        , [Income] UNIQUEIDENTIFIER N'$.Income'
-        , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
-        , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
-        , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
-        , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
-        , [BalanceOutAnalytics] UNIQUEIDENTIFIER N'$.BalanceOutAnalytics'
-        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
-        , [SKU] UNIQUEIDENTIFIER N'$.SKU'
-        , [batch] UNIQUEIDENTIFIER N'$.batch'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [Expense] CHAR(36) N'$.Expense'
+        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
+        , [Income] CHAR(36) N'$.Income'
+        , [IncomeAnalytics] CHAR(36) N'$.IncomeAnalytics'
+        , [BalanceIn] CHAR(36) N'$.BalanceIn'
+        , [BalanceInAnalytics] CHAR(36) N'$.BalanceInAnalytics'
+        , [BalanceOut] CHAR(36) N'$.BalanceOut'
+        , [BalanceOutAnalytics] CHAR(36) N'$.BalanceOutAnalytics'
+        , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [SKU] CHAR(36) N'$.SKU'
+        , [batch] CHAR(36) N'$.batch'
+        , [Department] CHAR(36) N'$.Department'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
         ) AS d
@@ -625,7 +625,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Loan];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -637,10 +637,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
-        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Loan] CHAR(36) N'$.Loan'
+        , [Counterpartie] CHAR(36) N'$.Counterpartie'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [currency] CHAR(36) N'$.currency'
         , [PaymentKind] NVARCHAR(250) N'$.PaymentKind'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -658,7 +658,7 @@
       DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -669,10 +669,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
-        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Loan] CHAR(36) N'$.Loan'
+        , [Counterpartie] CHAR(36) N'$.Counterpartie'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [currency] CHAR(36) N'$.currency'
         , [PaymentKind] NVARCHAR(250) N'$.PaymentKind'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -700,7 +700,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Department], [PL], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.PL]
@@ -708,9 +708,9 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [PL] UNIQUEIDENTIFIER N'$.PL'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
@@ -724,16 +724,16 @@
       DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.PL]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [Department], [PL], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [PL] UNIQUEIDENTIFIER N'$.PL'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -757,7 +757,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
@@ -772,13 +772,13 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
-        , [Product] UNIQUEIDENTIFIER N'$.Product'
-        , [Manager] UNIQUEIDENTIFIER N'$.Manager'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Customer] CHAR(36) N'$.Customer'
+        , [Product] CHAR(36) N'$.Product'
+        , [Manager] CHAR(36) N'$.Manager'
+        , [AO] CHAR(36) N'$.AO'
+        , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
@@ -798,7 +798,7 @@
       DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
@@ -812,13 +812,13 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
-        , [Product] UNIQUEIDENTIFIER N'$.Product'
-        , [Manager] UNIQUEIDENTIFIER N'$.Manager'
-        , [AO] UNIQUEIDENTIFIER N'$.AO'
-        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Customer] CHAR(36) N'$.Customer'
+        , [Product] CHAR(36) N'$.Product'
+        , [Manager] CHAR(36) N'$.Manager'
+        , [AO] CHAR(36) N'$.AO'
+        , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
@@ -848,7 +848,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Salary];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -858,15 +858,15 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [KorrCompany] UNIQUEIDENTIFIER N'$.KorrCompany'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Person] UNIQUEIDENTIFIER N'$.Person'
-        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [currency] CHAR(36) N'$.currency'
+        , [KorrCompany] CHAR(36) N'$.KorrCompany'
+        , [Department] CHAR(36) N'$.Department'
+        , [Person] CHAR(36) N'$.Person'
+        , [Employee] CHAR(36) N'$.Employee'
         , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
-        , [PL] UNIQUEIDENTIFIER N'$.PL'
-        , [PLAnalytics] UNIQUEIDENTIFIER N'$.PLAnalytics'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [PL] CHAR(36) N'$.PL'
+        , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -881,7 +881,7 @@
       DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Salary]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -890,15 +890,15 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [KorrCompany] UNIQUEIDENTIFIER N'$.KorrCompany'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Person] UNIQUEIDENTIFIER N'$.Person'
-        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [currency] CHAR(36) N'$.currency'
+        , [KorrCompany] CHAR(36) N'$.KorrCompany'
+        , [Department] CHAR(36) N'$.Department'
+        , [Person] CHAR(36) N'$.Person'
+        , [Employee] CHAR(36) N'$.Employee'
         , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
-        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
-        , [PL] UNIQUEIDENTIFIER N'$.PL'
-        , [PLAnalytics] UNIQUEIDENTIFIER N'$.PLAnalytics'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [PL] CHAR(36) N'$.PL'
+        , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -923,7 +923,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Depreciation];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [OperationType], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -933,10 +933,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [OE] UNIQUEIDENTIFIER N'$.OE'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [OE] CHAR(36) N'$.OE'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -951,7 +951,7 @@
       DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [OperationType], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -960,10 +960,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [OE] UNIQUEIDENTIFIER N'$.OE'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [currency] CHAR(36) N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [OE] CHAR(36) N'$.OE'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -988,7 +988,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.CashToPay];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.CashToPay]
@@ -996,19 +996,19 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
-        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
-        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [currency] CHAR(36) N'$.currency'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [CashRequest] CHAR(36) N'$.CashRequest'
+        , [Contract] CHAR(36) N'$.Contract'
+        , [BankAccountPerson] CHAR(36) N'$.BankAccountPerson'
+        , [Department] CHAR(36) N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
-        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
-        , [CashOrBank] UNIQUEIDENTIFIER N'$.CashOrBank'
-        , [CashRecipient] UNIQUEIDENTIFIER N'$.CashRecipient'
-        , [ExpenseOrBalance] UNIQUEIDENTIFIER N'$.ExpenseOrBalance'
-        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
-        , [BalanceAnalytics] UNIQUEIDENTIFIER N'$.BalanceAnalytics'
+        , [Loan] CHAR(36) N'$.Loan'
+        , [CashOrBank] CHAR(36) N'$.CashOrBank'
+        , [CashRecipient] CHAR(36) N'$.CashRecipient'
+        , [ExpenseOrBalance] CHAR(36) N'$.ExpenseOrBalance'
+        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
+        , [BalanceAnalytics] CHAR(36) N'$.BalanceAnalytics'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
     ) AS d
@@ -1022,26 +1022,26 @@
       DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
-        , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
-        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
-        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [currency] CHAR(36) N'$.currency'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [CashRequest] CHAR(36) N'$.CashRequest'
+        , [Contract] CHAR(36) N'$.Contract'
+        , [BankAccountPerson] CHAR(36) N'$.BankAccountPerson'
+        , [Department] CHAR(36) N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
-        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
-        , [CashOrBank] UNIQUEIDENTIFIER N'$.CashOrBank'
-        , [CashRecipient] UNIQUEIDENTIFIER N'$.CashRecipient'
-        , [ExpenseOrBalance] UNIQUEIDENTIFIER N'$.ExpenseOrBalance'
-        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
-        , [BalanceAnalytics] UNIQUEIDENTIFIER N'$.BalanceAnalytics'
+        , [Loan] CHAR(36) N'$.Loan'
+        , [CashOrBank] CHAR(36) N'$.CashOrBank'
+        , [CashRecipient] CHAR(36) N'$.CashRecipient'
+        , [ExpenseOrBalance] CHAR(36) N'$.ExpenseOrBalance'
+        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
+        , [BalanceAnalytics] CHAR(36) N'$.BalanceAnalytics'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         ) AS d
@@ -1065,7 +1065,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.BudgetItemTurnover];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
@@ -1077,15 +1077,15 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Scenario] UNIQUEIDENTIFIER N'$.Scenario'
-        , [BudgetItem] UNIQUEIDENTIFIER N'$.BudgetItem'
-        , [Anatitic1] UNIQUEIDENTIFIER N'$.Anatitic1'
-        , [Anatitic2] UNIQUEIDENTIFIER N'$.Anatitic2'
-        , [Anatitic3] UNIQUEIDENTIFIER N'$.Anatitic3'
-        , [Anatitic4] UNIQUEIDENTIFIER N'$.Anatitic4'
-        , [Anatitic5] UNIQUEIDENTIFIER N'$.Anatitic5'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Scenario] CHAR(36) N'$.Scenario'
+        , [BudgetItem] CHAR(36) N'$.BudgetItem'
+        , [Anatitic1] CHAR(36) N'$.Anatitic1'
+        , [Anatitic2] CHAR(36) N'$.Anatitic2'
+        , [Anatitic3] CHAR(36) N'$.Anatitic3'
+        , [Anatitic4] CHAR(36) N'$.Anatitic4'
+        , [Anatitic5] CHAR(36) N'$.Anatitic5'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInScenatio] MONEY N'$.AmountInScenatio'
         , [AmountInCurrency] MONEY N'$.AmountInCurrency'
@@ -1102,7 +1102,7 @@
       DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
@@ -1113,15 +1113,15 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [Scenario] UNIQUEIDENTIFIER N'$.Scenario'
-        , [BudgetItem] UNIQUEIDENTIFIER N'$.BudgetItem'
-        , [Anatitic1] UNIQUEIDENTIFIER N'$.Anatitic1'
-        , [Anatitic2] UNIQUEIDENTIFIER N'$.Anatitic2'
-        , [Anatitic3] UNIQUEIDENTIFIER N'$.Anatitic3'
-        , [Anatitic4] UNIQUEIDENTIFIER N'$.Anatitic4'
-        , [Anatitic5] UNIQUEIDENTIFIER N'$.Anatitic5'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] CHAR(36) N'$.Department'
+        , [Scenario] CHAR(36) N'$.Scenario'
+        , [BudgetItem] CHAR(36) N'$.BudgetItem'
+        , [Anatitic1] CHAR(36) N'$.Anatitic1'
+        , [Anatitic2] CHAR(36) N'$.Anatitic2'
+        , [Anatitic3] CHAR(36) N'$.Anatitic3'
+        , [Anatitic4] CHAR(36) N'$.Anatitic4'
+        , [Anatitic5] CHAR(36) N'$.Anatitic5'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInScenatio] MONEY N'$.AmountInScenatio'
         , [AmountInCurrency] MONEY N'$.AmountInCurrency'
@@ -1148,7 +1148,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Intercompany];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1158,12 +1158,12 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
-        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
-        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
-        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Intercompany] CHAR(36) N'$.Intercompany'
+        , [LegalCompanySender] CHAR(36) N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
+        , [Contract] CHAR(36) N'$.Contract'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1178,7 +1178,7 @@
       DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Intercompany]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1187,12 +1187,12 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
-        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
-        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
-        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Intercompany] CHAR(36) N'$.Intercompany'
+        , [LegalCompanySender] CHAR(36) N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
+        , [Contract] CHAR(36) N'$.Contract'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1217,7 +1217,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Acquiring];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
@@ -1226,14 +1226,14 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
         , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [Department] CHAR(36) N'$.Department'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
         , [PayDay] DATE N'$.PayDay'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
@@ -1248,7 +1248,7 @@
       DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Acquiring]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
         d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
@@ -1256,14 +1256,14 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
         , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
-        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
-        , [Department] UNIQUEIDENTIFIER N'$.Department'
-        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [OperationType] CHAR(36) N'$.OperationType'
+        , [Department] CHAR(36) N'$.Department'
+        , [CashFlow] CHAR(36) N'$.CashFlow'
         , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
         , [PayDay] DATE N'$.PayDay'
-        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
