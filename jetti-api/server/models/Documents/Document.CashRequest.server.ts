@@ -513,6 +513,9 @@ ORDER BY
       case 'Выплата заработной платы без ведомости':
         await this.FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation, tx, params);
         break;
+      case 'Выдача ДС подотчетнику':
+        await this.FillOperationВыдачаДСПодотчетнику(docOperation, tx, params);
+        break;
       default:
         throw new Error(`Не реализовано создание документа для вида операции ${this.Operation}`);
     }
@@ -619,19 +622,15 @@ ORDER BY
 
   async FillOperationОплатаПоКредитамИЗаймамПолученным(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
 
-    let CashOrBank, CashRecipientBankAccount;
+    let CashOrBank, CashRecipientBankAccount, CashRecipient;
 
-    if (docOperation['BankAccount']) {
-      CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
-    } else {
-      CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
-    }
-
+    if (docOperation['BankAccount']) CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
+    else CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
     if (!CashOrBank) throw new Error(`Не указан источник ДС в ${this.description}`);
+
     if (CashOrBank.type === 'Catalog.CashRegister') {
-      // касса
-      docOperation.Operation = 'DBBCB3D0-1749-11EA-92AC-8B4BF8464BD9';
-      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
+      CashRecipient = (await lib.doc.byId(this.CashRecipient, tx));
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // 4.2 - Расходный кассовый ордер
       docOperation['Counterpartie'] = this.CashRecipient;
       docOperation['CashRegister'] = this.CashOrBank;
       docOperation['PaymentKind'] = this.PaymentKind;
@@ -639,6 +638,22 @@ ORDER BY
       docOperation.f1 = docOperation['CashRegister'];
       docOperation.f2 = docOperation['Counterpartie'];
       docOperation.f3 = docOperation['Loan'];
+      if (CashRecipient.type === 'Catalog.Counterpartie') {
+        docOperation.Operation = 'DBBCB3D0-1749-11EA-92AC-8B4BF8464BD9'; // Из кассы - Выдача/Возврат кредитов и займов (Контрагент)
+      } else if (CashRecipient.type === 'Catalog.Person') {
+        // tslint:disable-next-line: max-line-length
+        docOperation.Operation = '8C3B61A0-6512-11EA-A8B2-95688F3F3592'; // Из кассы - Выдача/Возврат кредитов и займов (Физ.лицо) (МУЛЬТИВАЛЮТНЫЙ)
+        docOperation['CurrencyLoan'] = await lib.util.getObjectPropertyById(this.Loan as any, 'currency', tx);
+        if (docOperation['CurrencyLoan']) {
+          const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx);
+          const ExchangeRateDoc = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation.currency, tx);
+          const ExchangeRateLoan = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation['CurrencyLoan'], tx);
+          docOperation['AmountLoan'] = (docOperation.Amount / ExchangeRateDoc) * ExchangeRateLoan;
+        } else {
+          docOperation['CurrencyLoan'] = docOperation.currency;
+          docOperation['AmountLoan'] = docOperation.Amount;
+        }
+      }
     } else { // bank
       CashRecipientBankAccount = this.CashRecipientBankAccount;
       if (!CashRecipientBankAccount) {
@@ -717,6 +732,33 @@ ORDER BY
     // }
     // }
 
+  }
+
+  async FillOperationВыдачаДСПодотчетнику(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
+      docOperation.Operation = 'EC0A7030-1C06-11EA-97FB-7FA5141CBBD4'; // Из кассы - Выдача в подотчет (Статья ДДС)
+      docOperation['CashRegister'] = this.CashOrBank;
+      docOperation['Employee'] = this.CashRecipient;
+      docOperation.f1 = docOperation['CashRegister'];
+      docOperation.f2 = docOperation['Employee'];
+      docOperation.f3 = docOperation['CashFlow'];
+    } else if (CashOrBank.type === 'Catalog.BankAccount') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // Списание безналичных ДС
+      docOperation.Operation = 'BF4B4126-D835-11E7-9D5E-E7807DB3B488'; // С р/с - подотчетному
+      docOperation['Person'] = this.CashRecipient;
+      docOperation['BankAccount'] = this.CashOrBank;
+      docOperation['BankConfirm'] = false;
+      docOperation['BankDocNumber'] = '';
+      docOperation['BankConfirmDate'] = null;
+      docOperation.f1 = docOperation['BankAccount'];
+      docOperation.f2 = docOperation['Person'];
+      docOperation.f3 = docOperation['Department'];
+    }
   }
 
   async FillOperationВыплатаЗаработнойПлаты(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
