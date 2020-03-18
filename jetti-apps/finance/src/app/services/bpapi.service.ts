@@ -16,13 +16,12 @@ export class BPApi {
     return this.http.get<ITask[]>(query);
   }
 
-  CompleteTask(TaskID: number, UserDecisionID: number, Comment?: string): Observable<ITaskCompleteResult> {
+  CompleteTask(Task: ITask): Observable<ITaskCompleteResult> {
     const query = `${environment.api}BP/CompleteTask`;
     const body = {
-      'TaskID': TaskID,
-      'UserDecision': UserDecisionID.toString(),
-      'Comment': Comment,
-      // 'dev': true, //задача не выполняется (для разработки)
+      'TaskID': Task.TaskID,
+      'UserDecision': Task.DecisionID.toString(),
+      'Comment': Task.DecisionComment,
       'UserID': ''};
     return this.http.post<ITaskCompleteResult>(query, body);
   }
@@ -42,7 +41,7 @@ export class BPApi {
     return this.http.get<ProcessParticipants>(query);
   }
 
-  StartProcess(Base: any, BaseType: string): Observable<string> {
+  StartProcess(Base: any, BaseType: string, userMail: string): Observable<string> {
     const query = `${environment.api}/BP/StartProcess`;
     let body = {};
     if (BaseType === 'Document.CashRequest') {
@@ -57,10 +56,39 @@ export class BPApi {
         'AuthorID': Base.user.code,
         'DocumentID': Base.id,
         'Comment': Base.info,
-        'BaseType': BaseType
+        'BaseType': BaseType,
+        'userMail': userMail
       };
     }
     return this.http.post<string>(query, body);
+  }
+
+ ModifyProcess(Base: any, BaseType: string, userMail: string, processCode: string): Observable<string> {
+    const query = `${environment.api}/BP/ModifyProcess`;
+    let body = {};
+    if (BaseType === 'Document.CashRequest') {
+      body = {
+        'CompanyDescription': Base.company.value,
+        'CompanyID': Base.company.id,
+        'CashRecipientDescription': Base.CashRecipient ? Base.CashRecipient.value : '',
+        'SubdivisionID': Base.Department.id,
+        'Sum': Base.Amount,
+        'ItemID': Base.CashFlow.id,
+        'OperationTypeID': Base.Operation,
+        'AuthorID': Base.user.code,
+        'DocumentID': Base.id,
+        'Comment': Base.info,
+        'BaseType': BaseType,
+        'userMail': userMail,
+        'processCode': processCode
+      };
+    }
+    return this.http.post<string>(query, body);
+  }
+
+  isUserCurrentExecutant(processID: string): Promise<boolean> {
+    const query = `${environment.api}/BP/isUserCurrentExecutant/${processID}`;
+    return this.http.get<boolean>(query).toPromise();
   }
 
   CashRequestDesktop(): Observable<any[]> {

@@ -47,6 +47,7 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'enum', required: true, readOnly: true, hiddenInList: false, style: { width: '100px' }, order: 7, label: 'Статус', value: [
       'PREPARED',
       'AWAITING',
+      'MODIFY',
       'APPROVED',
       'REJECTED',
       'CLOSED',
@@ -277,7 +278,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'string', label: 'Бизнес-процесс №' })
   workflowID = '';
 
-  @Props({ type: 'boolean', label: 'Ручной ввод назначения платежа' })
+  @Props({ type: 'boolean', label: 'Ручной ввод назначения платежа', hiddenInList: true })
   ManualInfo = false;
 
   @Props({ type: 'Catalog.Company', hiddenInList: true })

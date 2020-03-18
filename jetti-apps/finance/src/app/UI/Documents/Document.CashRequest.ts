@@ -16,7 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: 'Document.CashRequest.html'
 })
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy, IFormEventsModel {
-  get readonlyMode() { return !this.isSuperUser && !this.isNew && this.form.get('Status').value !== 'PREPARED'; }
+  get readonlyMode() { return !this.isSuperUser && !this.isNew && ['PREPARED', 'MODIFY'].indexOf(this.form.get('Status').value) === -1; }
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
     private bpApi: BPApi, public dss: DynamicFormService, private api: ApiService) {
@@ -24,6 +24,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   isSuperUser = false;
+  canModifyProcess = false;
 
   ngOnInit() {
     super.ngOnInit();
@@ -152,6 +153,9 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   async onOpen() {
 
     this.isSuperUser = this.auth.isRoleAvailable('Cash request admin');
+    this.canModifyProcess = this.isSuperUser ||
+      (this.getValue('Status').value === 'MODIFY'
+        && await this.bpApi.isUserCurrentExecutant(this.getValue('workflowID').value));
 
     if (this.isSuperUser) {
       this.form.enable({ emitEvent: false });
@@ -161,6 +165,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if (this.isNew) {
       this.setValue('Status', 'PREPARED', { emitEvent: false });
       this.setValue('workflowID', '', { emitEvent: false });
+      this.setValue('PayDay', null, { emitEvent: false });
       if (this.getValue('Amount') === 0) this.setValue('Amount', null, { emitEvent: false });
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику', { emitEvent: false });
       if (!this.getValue('CashOrBank').value) this.onCashKindChange(this.getValue('CashKind'));
@@ -198,19 +203,35 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   StartProcess() {
-    this.bpApi.StartProcess(this.viewModel as DocumentBase, this.metadata.type).pipe(take(1)).subscribe(data => {
-      if (data === 'APPROVED') {
+    this.bpApi.StartProcess(
+      this.viewModel as DocumentBase,
+      this.metadata.type,
+      this.auth.userProfile.account.email).pipe(take(1)).subscribe(data => this.handleBpApiResponse(data));
+  }
+
+  ContinueAgreement() {
+    this.bpApi.ModifyProcess(
+      this.viewModel as DocumentBase,
+      this.metadata.type,
+      this.auth.userProfile.account.email,
+      this.getValue('workflowID').value).pipe(take(1)).subscribe(data => this.handleBpApiResponse(data));
+  }
+
+  handleBpApiResponse(response: any) {
+    switch (response) {
+      case 'APPROVED':
         this.setValue('workflowID', '');
         this.setValue('Status', 'APPROVED');
-        this.ds.openSnackBar('success', 'Заявка утверждена', 'Согласование не труебуется');
-      } else {
-        this.setValue('workflowID', data);
+        this.ds.openSnackBar('success', 'Заявка утверждена', 'Согласование не требуется');
+        break;
+      default:
+        this.setValue('workflowID', response);
         this.setValue('Status', 'AWAITING');
-        this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${data}`);
-      }
-      this.post();
-      this.form.disable({ emitEvent: false });
-    });
+        this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${response}`);
+        break;
+    }
+    this.post();
+    this.form.disable({ emitEvent: false });
   }
 
   print() {
@@ -220,8 +241,4 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   OpenReport() {
     window.open('https://bi.x100-group.com/Reports/report/Jetti/Cash/CashRequest?rs:Command=Render', '_blank');
   }
-}
-
-const newFormValue = (type = '', id = null, code = null, value = null) => {
-  return { id: id, code: code, type: type, value: value };
 }

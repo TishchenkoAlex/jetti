@@ -6,13 +6,14 @@
       <button pButton type="button" (click)="loadTasks()" label="Обновить" styleClass="ui-button-info"></button>
     </div>
     <div class="ui-toolbar-group-right">
-      <input type="text" placeholder="Строка поиска"
-        (input)="Tasklist.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      <input type="text" placeholder="Строка поиска" (input)="Tasklist.filterGlobal($event.target.value, 'contains')"
+        style="width:auto">
     </div>
   </p-toolbar>
 
   <p-table #Tasklist [columns]="columns" [value]="Tasks$ | async" dataKey="TaskID" sortMode="multiple" dataKey="TaskID"
-    [resizableColumns]="true" [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision','CashRecipient', 'Company']">
+    [resizableColumns]="true"
+    [globalFilterFields]="['UserDecision','Comment','ItemName','Subdivision','CashRecipient', 'Company']">
     <ng-template pTemplate="colgroup" let-columns>
       <colgroup>
         <col>
@@ -52,26 +53,33 @@
           <span *ngSwitchDefault>{{rowData[column.field]}}</span>
         </td>
         <td>
-          <div *ngIf="!rowData.CurrentTask" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
-            <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button" class="ui-button-success"
-              icon="pi pi-check" (click)="CompleteTask(rowData,0)" label="Утвердить" style="offset: 5px;"></button>
-            <span style="width: 5px;"></span>
-            <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button" class="ui-button-danger"
-              icon="pi pi-times" (click)="rowData.CurrentTask = true" label="Отклонить" style="offset: 5px;"></button>
-            <button *ngIf="rowData.CanModify.toString()==='true'" pButton type="button" class="ui-button-info"
-              icon="pi pi-pencil" (click)="rowData.CurrentTask = true" label="Доработать" style="offset: 5px;"></button>
+          <div *ngIf="rowData.isModifyTask.toString() ==='true'" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
+            <button pButton type="button" class="ui-button-info"
+              icon="pi pi-times" (click)= "open(rowData)" label="Выполнить доработку" style="offset: 5px;"></button>
           </div>
-          <div *ngIf="rowData.CurrentTask">
-            <div>
-              <button pButton type="button" icon="pi pi-check" class="ui-button-success" label="OK"
-                (click)="CompleteTask(rowData,rowData.CanReject ? 1 : 2)"></button>
+          <div *ngIf="rowData.isModifyTask.toString() !=='true'">
+            <div *ngIf="!rowData.DecisionID" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
+              <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button" class="ui-button-success"
+                icon="pi pi-check" (click)="CompleteTask(rowData,0)" label="Утвердить" style="offset: 5px;"></button>
               <span style="width: 5px;"></span>
-              <input type="text" pInputText
-                placeholder='{{rowData.CanReject ? "Причина отклонения" : "Причина доработки"}}'
-                [(ngModel)]="rowData.DecisionComment">
-              <span style="width: 5px;"></span>
-              <button pButton type="button" icon="pi pi-times" class="ui-button-danger" label="Отмена"
-                (click)="rowData.CurrentTask = false"></button>
+              <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button" class="ui-button-danger"
+                icon="pi pi-times" (click)="rowData.DecisionID = 1" label="Отклонить" style="offset: 5px;"></button>
+              <button *ngIf="rowData.CanModify.toString()==='true'" pButton type="button" class="ui-button-info"
+                icon="pi pi-pencil" (click)="rowData.DecisionID = 2" label="Доработать"
+                style="offset: 5px;"></button>
+            </div>
+            <div *ngIf="rowData.DecisionID">
+              <div>
+                <button pButton type="button" icon="pi pi-check" class="ui-button-success" label="OK"
+                  (click)="CompleteTask(rowData)"></button>
+                <span style="width: 5px;"></span>
+                <input type="text" pInputText
+                  placeholder='{{rowData.DecisionID === 1 ? "Причина отклонения" : "Причина доработки"}}'
+                  [(ngModel)]="rowData.DecisionComment">
+                <span style="width: 5px;"></span>
+                <button pButton type="button" icon="pi pi-times" class="ui-button-danger" label="Отмена"
+                  (click)="rowData.DecisionID = 0"></button>
+              </div>
             </div>
           </div>
         </td>
