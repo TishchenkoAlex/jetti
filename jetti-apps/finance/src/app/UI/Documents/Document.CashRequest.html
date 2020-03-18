@@ -41,6 +41,9 @@
           <button pButton type="button" id="StartProcess" label="Start agreement" class="ui-button-danger"
             *ngIf="!readonlyMode && isPosted && !form.get('workflowID').value" (click)="StartProcess()"
             [disabled]="!form.valid || (lds.busy$ | async)"></button>
+          <button pButton type="button" id="Modify" label="Continue agreement" class="ui-button-warning"
+            *ngIf="isPosted && canModifyProcess" (click)="ContinueAgreement()"
+            [disabled]="!form.valid || (lds.busy$ | async)"></button>
         </div>
 
       </p-toolbar>
@@ -142,8 +145,8 @@
         </div>
 
         <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0px" fxLayoutGap.xs="0px">
-            <j-control [control]="vk.ManualInfo" [form]="form"></j-control>
-            <j-control [control]="vk.info" [form]="form"></j-control>
+          <j-control [control]="vk.ManualInfo" [form]="form"></j-control>
+          <j-control [control]="vk.info" [form]="form"></j-control>
         </div>
 
       </div>

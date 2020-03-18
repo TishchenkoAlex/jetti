@@ -338,7 +338,10 @@ ORDER BY
         throw Error(`Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
     }
 
-    await this.FillTaxInfo(tx);
+    if (this.Status !== 'REJECTED') {
+      if (this.Operation === 'Оплата поставщику' && !this.Contract) throw new Error(`Не указан договор`);
+      else await this.FillTaxInfo(tx);
+    }
 
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
@@ -359,7 +362,7 @@ ORDER BY
           Department: this.Department,
           Supplier: this.CashRecipient,
           AmountIsPaid: (this.Status === 'APPROVED' ? this.Amount : 0),
-          AmountToPay: (this.Status === 'AWAITING' ? this.Amount : 0),
+          AmountToPay: (this.Status === 'AWAITING' || this.Status === 'MODIFY' ? this.Amount : 0),
           PayDay: this.PayDay,
           currency: сurrency,
           company: this.company

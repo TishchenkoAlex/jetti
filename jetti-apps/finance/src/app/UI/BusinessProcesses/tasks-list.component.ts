@@ -84,14 +84,14 @@ export class TaskListComponent implements OnInit {
     this.Tasks$ = this.TaskService.GetTasks(20);
   }
 
-  CompleteTask(task: ITask, UserDecisionID: number) {
-    if (UserDecisionID > 0 && !task.DecisionComment) {
-      this.ds.openSnackBar('error', 'Задача не выполнена', `Укажите причину ${UserDecisionID === 1 ? ' отклонения ' : ' доработки'}`);
+  CompleteTask(task: ITask) {
+    if (task.DecisionID && !task.DecisionComment) {
+      this.ds.openSnackBar('error', 'Задача не выполнена', `Укажите причину ${task.DecisionID === 1 ? ' отклонения ' : ' доработки'}`);
       return;
     }
 
     try {
-      this.TaskService.CompleteTask(task.TaskID, UserDecisionID, task.DecisionComment).pipe(take(1)).subscribe(res => {
+      this.TaskService.CompleteTask(task).pipe(take(1)).subscribe(res => {
         if (res.ErrorMessage) {
           this.ds.openSnackBar('error', 'Ошибка выполнения задачи', res.ErrorMessage);
         } else {
@@ -100,7 +100,7 @@ export class TaskListComponent implements OnInit {
           task.CanApprove = false;
           task.CanModify = false;
           task.CanReject = false;
-          task.UserDecision = UserDecisionID === 0 ? 'Утвердить' : UserDecisionID === 1 ? 'Отклонить' : 'Доработать';
+          task.UserDecision = !task.DecisionID ? 'Утвердить' : task.DecisionID === 1 ? 'Отклонить' : 'Доработать';
           this.ds.openSnackBar('success', 'Задача выполнена', `${task.TaskName} №${task.TaskID} выполнена!`);
           this.cd.detectChanges();
         }

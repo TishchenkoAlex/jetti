@@ -13,13 +13,12 @@ export interface ITaskCompleteResult {
 }
 
 export interface ITask {
-
   TaskName: string;
   TaskID: number;
   ProcessID: string;
   Subdivision: string;
   Company: string;
-  CashRecipient: string,
+  CashRecipient: string;
   ItemName: string;
   Summ: number;
   AutorName: string;
@@ -31,9 +30,10 @@ export interface ITask {
   CanApprove: boolean;
   CanReject: boolean;
   CanModify: boolean;
+  isModifyTask: boolean;
   Comment: string;
   DecisionComment: string;
-  CurrentTask: boolean;
+  DecisionID: number;
   Detailed: boolean;
   BaseDocumentID: string;
   baseType: string;

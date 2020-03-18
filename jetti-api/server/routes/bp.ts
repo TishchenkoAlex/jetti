@@ -49,6 +49,13 @@ router.get('/BP/GetMapByProcessID', async (req: Request, res: Response, next: Ne
   } catch (err) { next(err); }
 });
 
+router.get('/BP/isUserCurrentExecutant', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/isUserCurrentExecutant/CashApplication?UserMail=${User(req).email}&ProcessID=${req.query.ProcessID}`;
+    return res.json((await instance.get(query)).data);
+  } catch (err) { next(err); }
+});
 // StartProcess/CashApplication?AuthorID=dbez@outlook.com&DocumentID=049fe234-7b46-4b7e-b414-9dee0a8cd4da&SubdivisionID=959680e5-1523-11ea-ae46-d8e1ce3b07c9&Sum=100000&ItemID=1942b9df-1524-11ea-ae46-d8e1ce3b07c9
 
 router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFunction) => {
@@ -59,7 +66,13 @@ router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFu
   } catch (err) { next(err); }
 });
 
-
+router.post('/BP/ModifyProcess', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/ModifyProcess/CashApplication`;
+    return res.json((await instance.post(query, req.body)).data);
+  } catch (err) { next(err); }
+});
 
 router.get('/CashRequestDesktop', async (req: Request, res: Response, next: NextFunction) => {
   try {
