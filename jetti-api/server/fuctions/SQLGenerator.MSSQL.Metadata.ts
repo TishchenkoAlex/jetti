@@ -424,7 +424,7 @@ export class SQLGenegatorMetadata {
       DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [${type}]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate${fields}
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
