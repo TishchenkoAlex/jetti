@@ -38,19 +38,19 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   Storehouse: Ref = null;
 
   @Props({ type: 'datetime' })
-  openTime = null;
+  OpenTime = null;
 
   @Props({ type: 'datetime' })
-  printTime = null;
+  PrintTime = null;
 
   @Props({ type: 'datetime' })
-  deliverTime = null;
+  DeliverTime = null;
 
   @Props({ type: 'datetime' })
-  billTime = null;
+  BillTime = null;
 
   @Props({ type: 'datetime' })
-  closeTime = null;
+  CloseTime = null;
 
   @Props({ type: 'number' })
   CashShift = 0;
