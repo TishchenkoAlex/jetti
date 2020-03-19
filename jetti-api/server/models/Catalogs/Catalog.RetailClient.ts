@@ -1,14 +1,14 @@
 import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
-  type: 'Catalog.ReatailClient',
+  type: 'Catalog.RetailClient',
   description: 'Розничный клиент',
   icon: 'fa fa-list',
   menu: 'Розничные клиенты',
 })
-export class CatalogReatailClient extends DocumentBase {
+export class CatalogRetailClient extends DocumentBase {
 
-  @Props({ type: 'Catalog.ReatailClient', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.RetailClient', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
   @Props({ type: 'string' })

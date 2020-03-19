@@ -192,6 +192,7 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
       CodeCompanySalary = 'SALARY-KAZAKHSTAN';
       break;
     default:
+      return company;
   }
   return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
 }

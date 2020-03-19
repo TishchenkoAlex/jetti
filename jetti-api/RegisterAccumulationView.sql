@@ -307,7 +307,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Customer, Product, Manager, AO, Storehouse
+        d.exchangeRate, currency, Department, Customer, Product, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -325,6 +325,9 @@
         , [Customer] UNIQUEIDENTIFIER N'$.Customer'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
+        , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
+        , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'

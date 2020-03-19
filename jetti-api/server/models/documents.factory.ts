@@ -67,7 +67,7 @@ import { CatalogTaxRate } from './Catalogs/Catalog.TaxRates';
 import { CatalogTaxPaymentCode } from './Catalogs/Catalog.TaxPaymentCode';
 import { CatalogTaxPaymentPeriod } from './Catalogs/Catalog.TaxPaymentPeriod';
 import { CatalogTaxPayerStatus } from './Catalogs/Catalog.TaxPayerStatus';
-import { CatalogReatailClient } from './Catalogs/Catalog.ReatailClient';
+import { CatalogRetailClient } from './Catalogs/Catalog.RetailClient';
 import { CatalogTaxOffice } from './Catalogs/Catalog.TaxOffice';
 import { CatalogPersonBankAccount } from './Catalogs/Catalog.Person.BankAccount';
 import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
@@ -190,7 +190,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxPaymentPeriod', Class: CatalogTaxPaymentPeriod },
   { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus },
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
-  { type: 'Catalog.ReatailClient', Class: CatalogReatailClient },
+  { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
   { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
 

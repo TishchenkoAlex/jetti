@@ -39,7 +39,7 @@
       DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -112,7 +112,7 @@
       DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AP]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -187,7 +187,7 @@
       DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.AR]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -257,7 +257,7 @@
       DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -317,7 +317,7 @@
       DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
@@ -377,7 +377,7 @@
       DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Balance.Report]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -442,7 +442,7 @@
       DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -508,7 +508,7 @@
       DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -581,7 +581,7 @@
       DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -658,7 +658,7 @@
       DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -724,7 +724,7 @@
       DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.PL]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Department], [PL], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
@@ -758,7 +758,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -777,6 +777,9 @@
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
         , [Manager] CHAR(36) N'$.Manager'
+        , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
+        , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
@@ -798,8 +801,8 @@
       DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -817,6 +820,9 @@
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
         , [Manager] CHAR(36) N'$.Manager'
+        , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
+        , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
@@ -836,7 +842,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 
@@ -881,7 +887,7 @@
       DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Salary]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -951,7 +957,7 @@
       DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [OperationType], [currency], [Department], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1022,7 +1028,7 @@
       DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
@@ -1102,7 +1108,7 @@
       DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
@@ -1179,7 +1185,7 @@
       DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Intercompany]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1250,7 +1256,7 @@
       DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [Register.Accumulation.Acquiring]
       SELECT
-        r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
