@@ -60,7 +60,7 @@
           <div *ngIf="rowData.isModifyTask.toString() !=='true'">
             <div *ngIf="!rowData.DecisionID" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
               <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button" class="ui-button-success"
-                icon="pi pi-check" (click)="CompleteTask(rowData,0)" label="Утвердить" style="offset: 5px;"></button>
+                icon="pi pi-check" (click)="CompleteTask(rowData)" label="Утвердить" style="offset: 5px;"></button>
               <span style="width: 5px;"></span>
               <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button" class="ui-button-danger"
                 icon="pi pi-times" (click)="rowData.DecisionID = 1" label="Отклонить" style="offset: 5px;"></button>

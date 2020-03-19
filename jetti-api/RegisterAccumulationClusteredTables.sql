@@ -1149,7 +1149,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Intercompany];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
+      d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -1163,6 +1163,7 @@
         , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
         , [Contract] CHAR(36) N'$.Contract'
         , [OperationType] CHAR(36) N'$.OperationType'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -1179,7 +1180,7 @@
       INSERT INTO [Register.Accumulation.Intercompany]
       SELECT
         r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-        d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [currency]
+        d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -1192,6 +1193,7 @@
         , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
         , [Contract] CHAR(36) N'$.Contract'
         , [OperationType] CHAR(36) N'$.OperationType'
+        , [Analytics] CHAR(36) N'$.Analytics'
         , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
