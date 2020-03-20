@@ -1,10 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ITask, ProcessParticipants, ITaskCompleteResult } from 'src/app/UI/BusinessProcesses/task.object';
 import { environment } from '../../environments/environment';
-import { take } from 'rxjs/operators';
-import { DocumentTypes } from '../../../../../jetti-api/server/models/documents.types';
 
 @Injectable({ providedIn: 'root' })
 export class BPApi {
@@ -86,9 +84,9 @@ export class BPApi {
     return this.http.post<string>(query, body);
   }
 
-  isUserCurrentExecutant(processID: string): Promise<boolean> {
-    const query = `${environment.api}/BP/isUserCurrentExecutant/${processID}`;
-    return this.http.get<boolean>(query).toPromise();
+  isUserCurrentExecutant(ProcessID: string): Promise<boolean | string> {
+    const query = `${environment.api}BP/isUserCurrentExecutant?ProcessID=${ProcessID}`;
+    return this.http.get<boolean | string>(query).toPromise();
   }
 
   CashRequestDesktop(): Observable<any[]> {

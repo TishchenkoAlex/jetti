@@ -54,7 +54,10 @@ router.get('/BP/isUserCurrentExecutant', async (req: Request, res: Response, nex
     const instance = axios.create({ baseURL: bpApiHost });
     const query = `/Processes/pwd/isUserCurrentExecutant/CashApplication?UserMail=${User(req).email}&ProcessID=${req.query.ProcessID}`;
     return res.json((await instance.get(query)).data);
-  } catch (err) { next(err); }
+  } catch (err) {
+    if (err.response) return res.json(err.response.data);
+    next(err);
+  }
 });
 // StartProcess/CashApplication?AuthorID=dbez@outlook.com&DocumentID=049fe234-7b46-4b7e-b414-9dee0a8cd4da&SubdivisionID=959680e5-1523-11ea-ae46-d8e1ce3b07c9&Sum=100000&ItemID=1942b9df-1524-11ea-ae46-d8e1ce3b07c9
 

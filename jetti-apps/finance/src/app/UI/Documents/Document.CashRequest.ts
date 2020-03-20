@@ -153,10 +153,12 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   async onOpen() {
 
     this.isSuperUser = this.auth.isRoleAvailable('Cash request admin');
-    this.canModifyProcess = this.isSuperUser ||
-      (this.getValue('Status').value === 'MODIFY'
-        && await this.bpApi.isUserCurrentExecutant(this.getValue('workflowID').value));
-
+    this.canModifyProcess = this.isSuperUser;
+    if (!this.canModifyProcess && this.getValue('Status') === 'MODIFY') {
+      const res = await this.bpApi.isUserCurrentExecutant(this.getValue('workflowID'));
+      if (typeof res === 'string') this.ds.openSnackBar('error', 'Бизнес-процессы', res);
+      else this.canModifyProcess = res as boolean;
+    }
     if (this.isSuperUser) {
       this.form.enable({ emitEvent: false });
       this.vk.Status.readOnly = false;
@@ -214,10 +216,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.viewModel as DocumentBase,
       this.metadata.type,
       this.auth.userProfile.account.email,
-      this.getValue('workflowID').value).pipe(take(1)).subscribe(data => this.handleBpApiResponse(data));
+      this.getValue('workflowID')).pipe(take(1)).subscribe(data => {this.canModifyProcess = false; this.handleBpApiResponse(data, true );});
   }
 
-  handleBpApiResponse(response: any) {
+  handleBpApiResponse(response: any, isModifyEvent = false) {
     switch (response) {
       case 'APPROVED':
         this.setValue('workflowID', '');
@@ -227,7 +229,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       default:
         this.setValue('workflowID', response);
         this.setValue('Status', 'AWAITING');
-        this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${response}`);
+        if (isModifyEvent) this.ds.openSnackBar('success', 'Согласование возобновлено', `Процесс №${response}`);
+        else this.ds.openSnackBar('success', 'Согласование запущено', `Стартован процесс №${response}`);
         break;
     }
     this.post();
