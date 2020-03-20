@@ -170,7 +170,6 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.setValue('PayDay', null, { emitEvent: false });
       if (this.getValue('Amount') === 0) this.setValue('Amount', null, { emitEvent: false });
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику', { emitEvent: false });
-      if (!this.getValue('CashOrBank').value) this.onCashKindChange(this.getValue('CashKind'));
       this.onOperationChanges(this.getValue('Operation'));
     }
 

@@ -22,11 +22,35 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Catalog.Manager', dimension: true  })
   Manager: Ref = null;
 
+  @Props({ type: 'enum', value: ['COURIER', 'CLIENT', 'EXTERNAL'] })
+  DeliveryType = '';
+
+  @Props({ type: 'string' })
+  OrderSource = '';
+
+  @Props({ type: 'Catalog.RetailClient' })
+  RetailClient: Ref = null;
+
   @Props({ type: 'Types.Document' })
   AO: Ref = null;
 
   @Props({ type: 'Catalog.Storehouse', required: true, dimension: true })
   Storehouse: Ref = null;
+
+  @Props({ type: 'datetime' })
+  OpenTime = null;
+
+  @Props({ type: 'datetime' })
+  PrintTime = null;
+
+  @Props({ type: 'datetime' })
+  DeliverTime = null;
+
+  @Props({ type: 'datetime' })
+  BillTime = null;
+
+  @Props({ type: 'datetime' })
+  CloseTime = null;
 
   @Props({ type: 'number' })
   CashShift = 0;

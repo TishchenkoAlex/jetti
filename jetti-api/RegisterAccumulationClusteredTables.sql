@@ -758,7 +758,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -777,6 +777,9 @@
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
         , [Manager] CHAR(36) N'$.Manager'
+        , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
+        , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
@@ -799,7 +802,11 @@
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+<<<<<<< HEAD
         d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
+=======
+        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
+>>>>>>> 96a3fab03878d6f70c9cdfc53a574789984b9e59
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -817,6 +824,9 @@
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
         , [Manager] CHAR(36) N'$.Manager'
+        , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
+        , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
         , [CashShift] MONEY N'$.CashShift'
@@ -836,7 +846,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 

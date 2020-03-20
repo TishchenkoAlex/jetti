@@ -2017,10 +2017,10 @@
       GO
       --------------------------------------------------------------------------------------
       
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ReatailClient.v];
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.RetailClient.v];
       GO
 
-      CREATE OR ALTER VIEW dbo.[Catalog.ReatailClient.v] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Email"')), '') [Email]
@@ -2030,27 +2030,27 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ReatailClient'
+      WHERE [type] = 'Catalog.RetailClient'
     
       GO
 
-      CREATE UNIQUE CLUSTERED INDEX [Catalog.ReatailClient.v] ON [Catalog.ReatailClient.v](id);
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailClient.v] ON [Catalog.RetailClient.v](id);
       
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.code.f] ON [Catalog.ReatailClient.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.description.f] ON [Catalog.ReatailClient.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.description] ON [Catalog.ReatailClient.v](description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.code] ON [Catalog.ReatailClient.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.user] ON [Catalog.ReatailClient.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReatailClient.v.company] ON [Catalog.ReatailClient.v](company,id) INCLUDE([date]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.code.f] ON [Catalog.RetailClient.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.description.f] ON [Catalog.RetailClient.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.description] ON [Catalog.RetailClient.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.code] ON [Catalog.RetailClient.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.user] ON [Catalog.RetailClient.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.company] ON [Catalog.RetailClient.v](company,id) INCLUDE([date]);
 
-      GRANT SELECT ON dbo.[Catalog.ReatailClient.v] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.RetailClient.v] TO jetti;
       GO
 
       ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ReatailClient.v];
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailClient.v];
       GO
 
-      RAISERROR('Catalog.ReatailClient complete', 0 ,1) WITH NOWAIT;
+      RAISERROR('Catalog.RetailClient complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
