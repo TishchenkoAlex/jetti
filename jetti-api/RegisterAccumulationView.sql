@@ -307,7 +307,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Customer, Product, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse
+        d.exchangeRate, currency, Department, Customer, Product, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse, OpenTime, PrintTime, DeliverTime, BillTime, CloseTime
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -330,6 +330,11 @@
         , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [OpenTime] DATETIME N'$.OpenTime'
+        , [PrintTime] DATETIME N'$.PrintTime'
+        , [DeliverTime] DATETIME N'$.DeliverTime'
+        , [BillTime] DATETIME N'$.BillTime'
+        , [CloseTime] DATETIME N'$.CloseTime'
         , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
