@@ -40,7 +40,7 @@ export class CatalogOperation extends DocumentBase {
   CopyTo: CopyTo[] = [new CopyTo()];
 
   @Props({ type: 'table', label: 'Commands on server' })
-  commandsOnServer: Command[] = [new Command()];
+  commandsOnServer: CommandOnServer[] = [new CommandOnServer()];
 
   @Props({ type: 'table', label: 'Commands on client' })
   commandsOnClient: Command[] = [new Command()];
@@ -95,4 +95,9 @@ class Command {
 
   @Props({ type: 'number', required: true })
   order = 0;
+}
+
+class CommandOnServer extends Command {
+  @Props({ type: 'javascript', label: 'Client module', hiddenInList: true, style: { width: '550px' } })
+  clientModule = '';
 }

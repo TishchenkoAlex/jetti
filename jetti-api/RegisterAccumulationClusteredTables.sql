@@ -758,7 +758,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
+      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -782,6 +782,11 @@
         , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [OpenTime] DATETIME N'$.OpenTime'
+        , [PrintTime] DATETIME N'$.PrintTime'
+        , [DeliverTime] DATETIME N'$.DeliverTime'
+        , [BillTime] DATETIME N'$.BillTime'
+        , [CloseTime] DATETIME N'$.CloseTime'
         , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
@@ -802,11 +807,7 @@
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-<<<<<<< HEAD
-        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [AO], [Storehouse]
-=======
-        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse]
->>>>>>> 96a3fab03878d6f70c9cdfc53a574789984b9e59
+        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -829,6 +830,11 @@
         , [RetailClient] CHAR(36) N'$.RetailClient'
         , [AO] CHAR(36) N'$.AO'
         , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [OpenTime] DATETIME N'$.OpenTime'
+        , [PrintTime] DATETIME N'$.PrintTime'
+        , [DeliverTime] DATETIME N'$.DeliverTime'
+        , [BillTime] DATETIME N'$.BillTime'
+        , [CloseTime] DATETIME N'$.CloseTime'
         , [CashShift] MONEY N'$.CashShift'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
@@ -846,7 +852,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales](id) WITH (MAXDOP=4);
 

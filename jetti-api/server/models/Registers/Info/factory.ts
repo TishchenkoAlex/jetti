@@ -1,3 +1,4 @@
+import { RegisterInfoHoliday } from './Holiday';
 import { RegisterInfoCompanyResponsiblePersons } from './CompanyResponsiblePersons';
 import { RegisterInfoRLSPeriod } from './RLS.Period';
 import { RegisterInfoDepreciation } from './Depreciation';
@@ -12,6 +13,7 @@ import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
 import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
 
 export type RegisterInfoTypes =
+    'Register.Info.Holiday' |
     'Register.Info.PriceList' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
@@ -25,6 +27,7 @@ export type RegisterInfoTypes =
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
+    RegisterInfoHoliday |
     RegisterInfoPriceList |
     RegisterInfoSettlementsReconciliation |
     RegisterInfoCompanyResponsiblePersons |
@@ -39,6 +42,7 @@ export interface IRegisteredRegisterInfo {
 }
 
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
+    { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },

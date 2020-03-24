@@ -11,9 +11,25 @@ export class BankStatementUnloader {
   static country = '';
   static operation = '';
 
-  static countryKAZAKHSTANId = '9C226AA0-FAFA-11E9-B75B-A35013C043AE'; // KAZAKHSTAN
+  static countryKAZAKHSTAN = '381AA090-4D6B-11EA-9419-5B6F020710B8';
+  static countryUKRAINE = 'E04BAF30-4D6A-11EA-9419-5B6F020710B8';
+  // static countryUKRAINE = 'BA065230-4D6A-11EA-9419-5B6F020710B8';
+  static countryRUSSIA = 'BA065230-4D6A-11EA-9419-5B6F020710B8';
 
   private static getQueryTextSalaryProjectCommon() {
+
+    if (this.country === this.countryUKRAINE) {
+      return `
+      select
+        sp.code N'N_D',
+        BankAccount.code N'COUNT_A',
+        doc.[info] as N_P,
+        ISNULL(JSON_QUERY(doc.doc,'$.PayRolls'),'') ig_PayRolls
+      from [dbo].[Documents] doc
+        inner join [dbo].[Documents] sp on JSON_VALUE(doc.doc,N'$.SalaryProject') = sp.id
+        inner join [dbo].[Documents] BankAccount on JSON_VALUE(doc.doc,N'$.BankAccount') = BankAccount.id
+      where doc.id in (@p1)`;
+    }
     return `
     select
       doc.id N'ИдПервичногоДокумента',
@@ -63,57 +79,131 @@ export class BankStatementUnloader {
       left join [dbo].[Documents] ba on ba.id = pr.BankAccount;`;
   }
 
+  private static getQueryTextSalaryEmployeesUKRAINE() {
+    return `
+    DROP TABLE IF EXISTS #PayRolls;
+    SELECT *
+    INTO #PayRolls
+    FROM OPENJSON(@p1, N'$.PayRolls')
+    WITH (
+        Employee VARCHAR(200) N'$.Employee',
+        BankAccount VARCHAR(200) N'$.BankAccount',
+        Amount MONEY N'$.Amount');
+    SELECT
+      ISNULL(person.description,'') N'NAME_B',
+      ba.code N'COUNT_B',
+      pr.Amount N'SUMMA',
+      JSON_VALUE(Person.doc, '$.Code1') as OKPO_B
+    FROM #PayRolls pr
+      left join [dbo].[Documents] person on person.id = pr.Employee
+      left join [dbo].[Documents] ba on ba.id = pr.BankAccount;`;
+  }
+
   private static async getQueryTextCommon(): Promise<string> {
 
-    switch (this.country) {
-      case this.countryKAZAKHSTANId: // KAZAKHSTAN
-        return await this.getQueryTextCommonKAZAKHSTAN();
-      case 'E5850830-02D2-11EA-A524-E592E08C23A5': // RUSSIA
-      case 'FE302460-0489-11EA-941F-EBDB19162587': // UKRAINE - Украина
-        return await this.getQueryTextCommonRUSSIA();
-      default:
-        const comp = await lib.doc.byId(this.country, this.tx);
-        throw new Error(`Не реализована выгрузка для компании ${comp?.description}`);
+    if (this.country === this.countryUKRAINE) {
+      switch (this.operation) {
+        case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+          return this.getQueryTextCommonUKRAINEВыплатаЗарплаты();
+        case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
+          return this.getQueryTextCommonUKRAINEНаРасчетныйСчетВПуть();
+        case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
+          return this.getQueryTextCommonUKRANEВозвратКредитовИЗаймов();
+        case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
+        case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
+          return this.getQueryTextCommonUKRAINEОплатаПоставщику();
+      }
+    } else {
+      switch (this.operation) {
+        case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+          return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
+        case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
+          return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
+        case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
+          return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов();
+        case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
+          return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
+        case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
+          if (this.country === this.countryKAZAKHSTAN) return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику();
+          else return this.getQueryTextCommonRUSSIAОплатаПоставщику();
+      }
     }
-
-    return '';
+    const operation = await lib.doc.byId(this.operation, this.tx);
+    throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
   }
 
-  private static async getQueryTextCommonRUSSIA() {
+  private static getQueryTextCommonUKRAINEОплатаПоставщику() {
+    return `SELECT
+    Obj.[code] as N_D
+    ,CONVERT(MONEY, JSON_VALUE(Obj.doc, '$.Amount')) as SUMMA
+    ,BAComp.[code] as COUNT_A
+    ,Supp.[description] as NAME_B
+    ,BASupp.[code] as COUNT_B
+    ,Obj.[info] as N_P
+	  ,JSON_VALUE(Supp.doc, '$.Code1') as OKPO_B
 
-    switch (this.operation) {
-      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
-        return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
-      case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
-        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
-      case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
-        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов();
-      case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
-        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
-      case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
-        return this.getQueryTextCommonRUSSIAОплатаПоставщику();
-      default:
-        const operation = await lib.doc.byId(this.operation, this.tx);
-        throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
-    }
+    FROM [dbo].[Documents] as Obj
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+    LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+
+    WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') IN ('68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9','54AA5310-102E-11EA-AA50-31ECFB22CD33','8D128C20-3E20-11EA-A722-63A01E818155') -- С р/с -  оплата поставщику
+    order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 
-  private static async getQueryTextCommonKAZAKHSTAN() {
-    switch (this.operation) {
-      case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
-        return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
-      case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
-        return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
-      case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
-        return this.getQueryTextCommonRUSSIAВозвратКредитовИЗаймов();
-      case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
-        return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
-      case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
-        return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику();
-      default:
-        const operation = await lib.doc.byId(this.operation, this.tx);
-        throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
-    }
+  private static getQueryTextCommonUKRAINEНаРасчетныйСчетВПуть() {
+    return `SELECT
+        Obj.[code] as N_D
+        ,CONVERT(MONEY, JSON_VALUE(Obj.doc, '$.Amount')) as SUMMA
+        ,BAComp.[code] as COUNT_A
+        ,JSON_VALUE(CompIn.doc, '$.FullName') as NAME_B
+        ,BAIn.[code] as COUNT_B
+        ,Obj.[info] as N_P
+      ,JSON_VALUE(CompIn.doc, '$.Code1') as OKPO_B
+        FROM [dbo].[Documents] as Obj
+        LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccountOut') and BAComp.[type] = 'Catalog.BankAccount'
+        LEFT JOIN [dbo].[Documents] as BAIn on BAIn.id = JSON_VALUE(Obj.doc, '$.BankAccountTransit') and BAIn.[type] = 'Catalog.BankAccount'
+        LEFT JOIN [dbo].[Documents] as CompIn on CompIn.id = BAIn.company and CompIn.[type] = 'Catalog.Company'
+        WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '433D63DE-D849-11E7-83D2-2724888A9E4F' -- С р/с - на расчетный счет  (в путь)
+        order by Obj.company, BAComp.[code], Obj.[date]`;
+
+  }
+
+  private static getQueryTextCommonUKRANEВозвратКредитовИЗаймов() {
+    return `SELECT
+    Obj.[code] as N_D
+    ,CONVERT(MONEY, JSON_VALUE(Obj.doc, '$.Amount')) as SUMMA
+    ,BAComp.[code] as COUNT_A
+    ,Supp.[description] as NAME_B
+    ,BASupp.[code] as COUNT_B
+    ,Obj.[info] as N_P
+	  ,JSON_VALUE(Supp.doc, '$.Code1') as OKPO_B
+  FROM [dbo].[Documents] as Obj
+  LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+	LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Counterpartie') and Supp.[type] = 'Catalog.Counterpartie'
+  LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+  WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '54AA5310-102E-11EA-AA50-31ECFB22CD33' -- С р/с - Выдача/Возврат кредитов и займов (Контрагент)
+  order by Obj.company, BAComp.[code], Obj.[date]`;
+  }
+
+  private static getQueryTextCommonUKRAINEВыплатаЗарплаты() {
+    return `SELECT
+    Obj.[code] as N_D
+    ,CONVERT(MONEY, JSON_VALUE(Obj.doc, '$.Amount')) as SUMMA
+    ,BAComp.[code] as COUNT_A
+    ,Person.description as NAME_B
+    ,BAEmp.[code] as COUNT_B
+    ,Obj.[info] as N_P
+	,JSON_VALUE(Person.doc, '$.Code1') as OKPO_B
+
+    FROM [dbo].[Documents] as Obj
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BAEmp on BAEmp.id = JSON_VALUE(Obj.doc, '$.BankAccountPerson') and BAEmp.[type] = 'Catalog.Counterpartie.BankAccount'
+	LEFT JOIN [dbo].[Documents] as Person on Person.id = JSON_VALUE(Obj.doc, '$.Employee') and Person.[type] = 'Catalog.Person'
+
+    WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = 'E47A8910-4599-11EA-AAE2-A1796B9A826A' -- С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+    order by Obj.company, BAComp.[code], Obj.[date]`;
+
   }
 
   private static getQueryTextCommonRUSSIAОплатаПоставщику() {
@@ -173,12 +263,11 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
     order by Obj.company, BAComp.[code], Obj.[date]`;
   }
-
   private static getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть() {
     return `      SELECT
         N'Платежное поручение' as N'СекцияДокумент'
@@ -302,7 +391,7 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Counterpartie') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '54AA5310-102E-11EA-AA50-31ECFB22CD33' -- С р/с - Выдача/Возврат кредитов и займов (Контрагент)
     order by Obj.company, BAComp.[code], Obj.[date]`;
@@ -377,7 +466,7 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     LEFT JOIN [dbo].[Documents] as TaxPaymentCode on TaxPaymentCode.id = JSON_VALUE(Obj.doc, '$.TaxPaymentCode') and TaxPaymentCode.[type] = 'Catalog.TaxPaymentCode'
     LEFT JOIN [dbo].[Documents] as TaxBasisPayment on TaxBasisPayment.id = JSON_VALUE(Obj.doc, '$.TaxBasisPayment') and TaxBasisPayment.[type] = 'Catalog.TaxBasisPayment'
@@ -506,7 +595,7 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [sm].[dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
     order by Obj.company, BAComp.[code], Obj.[date]`;
@@ -521,7 +610,10 @@ export class BankStatementUnloader {
     if (!docsID.length) return 0;
     const doc = await lib.doc.byId(docsID[0], tx);
     if (!doc) return 0;
-    this.country = await lib.doc.Ancestors(doc.company as Ref, tx, 1) as string;
+    const parentCompany = await lib.doc.Ancestors(doc.company as Ref, tx, 1) as string;
+    const country = await lib.util.getObjectPropertyById(parentCompany, 'Country.id', tx);
+    if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))?.description}`);
+    this.country = country.id;
     this.operation = doc['Operation'];
     this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
     this.docsIds = docsID;
@@ -541,6 +633,10 @@ export class BankStatementUnloader {
   }
 
   private static async BankStatementDataAsSalaryProjectBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
+
+    if (this.country === this.countryUKRAINE) {
+      return await this.BankStatementDataAsSalaryProjectBankStatementStringUKRAINE(bankStatementData);
+    }
 
     let result = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -584,7 +680,55 @@ export class BankStatementUnloader {
     return result.trim();
   }
 
+
+  private static async BankStatementDataAsCommonBankStatementStringUKRAINE(bankStatementData: [{ key: string, value }][]): Promise<string> {
+    let result = '';
+    for (const prop of Object.keys(bankStatementData[0])) {
+      result += prop + ';';
+    }
+    result += 'SER_PAS_B;NOM_PAS_B';
+    let value = '';
+    for (const row of bankStatementData) {
+      result += '\n';
+      for (const prop of Object.keys(row)) {
+        switch (prop) {
+          case 'N_D':
+            value = this.getShortDocNumber(row[prop], false);
+            break;
+          case 'N_P':
+            value = (row[prop] as string).replace(/\r?\n/g, ' ');
+            break;
+          default:
+            value = row[prop];
+            break;
+        }
+        result += `${value};`;
+      }
+      result += `;`;
+    }
+    return result;
+  }
+
+  // tslint:disable-next-line: max-line-length
+  private static async BankStatementDataAsSalaryProjectBankStatementStringUKRAINE(bankStatementData: [{ key: string, value }][]): Promise<string> {
+    let result = 'N_D;SUMMA;COUNT_A;NAME_B;COUNT_B;N_P;OKPO_B;SER_PAS_B;NOM_PAS_B';
+    const common = bankStatementData[0];
+    const EmployeesInJSON = `{"PayRolls":${JSON.stringify(common['ig_PayRolls'])}}`;
+    const employees = await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployeesUKRAINE(), [EmployeesInJSON]);
+    const NP = (common['N_P'] as string).replace(/\r?\n/g, ' ');
+    const ND = this.getShortDocNumber(common['N_D'], false);
+    for (const employee of employees) {
+      // tslint:disable-next-line: max-line-length
+      result += `\n${ND};${employee['SUMMA']};${common['COUNT_A']};${employee['NAME_B']};${employee['COUNT_B']};${NP};${employee['OKPO_B']};;`;
+    }
+    return result;
+  }
+
   private static async BankStatementDataAsCommonBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
+
+    if (this.country === this.countryUKRAINE) {
+      return this.BankStatementDataAsCommonBankStatementStringUKRAINE(bankStatementData);
+    }
 
     let result = '';
     const companySpliter = `---------------------------------------------------------------------`;
@@ -680,7 +824,7 @@ export class BankStatementUnloader {
 
     if (docNumber.split('-').length === 2) {
       const docNumberArr = docNumber.split('-');
-      if (!withZeros || this.country === this.countryKAZAKHSTANId) {
+      if (!withZeros || this.country === this.countryKAZAKHSTAN) {
         return Number(docNumberArr[1]).toString();  // казахстан без лид. нулей
       }
       return docNumberArr[1];

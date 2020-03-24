@@ -12,11 +12,14 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { method: 'Create', icon: 'pi pi-plus', label: 'Создать документы', order: 2 },
     {
       method: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст', order: 3, clientModule:
-        `return { afterExecution: () => { 
+        `return { afterExecution: () => {
           const savedValue = this.form.get('info').value;
           if (!savedValue) return;
-          const vals = this.form; 
-          const fileName = 'exchange_' + vals.get('code').value + '_' + vals.get('date').value.toLocaleDateString()+ '_' + vals.get('company').value.value + '.' + (savedValue.startsWith('<?xml version=') ? 'xml' : 'txt');
+          const vals = this.form;
+          let fileName = '';
+          if (savedValue.indexOf('COUNT_B') === -1)
+          fileName = 'exchange_' + vals.get('code').value + '_' + vals.get('date').value.toLocaleDateString()+ '_' + vals.get('company').value.value + '.' + (savedValue.startsWith('<?xml version=') ? 'xml' : 'txt');
+          else fileName = 'jbkl_snd+.csv';
           this.ds.download(savedValue, fileName);
         }
       }`
