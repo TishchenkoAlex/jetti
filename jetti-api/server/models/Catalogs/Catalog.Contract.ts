@@ -28,13 +28,13 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'date', required: true })
   StartDate: Ref = null;
 
-  @Props({ type: 'date', required: false})
+  @Props({ type: 'date', required: false })
   EndDate: Ref = null;
 
-  @Props({ type: 'number', required: false})
+  @Props({ type: 'number', required: false })
   Indulgence = 0;
 
-  @Props({ type: 'number', required: false})
+  @Props({ type: 'number', required: false })
   Amount = 0;
 
   @Props({ type: 'Catalog.BusinessDirection', required: true })
@@ -61,7 +61,28 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'boolean', required: false })
   isDefault = false;
 
-  @Props({ type: 'boolean', label: 'Ф2'})
+  @Props({ type: 'boolean', label: 'Ф2' })
   notAccounting = false;
+
+  @Props({ type: 'enum', value: ['GRID', 'FIX'] })
+  RoyaltyArrangements = null;
+
+  @Props({ type: 'date' })
+  RoyaltyDelayTo = null;
+
+  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  PaymentKC = 'NONE';
+
+  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  PaymentOVM = 'NONE';
+
+  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  PaymentOKK = 'NONE';
+
+  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  PaymentKRO = 'NONE';
+
+  @Props({ type: 'string' })
+  OtherServices = '';
 
 }

@@ -1,4 +1,20 @@
 
+    CREATE OR ALTER VIEW [Register.Info.Holiday]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) "Country"
+        , ISNULL(JSON_VALUE(data, '$.Info'), '') "Info"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Holiday';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Holiday] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Holiday] ON [dbo].[Register.Info.Holiday](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.PriceList]
     WITH SCHEMABINDING
     AS
