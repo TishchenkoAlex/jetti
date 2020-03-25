@@ -472,6 +472,13 @@
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , d.[isDefault] [isDefault]
         , d.[notAccounting] [notAccounting]
+        , d.[RoyaltyArrangements] [RoyaltyArrangements]
+        , d.[RoyaltyDelayTo] [RoyaltyDelayTo]
+        , d.[PaymentKC] [PaymentKC]
+        , d.[PaymentOVM] [PaymentOVM]
+        , d.[PaymentOKK] [PaymentOKK]
+        , d.[PaymentKRO] [PaymentKRO]
+        , d.[OtherServices] [OtherServices]
       
         , ISNULL(l5.description, d.description) [Contract.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Contract.Level4]
@@ -1660,6 +1667,7 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([parent2.v].description, '') [parent2.value], d.[parent2] [parent2.id], [parent2.v].type [parent2.type]
         , d.[UnaryOperator] [UnaryOperator]
       
         , ISNULL(l5.description, d.description) [BudgetItem.Level5]
@@ -1678,6 +1686,7 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.BudgetItem.v] [parent2.v] WITH (NOEXPAND) ON [parent2.v].id = d.[parent2]
     
       GO
       GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;

@@ -70,16 +70,16 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'date' })
   RoyaltyDelayTo = null;
 
-  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
   PaymentKC = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
   PaymentOVM = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
   PaymentOKK = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
   PaymentKRO = 'NONE';
 
   @Props({ type: 'string' })
