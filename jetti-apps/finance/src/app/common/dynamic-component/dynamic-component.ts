@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 // tslint:disable-next-line:max-line-length
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, Input, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { getFormComponent, getListComponent } from '../../UI/userForms';
@@ -29,12 +30,14 @@ export class DynamicComponent implements OnInit, AfterViewInit {
 
   @ViewChild(DynamicComponentDirective, { static: false }) host: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef, private auth: AuthService) { }
 
   ngOnInit() {
-    this.component = this.kind === 'list' ?
-      new BaseDynamicCompoment(getListComponent(this.type)) :
-      new BaseDynamicCompoment(getFormComponent(this.type));
+    if (this.kind === 'list') {
+      this.component = new BaseDynamicCompoment(getListComponent(this.type, this.auth.isRoleAvailableTester()));
+    } else {
+      this.component = new BaseDynamicCompoment(getFormComponent(this.type));
+    }
   }
 
   ngAfterViewInit() {

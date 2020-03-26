@@ -10,20 +10,31 @@ import { createDocument } from '../documents.factory';
 import { insertDocument, updateDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
+import { Ref } from '../document';
+import e = require('express');
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
     switch (prop) {
       case 'Operation':
-        const Props = this.Props() as any;
-        Props.CashRequests.CashRequests.BankAccountIn = {
-          ...Props.CashRequests.CashRequests.BankAccountIn, hidden: this.Operation !== 'Оплата ДС в другую организацию'
-        };
-        Props.CashRequests.CashRequests.CashRecipientBankAccount = {
-          ...Props.CashRequests.CashRequests.CashRecipientBankAccount, hidden: this.Operation === 'Оплата ДС в другую организацию'
-        };
-        this.Props = () => Props;
+        // const Props = this.Props() as any;
+        // Props.CashRequests.CashRequests.BankAccountIn = {
+        //   ...Props.CashRequests.CashRequests.BankAccountIn, hidden: this.Operation !== 'Оплата ДС в другую организацию'
+        // };
+        // Props.CashRequests.CashRequests.CashRecipientBankAccount = {
+        //   ...Props.CashRequests.CashRequests.CashRecipientBankAccount, hidden: this.Operation === 'Оплата ДС в другую организацию' || this.Operation === 'Выплата заработной платы (наличные)'
+        // };
+        // Props.CashRequests.CashRequests.BankAccount = {
+        //   ...Props.CashRequests.CashRequests.BankAccount, hidden: this.Operation === 'Выплата заработной платы (наличные)'
+        // };
+        // Props.CashRequests.CashRequests.CountOfBankAccountCashRecipient = {
+        //   ...Props.CashRequests.CashRequests.CountOfBankAccountCashRecipient, hidden: this.Operation === 'Выплата заработной платы (наличные)'
+        // };
+        // Props.CashRequests.CashRequests.BankAccountPerson = {
+        //   ...Props.CashRequests.CashRequests.BankAccountPerson, hidden: this.Operation === 'Выплата заработной платы (наличные)'
+        // };
+        // this.Props = () => Props;
         return this;
       default:
         return this;
@@ -53,24 +64,36 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
     let Operation: DocumentOperation | null;
     let BankAccountSupplier, currentCR, addBaseOnParams, LinkedDocument;
+    const usedCashRegisters: Ref[] = [];
+    const usedLinkedDocuments: string[] = [];
+    const cashOper = this.Operation === 'Выплата заработной платы (наличные)';
 
     if (this.Operation === 'Выплата заработной платы') {
       const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
-      if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)') ;
+      if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)');
     }
 
     for (const row of rowsWithAmount) {
-      if (currentCR === row.CashRequest) continue;
+      if (currentCR !== row.CashRequest) usedCashRegisters.length = 0;
+      if ((currentCR === row.CashRequest && !cashOper) || usedCashRegisters.indexOf(row.CashRegister) !== -1) continue;
       addBaseOnParams = [];
+      usedCashRegisters.push(row.CashRegister);
       LinkedDocument = row.LinkedDocument;
       currentCR = row.CashRequest;
       if (this.Operation === 'Выплата заработной платы') {
         rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => {
           addBaseOnParams.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson, Amount: el.Amount });
-          if (el.LinkedDocument) LinkedDocument = el.LinkedDocument;
+          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
         });
       }
-      if (LinkedDocument) {
+      if (cashOper) {
+        rowsWithAmount.filter(el => (el.CashRequest === currentCR && el.CashRegister === row.CashRegister)).forEach(el => {
+          addBaseOnParams.push({ CashRecipient: el.CashRecipient, Amount: el.Amount });
+          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
+        });
+      }
+      if (LinkedDocument && usedLinkedDocuments.indexOf(LinkedDocument) === -1) {
+        usedLinkedDocuments.push(LinkedDocument);
         Operation = await lib.doc.byIdT<DocumentOperation>(LinkedDocument, tx);
       } else {
         Operation = createDocument<DocumentOperation>('Document.Operation');
@@ -88,12 +111,13 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       }
       await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
       // переопределение счета
-      if (this.Operation !== 'Выплата заработной платы' && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      if (this.Operation !== 'Выплата заработной платы' && this.Operation !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
-      if (this.Operation === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount']) OperationServer['Amount'] = row.Amount;
+      if (this.Operation !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+      if (this.Operation !== 'Выплата заработной платы' && !cashOper && this.Operation !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
+      if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
+      if (this.Operation === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
       if (LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
-      rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => { el.LinkedDocument = OperationServer.id; });
+      rowsWithAmount.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
     }
     // this.Post(true, tx);
     await updateDocument(this, tx);
@@ -156,7 +180,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         , CAST(0 AS BIT) AS Confirm
         , CRT.[CashRecipient] AS CashRecipient
         , DocCR.[company.id] AS company
-        , DocCR.[CashOrBank.id] AS BankAccount
+        , IIF(@p5 = 1,DocCR.[CashOrBank.id],NULL) AS CashRegister
+        , IIF(@p5 = 1,NULL,DocCR.[CashOrBank.id]) AS BankAccount
         , DocCR.[CashOrBankIn.id] AS BankAccountIn
         , DocCR.[CashRecipientBankAccount.id] AS CashRecipientBankAccount
         , (SELECT COUNT(*) FROM [dbo].[Catalog.Counterpartie.BankAccount] AS CBA
@@ -166,11 +191,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         , null as LinkedDocument
     FROM #CashRequestBalance AS CRT
       LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and CRT.BankAccountPerson = sa.BankAccountPerson
-      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and DocCR.[CashKind] <> 'CASH'
+      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and (DocCR.[CashKind] <> 'CASH' or @p5 = 1)
     ORDER BY Delayed, CashRequest, AmountBalance DESC, CashRecipient`;
 
     const CashRequests = await tx.manyOrNone<CashRequest>(query,
-      [this.company, this.CashFlow, this.сurrency, this.Operation ? this.Operation : 'Оплата поставщику']);
+      [this.company, this.CashFlow, this.сurrency, this.getDocumentCashRequestsOperationType(), this.Operation === 'Выплата заработной платы (наличные)' ? 1 : 0]);
     // const rowAmountName = this.Operation === 'Выплата заработной платы' ? 'AmountBalance' : 'Amount';
     for (const row of CashRequests) {
       this.CashRequests.push({
@@ -180,6 +205,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         AmountPaid: row.AmountPaid,
         AmountRequest: row.AmountBalance,
         BankAccount: row.BankAccount,
+        CashRegister: row.CashRegister,
         CashRecipient: row.CashRecipient,
         CashRequest: row.CashRequest,
         CashRequestAmount: row.CashRequestAmount,
@@ -192,8 +218,21 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         LinkedDocument: null
       });
     }
+    this.Amount = 0;
     this.CashRequests.forEach(row => this.Amount += row.Amount);
   }
+
+  private getDocumentCashRequestsOperationType() {
+    switch (this.Operation) {
+      case 'Выплата заработной платы (наличные)':
+        return 'Выплата заработной платы';
+      case '':
+        return 'Оплата поставщику';
+      default:
+        return this.Operation;
+    }
+  }
+
   async onCopy(tx: MSSQL) {
     this.Status = 'PREPARED';
     this.CashRequests = [];

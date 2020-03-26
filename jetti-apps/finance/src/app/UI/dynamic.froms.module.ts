@@ -119,7 +119,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
     BaseDocFormComponent,
     BaseFormComponent,
     BaseTreeListComponent,
-
+    BaseHierarchyListComponent,
     OperationListComponent,
   ]
 })

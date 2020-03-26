@@ -1,20 +1,29 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { TreeNode, SortMeta, FilterMetadata } from 'primeng/api';
-import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map, switchMap, tap, take, debounceTime } from 'rxjs/operators';
+import { AuthService } from 'src/app/auth/auth.service';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FilterMetadata } from 'primeng/components/common/filtermetadata';
+import { MenuItem } from 'primeng/components/common/menuitem';
+import { SortMeta } from 'primeng/components/common/sortmeta';
+import { iif as _if, merge, Observable, Subject, Subscription, fromEvent, of } from 'rxjs';
+import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
-import { ITree, ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { DocumentBase, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
-import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
-import { DocService } from '../../common/doc.service';
-import { ApiService } from '../../services/api.service';
-import { LoadingService } from '../loading.service';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
-import { FormListOrder, FormListFilter, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
+import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
+import { buildColumnDef } from '../../../../../../jetti-api/server/routes/utils/columns-def';
+import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
+import { calendarLocale, dateFormat } from '../../primeNG.module';
+import { scrollIntoViewIfNeeded } from '../utils';
+import { UserSettingsService } from './../../auth/settings/user.settings.service';
+import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
+import { DocService } from './../../common/doc.service';
+import { LoadingService } from './../../common/loading.service';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+import { Table } from './table';
+import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { ApiDataSource } from './api.datasource.v2';
-import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
+import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { TabsStore } from '../tabcontroller/tabs.store';
+import { TreeNode } from 'primeng/api';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,211 +31,452 @@ import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
   templateUrl: 'base.hierarchy-list.component.html',
 })
 export class BaseHierarchyListComponent implements OnInit, OnDestroy {
-  @Output() selectionChange = new EventEmitter();
-  @Output() Select = new EventEmitter<ISuggest>();
-  @Output() Close = new EventEmitter();
+  @Input() pageSize;
   @Input() type: DocTypes;
-  @Input() id: string;
-  @Input() showCommands = true;
-  @Input() scrollHeight = `${(window.innerHeight - 275)}px`;
   @Input() settings: FormListSettings = new FormListSettings();
-
+  @Input() data: IViewModel;
 
   locale = calendarLocale; dateFormat = dateFormat;
-  treeNodes$: Observable<TreeNode[]>;
-  treeNodes: TreeNode[] = [];
-  selection: TreeNode;
-  columns: ColumnDef[] = [];
-  doc: DocumentBase | undefined;
-  dataSource: ApiDataSource;
-  multiSortMeta: SortMeta[] = [];
-  filters: { [s: string]: FilterMetadata } = {};
+
+  constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, private auth: AuthService) { }
+
+  private _pageSizeSubscription$: Subscription = Subscription.EMPTY;
+  private _pageSize$ = new Subject<number>();
+  private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
+  private _docSubscription$: Subscription = Subscription.EMPTY;
+  private _routeSubscruption$: Subscription = Subscription.EMPTY;
+  private _debonceSubscription$: Subscription = Subscription.EMPTY;
+  private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
+  private _resizeSubscription$: Subscription = Subscription.EMPTY;
+
+  pageSize$: Observable<number>;
+
+
+  @ViewChild('tbl', { static: false }) tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get id() { return this.selectedData ? this.selectedData.id : null; }
+  set id(id: string) { this.selection = [{ id, type: this.type }]; this.selectedNode = { data: { id: id }, key: id, type: this.type }; }
+  get selectedData() {
+    return this.treeNodesVisible ?
+      (this.selectedNode ? this.selectedNode.data : null) :
+      (this.selection && this.selection.length ? this.selection[0] : null);
+  }
 
-  private _docSubscription$: Subscription = Subscription.EMPTY;
-  private _debonceSubscription$: Subscription = Subscription.EMPTY;
-  private debonce$ = new Subject<{ col: any, event: any, center: string }>();
+  group = '';
+  columns: ColumnDef[] = [];
+  selection: any[] = [];
+  contextMenuSelection = [];
+  ctxData = { column: '', value: undefined };
+  contexCommands: { list: MenuItem[], tree: MenuItem[] } = { list: [], tree: [] };
+  filters: { [s: string]: FilterMetadata } = {};
+  multiSortMeta: SortMeta[] = [];
 
-  // tslint:disable-next-line: max-line-length
-  constructor(private api: ApiService, public router: Router, public ds: DocService, public lds: LoadingService, private cd: ChangeDetectorRef) { }
+  postedCol: ColumnDef = ({
+    field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
+    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
+  });
+  dataSource: ApiDataSource;
+  readonly = false;
+
+  treeNodes$: Observable<TreeNode[]>;
+  treeNodes: TreeNode[] = [];
+  hierarchy = false;
+  treeNodesVisible = false;
+  initNodes = true;
+  selectedNode: TreeNode = null;
+  prevSelectedNode: TreeNode = null;
 
   ngOnInit() {
-    const columns: ColumnDef[] = [];
-    const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
-    this.dataSource = new ApiDataSource(this.ds.api, this.type, 20, true);
+    if (!this.type) this.type = this.route.snapshot.params.type;
+    if (!this.group) this.group = this.route.snapshot.params.group;
+    if (!this.settings) this.settings = this.data.settings;
+    if (this.route.snapshot.queryParams.goto) {
+      this.initNodes = true;
+      this.id = this.route.snapshot.queryParams.goto;
+    }
 
-    try { this.doc = createDocument(this.type); } catch { }
-    const schema = this.doc ? this.doc.Props() : {};
-    const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
-    [...data, ...dimensions].forEach(el => {
-      const field = Object.keys(el)[0]; const type = el[field];
-      let value = schema[field] && schema[field].value;
-      if (type === 'enum') {
-        value = [{ label: '', value: null }, ...(value || [] as string[]).map((el: any) => ({ label: el, value: el }))];
+    if (!this.data) {
+      const Doc = createDocument(this.type);
+      this.data = { schema: Doc.Props(), metadata: Doc.Prop() as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
+    }
+    this.columns = buildColumnDef(this.data.schema, this.settings);
+    if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
+
+    this.hierarchy = this.data.metadata.hierarchy === 'folders';
+    this.treeNodesVisible = this.hierarchy && !this.settings.filter.length;
+    this.columns = [...this.columns.filter(c => !c.hidden)];
+
+    if (this.hierarchy) {
+      const descriptionColumn = this.columns.filter(c => c.field === 'description' && this.columns.indexOf(c) !== 0);
+      if (descriptionColumn.length) {
+        this.columns = [descriptionColumn[0], ...this.columns.filter(c => c.field !== 'description')];
       }
-      columns.push({
-        field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
-        hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
-        order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
-        value: value,
-        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align': 'center' }
-      });
-    });
+    }
 
-    this.columns = [...columns.filter(c => !c.hidden)];
+    this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
+    this.dataSource.id = this.id;
+    this.dataSource.hierarchy = this.treeNodesVisible;
 
-    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
-      .subscribe(event => this._update(event.col, event.event, event.center));
-
+    this.setSortOrder();
     this.setFilters();
     this.prepareDataSource();
-    this.TreeNodesBuild();
+    this.setContextMenu(this.columns);
 
+    this._docSubscription$ = merge(...[
+      this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
+        filter(doc => doc && doc.type === this.type))
+      .subscribe(doc => {
+        const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
+        if (exist) {
+          this.dataSource.refresh(exist.id);
+          this.id = exist.id;
+        } else {
+          this.dataSource.goto(doc.id);
+          this.id = doc.id;
+        }
+      });
+
+    this.treeNodes$ = this.dataSource.result$.pipe(map(rows => {
+      if (this.treeNodesVisible) {
+        this.selectedNode = null;
+        this.treeNodes = this.buildTreeNodes(rows, null);
+        this.findSelectedNode(this.treeNodes, this.dataSource.id);
+        return this.treeNodes;
+      }
+    }));
+
+    // обработка команды найти в списке
+    this._routeSubscruption$ = this.route.params.pipe(
+      filter(params => params.type === this.type && params.group === this.group && this.route.snapshot.queryParams.goto))
+      .subscribe(params => {
+        const id = this.route.snapshot.queryParams.goto;
+        this.initNodes = true;
+        this.refresh(id);
+        const route: any[] = [this.type];
+        if (this.group) route.push('group', this.group);
+        setTimeout(() => this.router.navigate(route, { replaceUrl: true }));
+      });
+
+    this._resizeSubscription$ = fromEvent(window, 'resize').subscribe(e => {
+      this._pageSize$.next(this.getPageSize());
+    });
+
+    this._pageSizeSubscription$ = this._pageSize$.pipe(debounceTime(50))
+      .subscribe(pageSize => {
+        this.dataSource.pageSize = pageSize;
+        this.pageSize$ = of(pageSize);
+        if (this.id) this.goto(this.id);
+        else this.last();
+      });
+
+    this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
+      .subscribe(event => this._update(event.col, event.event, event.center));
+
+    this._pageSize$.next(this.getPageSize());
+    this.readonly = this.auth.isRoleAvailableReadonly();
   }
 
-
-  TreeNodesBuild() {
-    const id = this.selection && (this.selection.parent || !!this.treeNodes.filter(e => !e.data.hlevel).length) ? this.selection.data.id : '';
-    this.treeNodes$ = this.api.getDocList(this.type, id, 'first', 1000, 0, this.dataSource.formListSettings.order, this.dataSource.formListSettings.filter, true).pipe(
-      map(tree => <TreeNode[]>this.buildTreeNodes(tree.data, null)),
-      tap(treeNodes => {
-        // treeNodes.filter(node => !!node.children.length).forEach(el => el.data.description += ` [${el.children.length}]`);
-        this.treeNodes = treeNodes;
-      }));
+  private getPageSize() {
+    return Math.max(Math.round((window.innerHeight - 290) / 28 - 2), 1);
   }
 
-  private findDoc(tree: TreeNode[], id: string): TreeNode | undefined {
-    if (!id) { return undefined; }
-    const result = tree.find(el => el.data.id === id);
-    if (result) return result;
-    for (let i = 0; i < tree.length; i++) {
-      const childrenResult = this.findDoc(tree[i].children || [], id);
-      if (childrenResult) return childrenResult;
-    }
+  private findSelectedNode(tree: TreeNode[], id: string | null) {
+    if (this.selectedNode || !id) return;
+    const filteredById = tree.filter(el => el.key === id);
+    if (filteredById.length) this.selectedNode = filteredById[0];
+    else tree.filter(el => el.children.length).forEach(node => this.findSelectedNode(node.children, id));
   }
 
   private setFilters() {
     this.settings.filter
-      .filter(c => !(c.right === null || c.right === undefined))
-      .forEach(f => this.filters[f.left.replace('.id', '')] = { matchMode: f.center, value: f.right });
+      .filter(c => !(c.right == null || c.right === undefined))
+      .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
   }
 
-  setSelection(id: string) {
-    this.selection = this.findDoc(this.treeNodes, id);
-    this.cd.markForCheck();
+  private setSortOrder() {
+    this.multiSortMeta = this.settings.order
+      .filter(e => !!e.order)
+      .map(e => <SortMeta>{ field: e.field, order: e.order === 'asc' ? 1 : -1 });
+    if (this.multiSortMeta.length === 0) {
+      if (this.isCatalog) this.multiSortMeta.push({ field: 'description', order: 1 });
+      if (this.isDoc) this.multiSortMeta.push({ field: 'date', order: 1 });
+    }
   }
 
-  private buildTreeNodes(tree: any[], parent: string | null): TreeNode[] {
-    return tree.filter(el => el.hparent === parent).map(el => {
-      return <TreeNode>{
+  private _update(col: ColumnDef | undefined, event, center, id = null) {
+    if (!col) return;
+    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
+    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+    if (id) this.id = id;
+    this.prepareDataSource(this.multiSortMeta);
+    this._pageSize$.next(this.getPageSize());
+  }
+  update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
+    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
+      if (typeof event !== 'boolean') event = null;
+    }
+    this._debonce$.next({ col, event, center });
+  }
+
+  onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
+    this.multiSortMeta = event.multiSortMeta;
+    this.prepareDataSource();
+    if (this.id) this.goto(this.id);
+    else this.isCatalog ? this.first() : this.last();
+  }
+
+  loadNodes(id = null) {
+    if (!id) {
+      const sel = this.selectedNode;
+      if (this.initNodes && this.id) {
+        // const ob = await this.ds.api.byId(this.id);
+        // if (ob.parent)
+        id = this.id;
+      } else if (sel && sel.parent) id = !sel.expanded ? sel.key : sel.parent.key;
+      else if (sel) {
+        const topLevel = this.treeNodes.filter(e => e.parent === null).length > 1;
+        id = topLevel ? sel.key : null;
+      }
+    }
+    this.dataSource.id = id;
+    if (this.initNodes) { this.initNodes = false; this.dataSource.sort(); } else this.dataSource.first();
+  }
+
+  private buildTreeNodes(tree: any[], parent?: string | null, parentNode?: TreeNode | null): TreeNode[] {
+    return tree.filter(el => el.parent.id === parent).map(el => {
+      const node = <TreeNode>{
+        key: el.id,
         data: el,
-        expanded: true,
+        leaf: !el.isfolder,
+        icon: 'pi pi-folder-open',
+        expanded: false,
         expandedIcon: 'pi pi-folder-open',
         collapsedIcon: 'pi pi-folder',
         children: this.buildTreeNodes(tree, el.id) || [],
       };
+      node.expanded = !node.leaf && node.children.length > 0;
+      return node;
     });
   }
 
-  prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
+  onNodeSelect(event) {
+    if (!!this.selectedNode) this.prevSelectedNode = this.selectedNode;
+    if (event.node === this.prevSelectedNode && !this.selectedNode) { this.selectedNode = this.prevSelectedNode; return; }
+    if (event.node.leaf) return;
+    event.node.expanded = !event.node.expanded;
+    this.onNodeExpand(event, !!this.selectedNode);
+  }
+
+  onNodeExpand(event, unselect = false) {
+    const node = event.node;
+    if (unselect) this.selectedNode = node;
+    if (!node.leaf)
+      this.loadNodes(node.expanded ? node.key : node.parent ? node.parent.key : null);
+  }
+
+  private prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
     this.dataSource.id = this.id;
     const order = multiSortMeta
       .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
     const Filter = Object.keys(this.filters)
+      .filter(el => this.filters[el].value)
       .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
     this.dataSource.formListSettings = { filter: Filter, order };
+    const treeNodesVisibleBefore = this.treeNodesVisible;
+    this.treeNodesVisible = this.hierarchy && !Filter.length;
+    this.dataSource.hierarchy = this.treeNodesVisible;
+    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
+      if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
+      // tslint:disable-next-line: one-line
+      else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
+      else this.id = null;
+    }
   }
 
-  private _update(col: ColumnDef, event, center) {
-    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
-    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.prepareDataSource(this.multiSortMeta);
-    this.dataSource.sort();
+  private setContextMenu(columns: ColumnDef[]) {
+
+    const qFilterCommand = {
+      label: 'Quick filter', icon: 'pi pi-search',
+      command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null, this.id)
+    };
+
+    const selectAllCommand = {
+      label: 'Select (All)', icon: 'fa fa-check-square',
+      command: (event) => this.selection = this.dataSource.renderedDataList
+    };
+
+    const clearAllFilters = {
+      label: 'Clear all filters', icon: 'far fa-trash-alt',
+      command: (event) => { this.filters = {}; this.prepareDataSource(); this.goto(this.id); }
+    };
+
+    this.contexCommands.tree = [
+      qFilterCommand,
+      clearAllFilters,
+      ...(this.data.metadata.copyTo || []).map(el => {
+        const { label, icon } = el;
+        return <MenuItem>{ label, icon, command: (event) => this.copyTo(el.type) };
+      })];
+
+    this.contexCommands.list = [selectAllCommand, ...this.contexCommands.tree];
   }
-  update(col: ColumnDef, event, center = 'like') {
-    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) { event = null; }
-    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.prepareDataSource(this.multiSortMeta);
-    this.TreeNodesBuild();
-    // this.debonce$.next({ col, event, center });
+
+  private buildFiltersParamQuery() {
+    const filters = {};
+    Object.keys(this.filters)
+      .filter(f => this.filters[f].value && this.filters[f].value.id)
+      .forEach(f => filters[f] = this.filters[f].value.id);
+    return filters;
+  }
+
+  private getCurrentParent() {
+    const result = { parent: null };
+    if (this.treeNodesVisible && this.selectedData) {
+      result.parent = this.selectedData.isfolder ? this.selectedData.id : this.selectedData.parent.id;
+    }
+    return result;
   }
 
   add() {
     const id = v1().toUpperCase();
     this.router.navigate([this.type, id],
-      { queryParams: { new: id, isfolder: true, parent: this.selection.data.id } });
+      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent() } });
   }
 
   copy() {
-    const id = v1().toUpperCase();
-    this.router.navigate([this.type, id],
-      { queryParams: { copy: this.selection.data.id, isfolder: true, parent: this.selection.data.id } });
+    this.router.navigate([this.type, v1().toUpperCase()],
+      { queryParams: { copy: this.selectedData.id } });
   }
 
-  open = () => {
-    this.router.navigate([this.type, this.selection.data.id], { queryParams: {} });
+  copyTo(type: DocTypes) {
+    this.router.navigate([type, v1().toUpperCase()],
+      { queryParams: { base: this.selectedData.id } });
   }
 
-  delete = () => this.ds.delete(this.selection.data.id);
-
-  onDragEnd(event) {
+  open(isDblClickEvent = false) {
+    if (isDblClickEvent && this.selectedData.isfolder) return;
+    this.router.navigate([this.type, this.selectedData.id]);
   }
 
-  onNodeSelect(event) {
-    if (event.node.data.isfolder) this.TreeNodesBuild();
+  delete() {
+    if (this.treeNodesVisible && this.selectedNode) this.ds.delete(this.selectedNode.key);
+    else this.selection.forEach(el => this.ds.delete(el.id));
   }
 
-  onLazyLoad(event) {
-    this.multiSortMeta = event.multiSortMeta;
-    this.treeNodes.sort();
-  }
-
-  customSort(event) {
-    event.data.sort((data1, data2) => {
-      const isFolder1 = data1.data.isfolder;
-      const isFolder2 = data2.data.isfolder;
-
-      if (isFolder1 && !isFolder2)
-        return event.order * 1;
-      else if (!isFolder1 && isFolder2)
-        return event.order * -1;
-
-      const level1 = data1.data.hlevel;
-      const level2 = data2.data.hlevel;
-
-      if (level1 < level2)
-        return event.order * 1;
-      else if (level1 > level2)
-        return event.order * -1;
-
-      let value1 = data1.data[event.field];
-      let value2 = data2.data[event.field];
-
-      let result = null;
-
-      if (value1 && value1.type && value1.type.indexOf('.') !== -1) {
-        value1 = value1.value;
-        value2 = value2.value;
+  async post(mode = 'post') {
+    const tasksCount = this.selection.length; let i = tasksCount;
+    for (const s of this.selection) {
+      if (s.deleted) continue;
+      this.lds.counter = Math.round(100 - ((i--) / tasksCount * 100));
+      if (mode === 'post') {
+        try {
+          await this.ds.posById(s.id);
+          s.posted = true;
+        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
+      } else {
+        try {
+          await this.ds.unpostById(s.id);
+          s.posted = false;
+        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       }
+      this.selection = [s];
+      setTimeout(() => scrollIntoViewIfNeeded(this.type, 'ui-state-highlight'));
+    }
+    this.lds.counter = 0;
+    this.dataSource.refresh(this.selection[0].id);
+  }
 
-      if (value1 == null && value2 != null)
-        result = -1;
-      else if (value1 != null && value2 == null)
-        result = 1;
-      else if (value1 == null && value2 == null)
-        result = 0;
-      else if (typeof value1 === 'string' && typeof value2 === 'string')
-        result = value1.localeCompare(value2);
-      else
-        result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+  parentChange(event) {
+    this.id = null;
+    this.filters['parent'] = {
+      matchMode: '=',
+      value: event && event.data && event.data.id ? {
+        id: event.data.id,
+        code: '',
+        type: this.type,
+        description: event.data.description
+      } : null
+    };
+    this.prepareDataSource();
+    this.dataSource.sort();
+  }
 
-      return (event.order * result);
+  onContextMenuSelect(event) {
+    let el = (event.originalEvent as MouseEvent).target as any;
+    if (!el) return;
+    while (!el.id && el.lastElementChild) { el = el.lastElementChild; }
+    if (!el.id) return;
+    const dataStorage = this.treeNodesVisible ? event.node.data : event.data;
+    const value = dataStorage[el.id];
+    this.ctxData = { column: el.id, value: value && value.id ? value : value };
+    this.id = dataStorage.id;
+  }
+
+  first() {
+    this.selection = [];
+    this.selectedNode = null;
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0 && !this.treeNodesVisible) this.id = d[0].id;
     });
+    this.dataSource.first();
+  }
+
+  private listen() {
+    this.selection = [];
+    this.selectedNode = null;
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0 && !this.treeNodesVisible) this.id = d[d.length - 1].id;
+    });
+  }
+
+  last() { this.listen(); this.dataSource.last(); }
+  prev() { this.listen(); this.dataSource.prev(); }
+  next() { this.listen(); this.dataSource.next(); }
+
+  private listenRefresh(id: string) {
+    this.selection = [];
+    this.selectedNode = null;
+    this.dataSource.result$.pipe(take(1)).subscribe(d => {
+      if (d.length > 0 && !this.treeNodesVisible) {
+        const row = d.find(el => el.id === id);
+        if (row) this.id = row.id;
+      }
+    });
+  }
+
+  refresh(id: string) {
+    this.listenRefresh(id);
+    if (this.treeNodesVisible) this.loadNodes(id);
+    else this.dataSource.refresh(id);
+  }
+  goto(id: string) {
+    this.listenRefresh(id);
+    if (this.treeNodesVisible) this.loadNodes(id);
+    else this.dataSource.goto(id);
   }
 
   ngOnDestroy() {
     this._docSubscription$.unsubscribe();
+    this._routeSubscruption$.unsubscribe();
+    this._debonceSubscription$.unsubscribe();
+    this._debonce$.complete();
+    this._pageSize$.complete();
+    this._pageSizeSubscription$.unsubscribe();
+    this._resizeSubscription$.unsubscribe();
+    this._hotKeySubscriptions$.forEach(el => el.unsubscribe());
+    // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
+  }
+
+  private saveUserSettings() {
+    const formListSettings: FormListSettings = {
+      filter: (Object.keys(this.filters) || [])
+        .map(f => (<FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value })),
+      order: ((<SortMeta[]>this.multiSortMeta) || [])
+        .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' })
+    };
+    this.uss.setFormListSettings(this.type, formListSettings);
   }
 }

@@ -5,9 +5,39 @@ import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
+import { lib } from '../../std.lib';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
+
+  if (params.withHierarchy) {
+    let parent: any = null;
+    if (params.id) {
+      const ob = await lib.doc.byId(params.id, tx);
+      parent = ob?.isfolder ? params.id : ob?.parent;
+    }
+    // folders
+    const queryList = configSchema.get(params.type)?.QueryList;
+    const parentWhere = parent ? 'd.[parent.id] = @p1' : 'd.[parent.id] is NULL';
+    let queryText = `SELECT * FROM (${queryList}) d WHERE ${parentWhere} and isfolder = 1`;
+    if (parent) {
+      const ancestors = await lib.doc.Ancestors(params.id, tx) as any[];
+      const ancestorsId = ancestors.filter(el => el.parent !== parent).map(e => '\'' + e.id + '\'').join();
+      queryText = `${queryText} UNION SELECT * FROM (${queryList}) d WHERE id IN (${ancestorsId})`;
+    }
+    queryText = queryText + 'ORDER BY description';
+    const folders = await tx.manyOrNone(queryText, [parent]);
+    // elements
+    params.filter.push(new FormListFilter('parent', '=', { id: parent, type: params.type }));
+    params.filter.push(new FormListFilter('isfolder', '=', 0));
+    params.withHierarchy = false;
+    let result = await List(params, tx);
+
+    result.data = folders.concat(result.data);
+
+    return result;
+  }
+
   params.command = params.command || 'first';
 
   const cs = configSchema.get(params.type);

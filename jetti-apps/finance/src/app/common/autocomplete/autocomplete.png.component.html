@@ -64,10 +64,10 @@
         appendTo="body" [disableControl]="suggest.disabled">
         <ng-template let-data pTemplate="item">
           <div fxLayout="row" fxLayoutGap="5px" style="align-content: center; align-items: center;">
-          <i *ngIf="!data.isfolder && !data.deleted" class="fa fa-check-square" style="color: #5cb85c"></i>
-          <i *ngIf="!data.isfolder && data.deleted" class="fa fa-minus-square" style="color: #d9534f"></i>
-          <i *ngIf="data.isfolder && data.deleted" class="fa fa-folder" style="color: #d9534f"></i>
-          <i *ngIf="data.isfolder && !data.deleted" class="fa fa-folder" style="color: #5cb85c"></i>
+            <i *ngIf="!data.isfolder && !data.deleted" class="fa fa-check-square" style="color: #5cb85c"></i>
+            <i *ngIf="!data.isfolder && data.deleted" class="fa fa-minus-square" style="color: #d9534f"></i>
+            <i *ngIf="data.isfolder && data.deleted" class="fa fa-folder" style="color: #d9534f"></i>
+            <i *ngIf="data.isfolder && !data.deleted" class="fa fa-folder" style="color: #5cb85c"></i>
 
             <div *ngIf="data.deleted"><s style="color: #d9534f">{{data.value}}</s></div>
             <div *ngIf="data.deleted"><s style="color: #d9534f">({{data.code}})</s></div>
@@ -77,44 +77,76 @@
           </div>
         </ng-template>
       </p-autoComplete>
-      <button pButton type="button" icon="pi pi-search" class="ui-button-secondary" *ngIf="showFind && !this.form.disabled" pTooltip="Select"
-        tooltipPosition="top" showDelay="2000" (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
-      <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" *ngIf="showOpen || this.form.disabled"
-        pTooltip="Open" tooltipPosition="top" showDelay="2000" [disabled]="this.isEMPTY" (click)="handleOpen($event)"
-        [tabIndex]=-1></button>
-      <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" *ngIf="showClear && !this.form.disabled" pTooltip="Clear"
-        tooltipPosition="top" showDelay="2000" (click)="handleReset($event)" [tabIndex]=-1
-        [disabled]="this.suggest.disabled"></button>
+      <button pButton type="button" icon="pi pi-search" class="ui-button-secondary"
+        *ngIf="showFind && !this.form.disabled" pTooltip="Select" tooltipPosition="top" showDelay="2000"
+        (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
+      <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary"
+        *ngIf="showOpen || this.form.disabled" pTooltip="Open" tooltipPosition="top" showDelay="2000"
+        [disabled]="this.isEMPTY" (click)="handleOpen($event)" [tabIndex]=-1></button>
+      <button pButton type="button" icon="pi pi-times" class="ui-button-secondary"
+        *ngIf="showClear && !this.form.disabled" pTooltip="Clear" tooltipPosition="top" showDelay="2000"
+        (click)="handleReset($event)" [tabIndex]=-1 [disabled]="this.suggest.disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </span>
 </form>
 
-<p-dialog *ngIf="showDialog" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
-  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '600px', width: '80%'}" [appendTo]="appendTo">
+<div *ngIf="showDialog">
+  <p-dialog *ngIf="useHierarchyList" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
+  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '81vh', width: '80%'}" [appendTo]="appendTo">
 
-  <p-header>
-    {{this.placeholder}}
-  </p-header>
-  <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
-    [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
-  </j-suggest-list>
-  <p-footer>
-    <p-toolbar>
-      <div class="ui-toolbar-group-left">
-        <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-          [disabled]="!sl.selection[0]" (click)="sl.select(sl.selection[0])"></button>
-      </div>
-      <div class="ui-toolbar-group-right">
-        <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"
-          [disabled]="!sl.dataSource?.continuation?.first"></button>
-        <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selection = []; sl.dataSource?.prev()"
-          [disabled]="!sl.dataSource?.continuation?.first"></button>
-        <button pButton type="button" icon="pi pi-step-forward" (click)="sl.selection = []; sl.dataSource?.next()"
-          [disabled]="!sl.dataSource?.continuation?.last"></button>
-        <button pButton type="button" icon="pi pi-fast-forward" (click)="sl.selection = []; sl.dataSource?.last()"
-          [disabled]="!sl.dataSource?.continuation?.last"></button>
-      </div>
-    </p-toolbar>
-  </p-footer>
-</p-dialog>
+    <p-header>
+      {{this.placeholder}}
+    </p-header>
+    <j-suggest-hierarchy-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
+      [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
+    </j-suggest-hierarchy-list>
+    <p-footer>
+      <p-toolbar>
+        <div class="ui-toolbar-group-left">
+          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
+            [disabled]="!sl.isSelectEnabled" (click)="sl.select(sl.selectedNode)"></button>
+        </div>
+        <div class="ui-toolbar-group-right">
+          <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selectedRow = null; sl.dataSource?.first()"
+            [disabled]="!sl.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selectedRow = null; sl.dataSource?.prev()"
+            [disabled]="!sl.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-forward" (click)="sl.selectedRow = null; sl.dataSource?.next()"
+            [disabled]="!sl.dataSource?.continuation?.last"></button>
+          <button pButton type="button" icon="pi pi-fast-forward" (click)="sl.selectedRow = null; sl.dataSource?.last()"
+            [disabled]="!sl.dataSource?.continuation?.last"></button>
+        </div>
+      </p-toolbar>
+    </p-footer>
+  </p-dialog>
+
+  <p-dialog *ngIf="!useHierarchyList" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
+    [closeOnEscape]="true" [blockScroll]="false" [style]="{height: '600px', width: '80%'}" [appendTo]="appendTo">
+
+    <p-header>
+      {{this.placeholder}}
+    </p-header>
+    <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
+      [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)" [pageSize] = "15">
+    </j-suggest-list>
+    <p-footer>
+      <p-toolbar>
+        <div class="ui-toolbar-group-left">
+          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
+            [disabled]="!sl.selection[0]" (click)="sl.select(sl.selection[0])"></button>
+        </div>
+        <div class="ui-toolbar-group-right">
+          <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"
+            [disabled]="!sl.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selection = []; sl.dataSource?.prev()"
+            [disabled]="!sl.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-forward" (click)="sl.selection = []; sl.dataSource?.next()"
+            [disabled]="!sl.dataSource?.continuation?.last"></button>
+          <button pButton type="button" icon="pi pi-fast-forward" (click)="sl.selection = []; sl.dataSource?.last()"
+            [disabled]="!sl.dataSource?.continuation?.last"></button>
+        </div>
+      </p-toolbar>
+    </p-footer>
+  </p-dialog>
+</div>

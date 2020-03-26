@@ -130,7 +130,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
 
     this.isCopy = !!this.route.snapshot.queryParams.copy;
     this.isHistory = !!this.route.snapshot.queryParams.history;
-    this.readonly = !this.isHistory && this.auth.isRoleAvailable('Readonly');
+    this.readonly = !this.isHistory && this.auth.isRoleAvailableReadonly();
 
     this._subscription$ = merge(...[this.ds.save$, this.ds.delete$, this.ds.post$, this.ds.unpost$]).pipe(
       filter(doc => doc.id === this.id))

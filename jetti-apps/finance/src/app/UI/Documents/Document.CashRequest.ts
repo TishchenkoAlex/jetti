@@ -152,7 +152,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   async onOpen() {
 
-    this.isSuperUser = this.auth.isRoleAvailable('Cash request admin');
+    this.isSuperUser = this.auth.isRoleAvailableCashRequestAdmin();
     this.canModifyProcess = this.isSuperUser;
     if (!this.canModifyProcess && this.getValue('Status') === 'MODIFY') {
       const res = await this.bpApi.isUserCurrentExecutant(this.getValue('workflowID'));

@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { Subject, Subscription, merge, Observable } from 'rxjs';
-import { debounceTime, filter, map, take, tap } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
@@ -12,7 +13,6 @@ import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../
 import { ApiDataSource } from '../common/datatable/api.datasource.v2';
 import { calendarLocale, dateFormat } from '../primeNG.module';
 import { ApiService } from '../services/api.service';
-import { BaseTreeListComponent } from '../common/datatable/base.tree-list.component';
 import { DocService } from '../common/doc.service';
 import { LoadingService } from '../common/loading.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,12 +26,10 @@ import { TreeNode } from 'primeng/api';
 })
 export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
-
   @Input() type: DocTypes;
   @Input() id: string;
   @Input() uuid: string;
   @Input() storageType: StorageType;
-  @Input() pageSize = 100;
   @Input() settings: FormListSettings = new FormListSettings();
   @Output() Select = new EventEmitter<ISuggest>();
   @Output() Close = new EventEmitter();
@@ -40,108 +38,153 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   dateFormat = dateFormat;
   doc: DocumentBase | undefined;
   columns: ColumnDef[] = [];
-  selection: any;
+  selectedNode: TreeNode | null;
+  selectedRow: DocumentBase = null;
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
-  treeNodes$: Observable<TreeNode[]>;
-  treeNodes: TreeNode[] = [];
-  hierarchy = false;
-  dataSource: ApiDataSource;
+  initNodes = true;
+  readonly = false;
 
-  get sid() { return { id: this.selection ? this.selection.id : '', type: this.type }; }
+  treeNodes: TreeNode[] = [];
+  treeNodesVisible = false;
+  hierarchy = false;
+  formListSettings: FormListSettings;
+  dataSource: ApiDataSource;
+  scrollHeight = 700;
+
+  private _debonceSubscription$: Subscription = Subscription.EMPTY;
+  private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
+
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
-
-  set sid(value: { id: string, type?: DocTypes }) {
-    this.selection = { id: value.id, type: this.type };
+  get selectionData() { return this.treeNodesVisible ? (this.selectedNode ? this.selectedNode.data : null) : this.selectedRow; }
+  get isSelectEnabled() {
+    const sel = this.selectionData;
+    return sel &&
+      (
+        this.storageType === 'all' ||
+        (this.storageType === 'folders' && sel.isfolder) ||
+        (this.storageType === 'elements' && !sel.isfolder)
+      );
   }
 
-  private _docSubscription$: Subscription = Subscription.EMPTY;
-  private _debonceSubscription$: Subscription = Subscription.EMPTY;
-  private debonce$ = new Subject<{ col: any, event: any, center: string }>();
-
   constructor(private api: ApiService, public ds: DocService, public lds: LoadingService,
-    public route: ActivatedRoute, public router: Router) { }
+    public route: ActivatedRoute, public router: Router, private auth: AuthService) { }
 
   ngOnInit() {
-    const columns: ColumnDef[] = [];
+    this.readonly = this.auth.isRoleAvailableReadonly();
     const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     try { this.doc = createDocument(this.type); } catch { }
     const schema = this.doc ? this.doc.Props() : {};
     const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
     [...data, ...dimensions].forEach(el => {
-      const field = Object.keys(el)[0]; const type = el[field];
-      let value = schema[field] && schema[field].value;
-      if (type === 'enum') {
-        value = [{ label: '', value: null }, ...(value || [] as string[]).map((el: any) => ({ label: el, value: el }))];
+      const field = Object.keys(el)[0];
+      const fieldProp = schema[field];
+      if (fieldProp && !fieldProp.hidden) {
+        const type = el[field];
+        let value = fieldProp.value;
+        if (type === 'enum') {
+          value = [{ label: '', value: null }, ...(value || [] as string[]).map((e: any) => ({ label: e, value: e }))];
+        }
+        this.columns.push({
+          field,
+          type: <DocTypes>(fieldProp.type || type),
+          label: fieldProp.label || field,
+          hidden: false,
+          required: true,
+          readOnly: false,
+          sort: new FormListOrder(field),
+          order: fieldProp.order || 0,
+          style: fieldProp.style || { width: '200px' },
+          value: value,
+          headerStyle: fieldProp.style || { width: '200px', 'text-align': 'center' }
+        });
       }
-      columns.push({
-        field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
-        hidden: !!(schema[field] && schema[field].hidden), required: true, readOnly: false, sort: new FormListOrder(field),
-        order: schema[field] && schema[field].order || 0, style: schema[field] && schema[field].style || { width: '150px' },
-        value: value,
-        headerStyle: schema[field] && schema[field].style || { width: '150px', 'text-align': 'center' }
-      });
     });
 
-    this.columns = [...columns.filter(c => !c.hidden)];
-    if (this.doc) {
-      this.hierarchy = (this.doc.Prop() as DocumentOptions).hierarchy === 'folders';
-    }
+    this.hierarchy = !!(this.doc.Prop() as DocumentOptions).hierarchy;
+    this.treeNodesVisible = this.hierarchy && !this.settings.filter.length;
+    this.dataSource = new ApiDataSource(this.api, this.type, 18, true);
 
-    this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
-    this.setSortOrder();
     this.setFilters();
+    this.setSortOrder();
+    this.caclPageSize();
     this.prepareDataSource();
 
-    if (this.hierarchy) this.TreeNodesBuild(true);
-    else
-      this.dataSource.result$.pipe(take(1),
-        map(rows => rows.find(r => r.id === this.id)),
-        filter(row => row !== undefined)).subscribe(row => {
-          this.selection = row as DocumentBase;
-        });
+    // this.dataSource.result$.pipe(take(1)).subscribe(data => { this.selection = this.dataSource.selectedNode });
 
-    this._debonceSubscription$ = this.debonce$.pipe(debounceTime(500))
+    this.dataSource.result$.subscribe(rows => {
+      if (this.treeNodesVisible) {
+        this.selectedNode = null;
+        this.treeNodes = this.buildTreeNodes(rows, null);
+        this.findSelectedNode(this.treeNodes);
+      } else {
+        this.selectedRow = rows.find(e => e.id === this.id);
+      }
+    });
+
+    this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
 
-    this._docSubscription$ = merge(...[
-      this.ds.delete$]).pipe(
-        filter(doc => doc && doc.type === this.type))
-      .subscribe(doc => {
-        const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
-        if (exist) {
-          this.dataSource.refresh(exist.id);
-          this.sid = { id: exist.id };
-        } else {
-          this.dataSource.goto(doc.id);
-          this.sid = { id: doc.id };
-        }
-      });
+    if (this.treeNodesVisible) this.loadNodes();
 
   }
 
-  TreeNodesBuild(onInit = false) {
-    let id = '';
-    if (onInit) id = this.id;
-    else id = this.selection && (this.selection.parent || !!this.treeNodes.filter(e => !e.data.hlevel).length) ? this.selection.data.id : '';
-    this.treeNodes$ = this.api.getDocList(this.type, id, 'first', 1000, 0, this.dataSource.formListSettings.order, this.dataSource.formListSettings.filter, true).pipe(
-      map(tree => <TreeNode[]>this.buildTreeNodes(tree.data, null)),
-      tap(treeNodes => {
-        this.treeNodes = treeNodes;
-        this.treeNodes.filter(node => node.data.id === this.id).forEach(el => this.selection = el);
-      }));
+  private caclPageSize() {
+    const scrollHeight = () => window.innerHeight - 392;
+    this.scrollHeight = scrollHeight();
+    this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 2), 1);
+    if (!this.treeNodesVisible) this.dataSource.pageSize += 2;
   }
 
-  private buildTreeNodes(tree: any[], parent: string | null): TreeNode[] {
-    return tree.filter(el => el.hparent === parent).map(el => {
-      return <TreeNode>{
+  private findSelectedNode(tree: TreeNode[]) {
+    if (this.selectedNode) return;
+    const filteredById = tree.filter(el => el.key === this.id);
+    if (filteredById.length) this.selectedNode = filteredById[0];
+    else tree.filter(el => el.children.length).forEach(node => this.findSelectedNode(node.children));
+  }
+
+  onLazyLoad(event) {
+    this.multiSortMeta = event.multiSortMeta;
+    if (this.treeNodesVisible && event.sortField) {
+      if (this.multiSortMeta.filter(e => e.field === event.sortField).length)
+        this.multiSortMeta.filter(e => e.field === event.sortField).forEach(sf => sf.order = event.sortOrder);
+      else this.multiSortMeta.push({ field: event.sortField, order: event.sortOrder });
+    }
+    this.prepareDataSource();
+    this.dataSource.sort();
+  }
+
+  async loadNodes(id: string = null) {
+    if (!id) {
+      const sel = this.selectedNode;
+      if (this.initNodes && this.id) {
+        const ob = await this.api.byId(this.id);
+        if (ob.parent) id = this.id;
+      } else if (sel && sel.parent !== null) id = !sel.expanded ? sel.key : sel.parent.key;
+      else if (sel) {
+        const topLevel = this.treeNodes.filter(e => e.parent === null).length > 1;
+        id = topLevel ? sel.key : null;
+      }
+    }
+    this.dataSource.id = id;
+    if (this.initNodes) { this.initNodes = false; this.dataSource.sort(); } else this.dataSource.first();
+  }
+
+  private buildTreeNodes(tree: any[], parent?: string | null, parentNode?: TreeNode | null): TreeNode[] {
+    return tree.filter(el => el.parent.id === parent).map(el => {
+      const node = <TreeNode>{
+        key: el.id,
         data: el,
-        expanded: true,
+        leaf: !el.isfolder,
+        icon: 'pi pi-folder-open',
+        expanded: false,
         expandedIcon: 'pi pi-folder-open',
         collapsedIcon: 'pi pi-folder',
         children: this.buildTreeNodes(tree, el.id) || [],
       };
+      node.expanded = !node.leaf && node.children.length > 0;
+      return node;
     });
   }
 
@@ -161,26 +204,35 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _update(col: ColumnDef, event, center) {
-    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
-    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    this.prepareDataSource(this.multiSortMeta);
-    this.dataSource.sort();
-  }
-  update(col: ColumnDef, event, center = 'like') {
-    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) { event = null; }
-    this.debonce$.next({ col, event, center });
+  private _update(col: ColumnDef | undefined, event, center, id = null) {
+    if (!col) return;
+    this.prepareDataSource();
+    if (this.treeNodesVisible) this.loadNodes(this.selectedRow ? this.selectedRow.id : null);
+    else this.dataSource.sort();
   }
 
-  onLazyLoad(event) {
-    this.multiSortMeta = event.multiSortMeta;
-    this.prepareDataSource();
-    this.dataSource.sort();
+  update(col: ColumnDef, event, center = 'like') {
+    if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
+      if (typeof event !== 'boolean') event = null;
+    }
+    if (event === null) delete this.filters[col.field];
+    else this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+    this._debonce$.next({ col, event, center });
   }
 
   onNodeSelect(event) {
-    if (event.node.data.isfolder) this.TreeNodesBuild();
+    if (event.node.leaf || this.isSelectEnabled) return;
+    event.node.expanded = !event.node.expanded;
+    this.onNodeExpand(event, !!this.selectedNode);
   }
+
+  onNodeExpand(event, unselect = false) {
+    const node = event.node;
+    if (unselect) this.selectedNode = node;
+    if (!node.leaf)
+      this.loadNodes(node.expanded ? node.key : node.parent ? node.parent.key : null);
+  }
+
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
     this.dataSource.id = this.id;
     const order = multiSortMeta
@@ -188,28 +240,26 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     const Filter = Object.keys(this.filters)
       .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
     this.dataSource.formListSettings = { filter: Filter, order };
+    this.formListSettings = { filter: Filter, order };
+    const treeNodesVisibleBefore = this.treeNodesVisible;
+    this.treeNodesVisible = this.hierarchy && !Filter.length;
+    this.dataSource.hierarchy = this.treeNodesVisible;
+    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
+      if (this.treeNodesVisible && this.selectedRow) { this.id = this.selectedRow.id; this.initNodes = true; }
+      // tslint:disable-next-line: one-line
+      else if (!this.treeNodesVisible && this.selectedNode) { this.id = this.selectedNode.key; }
+      // tslint:disable-next-line: one-line
+      else this.id = null;
+      this.caclPageSize();
+    }
   }
 
   select(row) {
-    if (this.hierarchy) row = row.data;
-    const selection: ISuggest = { id: row.id, type: row.type, code: row.code, value: row.description, deleted: row.deleted };
+    this.selectedNode = row.node ? row.node : row;
+    if (!this.isSelectEnabled) return;
+    const sel = this.selectionData;
+    const selection: ISuggest = { id: sel.id, type: sel.type, code: sel.code, value: sel.description, deleted: sel.deleted };
     this.Select.emit(selection);
-  }
-
-  parentChange(event) {
-    this.selection = null;
-    this.id = null;
-    this.filters['parent'] = {
-      matchMode: '=',
-      value: event && event.data && event.data.id ? {
-        id: event.data.id,
-        code: '',
-        type: this.type,
-        description: event.data.description
-      } : null
-    };
-    this.prepareDataSource();
-    this.dataSource.sort();
   }
 
   private buildFiltersParamQuery() {
@@ -220,33 +270,42 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     return filters;
   }
 
+  private getCurrentParent() {
+    const result = { parent: null };
+    if (this.treeNodesVisible && this.selectedNode) {
+      result.parent = this.selectedNode.data.isfolder ? this.selectedNode.data.id : this.selectedNode.data.parent.id;
+    }
+    return result;
+  }
+
   add() {
     this.Close.emit();
     const id = v1().toUpperCase();
     this.router.navigate([this.type, id],
-      { queryParams: { new: id, ...this.buildFiltersParamQuery(), uuid: this.uuid } });
+      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent(), uuid: this.uuid } });
   }
 
   copy() {
     this.Close.emit();
-    this.router.navigate([this.selection.type, v1().toUpperCase()],
-      { queryParams: { copy: this.selection.id, uuid: this.uuid } });
+    this.router.navigate([this.type, v1().toUpperCase()],
+      { queryParams: { copy: this.selectedNode.key, uuid: this.uuid } });
   }
 
   open() {
     this.Close.emit();
-    this.router.navigate([this.selection.type, this.selection.id],
+    this.router.navigate([this.type, this.selectedNode.key],
       { queryParams: { uuid: this.uuid } });
   }
 
   delete() {
-    if (this.selection) this.ds.delete(this.selection.id)
+    if (this.selectedNode) {
+      this.ds.delete(this.selectedNode.key);
+      this.loadNodes();
+    }
   }
 
   ngOnDestroy() {
     this._debonceSubscription$.unsubscribe();
-    this.debonce$.complete();
-    this._docSubscription$.unsubscribe();
+    this._debonce$.complete();
   }
-
 }

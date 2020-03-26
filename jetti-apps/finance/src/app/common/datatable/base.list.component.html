@@ -4,7 +4,7 @@
     <j-tree-list #tl [type]="type" (selectionChange)="parentChange($event)"></j-tree-list>
   </div>
 
-  <div style="display: flex; flex-direction: column; overflow-x: auto">
+  <div style="display: flex; flex-direction: column; overflow-x: hidden">
     <ng-content></ng-content>
     <p-toolbar *ngIf="!readonly">
       <div class="ui-toolbar-group-left">

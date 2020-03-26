@@ -771,8 +771,8 @@ ORDER BY
       CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     }
     if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
-    let AmountBalancFromDoc: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
-    if (!params) AmountBalancFromDoc = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+    // let AmountBalancFromDoc: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
+    const AmountBalancFromDoc = params ? params : await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
     docOperation['SalaryProject'] = this.SalaryProject;
     docOperation['PayRolls'] = [];
     docOperation['SalaryAnalytics'] = this.SalaryAnalitics;
@@ -786,6 +786,7 @@ ORDER BY
       docOperation['CashRegister'] = CashOrBank.id;
       docOperation.f1 = docOperation['CashRegister'];
       docOperation['SalaryKind'] = 'PAID';
+      docOperation.Amount = 0;
       const knowEmployee1: TypesCashRecipient[] = [];
 
       for (const row of this.PayRolls) {
@@ -793,6 +794,7 @@ ORDER BY
         for (const emp of EmployeeBalance) {
           if (knowEmployee1.indexOf(emp.CashRecipient) === -1)
             knowEmployee1.push(emp.CashRecipient);
+          docOperation.Amount += emp.Amount;
           docOperation['PayRolls'].push({
             Employee: emp.CashRecipient,
             Amount: emp.Amount
@@ -829,7 +831,7 @@ ORDER BY
 
         for (const row of this.PayRolls) {
           const EmployeeBalance = AmountBalancFromDoc.filter(el => (
-            row.Employee as any === el.CashRecipient
+            row.Employee as any === el.CashRecipient!
             && row.BankAccount as any === el.BankAccountPerson
           ));
 

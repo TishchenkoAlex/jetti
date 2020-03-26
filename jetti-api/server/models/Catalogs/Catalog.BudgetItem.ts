@@ -8,13 +8,20 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   hierarchy: 'all',
   dimensions: [
     { parent: 'Catalog.BudgetItem' },
+    { parent2: 'Catalog.BudgetItem' },
     { UnaryOperator: 'enum' },
   ]
 })
 export class CatalogBudgetItem extends DocumentBase {
 
-  @Props({ type: 'Catalog.BudgetItem', order: 3, storageType: 'all' })
+  @Props({ type: 'Catalog.BudgetItem', order: 10, storageType: 'all', hiddenInForm: true })
   parent: Ref = null;
+
+  @Props({ type: 'Catalog.BudgetItem', order: 11, storageType: 'all', hiddenInForm: true })
+  parent2: Ref = null;
+
+  @Props({ type: 'boolean', hiddenInList: false })
+  isfolder = false;
 
   @Props({ type: 'enum', value: [
     '+',

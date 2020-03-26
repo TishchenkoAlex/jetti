@@ -21,7 +21,7 @@ import { IViewModel } from '../../../../../../jetti-api/server/models/common-typ
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
 
 @Component({
@@ -101,7 +101,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       this.pageSize$ = fromEvent(window, 'resize')
         .pipe(debounceTime(500), map(evt => {
           this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 1), 1);
-          const id = this.dataSource.renderedData.length > 0 ? this.dataSource.renderedData[0].id : null;
+          const id = this.dataSource.renderedData.length > 0 ? (this.dataSource.renderedData[0] as DocumentBase).id : null;
           this.dataSource.refresh(id);
           return this.dataSource.pageSize;
         }));
@@ -115,7 +115,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
         filter(doc => doc && doc.type === this.type))
       .subscribe(doc => {
-        const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
+        const exist = (this.dataSource.renderedData as DocumentBase[]).find(d => d.id === doc.id);
         if (exist) {
           this.dataSource.refresh(exist.id);
           this.id = exist.id;
@@ -137,7 +137,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
-    this.readonly = this.auth.isRoleAvailable('Readonly');
+    this.readonly = this.auth.isRoleAvailableReadonly();
   }
 
   private setFilters() {
