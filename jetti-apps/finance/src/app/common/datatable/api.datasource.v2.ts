@@ -20,8 +20,10 @@ export class ApiDataSource {
 
   result$: Observable<DocumentBase[]>;
   renderedData: DocumentBase[] = [];
+  renderedDataList: DocumentBase[] = [];
+  hierarchy = false;
 
-  continuation: Continuation = { first: null, last: null};
+  continuation: Continuation = { first: null, last: null };
   private EMPTY: DocListResponse = { data: [], continuation: { first: this.continuation.first, last: this.continuation.first } };
 
   constructor(public api: ApiService, public type: DocTypes, public pageSize = 10, direction = false) {
@@ -37,15 +39,16 @@ export class ApiDataSource {
           case 'prev': id = this.continuation.first!.id as string; break;
           case 'next': id = this.continuation.last!.id as string; break;
           case 'refresh': case 'sort': case undefined:
-            offset = this.renderedData.findIndex(r => r.id === id);
-            if (offset === -1) offset = 0; else id = this.renderedData[offset].id;
+            offset = this.renderedDataList.findIndex(r => r.id === id);
+            if (offset === -1) offset = 0; else id = this.renderedDataList[offset].id;
             stream.command = 'sort';
             break;
         }
         return this.api.getDocList(this.type, id, stream.command, this.pageSize, offset,
-          this.formListSettings.order, this.formListSettings.filter).pipe(
+          this.formListSettings.order, this.hierarchy ? [] : this.formListSettings.filter, this.hierarchy).pipe(
             tap(data => {
               this.renderedData = data.data;
+              this.renderedDataList = data.data;
               this.continuation = data.continuation;
               setTimeout(() => scrollIntoViewIfNeeded(type, 'ui-state-highlight', direction));
             }),

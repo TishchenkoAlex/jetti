@@ -36,7 +36,7 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
-    Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, level: number }[] | Ref | null>;
+    Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
     Descendants: (id: Ref, tx: MSSQL) => Promise<{ id: Ref, parent: Ref }[] | null>;
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
@@ -155,15 +155,15 @@ async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T |
   if (result) return createDocument<T>(result.type, result); else return null;
 }
 
-async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, level: number }[] | Ref | null> {
+async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {
   if (!id) return null;
-  const query = `SELECT id, levelUp as N'level' FROM dbo.[Ancestors](@p1) WHERE levelUp = @p2 or @p2 is NULL`;
+  const query = `SELECT id, [parent.id] parent, levelUp as N'level' FROM dbo.[Ancestors](@p1) WHERE levelUp = @p2 or @p2 is NULL`;
   let result;
   if (level || level === 0) {
-    result = await tx.oneOrNone<{ id: Ref, level: number } | null>(query, [id, level]);
+    result = await tx.oneOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, level]);
     if (result) result = result.id;
   } else {
-    result = await tx.manyOrNone<{ id: Ref, level: number } | null>(query, [id, null]);
+    result = await tx.manyOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, null]);
   }
   return result;
 }

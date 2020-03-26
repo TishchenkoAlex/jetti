@@ -1,24 +1,25 @@
 <div [ngStyle]="{'display':'flex'}" [class]="'scroll-' + type" [id]="type">
 
   <div style="display: flex; flex-direction: column;">
-    <p-toolbar>
+    <p-toolbar *ngIf="!readonly">
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
         <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" (click)="open()"
-          [disabled]="(lds.busy$ | async)" *ngIf="selection"></button>
+          [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
         <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
-          [disabled]="(lds.busy$ | async)" *ngIf="selection"></button>
+          [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
         <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
-          [disabled]="(lds.busy$ | async)" *ngIf="selection"></button>
+          [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
       </div>
     </p-toolbar>
 
-    <div *ngIf="hierarchy">
-      <p-treeTable #treeTable [value]="treeNodes$ | async" selectionMode="single" dataKey="id" [(selection)]="selection"
-        (onNodeSelect)="onNodeSelect($event)" [multiSortMeta]="multiSortMeta" [filterDelay]="500" [columns]="columns"
-        [scrollable]="true" [reorderableColumns]="true" (onLazyLoad)="onLazyLoad($event)" [resizableColumns]="true"
-        [customSort]="true"  scrollHeight="37vh" columnResizeMode="expand">
+    <div *ngIf="treeNodesVisible">
+      <p-treeTable #treeTable [value]="treeNodes" selectionMode="single" dataKey="id" [(selection)]="selectedNode"
+        (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)"
+        (onNodeSelect)="onNodeSelect($event)" (onNodeUnselect)="onNodeSelect($event)" [multiSortMeta]="multiSortMeta"
+        [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
+        [scrollable]="true" [scrollHeight]="scrollHeight +'px'" class="noselect" >
 
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
@@ -29,13 +30,15 @@
 
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
+            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th [ttSortableColumn]="column.field" ttResizableColumn *ngFor="let column of columns"
               [ngStyle]="column.style">
               {{column.label}}
               <p-treeTableSortIcon [field]="column.field"></p-treeTableSortIcon>
             </th>
           </tr>
-          <tr cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
+          <tr>
+            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th *ngFor="let column of columns" [ngStyle]="column.style" [ngSwitch]="column.type"
               class="ui-fluid ui-column-filter">
               <div *ngSwitchCase="'boolean'">
@@ -78,9 +81,9 @@
             </th>
           </tr>
         </ng-template>
-
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" (dblclick)="select(rowNode)">
+            <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
             <td *ngFor="let column of columns" [ngStyle]="column.style">
               <span [ngSwitch]="column.type" [id]="column.field">
                 <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
@@ -102,8 +105,10 @@
                       style="color: #d9534f"> </i>
                     <i *ngIf="rowData.isfolder && rowNode.expanded && !rowData['deleted']" class="pi pi-folder-open"
                       style="color: #d1cf38"> </i>
-                    <i *ngIf="!rowData.isfolder && rowData['deleted']" class="pi pi-minus" style="color: #d9534f"> </i>
-                    <i *ngIf="!rowData.isfolder && !rowData['deleted']" class="pi pi-minus" style="color: #2434c7"> </i>
+                    <i *ngIf="!rowData.isfolder && rowData['deleted']" class="pi pi-minus" style="color: #d9534f">
+                    </i>
+                    <i *ngIf="!rowData.isfolder && !rowData['deleted']" class="pi pi-minus" style="color: #2434c7">
+                    </i>
                   </span>
                   {{rowData[column.field]}}
                 </span>
@@ -116,12 +121,12 @@
       </p-treeTable>
     </div>
 
-    <div *ngIf="!hierarchy">
+    <div *ngIf="!treeNodesVisible">
       <p-table #tbl [value]="dataSource.result$ | async" selectionMode="single" dataKey="id" [lazy]="true"
-        sortMode="multiple" [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect"
-        [scrollHeight]="'415px'" [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)"
-        [multiSortMeta]="multiSortMeta" [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true"
-        [resizableColumns]="true">
+        sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="500"
+        [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="scrollHeight +'px'"
+        [(selection)]="selectedRow" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
+        [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true" [resizableColumns]="true">
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
             <col>
@@ -130,15 +135,15 @@
         </ng-template>
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
-            <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
+            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th pReorderableColumn pResizableColumn [pSortableColumn]="column.field" [pSortableColumn]="column.field"
               *ngFor="let column of tbl.columns" [ngStyle]="column.style">
               {{column.label}}
               <p-sortIcon [field]="column.field"></p-sortIcon>
             </th>
           </tr>
-          <tr cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
-            <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
+          <tr>
+            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th *ngFor="let column of tbl.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
               class="ui-fluid ui-column-filter">
               <div *ngSwitchCase="'boolean'">
@@ -184,7 +189,8 @@
 
         <ng-template pTemplate="body" let-rowData>
           <tr [pSelectableRow]="rowData" (dblclick)="select(rowData)" [class]="'scrollTo-' + type">
-            <td class="ui-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
+            <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
+            <!-- <td class="ui-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
               <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
                 style="color: #5cb85c"></i>
               <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
@@ -192,7 +198,7 @@
                 style="color: #f0ad4e"></i>
               <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
               <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
-            </td>
+            </td> -->
             <td *ngFor="let column of tbl.columns" [ngStyle]="column.style" [class]="'scrollTo-' + type">
               <span [ngSwitch]="column.type" [id]="column.field">
                 <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
@@ -203,7 +209,18 @@
                   <i *ngIf="rowData[column.field]" class="fa fa-check-square" [id]="column.field"></i>
                   <i *ngIf="!rowData[column.field]" class="far fa-square" [id]="column.field"></i>
                 </span>
-                <span *ngSwitchCase="'string'" [id]="column.field">{{rowData[column.field]}}</span>
+
+                <span *ngSwitchCase="'string'" [id]="column.field">
+                  <span *ngIf="column.field === 'description'">
+                    <i *ngIf="rowData.isfolder && rowData['deleted']" class="pi pi-folder" style="color: #d9534f"> </i>
+                    <i *ngIf="rowData.isfolder && !rowData['deleted']" class="pi pi-folder" style="color: #d1cf38"> </i>
+                    <i *ngIf="!rowData.isfolder && rowData['deleted']" class="pi pi-minus" style="color: #d9534f">
+                    </i>
+                    <i *ngIf="!rowData.isfolder && !rowData['deleted']" class="pi pi-minus" style="color: #2434c7">
+                    </i>
+                  </span>
+                  {{rowData[column.field]}}
+                </span>
                 <span *ngSwitchCase="'enum'" [id]="column.field">{{rowData[column.field]}}</span>
                 <span *ngSwitchDefault [id]="column.field">{{rowData[column.field]?.value}}</span>
               </span>
@@ -213,5 +230,5 @@
 
       </p-table>
     </div>
+
   </div>
-</div>

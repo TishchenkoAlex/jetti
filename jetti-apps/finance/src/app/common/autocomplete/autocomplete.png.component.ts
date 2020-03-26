@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 // tslint:disable:max-line-length
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
@@ -5,7 +6,7 @@ import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription, of } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
+import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
@@ -68,6 +69,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   private _docSubscription$: Subscription = Subscription.EMPTY;
 
   showDialog = false;
+  useHierarchyList = false;
   filters = new FormListSettings();
   uuid = v1().toLocaleUpperCase();
 
@@ -78,7 +80,8 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   get EMPTY() { return { id: null, code: null, type: this.type, value: null }; }
   get isEMPTY() { return this.isComplexControl && !(this.value && this.value.value); }
   get isCatalogParent() { return this.type.startsWith('Catalog.') && this.id === 'parent'; }
-  get hierarchy() { return (createDocument(this.type as any).Props()).hierarchy; }
+  get hierarchy() { const prop = this.DocProp; return prop ? prop.hierarchy : undefined; }
+  get DocProp() { return this.isTypeValue || !this.isComplexControl ? undefined : createDocument(this.value.type as any).Prop() as DocumentOptions; }
 
   private _value: IComplexObject;
   @Input() set value(obj) {
@@ -125,7 +128,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
   // end of implementation Validator interface
 
-  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService) { }
+  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService, private auth: AuthService) { }
 
   ngOnInit() {
     this._value = this.EMPTY;
@@ -153,6 +156,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   handleReset = (event: Event) => this.value = this.EMPTY;
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
   handleSearch = (event: Event) => {
+    this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders' && this.auth.isRoleAvailableTester();
     if (!this.isTypeValue) this.filters = this.calcFilters(); else this.filters = new FormListSettings();
     this.showDialog = true;
   }
@@ -183,16 +187,18 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
           result.filter.push({ left: row.filterBy, center: '=', right: fc!.value });
       }
     }
-    if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
-    if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
-    if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
+    if (!this.useHierarchyList) {
+      if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
+      if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
+      if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
+    }
     let company;
     if (this.type.startsWith('Document.')) {
       const doc = this.formControl && this.formControl.root.value;
-      if (doc && doc.company.id) company = doc.company
+      if (doc && doc.company.id) company = doc.company;
     } else if (this.type === 'Types.Document') {
       const doc = this.formControl && this.formControl.root['controls'];
-      if (doc && doc.company && doc.company.value && doc.company.value.id) company = doc.company.value.id
+      if (doc && doc.company && doc.company.value && doc.company.value.id) company = doc.company.value.id;
     }
     if (company) result.filter.push({ left: 'company', center: '=', right: company });
     return result;

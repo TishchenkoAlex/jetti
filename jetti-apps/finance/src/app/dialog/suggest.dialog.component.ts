@@ -64,7 +64,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute, public router: Router, private auth: AuthService) { }
 
   ngOnInit() {
-    this.readonly = this.auth.isRoleAvailable('Readonly');
+    this.readonly = this.auth.isRoleAvailableReadonly();
     const columns: ColumnDef[] = [];
     const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     try { this.doc = createDocument(this.type); } catch { }
@@ -74,7 +74,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       const field = Object.keys(el)[0]; const type = el[field];
       let value = schema[field] && schema[field].value;
       if (type === 'enum') {
-        value = [{ label: '', value: null }, ...(value || [] as string[]).map((el: any) => ({ label: el, value: el }))];
+        value = [{ label: '', value: null }, ...(value || [] as string[]).map((fld: any) => ({ label: fld, value: fld }))];
       }
       columns.push({
         field, type: <DocTypes>(schema[field] && schema[field].type || type), label: schema[field] && schema[field].label || field,
@@ -110,7 +110,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       this.ds.delete$]).pipe(
         filter(doc => doc && doc.type === this.type))
       .subscribe(doc => {
-        const exist = (this.dataSource.renderedData).find(d => d.id === doc.id);
+        const exist = (this.dataSource.renderedData as DocumentBase[]).find(d => d.id === doc.id);
         if (exist) {
           this.dataSource.refresh(exist.id);
           this.sid = { id: exist.id };

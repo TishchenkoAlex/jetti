@@ -1,4 +1,3 @@
-import { Command } from './../document';
 import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
@@ -48,9 +47,9 @@ export class DocumentCashRequestRegistry extends DocumentBase {
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
       'Выплата заработной платы',
+      'Выплата заработной платы (наличные)',
       'Выплата заработной платы без ведомости',
-    ],
-    onChangeServer: true,
+    ]
   })
   Operation = 'Оплата поставщику';
 
@@ -122,8 +121,22 @@ export class CashRequest {
   @Props({ type: 'Catalog.Company', label: 'Company', readOnly: true })
   company: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', label: 'Bank account out', owner: [{ dependsOn: 'company', filterBy: 'company' }, { dependsOn: 'currency', filterBy: 'currency' }], required: true })
+  @Props({
+    type: 'Catalog.CashRegister', label: 'Cash register', owner: [
+      { dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }]
+  })
+  CashRegister: Ref = null;
+
+  @Props({
+    type: 'Catalog.BankAccount', label: 'Bank account out', owner:
+      [{ dependsOn: 'company', filterBy: 'company' },
+      { dependsOn: 'currency', filterBy: 'currency' }], required: true
+  })
   BankAccount: Ref = null;
+
+  @Props({ type: 'Catalog.BankAccount', label: 'Bank account in', owner: [{ dependsOn: 'company', filterBy: 'company' }, { dependsOn: 'currency', filterBy: 'currency' }] })
+  BankAccountIn: Ref = null;
 
   @Props({
     type: 'Catalog.Counterpartie.BankAccount', label: 'Cash recipient bank account', owner: [
@@ -135,8 +148,6 @@ export class CashRequest {
   @Props({ type: 'Catalog.Person.BankAccount', label: 'Bank account person', readOnly: true, required: false })
   BankAccountPerson: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', label: 'Bank account in', owner: [{ dependsOn: 'company', filterBy: 'company' }, { dependsOn: 'currency', filterBy: 'currency' }] })
-  BankAccountIn: Ref = null;
 
   @Props({ type: 'number', label: '#BA', readOnly: true, style: { width: '40px', textAlign: 'right' } })
   CountOfBankAccountCashRecipient = 0;
@@ -144,13 +155,3 @@ export class CashRequest {
   @Props({ type: 'Types.Document', label: 'Linked document', readOnly: true, style: { width: '440px' } })
   LinkedDocument: Ref = null;
 }
-
-// export class BankStatement {
-
-//   @Props({ type: 'Catalog.Company', order: 1, readOnly: true, label: 'Company', required: false, style: { width: '20%' } })
-//   company: Ref = null;
-
-//   @Props({ type: 'string', label: 'Bank statement', style: { width: '80%' } })
-//   BankStatementText = 0;
-
-// }

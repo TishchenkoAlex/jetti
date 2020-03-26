@@ -7,6 +7,7 @@ import { SyncFormComponent } from './Forms/sync.form.component';
 import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
 import { SearchAndReplaceComponent } from './Forms/search-and-replace.component';
+import { BaseHierarchyListComponent } from '../common/datatable/base.hierarchy-list.component';
 
 const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<any> } } = {
   'home': { formComponent: HomeComponent, listComponent: HomeComponent },
@@ -18,8 +19,8 @@ const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<
   // add user's defined component for list- or doc-Form here
 };
 
-export function getListComponent(type: string) {
-  return userForms[type] ? userForms[type].listComponent : BaseDocListComponent;
+export function getListComponent(type: string, testComponent = false) {
+  return userForms[type] ? userForms[type].listComponent : (testComponent ? BaseHierarchyListComponent : BaseDocListComponent);
 }
 
 export function getFormComponent(type: string) {

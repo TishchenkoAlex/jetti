@@ -1,5 +1,4 @@
 import { DocumentBase, JDocument, Props, Ref } from '../document';
-import { CatalogBankAccount } from './Catalog.BankAccount';
 
 @JDocument({
   type: 'Catalog.Contract',
@@ -18,6 +17,9 @@ export class CatalogContract extends DocumentBase {
 
   @Props({ type: 'Catalog.Counterpartie', required: true, order: 1 })
   owner: Ref = null;
+
+  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }})
+  company: Ref = null;
 
   @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
   Status = 'OPEN';

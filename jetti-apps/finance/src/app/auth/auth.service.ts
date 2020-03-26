@@ -54,8 +54,21 @@ export class AuthService {
   }
 
   public isRoleAvailable(roleName: string): boolean {
+    if (!this.token) return false;
     const token = this.tokenPayload as { roles: string[] };
     return token.roles.indexOf(roleName) !== -1;
+  }
+
+  public isRoleAvailableReadonly(): boolean {
+    return this.isRoleAvailable('Readonly');
+  }
+
+  public isRoleAvailableCashRequestAdmin(): boolean {
+    return this.isRoleAvailable('Cash request admin');
+  }
+
+  public isRoleAvailableTester(): boolean {
+    return this.isRoleAvailable('New features tester');
   }
 
   private init(loginResponse: ILoginResponse) {
