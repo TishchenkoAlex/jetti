@@ -472,6 +472,13 @@
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , d.[isDefault] [isDefault]
         , d.[notAccounting] [notAccounting]
+        , d.[RoyaltyArrangements] [RoyaltyArrangements]
+        , d.[RoyaltyDelayTo] [RoyaltyDelayTo]
+        , d.[PaymentKC] [PaymentKC]
+        , d.[PaymentOVM] [PaymentOVM]
+        , d.[PaymentOKK] [PaymentOKK]
+        , d.[PaymentKRO] [PaymentKRO]
+        , d.[OtherServices] [OtherServices]
       
         , ISNULL(l5.description, d.description) [Contract.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Contract.Level4]
