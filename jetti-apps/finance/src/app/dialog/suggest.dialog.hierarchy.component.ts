@@ -63,6 +63,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     return sel &&
       (
         this.storageType === 'all' ||
+        (!this.storageType && !sel.isfolder) ||
         (this.storageType === 'folders' && sel.isfolder) ||
         (this.storageType === 'elements' && !sel.isfolder)
       );
@@ -115,9 +116,10 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
     this.dataSource.result$.subscribe(rows => {
       if (this.treeNodesVisible) {
+        const selectedNodeId = this.selectedNode ? this.selectedNode.key : this.id ? this.id : this.dataSource.id;
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
-        this.findSelectedNode(this.treeNodes);
+        this.findSelectedNode(this.treeNodes, selectedNodeId);
       } else {
         this.selectedRow = rows.find(e => e.id === this.id);
       }
@@ -131,17 +133,16 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   }
 
   private caclPageSize() {
-    const scrollHeight = () => window.innerHeight - 392;
-    this.scrollHeight = scrollHeight();
-    this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28 - 2), 1);
-    if (!this.treeNodesVisible) this.dataSource.pageSize += 2;
+    const scrollHeight = () => window.innerHeight * 0.625;
+    this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28), 1);
+    this.scrollHeight = this.dataSource.pageSize * 28;
   }
 
-  private findSelectedNode(tree: TreeNode[]) {
+  private findSelectedNode(tree: TreeNode[], id: string | null) {
     if (this.selectedNode) return;
-    const filteredById = tree.filter(el => el.key === this.id);
+    const filteredById = tree.filter(el => el.key === id);
     if (filteredById.length) this.selectedNode = filteredById[0];
-    else tree.filter(el => el.children.length).forEach(node => this.findSelectedNode(node.children));
+    else tree.filter(el => el.children.length).forEach(node => this.findSelectedNode(node.children, id));
   }
 
   onLazyLoad(event) {
@@ -155,13 +156,14 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     this.dataSource.sort();
   }
 
-  async loadNodes(id: string = null) {
+  loadNodes(id = null) {
     if (!id) {
       const sel = this.selectedNode;
       if (this.initNodes && this.id) {
-        const ob = await this.api.byId(this.id);
-        if (ob.parent) id = this.id;
-      } else if (sel && sel.parent !== null) id = !sel.expanded ? sel.key : sel.parent.key;
+        // const ob = await this.ds.api.byId(this.id);
+        // if (ob.parent)
+        id = this.id;
+      } else if (sel && sel.parent) id = !sel.expanded ? sel.key : sel.parent.key;
       else if (sel) {
         const topLevel = this.treeNodes.filter(e => e.parent === null).length > 1;
         id = topLevel ? sel.key : null;
@@ -220,17 +222,17 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     this._debonce$.next({ col, event, center });
   }
 
-  onNodeSelect(event) {
-    if (event.node.leaf || this.isSelectEnabled) return;
-    event.node.expanded = !event.node.expanded;
-    this.onNodeExpand(event, !!this.selectedNode);
+  onNodeDblclick(node: { node: TreeNode }) {
+    const Node = node.node;
+    if (Node.leaf) { this.select(node); return; }
+    Node.expanded = !Node.expanded;
+    this.onNodeExpand(node);
   }
 
-  onNodeExpand(event, unselect = false) {
-    const node = event.node;
-    if (unselect) this.selectedNode = node;
-    if (!node.leaf)
-      this.loadNodes(node.expanded ? node.key : node.parent ? node.parent.key : null);
+  onNodeExpand(node: { node: TreeNode }) {
+    const Node = node.node;
+    this.selectedNode = Node;
+    this.loadNodes(Node.expanded ? Node.key : Node.parent ? Node.parent.key : null);
   }
 
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -278,11 +280,11 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  add() {
+  add(isFolder = false) {
     this.Close.emit();
     const id = v1().toUpperCase();
     this.router.navigate([this.type, id],
-      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent(), uuid: this.uuid } });
+      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent(), isfolder: isFolder, uuid: this.uuid } });
   }
 
   copy() {
@@ -291,9 +293,9 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
       { queryParams: { copy: this.selectedNode.key, uuid: this.uuid } });
   }
 
-  open() {
+  open(id = null) {
     this.Close.emit();
-    this.router.navigate([this.type, this.selectedNode.key],
+    this.router.navigate([this.type, id ? id : this.selectedNode.key],
       { queryParams: { uuid: this.uuid } });
   }
 

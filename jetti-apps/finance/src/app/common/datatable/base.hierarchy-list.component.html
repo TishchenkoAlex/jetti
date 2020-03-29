@@ -1,11 +1,13 @@
 <div [ngStyle]="{'display':'block'}" [class]="'scroll-' + type" [id]="type">
 
-  <div style="display: flex; flex-direction: column; overflow-x: hidden">
+  <div style="display: flex; flex-direction: column; overflow-x: hidden;">
     <ng-content></ng-content>
     <p-toolbar *ngIf="!readonly">
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
+        <button id="addFolder" icon="fas fa-folder-plus" class="ui-button-success" pButton type="button" (click)="add(true)"
+          pTooltip="Add folder" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
         <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" pTooltip="Open"
           tooltipPosition="top" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
           *ngIf="selectedData"></button>
@@ -27,9 +29,9 @@
     <div *ngIf="treeNodesVisible">
       <p-treeTable #treeTable [value]="(treeNodes$ | async)" selectionMode="single" dataKey="id"
         [(selection)]="selectedNode" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)"
-        (onNodeSelect)="onNodeSelect($event)" (onNodeUnselect)="onNodeSelect($event)" [multiSortMeta]="multiSortMeta"
+        [multiSortMeta]="multiSortMeta"
         [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
-        columnResizeMode="expand" [scrollable]="true" [scrollHeight]="(pageSize$ | async)*31 + 'px'" class="noselect"
+        columnResizeMode="expand" [scrollable]="true" [scrollHeight]="(pageSize$ | async)*29 + 'px'" class="noselect"
         [contextMenu]="cm" [(contextMenuSelection)]="selectedNode" (onContextMenuSelect)="onContextMenuSelect($event)" >
 
         <ng-template pTemplate="colgroup" let-columns>
@@ -85,7 +87,7 @@
               <div *ngSwitchDefault>
                 <j-autocomplete-png [checkValue]="false"
                   [type]="filters[column.field]?.value?.type || column.type || 'string'"
-                  [ngModel]="filters[column.field]?.value" [showOpen]="false" [showFind]="false" [showClear]="true"
+                  [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
                   (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
                 </j-autocomplete-png>
               </div>
@@ -93,7 +95,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttContextMenuRow]="rowNode" (dblclick)="open(true)">
+          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttContextMenuRow]="rowNode" (dblclick)="onNodeDblclick(rowNode)">
             <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
             <td *ngFor="let column of columns" [ngStyle]="column.style">
               <span [ngSwitch]="column.type" [id]="column.field">
@@ -195,7 +197,7 @@
               <div *ngSwitchDefault>
                 <j-autocomplete-png [checkValue]="false"
                   [type]="filters[column.field]?.value?.type || column.type || 'string'"
-                  [ngModel]="filters[column.field]?.value" [showOpen]="false" [showFind]="true" [showClear]="true"
+                  [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
                   (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
                 </j-autocomplete-png>
               </div>
