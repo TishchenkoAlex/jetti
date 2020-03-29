@@ -87,7 +87,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   treeNodesVisible = false;
   initNodes = true;
   selectedNode: TreeNode = null;
-  prevSelectedNode: TreeNode = null;
 
   ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
@@ -129,21 +128,29 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
         filter(doc => doc && doc.type === this.type))
       .subscribe(doc => {
-        const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
-        if (exist) {
-          this.dataSource.refresh(exist.id);
-          this.id = exist.id;
-        } else {
-          this.dataSource.goto(doc.id);
+
+        if (this.treeNodesVisible) {
+          this.selectedNode = null;
           this.id = doc.id;
+          setTimeout(() => this.loadNodes(doc.id), 20);
+        } else {
+          const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
+          if (exist) {
+            this.dataSource.refresh(exist.id);
+            this.id = exist.id;
+          } else {
+            this.dataSource.goto(doc.id);
+            this.id = doc.id;
+          }
         }
       });
 
     this.treeNodes$ = this.dataSource.result$.pipe(map(rows => {
       if (this.treeNodesVisible) {
+        const selectedNodeId = this.selectedNode ? this.selectedNode.key : this.dataSource.id;
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
-        this.findSelectedNode(this.treeNodes, this.dataSource.id);
+        this.findSelectedNode(this.treeNodes, selectedNodeId);
         return this.treeNodes;
       }
     }));
@@ -169,7 +176,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
         this.dataSource.pageSize = pageSize;
         this.pageSize$ = of(pageSize);
         if (this.id) this.goto(this.id);
-        else this.last();
+        else this.first();
       });
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
@@ -180,7 +187,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   private getPageSize() {
-    return Math.max(Math.round((window.innerHeight - 290) / 28 - 2), 1);
+    return Math.max(Math.round((window.innerHeight - 270) / 28 - 1), 1);
   }
 
   private findSelectedNode(tree: TreeNode[], id: string | null) {
@@ -262,19 +269,17 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     });
   }
 
-  onNodeSelect(event) {
-    if (!!this.selectedNode) this.prevSelectedNode = this.selectedNode;
-    if (event.node === this.prevSelectedNode && !this.selectedNode) { this.selectedNode = this.prevSelectedNode; return; }
-    if (event.node.leaf) return;
-    event.node.expanded = !event.node.expanded;
-    this.onNodeExpand(event, !!this.selectedNode);
+  onNodeDblclick(node: { node: TreeNode }) {
+    const Node = node.node;
+    if (Node.leaf) { this.open(Node.key); return; }
+    Node.expanded = !Node.expanded;
+    this.onNodeExpand(node);
   }
 
-  onNodeExpand(event, unselect = false) {
-    const node = event.node;
-    if (unselect) this.selectedNode = node;
-    if (!node.leaf)
-      this.loadNodes(node.expanded ? node.key : node.parent ? node.parent.key : null);
+  onNodeExpand(node: { node: TreeNode }) {
+    const Node = node.node;
+    this.selectedNode = Node;
+    this.loadNodes(Node.expanded ? Node.key : Node.parent ? Node.parent.key : null);
   }
 
   private prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -340,10 +345,10 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  add() {
+  add(isFolder = false) {
     const id = v1().toUpperCase();
     this.router.navigate([this.type, id],
-      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent() } });
+      { queryParams: { new: id, ...this.buildFiltersParamQuery(), ...this.getCurrentParent(), isfolder: isFolder } });
   }
 
   copy() {
@@ -356,9 +361,9 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
       { queryParams: { base: this.selectedData.id } });
   }
 
-  open(isDblClickEvent = false) {
-    if (isDblClickEvent && this.selectedData.isfolder) return;
-    this.router.navigate([this.type, this.selectedData.id]);
+  open(id = null) {
+    if (!id && this.selectedData.isfolder) return;
+    this.router.navigate([this.type, id ? id : this.selectedData.id]);
   }
 
   delete() {
@@ -417,7 +422,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   first() {
     this.selection = [];
-    this.selectedNode = null;
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) this.id = d[0].id;
     });
@@ -426,7 +430,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   private listen() {
     this.selection = [];
-    this.selectedNode = null;
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) this.id = d[d.length - 1].id;
     });
@@ -438,7 +441,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   private listenRefresh(id: string) {
     this.selection = [];
-    this.selectedNode = null;
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) {
         const row = d.find(el => el.id === id);
@@ -449,13 +451,11 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   refresh(id: string) {
     this.listenRefresh(id);
-    if (this.treeNodesVisible) this.loadNodes(id);
-    else this.dataSource.refresh(id);
+    this.dataSource.refresh(id);
   }
   goto(id: string) {
     this.listenRefresh(id);
-    if (this.treeNodesVisible) this.loadNodes(id);
-    else this.dataSource.goto(id);
+    this.dataSource.goto(id);
   }
 
   ngOnDestroy() {

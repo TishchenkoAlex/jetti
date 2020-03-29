@@ -135,9 +135,10 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   private async Fill(tx: MSSQL) {
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
     this.CashRequests = [];
-    const query = `
+    let query = `
     DROP TABLE IF EXISTS #CashRequestBalance;
     DROP TABLE IF EXISTS #SalaryAmount;
+    DROP TABLE IF EXISTS #SalaryAmountCashRequest;
     SELECT
         Balance.[currency] AS сurrency,
         Balance.[CashRequest] AS CashRequest,
@@ -162,21 +163,40 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         SUM(Balance.[Amount]) AS Amount
     INTO #SalaryAmount
     FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
-    WHERE Balance.document in (SELECT cr.CashRequest
-      FROM #CashRequestBalance cr
-      WHERE cr.OperationType = N'Выплата заработной платы')
-    GROUP BY
-        Balance.[CashRequest],Balance.[CashRecipient],Balance.[BankAccountPerson] ;
+    INNER JOIN #CashRequestBalance cr
+    ON cr.CashRecipient = Balance.CashRecipient
+    and cr.CashRequest = Balance.CashRequest
+    and cr.OperationType = N'Выплата заработной платы'
+      GROUP BY
+          Balance.[CashRequest],Balance.[CashRecipient],Balance.[BankAccountPerson]
+  HAVING SUM(Balance.[Amount]) > 0;
+
+  SELECT
+  Balance.[CashRequest] AS CashRequest,
+  Balance.[CashRecipient] AS CashRecipient,
+  Balance.[BankAccountPerson] as BankAccountPerson,
+  SUM(Balance.[Amount]) AS Amount
+INTO #SalaryAmountCashRequest
+FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
+INNER JOIN #CashRequestBalance cr
+ON cr.CashRecipient = Balance.CashRecipient
+and cr.CashRequest = Balance.CashRequest
+and cr.CashRequest = Balance.Document
+and cr.OperationType = N'Выплата заработной платы'
+GROUP BY
+    Balance.[CashRequest],Balance.[CashRecipient],Balance.[BankAccountPerson]
+HAVING SUM(Balance.[Amount]) > 0;
+
     SELECT
         CRT.[CashRequest] AS CashRequest
-        , CAST(ISNULL(sa.Amount,DocCR.[Amount]) AS MONEY) AS CashRequestAmount
-        , -(CAST(CRT.[AmountBalance] - ISNULL(sa.Amount,DocCR.[Amount]) AS MONEY)) AS AmountPaid
-        , CRT.[AmountBalance] AS AmountBalance
+        , CAST(IIF(DocCR.Operation = N'Выплата заработной платы', sacr.Amount, DocCR.[Amount]) AS MONEY)  AS CashRequestAmount
+        , CAST(IIF(DocCR.Operation = N'Выплата заработной платы', sacr.Amount, DocCR.[Amount]) AS MONEY) - IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS AmountPaid
+        , CAST(IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS MONEY) AS AmountBalance
         , CRT.OperationType
         , CRT.BankAccountPerson
         , CAST(0 AS MONEY) AS AmountRequest
         , DATEDIFF(DAY, GETDATE(), DocCR.[PayDay]) AS Delayed
-        , CRT.[AmountBalance] AS Amount
+        , CAST(IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS MONEY) AS Amount
         , CAST(0 AS BIT) AS Confirm
         , CRT.[CashRecipient] AS CashRecipient
         , DocCR.[company.id] AS company
@@ -190,10 +210,12 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       AND CBA.[deleted] = 0) AS CountOfBankAccountCashRecipient
         , null as LinkedDocument
     FROM #CashRequestBalance AS CRT
-      LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and CRT.BankAccountPerson = sa.BankAccountPerson
+      LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and (CRT.BankAccountPerson = sa.BankAccountPerson or @p5 = 1)
+      LEFT JOIN #SalaryAmountCashRequest sacr ON CRT.CashRequest = sacr.CashRequest and CRT.CashRecipient = sacr.CashRecipient and (CRT.BankAccountPerson = sacr.BankAccountPerson or @p5 = 1)
       INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and (DocCR.[CashKind] <> 'CASH' or @p5 = 1)
     ORDER BY Delayed, CashRequest, AmountBalance DESC, CashRecipient`;
 
+    if (this.Operation === 'Выплата заработной платы (наличные)') query = query.replace('LEFT JOIN #SalaryAmount', 'INNER JOIN #SalaryAmount');
     const CashRequests = await tx.manyOrNone<CashRequest>(query,
       [this.company, this.CashFlow, this.сurrency, this.getDocumentCashRequestsOperationType(), this.Operation === 'Выплата заработной платы (наличные)' ? 1 : 0]);
     // const rowAmountName = this.Operation === 'Выплата заработной платы' ? 'AmountBalance' : 'Amount';
