@@ -185,6 +185,11 @@
       id, date, document, company
         , ISNULL(JSON_VALUE(data, '$.Scenario'), '') "Scenario"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
+        , ISNULL(JSON_VALUE(data, '$.DocNumber'), '') "DocNumber"
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.DocDate'),127) "DocDate"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
