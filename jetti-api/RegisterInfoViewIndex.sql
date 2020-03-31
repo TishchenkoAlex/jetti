@@ -78,6 +78,24 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.MainSpecification]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"')) "SKU"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResourceSpecification"')) "ResourceSpecification"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.Active')) "Active"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.MainSpecification';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.MainSpecification] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.MainSpecification] ON [dbo].[Register.Info.MainSpecification](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.Settings]
     WITH SCHEMABINDING
     AS
@@ -187,7 +205,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
         , ISNULL(JSON_VALUE(data, '$.DocNumber'), '') "DocNumber"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.DocDate'),127) "DocDate"
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.DocDate'),127) "DocDate"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"

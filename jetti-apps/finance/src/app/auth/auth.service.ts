@@ -63,6 +63,10 @@ export class AuthService {
     return this.isRoleAvailable('Readonly');
   }
 
+  public isRoleAvailableOperationRulesDesigner(): boolean {
+    return this.isRoleAvailable('Operation rules designer');
+  }
+
   public isRoleAvailableCashRequestAdmin(): boolean {
     return this.isRoleAvailable('Cash request admin');
   }

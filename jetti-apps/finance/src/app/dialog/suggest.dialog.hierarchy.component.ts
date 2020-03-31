@@ -2,8 +2,8 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Subject, Subscription, merge } from 'rxjs';
+import { debounceTime, filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
@@ -52,8 +52,11 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   dataSource: ApiDataSource;
   scrollHeight = 700;
 
+  showDeleted = false;
+
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
   private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
+  private _docSubscription$: Subscription = Subscription.EMPTY;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
@@ -109,6 +112,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
     this.setFilters();
     this.setSortOrder();
+    this.showDeletedSet(false);
     this.caclPageSize();
     this.prepareDataSource();
 
@@ -124,6 +128,28 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
         this.selectedRow = rows.find(e => e.id === this.id);
       }
     });
+
+    this._docSubscription$ = merge(...[
+      this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
+        filter(doc => doc && doc.type === this.type))
+      .subscribe(doc => {
+
+        if (this.treeNodesVisible) {
+          this.selectedNode = null;
+          this.id = doc.id;
+          setTimeout(() => this.loadNodes(doc.id), 20);
+        } else {
+          const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
+          if (exist) {
+            this.dataSource.refresh(exist.id);
+            this.id = exist.id;
+          } else {
+            this.dataSource.goto(doc.id);
+            this.id = doc.id;
+          }
+        }
+      });
+
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
       .subscribe(event => this._update(event.col, event.event, event.center));
@@ -190,6 +216,17 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     });
   }
 
+  showDeletedSet(showDeleted: boolean, update = false) {
+    this.showDeleted = showDeleted;
+    if (showDeleted) delete this.filters['deleted'];
+    else this.filters['deleted'] = { matchMode: '=', value: 0 };
+    if (update) {
+      this.prepareDataSource(this.multiSortMeta);
+      if (this.treeNodesVisible) this.loadNodes(this.selectedRow ? this.selectedRow.id : null);
+      else this.dataSource.sort();
+    }
+  }
+
   private setFilters() {
     this.settings.filter
       .filter(c => !(c.right === null || c.right === undefined))
@@ -244,7 +281,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     this.dataSource.formListSettings = { filter: Filter, order };
     this.formListSettings = { filter: Filter, order };
     const treeNodesVisibleBefore = this.treeNodesVisible;
-    this.treeNodesVisible = this.hierarchy && !Filter.length;
+    this.treeNodesVisible = this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
     this.dataSource.hierarchy = this.treeNodesVisible;
     if (treeNodesVisibleBefore !== this.treeNodesVisible) {
       if (this.treeNodesVisible && this.selectedRow) { this.id = this.selectedRow.id; this.initNodes = true; }
@@ -307,6 +344,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this._docSubscription$.unsubscribe();
     this._debonceSubscription$.unsubscribe();
     this._debonce$.complete();
   }

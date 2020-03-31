@@ -28,8 +28,11 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     queryText = queryText + 'ORDER BY description';
     const folders = await tx.manyOrNone(queryText, [parent]);
     // elements
+    let deletedFilter = params.filter.find(e => e.left === 'deleted');
+    params.filter = [];
     params.filter.push(new FormListFilter('parent', '=', { id: parent, type: params.type }));
     params.filter.push(new FormListFilter('isfolder', '=', 0));
+    if (deletedFilter) params.filter.push(new FormListFilter('deleted', '=', 0));
     params.withHierarchy = false;
     let result = await List(params, tx);
 

@@ -15,13 +15,19 @@
         <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
           [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
       </div>
+      <div class="ui-toolbar-group-right">
+        <button pButton type="button" [label]="(this.showDeleted ? 'Hide ' : 'Show ') + 'deleted'"
+          class="ui-button-secondary" (click)="showDeletedSet(!this.showDeleted, true)"
+          [disabled]="(lds.busy$ | async)"></button>
+      </div>
     </p-toolbar>
 
     <div *ngIf="treeNodesVisible">
       <p-treeTable #treeTable [value]="treeNodes" selectionMode="single" dataKey="id" [(selection)]="selectedNode"
         (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)" [multiSortMeta]="multiSortMeta"
         [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
-        [scrollable]="true" [scrollHeight]="scrollHeight +'px'" class="noselect">
+        [scrollable]="true" [scrollHeight]="scrollHeight +'px'" class="noselect" [multiSortMeta]="multiSortMeta"
+        (onLazyLoad)="onLazyLoad($event)" sortMode="multiple" [lazy]="true">
 
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>

@@ -6,8 +6,9 @@
       <div class="ui-toolbar-group-left">
         <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
           pTooltip="Add" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
-        <button id="addFolder" icon="fas fa-folder-plus" class="ui-button-success" pButton type="button" (click)="add(true)"
-          pTooltip="Add folder" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
+        <button id="addFolder" icon="fas fa-folder-plus" class="ui-button-warning" pButton type="button"
+          (click)="add(true)" pTooltip="Add folder" tooltipPosition="top" showDelay="2000"
+          [disabled]="(lds.busy$ | async)"></button>
         <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" pTooltip="Open"
           tooltipPosition="top" showDelay="2000" (click)="open()" [disabled]="(lds.busy$ | async)"
           *ngIf="selectedData"></button>
@@ -24,15 +25,26 @@
           pTooltip="Delete" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
           *ngIf="selectedData"></button>
       </div>
+      <div class="ui-toolbar-group-right">
+
+        <button pButton type="button" [label]="(this.showDeleted ? 'Hide ' : 'Show ') + 'deleted'"
+          class="ui-button-secondary" (click)="showDeletedSet(!this.showDeleted, true)"
+          [disabled]="(lds.busy$ | async)"></button>
+        <button pButton type="button" label="Clear filters" class="ui-button-secondary" (click)="clearAllFilters()"
+          icon="far fa-trash-alt" [disabled]="isNoFiltered() || (lds.busy$ | async)"></button>
+        <i *ngIf="this.hierarchy" class="pi pi-bars" style="margin-left: 0.5em; margin-right: 0.5em;"></i>
+        <p-selectButton *ngIf="this.hierarchy" [options]="presentationTypes" [(ngModel)]="presentation"
+          (onChange)="onChangePresentation()"></p-selectButton>
+      </div>
     </p-toolbar>
 
     <div *ngIf="treeNodesVisible">
       <p-treeTable #treeTable [value]="(treeNodes$ | async)" selectionMode="single" dataKey="id"
         [(selection)]="selectedNode" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)"
-        [multiSortMeta]="multiSortMeta"
         [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
-        columnResizeMode="expand" [scrollable]="true" [scrollHeight]="(pageSize$ | async)*29 + 'px'" class="noselect"
-        [contextMenu]="cm" [(contextMenuSelection)]="selectedNode" (onContextMenuSelect)="onContextMenuSelect($event)" >
+        columnResizeMode="expand" [scrollable]="true" sortMode="multiple" [scrollHeight]="(pageSize$ | async)*29 + 'px'"
+        class="noselect" [contextMenu]="cm" [multiSortMeta]="multiSortMeta" (onLazyLoad)="onLazyLoad($event)"
+        [lazy]="true" [(contextMenuSelection)]="selectedNode" (onContextMenuSelect)="onContextMenuSelect($event)">
 
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
@@ -95,7 +107,8 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttContextMenuRow]="rowNode" (dblclick)="onNodeDblclick(rowNode)">
+          <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttContextMenuRow]="rowNode"
+            (dblclick)="onNodeDblclick(rowNode)">
             <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
             <td *ngFor="let column of columns" [ngStyle]="column.style">
               <span [ngSwitch]="column.type" [id]="column.field">
@@ -215,7 +228,7 @@
               <i *ngIf="!rowData.isfolder && !rowData['posted'] && !rowData['deleted']" class="far fa-square"
                 style="color: #f0ad4e"></i>
               <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
-              <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
+              <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #d1cf38"></i>
             </td>
             <td *ngFor="let column of tbl.columns" [ngStyle]="column.style" class="ui-resizable-column">
               <span [ngSwitch]="column.type" [id]="column.field">
