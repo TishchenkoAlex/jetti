@@ -45,7 +45,7 @@ export class ApiDataSource {
             break;
         }
         return this.api.getDocList(this.type, id, stream.command, this.pageSize, offset,
-          this.formListSettings.order, this.hierarchy ? [] : this.formListSettings.filter, this.hierarchy).pipe(
+          this.formListSettings.order, this.formListSettings.filter, this.hierarchy).pipe(
             tap(data => {
               this.renderedData = data.data;
               this.renderedDataList = data.data;

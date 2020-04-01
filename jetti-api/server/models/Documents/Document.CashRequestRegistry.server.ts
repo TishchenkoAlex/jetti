@@ -11,7 +11,6 @@ import { insertDocument, updateDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from '../document';
-import e = require('express');
 
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
@@ -51,6 +50,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
         return this;
       case 'UnloadToText':
         await this.UnloadToText(tx);
+        return this;
+      case 'ExportSalaryToCSV':
+        await this.ExportSalaryToCSV(tx);
         return this;
       default:
         return this;
@@ -128,6 +130,37 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
     const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
     this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
+    await updateDocument(this, tx);
+    await lib.doc.postById(this.id, tx);
+  }
+
+  private async ExportSalaryToCSV(tx: MSSQL) {
+    if (this.Status !== 'APPROVED') throw new Error(`Possible only in the APPROVED document!`);
+    if (this.Operation !== 'Выплата заработной платы (наличные)') throw new Error(`Доступно только для операции "Выплата заработной платы (наличные)"`);
+    const query = `
+          SELECT
+      per.description Person,
+      ISNULL(jt.description,'') JobTitle,
+      Amount
+      FROM Documents d
+          CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
+          WITH (CashRecipient VARCHAR(40),
+              [Amount] MONEY
+          ) AS CashRequests
+      LEFT JOIN [dbo].[Catalog.Person.v] per on per.id = CashRecipient
+      LEFT JOIN [dbo].[Catalog.JobTitle.v] jt on jt.id = per.JobTitle
+      where d.id = @p1
+      AND Amount > 0
+      `;
+    const salaryData = await tx.manyOrNone<{ Person, JobTitle, Amount }>(query, [this.id]);
+
+    let result = '№;Сотрудник;Должность;Сумма;Подпись;Примечание';
+    for (let index = 0; index < salaryData.length; index++) {
+      const row = salaryData[index];
+      result += `\n${index + 1};${row.Person};${row.JobTitle};${row.Amount};;`;
+    }
+
+    this.info = result;
     await updateDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }

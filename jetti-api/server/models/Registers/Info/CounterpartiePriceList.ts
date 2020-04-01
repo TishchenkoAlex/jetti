@@ -40,7 +40,13 @@ export class RegisterInfoCounterpartiePriceList extends RegisterInfo {
   Product: Ref = null;
 
   @Props({ type: 'number', resource: true })
+  Qty = 0;
+
+  @Props({ type: 'number', resource: true })
   Price = 0;
+
+  @Props({ type: 'number', resource: true })
+  Cost = 0;
 
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;

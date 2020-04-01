@@ -14,7 +14,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   copyTo: [
     { type: 'Document.Operation', icon: '', label: 'Operation', order: 1 }
   ],
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableOperationRulesDesigner()}; return {onOpen};}`
 })
 export class CatalogOperation extends DocumentBase {
 

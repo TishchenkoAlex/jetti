@@ -24,6 +24,7 @@ import { createDocument } from '../../../../../../jetti-api/server/models/docume
 import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { TreeNode } from 'primeng/api';
+// import { Hotkeys } from 'src/app/services/hotkeys.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,7 +40,8 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   locale = calendarLocale; dateFormat = dateFormat;
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
-    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, private auth: AuthService) { }
+    public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService,
+    private auth: AuthService) { }
 
   private _pageSizeSubscription$: Subscription = Subscription.EMPTY;
   private _pageSize$ = new Subject<number>();
@@ -65,6 +67,10 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
       (this.selection && this.selection.length ? this.selection[0] : null);
   }
 
+  postedCol: ColumnDef = ({
+    field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
+    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
+  });
   group = '';
   columns: ColumnDef[] = [];
   selection: any[] = [];
@@ -73,11 +79,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   contexCommands: { list: MenuItem[], tree: MenuItem[] } = { list: [], tree: [] };
   filters: { [s: string]: FilterMetadata } = {};
   multiSortMeta: SortMeta[] = [];
-
-  postedCol: ColumnDef = ({
-    field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
-    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
-  });
+  showDeleted = false;
   dataSource: ApiDataSource;
   readonly = false;
 
@@ -87,6 +89,13 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   treeNodesVisible = false;
   initNodes = true;
   selectedNode: TreeNode = null;
+  swichedPresentation = false;
+  presentationTypes = [
+    { label: 'Tree', value: 'Tree' },
+    { label: 'List', value: 'List' },
+    { label: 'Auto', value: 'Auto' }
+  ];
+  presentation = 'Auto';
 
   ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
@@ -121,6 +130,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
     this.setSortOrder();
     this.setFilters();
+    this.showDeletedSet(false);
     this.prepareDataSource();
     this.setContextMenu(this.columns);
 
@@ -184,6 +194,16 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
     this._pageSize$.next(this.getPageSize());
     this.readonly = this.auth.isRoleAvailableReadonly();
+
+    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe(() => { this.add(); });
+    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe(() => { this.open(); });
+    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe(() => { this.copy(); });
+    // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe(() => { this.delete(); });
+  }
+
+  isNoFiltered() {
+    const f = this.dataSource.formListSettings.filter.length;
+    return !f || (!this.showDeleted && f === 1);
   }
 
   private getPageSize() {
@@ -201,6 +221,49 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.settings.filter
       .filter(c => !(c.right == null || c.right === undefined))
       .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
+  }
+
+  showDeletedSet(showDeleted: boolean, update = false) {
+    this.showDeleted = showDeleted;
+    if (showDeleted) delete this.filters['deleted'];
+    else this.filters['deleted'] = { matchMode: '=', value: 0 };
+    if (update) {
+      this.prepareDataSource(this.multiSortMeta);
+      this._pageSize$.next(this.getPageSize());
+    }
+  }
+
+  onChangePresentation() {
+    const treeNodesVisibleBefore = this.treeNodesVisible;
+    switch (this.presentation) {
+      case 'List':
+        this.treeNodesVisible = false;
+        break;
+      case 'Tree':
+        this.treeNodesVisible = true;
+        this.filters = {};
+        this.showDeletedSet(this.showDeleted);
+        break;
+      case 'Auto':
+        const dsFilter = this.dataSource.formListSettings.filter;
+        this.treeNodesVisible = this.hierarchy && (!!dsFilter.length || (dsFilter.length === 1 && !this.showDeleted));
+        break;
+      default:
+        break;
+    }
+    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
+      this.onTreeNodesVisibleChange();
+      this.prepareDataSource(this.multiSortMeta);
+      this._pageSize$.next(this.getPageSize());
+    }
+  }
+
+  onTreeNodesVisibleChange() {
+    this.dataSource.hierarchy = this.treeNodesVisible;
+    if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
+    // tslint:disable-next-line: one-line
+    else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
+    else this.id = null;
   }
 
   private setSortOrder() {
@@ -225,6 +288,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
       if (typeof event !== 'boolean') event = null;
     }
+
     this._debonce$.next({ col, event, center });
   }
 
@@ -287,18 +351,14 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     const order = multiSortMeta
       .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
     const Filter = Object.keys(this.filters)
-      .filter(el => this.filters[el].value)
+      .filter(el => this.filters[el].value || el === 'deleted')
       .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
     this.dataSource.formListSettings = { filter: Filter, order };
     const treeNodesVisibleBefore = this.treeNodesVisible;
-    this.treeNodesVisible = this.hierarchy && !Filter.length;
+    // tslint:disable-next-line: max-line-length
+    this.treeNodesVisible = this.presentation !== 'List' && this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
     this.dataSource.hierarchy = this.treeNodesVisible;
-    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
-      if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
-      // tslint:disable-next-line: one-line
-      else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
-      else this.id = null;
-    }
+    if (treeNodesVisibleBefore !== this.treeNodesVisible) this.onTreeNodesVisibleChange();
   }
 
   private setContextMenu(columns: ColumnDef[]) {
@@ -315,7 +375,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
     const clearAllFilters = {
       label: 'Clear all filters', icon: 'far fa-trash-alt',
-      command: (event) => { this.filters = {}; this.prepareDataSource(); this.goto(this.id); }
+      command: (event) => this.clearAllFilters()
     };
 
     this.contexCommands.tree = [
@@ -327,6 +387,12 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
       })];
 
     this.contexCommands.list = [selectAllCommand, ...this.contexCommands.tree];
+  }
+
+  clearAllFilters() {
+    this.filters = {};
+    if (!this.showDeleted) this.showDeletedSet(false);
+    this.prepareDataSource(); this.goto(this.id);
   }
 
   private buildFiltersParamQuery() {
@@ -421,7 +487,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   first() {
-    this.selection = [];
+    // this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) this.id = d[0].id;
     });
@@ -429,7 +495,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   private listen() {
-    this.selection = [];
+    // this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) this.id = d[d.length - 1].id;
     });
@@ -440,7 +506,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   next() { this.listen(); this.dataSource.next(); }
 
   private listenRefresh(id: string) {
-    this.selection = [];
+    // this.selection = [];
     this.dataSource.result$.pipe(take(1)).subscribe(d => {
       if (d.length > 0 && !this.treeNodesVisible) {
         const row = d.find(el => el.id === id);

@@ -22,6 +22,17 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
           this.ds.download(savedValue, fileName);
         }
       }`
+    },
+    {
+      method: 'ExportSalaryToCSV', icon: 'pi pi-plus', label: 'Выгрузить в CSV', order: 4, clientModule:
+        `return { afterExecution: () => {
+          const savedValue = this.form.get('info').value;
+          if (!savedValue) return;
+          const vals = this.form;
+          fileName = 'salary_' + vals.get('code').value + '_' + vals.get('date').value.toLocaleDateString()+ '_' + vals.get('company').value.value + '.csv';
+          this.ds.download(savedValue, fileName);
+        }
+      }`
     }
   ],
 })
