@@ -45,6 +45,7 @@ export type CatalogTypes =
   'Catalog.ProductCategory' |
   'Catalog.ProductKind' |
   'Catalog.ObjectsExploitation' |
+  'Catalog.OrderSource' |
   'Catalog.GroupObjectsExploitation' |
   'Catalog.Scenario' |
   'Catalog.BudgetItem' |

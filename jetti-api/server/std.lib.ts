@@ -1,8 +1,7 @@
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
-import * as moment from 'moment';
-import { RefValue } from './models/common-types';
+import { RefValue, Type } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
@@ -12,7 +11,7 @@ import { RegisterAccumulationTypes } from './models/Registers/Accumulation/facto
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -41,6 +40,9 @@ export interface JTL {
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
+    createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
+    createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
+    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
@@ -79,6 +81,9 @@ export const lib: JTL = {
     byCode: byCode,
     byId: byId,
     byIdT: byIdT,
+    createDoc,
+    createDocServer,
+    saveDoc,
     historyById: historyById,
     Ancestors,
     Descendants,
@@ -153,6 +158,25 @@ async function historyById(historyId: string, tx: MSSQL): Promise<IFlatDocument 
 async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T | null> {
   const result = await byId(id, tx);
   if (result) return createDocument<T>(result.type, result); else return null;
+}
+
+async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): Promise<T> {
+  return await createDocument<T>(type, document);
+}
+
+async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL): Promise<T> {
+  return await createDocumentServer<T>(type, document, tx);
+}
+
+async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
+  const savedVersion = await byId(servDoc.id, tx);
+  const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
+  const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
+  if (isPostedBefore) await unpostDocument(servDoc, tx);
+  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx);
+  else servDoc = await updateDocument(servDoc, tx);
+  if (isPostedAfter) await postDocument(servDoc, tx);
+  return servDoc;
 }
 
 async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {

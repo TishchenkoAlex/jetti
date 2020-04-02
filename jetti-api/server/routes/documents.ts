@@ -221,8 +221,8 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
       try {
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        await unpostDocument(serverDoc, tx);
         if (serverDoc.timestamp) {
-          await unpostDocument(serverDoc, tx);
           await updateDocument(serverDoc, tx);
         } else {
           await insertDocument(serverDoc, tx);
@@ -245,8 +245,8 @@ router.post('/post', async (req: Request, res: Response, next: NextFunction) => 
       await lib.util.adminMode(true, tx);
       try {
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        await unpostDocument(serverDoc, tx);
         if (serverDoc.timestamp) {
-          await unpostDocument(serverDoc, tx);
           await updateDocument(serverDoc, tx);
         } else {
           await insertDocument(serverDoc, tx);
@@ -536,8 +536,8 @@ router.post('/setApprovingStatus/:id/:Status', async (req: Request, res: Respons
         if (!sourse.timestamp) throw new Error('source document not saved');
         sourse['Status'] = req.params.Status;
         const serverDoc = await createDocumentServer(sourse.type as DocTypes, sourse, tx);
+        await unpostDocument(serverDoc, tx);
         if (serverDoc.timestamp) {
-          await unpostDocument(serverDoc, tx);
           await updateDocument(serverDoc, tx);
         } else {
           await insertDocument(serverDoc, tx);
