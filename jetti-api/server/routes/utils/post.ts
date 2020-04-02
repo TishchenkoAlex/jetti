@@ -28,8 +28,8 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   if (serverDoc.onUnPost) await serverDoc.onUnPost(tx);
 
   await tx.none(`
-    DELETE FROM "Register.Account" WHERE document = @p1;
     DELETE FROM "Register.Info" WHERE document = @p1;
+    DELETE FROM "Register.Account" WHERE document = @p1;
     DELETE FROM "Accumulation" WHERE document = @p1;
   `, [serverDoc.id, serverDoc.date]);
 }

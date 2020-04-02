@@ -76,6 +76,7 @@ import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
 import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
 import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
+import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -137,7 +138,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Counterpartie', Class: CatalogCounterpartie },
   { type: 'Catalog.Counterpartie.BankAccount', Class: CatalogCounterpartieBankAccount },
   { type: 'Catalog.Contract', Class: CatalogContract },
-  { type: 'Catalog.Contract.Intercompany', Class: CatalogContractIntercompany},
+  { type: 'Catalog.Contract.Intercompany', Class: CatalogContractIntercompany },
   { type: 'Catalog.BusinessDirection', Class: CatalogBusinessDirection },
   { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
@@ -159,6 +160,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation', Class: CatalogOperation },
   { type: 'Catalog.Operation.Group', Class: CatalogOperationGroup },
   { type: 'Catalog.Operation.Type', Class: CatalogOperationType },
+  { type: 'Catalog.OrderSource', Class: CatalogOrderSource },
   { type: 'Catalog.Unit', Class: CatalogUnit },
   { type: 'Catalog.User', Class: CatalogUser },
   { type: 'Catalog.UsersGroup', Class: CatalogUsersGroup },
