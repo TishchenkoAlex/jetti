@@ -40,7 +40,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
     public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService, public auth: AuthService) { }
 
-  private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
   private _docSubscription$: Subscription = Subscription.EMPTY;
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
@@ -324,7 +323,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this._routeSubscruption$.unsubscribe();
     this._debonceSubscription$.unsubscribe();
     this._debonce$.complete();
-    this._hotKeySubscriptions$.forEach(el => el.unsubscribe());
     // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
   }
 

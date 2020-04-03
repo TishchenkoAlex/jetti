@@ -7,9 +7,14 @@ import { FormListFilter, FormListOrder, FormListSettings } from './user.settings
 export interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }
 
 export interface DocListRequestBody {
-  id: string; type: AllDocTypes; command: string; count: number; offset: number; withHierarchy: boolean;
+  id: string; type: AllDocTypes; command: string; count: number; offset: number;
   filter: FormListFilter[];
   order: FormListOrder[];
+  listOptions?: DocListOptions;
+}
+export interface DocListOptions{
+  withHierarchy: boolean;
+  hierarchyDirectionUp: boolean;
 }
 
 export interface Continuation { first: { id: Ref, type: string } | null; last: { id: Ref, type: string } | null; }

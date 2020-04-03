@@ -35,6 +35,8 @@
         <i *ngIf="this.hierarchy" class="pi pi-bars" style="margin-left: 0.5em; margin-right: 0.5em;"></i>
         <p-selectButton *ngIf="this.hierarchy" [options]="presentationTypes" [(ngModel)]="presentation"
           (onChange)="onChangePresentation()"></p-selectButton>
+        <!-- <p-slideMenu #addMenu [model]="addMenuItems" [popup]="true" effectDuration="200" easing="ease-in" [viewportHeight]="150"></p-slideMenu>
+        <button #addMenuBtn type="button" pButton icon="pi pi-list" label="Menu" (click)="addMenu.toggle($event)"></button> -->
       </div>
     </p-toolbar>
 

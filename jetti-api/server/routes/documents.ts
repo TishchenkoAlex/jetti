@@ -376,6 +376,13 @@ router.get('/descendants/:id/', async (req: Request, res: Response, next: NextFu
   } catch (err) { next(err); }
 });
 
+router.get('/haveDescendants/:id/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    res.json(await lib.doc.haveDescendants(req.params.id, sdb));
+  } catch (err) { next(err); }
+});
+
 // Get tree for document list
 router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {

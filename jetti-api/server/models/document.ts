@@ -27,6 +27,7 @@ export interface PropOptions {
   unique?: boolean;
   dimension?: boolean;
   resource?: boolean;
+  isAdditional?: boolean;
   storageType?: StorageType;
 }
 

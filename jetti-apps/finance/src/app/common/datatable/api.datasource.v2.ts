@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, filter, map, share, switchMap, tap } from 'rxjs/operators';
-import { Continuation, DocListResponse } from '../../../../../../jetti-api/server/models/common-types';
+import { Continuation, DocListResponse, DocListOptions } from '../../../../../../jetti-api/server/models/common-types';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
@@ -20,9 +20,8 @@ export class ApiDataSource {
 
   result$: Observable<DocumentBase[]>;
   renderedData: DocumentBase[] = [];
-  renderedDataList: DocumentBase[] = [];
-  hierarchy = false;
-
+  renderedDataList = [];
+  listOptions: DocListOptions = { withHierarchy: false, hierarchyDirectionUp: false };
   continuation: Continuation = { first: null, last: null };
   private EMPTY: DocListResponse = { data: [], continuation: { first: this.continuation.first, last: this.continuation.first } };
 
@@ -45,7 +44,8 @@ export class ApiDataSource {
             break;
         }
         return this.api.getDocList(this.type, id, stream.command, this.pageSize, offset,
-          this.formListSettings.order, this.formListSettings.filter, this.hierarchy).pipe(
+          this.formListSettings.order, this.formListSettings.filter,
+          this.listOptions).pipe(
             tap(data => {
               this.renderedData = data.data;
               this.renderedDataList = data.data;

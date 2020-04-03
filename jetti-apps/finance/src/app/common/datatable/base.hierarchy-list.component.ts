@@ -21,10 +21,9 @@ import { IViewModel } from '../../../../../../jetti-api/server/models/common-typ
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
-import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { TreeNode } from 'primeng/api';
-// import { Hotkeys } from 'src/app/services/hotkeys.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +44,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   private _pageSizeSubscription$: Subscription = Subscription.EMPTY;
   private _pageSize$ = new Subject<number>();
-  private _hotKeySubscriptions$: [Subscription] = [Subscription.EMPTY];
   private _docSubscription$: Subscription = Subscription.EMPTY;
   private _routeSubscruption$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
@@ -96,6 +94,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     { label: 'Auto', value: 'Auto' }
   ];
   presentation = 'Auto';
+  addMenuItems: MenuItem[];
 
   ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
@@ -126,8 +125,9 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
     this.dataSource.id = this.id;
-    this.dataSource.hierarchy = this.treeNodesVisible;
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
 
+    this.addMenuItemsFill();
     this.setSortOrder();
     this.setFilters();
     this.showDeletedSet(false);
@@ -161,6 +161,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
         this.findSelectedNode(this.treeNodes, selectedNodeId);
+        if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
         return this.treeNodes;
       }
     }));
@@ -195,10 +196,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this._pageSize$.next(this.getPageSize());
     this.readonly = this.auth.isRoleAvailableReadonly();
 
-    // this.hotkeys.addShortcut({ keys: 'Insert', description: 'Add' }).subscribe(() => { this.add(); });
-    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe(() => { this.open(); });
-    // this.hotkeys.addShortcut({ keys: 'F9', description: 'Copy' }).subscribe(() => { this.copy(); });
-    // this.hotkeys.addShortcut({ keys: 'Delete', description: 'Delete' }).subscribe(() => { this.delete(); });
   }
 
   isNoFiltered() {
@@ -259,7 +256,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   onTreeNodesVisibleChange() {
-    this.dataSource.hierarchy = this.treeNodesVisible;
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
     if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
     // tslint:disable-next-line: one-line
     else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
@@ -300,11 +297,13 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   loadNodes(id = null) {
+    this.dataSource.listOptions.hierarchyDirectionUp = false;
+    if (id && id === this.selectedNode.key) {
+      this.dataSource.listOptions.hierarchyDirectionUp = this.selectedNode.expanded;
+    }
     if (!id) {
       const sel = this.selectedNode;
       if (this.initNodes && this.id) {
-        // const ob = await this.ds.api.byId(this.id);
-        // if (ob.parent)
         id = this.id;
       } else if (sel && sel.parent) id = !sel.expanded ? sel.key : sel.parent.key;
       else if (sel) {
@@ -343,7 +342,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   onNodeExpand(node: { node: TreeNode }) {
     const Node = node.node;
     this.selectedNode = Node;
-    this.loadNodes(Node.expanded ? Node.key : Node.parent ? Node.parent.key : null);
+    this.loadNodes(Node.key);
   }
 
   private prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -357,7 +356,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     const treeNodesVisibleBefore = this.treeNodesVisible;
     // tslint:disable-next-line: max-line-length
     this.treeNodesVisible = this.presentation !== 'List' && this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
-    this.dataSource.hierarchy = this.treeNodesVisible;
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
     if (treeNodesVisibleBefore !== this.treeNodesVisible) this.onTreeNodesVisibleChange();
   }
 
@@ -460,6 +459,21 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.dataSource.refresh(this.selection[0].id);
   }
 
+  addMenuItemsFill() {
+    this.addMenuItems = [
+      {
+        label: 'View', items: [
+          { label: 'Tree' },
+          { label: 'List' },
+          { label: 'Auto' }
+        ]
+      },
+      { separator: true },
+      { label: 'Clear filters' },
+      { label: 'Deleted' },
+    ];
+  }
+
   parentChange(event) {
     this.id = null;
     this.filters['parent'] = {
@@ -532,7 +546,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this._pageSize$.complete();
     this._pageSizeSubscription$.unsubscribe();
     this._resizeSubscription$.unsubscribe();
-    this._hotKeySubscriptions$.forEach(el => el.unsubscribe());
     // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
   }
 
