@@ -14,6 +14,7 @@ export interface Ix100Lib {
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
   };
   util: {
     salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
@@ -32,7 +33,8 @@ export const x100: Ix100Lib = {
   doc: {
   },
   info: {
-    companyByDepartment
+    companyByDepartment,
+    company2ByDepartment
   },
   util: {
     salaryCompanyByCompany,
@@ -79,6 +81,19 @@ async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL
     ORDER BY date DESC`;
   const res = await tx.oneOrNone<{ company: string }>(queryText, [date, department]);
   if (res) result = res.company;
+  return result;
+}
+
+async function company2ByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  let result: Ref | null = null;
+  const queryText = `
+    SELECT TOP 1 company2 FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
+    WHERE (1=1)
+      AND date <= @p1
+      AND Department = @p2
+    ORDER BY date DESC`;
+  const res = await tx.oneOrNone<{ company2: string }>(queryText, [date, department]);
+  if (res) result = res.company2;
   return result;
 }
 
