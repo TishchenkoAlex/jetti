@@ -29,6 +29,37 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
     
+    CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, PaymantKind, Customer, BankAccount, CashRegister, AcquiringTerminal, currency, Department
+      , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [PaymantKind] NVARCHAR(250) N'$.PaymantKind'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
+        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [CashShift] MONEY N'$.CashShift'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.OrderPayment';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.OrderPayment] TO JETTI;
+    GO
+    
     CREATE OR ALTER VIEW [Register.Accumulation.AP]
     AS
       SELECT

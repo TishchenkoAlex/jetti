@@ -186,6 +186,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) "company2"
         , ISNULL(JSON_VALUE(data, '$.TypeFranchise'), '') "TypeFranchise"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
@@ -209,7 +210,9 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Qty')) "Qty"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Cost')) "Cost"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CounterpartiePriceList';
     GO
