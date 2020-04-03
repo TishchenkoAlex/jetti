@@ -13,6 +13,9 @@ export class DepartmentCompanyHistory extends RegisterInfo {
   @Props({ type: 'Catalog.Company', required: true, unique: true, order: 2 })
   company: Ref = null;
 
+  @Props({ type: 'Catalog.Company', unique: true, order: 3 })
+  company2: Ref = null;
+
   @Props({ type: 'enum', value: ['Own organization', 'Classic franchise', 'Management franchise' ], order: 3 })
   TypeFranchise = 'Own organization';
 
