@@ -28,6 +28,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import { TreeTableModule } from 'primeng/treetable';
+import { SlideMenuModule } from 'primeng/slidemenu';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { TableModule } from './common/datatable/table';
 
@@ -68,7 +69,7 @@ import { TableModule } from './common/datatable/table';
     // PanelMenuModule,
     // TabMenuModule,
     // MegaMenuModule,
-    // SlideMenuModule,
+    SlideMenuModule,
     // BreadcrumbModule,
     // TieredMenuModule,
     // StepsModule,

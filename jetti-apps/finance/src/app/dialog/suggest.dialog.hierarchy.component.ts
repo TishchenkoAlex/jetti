@@ -124,6 +124,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
         this.findSelectedNode(this.treeNodes, selectedNodeId);
+        if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
       } else {
         this.selectedRow = rows.find(e => e.id === this.id);
       }
@@ -183,6 +184,10 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   }
 
   loadNodes(id = null) {
+    this.dataSource.listOptions.hierarchyDirectionUp = false;
+    if (id && id === this.selectedNode.key) {
+      this.dataSource.listOptions.hierarchyDirectionUp = this.selectedNode.expanded;
+    }
     if (!id) {
       const sel = this.selectedNode;
       if (this.initNodes && this.id) {
@@ -269,7 +274,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   onNodeExpand(node: { node: TreeNode }) {
     const Node = node.node;
     this.selectedNode = Node;
-    this.loadNodes(Node.expanded ? Node.key : Node.parent ? Node.parent.key : null);
+    this.loadNodes(Node.key);
   }
 
   prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
@@ -282,7 +287,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     this.formListSettings = { filter: Filter, order };
     const treeNodesVisibleBefore = this.treeNodesVisible;
     this.treeNodesVisible = this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
-    this.dataSource.hierarchy = this.treeNodesVisible;
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
     if (treeNodesVisibleBefore !== this.treeNodesVisible) {
       if (this.treeNodesVisible && this.selectedRow) { this.id = this.selectedRow.id; this.initNodes = true; }
       // tslint:disable-next-line: one-line

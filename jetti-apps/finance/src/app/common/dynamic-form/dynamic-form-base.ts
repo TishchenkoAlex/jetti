@@ -23,6 +23,7 @@ export interface IFormControlInfo {
   onChange?: ((doc: any, value: any) => Promise<any>) | string;
   onChangeServer?: boolean;
   value: any;
+  isAdditional: boolean;
   storageType: StorageType;
   controlType: ControlTypes;
   headerStyle: { [key: string]: any };
@@ -46,6 +47,7 @@ export class FormControlInfo {
   onChange?: ((doc: any, value: any) => Promise<any>) | string;
   onChangeServer?: boolean;
   value: any;
+  isAdditional: boolean;
   storageType: StorageType;
   controlType: ControlTypes;
   headerStyle: { [key: string]: any };
@@ -67,6 +69,7 @@ export class FormControlInfo {
     this.showLabel = true;
     this.storageType = options.storageType;
     this.value = options.value;
+    this.isAdditional = options.isAdditional;
     this.valuesOptions = [];
     this.onChange = options.onChange;
     this.onChangeServer = options.onChangeServer;

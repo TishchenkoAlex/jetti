@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, take } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
-import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem } from '../../../../../jetti-api/server/models/common-types';
+import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem, DocListOptions } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/models/document';
 import { AllDocTypes, DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
@@ -37,6 +37,11 @@ export class ApiService {
     return (this.http.get<{ id: Ref, parent: Ref }[]>(query)).toPromise();
   }
 
+  haveDescendants(id: string): Promise<boolean> {
+    const query = `${environment.api}haveDescendants/${id}`;
+    return (this.http.get<boolean>(query)).toPromise();
+  }
+
   isCountryByCompany(companyId: string, countryCode: string): Promise<boolean> {
     return this.getObjectPropertyById(companyId, 'Country.code').then(code => {
       return code && code === countryCode;
@@ -55,9 +60,10 @@ export class ApiService {
 
   getDocList(type: AllDocTypes, id: string, command: string,
     count = 10, offset = 0, order: FormListOrder[] = [],
-    filter: FormListFilter[] = [], withHierarchy = false): Observable<DocListResponse> {
+    filter: FormListFilter[] = [],
+    listOptions: DocListOptions = { withHierarchy: false, hierarchyDirectionUp: false }): Observable<DocListResponse> {
     const query = `${environment.api}list`;
-    const body: DocListRequestBody = { id, type, command, count, offset, order, filter, withHierarchy };
+    const body: DocListRequestBody = { id, type, command, count, offset, order, filter, listOptions };
     return this.http.post<DocListResponse>(query, body);
   }
 

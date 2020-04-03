@@ -10,11 +10,11 @@ import { lib } from '../../std.lib';
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
 
-  if (params.withHierarchy) {
+  if (params.listOptions && params.listOptions?.withHierarchy) {
     let parent: any = null;
     if (params.id) {
       const ob = await lib.doc.byId(params.id, tx);
-      parent = ob?.isfolder ? params.id : ob?.parent;
+      parent = ob?.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob?.parent;
     }
     // folders
     const queryList = configSchema.get(params.type)?.QueryList;
@@ -33,7 +33,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     params.filter.push(new FormListFilter('parent', '=', { id: parent, type: params.type }));
     params.filter.push(new FormListFilter('isfolder', '=', 0));
     if (deletedFilter) params.filter.push(new FormListFilter('deleted', '=', 0));
-    params.withHierarchy = false;
+    params.listOptions.withHierarchy = false;
     let result = await List(params, tx);
 
     result.data = folders.concat(result.data);
@@ -50,7 +50,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   let query = '';
   let tempTabe = '';
 
-  if (!params.withHierarchy && params.id) row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`));
+  if (params.id) row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`));
   if (!row && params.command !== 'last') params.command = 'first';
   const isFirstLast = params.command === 'last' || params.command === 'first';
   if (row && isFirstLast) row = null;
@@ -175,10 +175,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     ${orderbyAfter}`;
   } else {
     const filter = filterBuilder(params.filter);
-    if (params.withHierarchy) {
-      QueryList = addHierarchyToQuery(QueryList, params.type, params.id, filter, orderbyBefore);
-      query = `${QueryList}`;
-    } else if (params.command === 'last')
+    if (params.command === 'last')
       query = `${tempTabe}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyBefore}) d ${orderbyAfter}`;
     else
       query = `${tempTabe}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyAfter}`;
@@ -187,60 +184,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   const data = await tx.manyOrNone<any>(query);
 
   return listPostProcess(data, params);
-}
-
-function getHierarchyQuery(type: AllDocTypes, id: string): { queryText: string, orderText: string } {
-
-  if (!id) { // top level
-    return {
-      queryText: `
-    DROP TABLE IF EXISTS #Hierarchy;
-    SELECT doc.id, doc.parent hparent, 0 hlevel INTO #Hierarchy
-    FROM Documents doc
-    WHERE doc.parent is NULL and type = '@p1';
-    SELECT
-        h.hparent, h.hlevel, d.description value, `.replace('@p1', type),
-      orderText: 'order by isfolder desc'
-    };
-
-  } else {
-    return {
-      queryText: `
-    DROP TABLE IF EXISTS #Tree;
-    DROP TABLE IF EXISTS #Hierarchy;
-
-    SELECT id, [parent.id], description, LevelUp
-    INTO #Tree
-    FROM dbo.[Ancestors]('@p1');
-
-    SELECT res.id, res.parent hparent, MIN(res.LevelUp) hlevel  INTO #Hierarchy
-    from (
-      SELECT doc.id id, doc.parent parent, doc.isfolder, doc.description, tree.LevelUp
-        FROM #Tree tree INNER JOIN Documents doc ON tree.[parent.id] = doc.parent and tree.id = '@p1'
-      UNION
-      SELECT tree.id id, tree.[parent.id] parent, 1, tree.description, tree.LevelUp
-        FROM #Tree tree
-        WHERE tree.id <> '@p1'
-      UNION
-      SELECT doc.id, doc.parent, doc.isfolder, doc.description, 9 LevelUp
-        FROM Documents doc
-        WHERE id = '@p1'
-      UNION
-      SELECT doc.id, doc.parent, doc.isfolder, doc.description, 10 LevelUp
-        FROM Documents doc
-        WHERE doc.parent = '@p1') res LEFT JOIN Documents doc on doc.id = res.id
-    GROUP BY res.id, res.parent;
-    SELECT
-    h.hparent, h.hlevel, d.description value, `.replace(/@p1/g, id),
-      orderText: 'order by hlevel, isfolder desc'
-    };
-  }
-}
-
-function addHierarchyToQuery(queryText: string, type: AllDocTypes, id: string, filter?: string, order?: string): string {
-  const HierarchyQuery = getHierarchyQuery(type, id);
-  let result = queryText.replace('SELECT', `${HierarchyQuery.queryText}`);
-  return `${result}\nINNER JOIN #Hierarchy h ON d.id = h.id\n${HierarchyQuery.orderText}`;
 }
 
 function listPostProcess(data: any[], params: DocListRequestBody) {

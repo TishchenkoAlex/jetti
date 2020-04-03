@@ -37,6 +37,7 @@ export interface JTL {
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
     Descendants: (id: Ref, tx: MSSQL) => Promise<{ id: Ref, parent: Ref }[] | null>;
+    haveDescendants: (id: Ref, tx: MSSQL) => Promise<boolean>;
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
@@ -87,6 +88,7 @@ export const lib: JTL = {
     historyById: historyById,
     Ancestors,
     Descendants,
+    haveDescendants,
     formControlRef,
     postById,
     unPostById,
@@ -196,6 +198,12 @@ async function Descendants(id: string, tx: MSSQL): Promise<{ id: Ref, parent: Re
   if (!id) return null;
   return await tx.manyOrNone<{ id: Ref, parent: Ref }>(`SELECT id, parent FROM dbo.[Descendants](@p1,'')`, [id]);
 
+}
+
+async function haveDescendants(id: string, tx: MSSQL): Promise<boolean> {
+  if (!id) return false;
+  const query = 'select top 1 id from Documents where parent = @p1';
+  return !!(await tx.oneOrNone(query, [id]));
 }
 
 async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string | null> {

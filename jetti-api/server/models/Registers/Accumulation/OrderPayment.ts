@@ -25,6 +25,9 @@ export class RegisterAccumulationOrderPayment extends RegisterAccumulation {
   @Props({ type: 'Catalog.Currency', dimension: true })
   currency: Ref = null;
 
+  @Props({ type: 'Catalog.Department', dimension: true })
+  Department: Ref = null;
+
   @Props({ type: 'number' })
   CashShift = 0;
 

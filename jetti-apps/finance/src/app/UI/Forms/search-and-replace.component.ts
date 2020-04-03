@@ -18,7 +18,7 @@ import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.
 export class SearchAndReplaceComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
   onlyViewMode = false;
-  header = 'Search and replace'
+  header = 'Search and replace';
 
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
