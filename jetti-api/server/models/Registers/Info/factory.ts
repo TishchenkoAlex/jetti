@@ -1,3 +1,4 @@
+import { RegisterInfoDepartmentStatus } from './DepartmentStatus';
 import { RegisterInfoHoliday } from './Holiday';
 import { RegisterInfoCompanyResponsiblePersons } from './CompanyResponsiblePersons';
 import { RegisterInfoRLSPeriod } from './RLS.Period';
@@ -12,6 +13,7 @@ import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
 import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
 import { RegisterInfoMainSpecification } from './MainSpecification';
+import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
@@ -25,18 +27,22 @@ export type RegisterInfoTypes =
     'Register.Info.RLS.Period' |
     'Register.Info.BudgetItemRule' |
     'Register.Info.DepartmentCompanyHistory' |
+    'Register.Info.DepartmentStatus' |
     'Register.Info.CompanyResponsiblePersons' |
+    'Register.Info.IntercompanyHistory' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
     RegisterInfoHoliday |
     RegisterInfoPriceList |
+    RegisterInfoDepartmentStatus |
     RegisterInfoSettlementsReconciliation |
     RegisterInfoCompanyResponsiblePersons |
     RegisterInfoExchangeRates |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
     RegisterInfoMainSpecification |
+    RegisterInfoIntercompanyHistory |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -55,7 +61,9 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.RLS.Period', Class: RegisterInfoRLSPeriod },
     { type: 'Register.Info.RLS', Class: RegisterInfoRLS },
     { type: 'Register.Info.BudgetItemRule', Class: RegisterInfoBudgetItemRule },
+    { type: 'Register.Info.IntercompanyHistory', Class: RegisterInfoIntercompanyHistory },
     { type: 'Register.Info.DepartmentCompanyHistory', Class: DepartmentCompanyHistory },
+    { type: 'Register.Info.DepartmentStatus', Class: RegisterInfoDepartmentStatus },
     { type: 'Register.Info.CounterpartiePriceList', Class: RegisterInfoCounterpartiePriceList },
     { type: 'Register.Info.CompanyResponsiblePersons', Class: RegisterInfoCompanyResponsiblePersons },
 ];

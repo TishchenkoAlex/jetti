@@ -47,9 +47,4 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'string', required: false })
   Address = '';
 
-  @Props({ type: 'date', label: 'Quarantine begin date', isAdditional: true })
-  QuarantineBeginDate = null;
-
-  @Props({ type: 'date', label: 'Quarantine end date', isAdditional: true })
-  QuarantineEndDate = null;
 }

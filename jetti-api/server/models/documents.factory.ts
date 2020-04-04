@@ -1,3 +1,4 @@
+import { CatalogDepartmentStatusReason } from './Catalogs/Catalog.Department.StatusReason';
 import { CatalogDepartmentKind } from './Catalogs/Catalog.Department.Kind';
 import { CatalogContractIntercompany } from './Catalogs/Catalog.Contract.Intercompany';
 import { CatalogPersonIdentity } from './Catalogs/Catalog.PersonIdentity';
@@ -143,6 +144,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
   { type: 'Catalog.Department.Kind', Class: CatalogDepartmentKind },
+  { type: 'Catalog.Department.StatusReason', Class: CatalogDepartmentStatusReason },
   { type: 'Catalog.Expense', Class: CatalogExpense },
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
   { type: 'Catalog.Income', Class: CatalogIncome },

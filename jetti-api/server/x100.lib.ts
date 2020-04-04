@@ -15,6 +15,7 @@ export interface Ix100Lib {
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
   };
   util: {
     salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
@@ -34,7 +35,8 @@ export const x100: Ix100Lib = {
   },
   info: {
     companyByDepartment,
-    company2ByDepartment
+    company2ByDepartment,
+    IntercompanyByCompany,
   },
   util: {
     salaryCompanyByCompany,
@@ -94,6 +96,19 @@ async function company2ByDepartment(department: Ref, date = new Date(), tx: MSSQ
     ORDER BY date DESC`;
   const res = await tx.oneOrNone<{ company2: string }>(queryText, [date, department]);
   if (res) result = res.company2;
+  return result;
+}
+
+async function IntercompanyByCompany(company: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  let result: Ref | null = null;
+  const queryText = `
+    SELECT TOP 1 Intercompany FROM [Register.Info.IntercompanyHistory] WITH (NOEXPAND)
+    WHERE (1=1)
+      AND date <= @p1
+      AND company = @p2
+    ORDER BY date DESC`;
+  const res = await tx.oneOrNone<{ Intercompany: string }>(queryText, [date, company]);
+  if (res) result = res.Intercompany;
   return result;
 }
 

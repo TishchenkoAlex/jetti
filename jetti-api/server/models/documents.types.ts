@@ -14,6 +14,7 @@ export type CatalogTypes =
   'Catalog.Currency' |
   'Catalog.Department' |
   'Catalog.Department.Kind' |
+  'Catalog.Department.StatusReason' |
   'Catalog.PersonIdentity' |
   'Catalog.Expense' |
   'Catalog.Expense.Analytics' |
