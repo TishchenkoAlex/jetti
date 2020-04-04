@@ -5,10 +5,12 @@ import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { TaskComponent } from './BusinessProcesses/task.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
 import { SearchAndReplaceComponent } from './Forms/search-and-replace.component';
+import { ObjectsGroupModifyComponent } from './Forms/ObjectsGroupModify.form.component';
 
 @NgModule({
   declarations: [
     SearchAndReplaceComponent,
+    ObjectsGroupModifyComponent,
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,
@@ -23,6 +25,7 @@ import { SearchAndReplaceComponent } from './Forms/search-and-replace.component'
   ],
   entryComponents: [
     SearchAndReplaceComponent,
+    ObjectsGroupModifyComponent,
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,

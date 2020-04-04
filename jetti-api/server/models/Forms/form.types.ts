@@ -4,5 +4,6 @@ export type FormTypes =
   'Form.PostAfterEchange' |
   'Form.CashRequestDesktop' |
   'Form.SearchAndReplace' |
+  'Form.ObjectsGroupModify' |
   'Form.BusinessProcessTasks'
-;
+  ;

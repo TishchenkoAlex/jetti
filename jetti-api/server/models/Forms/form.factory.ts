@@ -1,3 +1,4 @@
+import { FormObjectsGroupModify } from './Form.ObjectsGroupModify';
 import { FormBase } from './form';
 import { FormTypes } from './form.types';
 import { PostAfterEchange } from './Form.PostAfterEchange';
@@ -20,4 +21,5 @@ export const RegisteredForms = new Map<FormTypes, typeof FormBase>([
   ['Form.PostAfterEchange', PostAfterEchange],
   ['Form.SearchAndReplace', FormSearchAndReplace],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
+  ['Form.ObjectsGroupModify', FormObjectsGroupModify],
 ]);

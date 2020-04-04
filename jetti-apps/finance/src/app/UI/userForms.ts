@@ -8,6 +8,7 @@ import { TaskListComponent } from './BusinessProcesses/tasks-list.component';
 import { DocumentCashRequestComponent } from './Documents/Document.CashRequest';
 import { SearchAndReplaceComponent } from './Forms/search-and-replace.component';
 import { BaseHierarchyListComponent } from '../common/datatable/base.hierarchy-list.component';
+import { ObjectsGroupModifyComponent } from './Forms/ObjectsGroupModify.form.component';
 
 const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<any> } } = {
   'home': { formComponent: HomeComponent, listComponent: HomeComponent },
@@ -16,7 +17,8 @@ const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<
   'Form.BusinessProcessTasks': { formComponent: TaskListComponent, listComponent: TaskListComponent },
   'Document.CashRequest': { formComponent: DocumentCashRequestComponent, listComponent: BaseDocListComponent },
   'Form.SearchAndReplace': { formComponent: SearchAndReplaceComponent, listComponent: SearchAndReplaceComponent },
-  // add user's defined component for list- or doc-Form here
+  'Form.ObjectsGroupModify': { formComponent: ObjectsGroupModifyComponent, listComponent: ObjectsGroupModifyComponent },
+    // add user's defined component for list- or doc-Form here
 };
 
 export function getListComponent(type: string, testComponent = false) {
