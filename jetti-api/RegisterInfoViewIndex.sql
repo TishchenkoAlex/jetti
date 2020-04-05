@@ -180,6 +180,21 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.IntercompanyHistory]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Intercompany"')) "Intercompany"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.IntercompanyHistory';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.IntercompanyHistory] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.IntercompanyHistory] ON [dbo].[Register.Info.IntercompanyHistory](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.DepartmentCompanyHistory]
     WITH SCHEMABINDING
     AS
@@ -193,6 +208,25 @@
     GRANT SELECT,DELETE ON [Register.Info.DepartmentCompanyHistory] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.DepartmentCompanyHistory] ON [dbo].[Register.Info.DepartmentCompanyHistory](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.DepartmentStatus]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.BeginDate'),127) "BeginDate"
+        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.EndDate'),127) "EndDate"
+        , ISNULL(JSON_VALUE(data, '$.Info'), '') "Info"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StatusReason"')) "StatusReason"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentStatus';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.DepartmentStatus] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.DepartmentStatus] ON [dbo].[Register.Info.DepartmentStatus](
       company,date,id
     )
     GO
