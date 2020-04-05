@@ -6,7 +6,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   icon: 'fa fa-list',
   menu: 'Организации',
   relations: [
-    { name: 'Intercompany history', type: 'Register.Info.IntercompanyHistory', field: 'company' },
+    { name: 'Intercompany history', type: 'Register.Info.IntercompanyHistory', field: 'company.id' },
     { name: 'Departments', type: 'Catalog.Department', field: 'company' },
     { name: 'Bank accounts', type: 'Catalog.BankAccount', field: 'company' },
     { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'company' },
