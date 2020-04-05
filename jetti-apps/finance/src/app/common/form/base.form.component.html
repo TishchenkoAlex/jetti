@@ -110,7 +110,7 @@
 
         </p-panel>
 
-        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields">
+        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true">
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
             *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
             <div fxFlex>
