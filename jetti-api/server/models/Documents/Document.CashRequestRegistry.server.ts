@@ -151,7 +151,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       LEFT JOIN [dbo].[Catalog.JobTitle.v] jt on jt.id = per.JobTitle
       where d.id = @p1
       AND Amount > 0
-      `;
+      `; 
     const salaryData = await tx.manyOrNone<{ Person, JobTitle, Amount }>(query, [this.id]);
 
     let result = '№;Сотрудник;Должность;Сумма;Подпись;Примечание';
