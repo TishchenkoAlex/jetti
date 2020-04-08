@@ -29,6 +29,7 @@ export interface IFormControlInfo {
   headerStyle: { [key: string]: any };
   showLabel: boolean;
   valuesOptions: { label: string, value: string | null }[];
+  validators?: { key: string, value?: any }[];
 }
 
 export class FormControlInfo {
@@ -53,6 +54,7 @@ export class FormControlInfo {
   headerStyle: { [key: string]: any };
   showLabel: boolean;
   valuesOptions: { label: string, value: string | null }[];
+  validators?: { key: string, value?: any }[];
 
   constructor(options: IFormControlInfo) {
     this.type = options.type;
@@ -74,6 +76,7 @@ export class FormControlInfo {
     this.onChange = options.onChange;
     this.onChangeServer = options.onChangeServer;
     this.change = options.change;
+    this.validators = options.validators;
     if (this.change && !this.onChange) {
       this.onChange = new Function('doc', 'value', 'api', this.change) as any;
     }

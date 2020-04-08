@@ -64,19 +64,19 @@ export class CatalogLoan extends DocumentBase {
   })
   Status = 'PREPARED';
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', order: 777 })
   InterestRate = 0;
 
-  @Props({ type: 'date', label: 'Interest deadline' })
+  @Props({ type: 'date', label: 'Interest deadline', order: 777 })
   InterestDeadline: Date | null = null;
 
-  @Props({ type: 'Catalog.LoanTypes' })
+  @Props({ type: 'Catalog.LoanTypes', order: 777 })
   loanType: Ref = null;
 
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', order: 777 })
   AmountLoan = 0;
 
   @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' } })
@@ -85,10 +85,10 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.Country' })
   Country: Ref = null;
 
-  @Props({ type: 'Catalog.LoanRepaymentProcedure' })
+  @Props({ type: 'Catalog.LoanRepaymentProcedure', order: 777 })
   LoanRepaymentProcedure: Ref = null;
 
-  @Props({ type: 'date', label: 'Pay deadline' })
+  @Props({ type: 'date', label: 'Pay deadline', order: 777 })
   PayDeadline: Date | null = null;
 
   @Props({
@@ -143,6 +143,7 @@ export class Agreement {
   @Props({ type: 'string', label: 'Hologram №' })
   AgreementHologram = '';
 
+  // tslint:disable-next-line: max-line-length
   @Props({ type: 'number', label: 'Amount ', style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1 })
   AgreementAmount = 0;
 

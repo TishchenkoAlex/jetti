@@ -66,25 +66,25 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'boolean', label: 'Ф2' })
   notAccounting = false;
 
-  @Props({ type: 'enum', value: ['GRID', 'FIX'] })
+  @Props({ type: 'enum', value: ['GRID', 'FIX'], order: 777})
   RoyaltyArrangements = null;
 
-  @Props({ type: 'date' })
+  @Props({ type: 'date', order: 777 })
   RoyaltyDelayTo = null;
 
-  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentKC = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentOVM = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentOKK = 'NONE';
 
-  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'] })
+  @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentKRO = 'NONE';
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', order: 777 })
   OtherServices = '';
 
 }

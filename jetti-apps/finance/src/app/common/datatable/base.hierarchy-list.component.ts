@@ -87,7 +87,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   treeNodesVisible = false;
   initNodes = true;
   selectedNode: TreeNode = null;
-  swichedPresentation = false;
   presentationTypes = [
     { label: 'Tree', value: 'Tree' },
     { label: 'List', value: 'List' },
@@ -161,7 +160,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
         this.findSelectedNode(this.treeNodes, selectedNodeId);
-        if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
+        // if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
         return this.treeNodes;
       }
     }));
@@ -218,49 +217,6 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.settings.filter
       .filter(c => !(c.right == null || c.right === undefined))
       .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
-  }
-
-  showDeletedSet(showDeleted: boolean, update = false) {
-    this.showDeleted = showDeleted;
-    if (showDeleted) delete this.filters['deleted'];
-    else this.filters['deleted'] = { matchMode: '=', value: 0 };
-    if (update) {
-      this.prepareDataSource(this.multiSortMeta);
-      this._pageSize$.next(this.getPageSize());
-    }
-  }
-
-  onChangePresentation() {
-    const treeNodesVisibleBefore = this.treeNodesVisible;
-    switch (this.presentation) {
-      case 'List':
-        this.treeNodesVisible = false;
-        break;
-      case 'Tree':
-        this.treeNodesVisible = true;
-        this.filters = {};
-        this.showDeletedSet(this.showDeleted);
-        break;
-      case 'Auto':
-        const dsFilter = this.dataSource.formListSettings.filter;
-        this.treeNodesVisible = this.hierarchy && (!!dsFilter.length || (dsFilter.length === 1 && !this.showDeleted));
-        break;
-      default:
-        break;
-    }
-    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
-      this.onTreeNodesVisibleChange();
-      this.prepareDataSource(this.multiSortMeta);
-      this._pageSize$.next(this.getPageSize());
-    }
-  }
-
-  onTreeNodesVisibleChange() {
-    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
-    if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
-    // tslint:disable-next-line: one-line
-    else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
-    else this.id = null;
   }
 
   private setSortOrder() {
@@ -427,8 +383,9 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   open(id = null) {
-    if (!id && this.selectedData.isfolder) return;
-    this.router.navigate([this.type, id ? id : this.selectedData.id]);
+    const selId = id ? id : this.id ? this.id : null;
+    if (!selId) return;
+    this.router.navigate([this.type, selId]);
   }
 
   delete() {
@@ -463,15 +420,60 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.addMenuItems = [
       {
         label: 'View', items: [
-          { label: 'Tree' },
-          { label: 'List' },
-          { label: 'Auto' }
+          { label: 'Tree', command: () => { this.presentation = 'Tree'; this.onChangePresentation(); } },
+          { label: 'List', command: () => { this.presentation = 'List'; this.onChangePresentation(); } },
+          { label: 'Auto', command: () => { this.presentation = 'Auto'; this.onChangePresentation(); } }
         ]
       },
       { separator: true },
-      { label: 'Clear filters' },
-      { label: 'Deleted' },
+      { label: 'Clear filters', command: () => { this.clearAllFilters(); } },
+      { separator: true },
+      { label: 'Show deleted', command: () => { this.showDeletedSet(!this.showDeleted, true); } },
     ];
+  }
+
+  showDeletedSet(showDeleted: boolean, update = false) {
+    this.showDeleted = showDeleted;
+    this.addMenuItems[this.addMenuItems.length - 1].label = `${this.showDeleted ? 'Hide' : 'Show'} deleted`;
+    if (showDeleted) delete this.filters['deleted'];
+    else this.filters['deleted'] = { matchMode: '=', value: 0 };
+    if (update) {
+      this.prepareDataSource(this.multiSortMeta);
+      this._pageSize$.next(this.getPageSize());
+    }
+  }
+
+  onChangePresentation() {
+    const treeNodesVisibleBefore = this.treeNodesVisible;
+    switch (this.presentation) {
+      case 'List':
+        this.treeNodesVisible = false;
+        break;
+      case 'Tree':
+        this.treeNodesVisible = true;
+        this.filters = {};
+        this.showDeletedSet(this.showDeleted);
+        break;
+      case 'Auto':
+        const dsFilter = this.dataSource.formListSettings.filter;
+        this.treeNodesVisible = this.hierarchy && (!!dsFilter.length || (dsFilter.length === 1 && !this.showDeleted));
+        break;
+      default:
+        break;
+    }
+    if (treeNodesVisibleBefore !== this.treeNodesVisible) {
+      this.onTreeNodesVisibleChange();
+      this.prepareDataSource(this.multiSortMeta);
+      this._pageSize$.next(this.getPageSize());
+    }
+  }
+
+  onTreeNodesVisibleChange() {
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
+    if (this.treeNodesVisible && this.selection.length > 0) { this.id = this.selection[0].id; this.initNodes = true; }
+    // tslint:disable-next-line: one-line
+    else if (!this.treeNodesVisible && this.selectedNode) this.id = this.selectedNode.key;
+    else this.id = null;
   }
 
   parentChange(event) {

@@ -149,7 +149,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   getSuggests(text: string) {
     if (this.isTypeValue) { this.Suggests$ = of([]); this.value = this.EMPTY; return; }
-    this.filters = this.calcFilters();
+    this.filters = this.calcFilters(true);
     this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.filters.filter);
   }
 
@@ -178,7 +178,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     this.value = { id: this.isTypeValue ? null : row.id, code: row.code, type: row.type, value: this.isTypeValue ? null : row.value };
   }
 
-  calcFilters(data?: any) {
+  calcFilters(suggest = false) {
     const result = new FormListSettings();
     if (this.owner && this.owner.length) {
       for (const row of this.owner) {
@@ -187,9 +187,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
           result.filter.push({ left: row.filterBy, center: '=', right: fc!.value });
       }
     }
-    if (!this.useHierarchyList) {
-      if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: true }); }
-      if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: false }); }
+    if (!this.useHierarchyList || suggest) {
+      if (this.storageType === 'folders') { result.filter.push({ left: 'isfolder', center: '=', right: 1 }); }
+      if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: 0 }); }
       if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
     }
     let company;
