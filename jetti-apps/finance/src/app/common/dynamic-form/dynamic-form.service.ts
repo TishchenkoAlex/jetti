@@ -24,6 +24,18 @@ export function cloneFormGroup(formGroup: FormGroup): FormGroup {
   return newFormGroup;
 }
 
+const getControlValidators = (control: FormControlInfo): any[] => {
+  const result = [];
+  if (control.required) result.push(Validators.required);
+  if (control.validators) {
+    for (const validator of control.validators) {
+      if (validator.value) result.push(Validators[validator.key](validator.value));
+      else result.push(Validators[validator.key]);
+    }
+  }
+  return result;
+};
+
 function toFormGroup(controls: FormControlInfo[]) {
   const group: { [key: string]: AbstractControl } = {};
 
@@ -32,13 +44,13 @@ function toFormGroup(controls: FormControlInfo[]) {
       const Row: { [key: string]: AbstractControl } = {};
       const arr: FormGroup[] = [];
       for (const item of control.controls) {
-        Row[item.key] = item.required ? new FormControl(item.value, Validators.required) : new FormControl(item.value);
+        Row[item.key] = new FormControl(item.value, getControlValidators(item));
         Row[item.key]['formControlInfo'] = item;
       }
       arr.push(new FormGroup(Row));
-      group[control.key] = control.required ? new FormArray(arr, Validators.required) : new FormArray(arr);
+      group[control.key] = new FormArray(arr, getControlValidators(control));
     } else {
-      group[control.key] = control.required ? new FormControl(control.value, Validators.required) : new FormControl(control.value);
+      group[control.key] = new FormControl(control.value, getControlValidators(control));
     }
     group[control.key]['formControlInfo'] = control;
   });
@@ -73,11 +85,12 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const headerStyle = prop['headerStyle'];
       const showLabel = prop['showLabel'] || true;
       const valuesOptions = prop['valuesOptions'] || [];
+      const validators = prop['validators'];
       let value = prop['value'];
       let newControl: FormControlInfo;
       const controlOptions: IFormControlInfo = {
         key, label, type: controlType, required, readOnly, headerStyle, showLabel, valuesOptions, controlType,
-        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType, isAdditional
+        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType, isAdditional, validators
       };
       switch (controlType) {
         case 'table':

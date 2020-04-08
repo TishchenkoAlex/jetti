@@ -29,6 +29,7 @@ export interface PropOptions {
   resource?: boolean;
   isAdditional?: boolean;
   storageType?: StorageType;
+  validators?: { key: string, value?: any }[];
 }
 
 export interface Relation { name: string; type: DocTypes | RegisterInfoTypes; field: string; }

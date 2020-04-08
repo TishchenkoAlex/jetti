@@ -124,7 +124,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
         this.selectedNode = null;
         this.treeNodes = this.buildTreeNodes(rows, null);
         this.findSelectedNode(this.treeNodes, selectedNodeId);
-        if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
+        // if (this.selectedNode && !this.selectedNode.leaf) this.selectedNode.expanded = true;
       } else {
         this.selectedRow = rows.find(e => e.id === this.id);
       }

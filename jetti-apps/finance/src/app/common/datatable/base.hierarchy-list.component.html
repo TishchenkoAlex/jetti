@@ -27,16 +27,16 @@
       </div>
       <div class="ui-toolbar-group-right">
 
-        <button pButton type="button" [label]="(this.showDeleted ? 'Hide ' : 'Show ') + 'deleted'"
+        <!-- <button pButton type="button" [label]="(this.showDeleted ? 'Hide ' : 'Show ') + 'deleted'"
           class="ui-button-secondary" (click)="showDeletedSet(!this.showDeleted, true)"
           [disabled]="(lds.busy$ | async)"></button>
         <button pButton type="button" label="Clear filters" class="ui-button-secondary" (click)="clearAllFilters()"
           icon="far fa-trash-alt" [disabled]="isNoFiltered() || (lds.busy$ | async)"></button>
         <i *ngIf="this.hierarchy" class="pi pi-bars" style="margin-left: 0.5em; margin-right: 0.5em;"></i>
         <p-selectButton *ngIf="this.hierarchy" [options]="presentationTypes" [(ngModel)]="presentation"
-          (onChange)="onChangePresentation()"></p-selectButton>
-        <!-- <p-slideMenu #addMenu [model]="addMenuItems" [popup]="true" effectDuration="200" easing="ease-in" [viewportHeight]="150"></p-slideMenu>
-        <button #addMenuBtn type="button" pButton icon="pi pi-list" label="Menu" (click)="addMenu.toggle($event)"></button> -->
+          (onChange)="onChangePresentation()"></p-selectButton> -->
+        <p-slideMenu #addMenu [model]="addMenuItems" [popup]="true" effectDuration="200" easing="ease-in" [viewportHeight]="130"></p-slideMenu>
+        <button #addMenuBtn type="button" pButton icon="pi pi-list" (click)="addMenu.toggle($event)"></button>
       </div>
     </p-toolbar>
 

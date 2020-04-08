@@ -128,20 +128,20 @@
 
         <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <p-fieldset legend="Налоговые реквизиты" [toggleable]="true">
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-              <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
-              <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
-              <j-control [control]="vk.TaxKPP" [form]="form"></j-control>
-            </div>
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-              <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
-              <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
-              <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
-              <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
-              <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
-            </div>
-          </p-fieldset>
+            <p-fieldset legend="Налоговые реквизиты" [toggleable]="true" collapsed=true>
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+                <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
+                <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
+                <j-control [control]="vk.TaxKPP" [form]="form"></j-control>
+              </div>
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+                <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
+                <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
+                <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
+                <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
+                <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
+              </div>
+            </p-fieldset>
         </div>
 
         <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0px" fxLayoutGap.xs="0px">

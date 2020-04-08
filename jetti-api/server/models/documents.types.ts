@@ -65,8 +65,8 @@ export type CatalogTypes =
   'Catalog.TaxPayerStatus' |
   'Catalog.TaxBasisPayment' |
   'Catalog.TaxOffice' |
-  'Catalog.RetailClient'|
-  'Catalog.Contract.Intercompany'|
+  'Catalog.RetailClient' |
+  'Catalog.Contract.Intercompany' |
   'Catalog.ResourceSpecification'
   ;
 

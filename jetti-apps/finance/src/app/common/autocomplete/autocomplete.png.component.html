@@ -93,29 +93,33 @@
 
 <div *ngIf="showDialog">
   <p-dialog *ngIf="useHierarchyList" [(visible)]="showDialog" [modal]="true" [responsive]="true" [closable]="true"
-  [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '81vh', width: '80%'}" [appendTo]="appendTo">
+    [closeOnEscape]="true" [blockScroll]="true" [style]="{height: '81vh', width: '80%'}" [appendTo]="appendTo">
 
     <p-header>
       {{this.placeholder}}
     </p-header>
-    <j-suggest-hierarchy-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
+    <j-suggest-hierarchy-list #slh [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
       [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)">
     </j-suggest-hierarchy-list>
     <p-footer>
       <p-toolbar>
         <div class="ui-toolbar-group-left">
           <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-            [disabled]="!sl.isSelectEnabled" (click)="sl.select(sl.selectedNode)"></button>
+            [disabled]="!slh.isSelectEnabled" (click)="slh.select(slh.selectedNode)"></button>
         </div>
         <div class="ui-toolbar-group-right">
-          <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selectedRow = null; sl.dataSource?.first()"
-            [disabled]="!sl.dataSource?.continuation?.first"></button>
-          <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selectedRow = null; sl.dataSource?.prev()"
-            [disabled]="!sl.dataSource?.continuation?.first"></button>
-          <button pButton type="button" icon="pi pi-step-forward" (click)="sl.selectedRow = null; sl.dataSource?.next()"
-            [disabled]="!sl.dataSource?.continuation?.last"></button>
-          <button pButton type="button" icon="pi pi-fast-forward" (click)="sl.selectedRow = null; sl.dataSource?.last()"
-            [disabled]="!sl.dataSource?.continuation?.last"></button>
+          <button pButton type="button" icon="pi pi-fast-backward"
+            (click)="slh.selectedRow = null; slh.dataSource?.first()"
+            [disabled]="!slh.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-backward"
+            (click)="slh.selectedRow = null; slh.dataSource?.prev()"
+            [disabled]="!slh.dataSource?.continuation?.first"></button>
+          <button pButton type="button" icon="pi pi-step-forward"
+            (click)="slh.selectedRow = null; slh.dataSource?.next()"
+            [disabled]="!slh.dataSource?.continuation?.last"></button>
+          <button pButton type="button" icon="pi pi-fast-forward"
+            (click)="slh.selectedRow = null; slh.dataSource?.last()"
+            [disabled]="!slh.dataSource?.continuation?.last"></button>
         </div>
       </p-toolbar>
     </p-footer>
@@ -128,7 +132,7 @@
       {{this.placeholder}}
     </p-header>
     <j-suggest-list #sl [type]="value.type || type" [id]="value.id" [uuid]="uuid" [storageType]="storageType"
-      [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)" [pageSize] = "15">
+      [settings]="filters" (Select)="searchComplete($event)" (Close)="searchComplete(null)" [pageSize]="15">
     </j-suggest-list>
     <p-footer>
       <p-toolbar>

@@ -24,6 +24,12 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Department', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({
+    type: 'string', required: false, hiddenInList: false
+    , label: 'Short name (max 15 symbols)', order: 16, validators: [{ key: 'maxLength', value: 15 }]
+  })
+  ShortName = '';
+
   @Props({ type: 'Catalog.BusinessRegion' })
   BusinessRegion: Ref = null;
 
