@@ -275,3 +275,21 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountMin')) "AmountMin"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountMax')) "AmountMax"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Royalty')) "Royalty"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.RoyaltySales';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.RoyaltySales] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.RoyaltySales] ON [dbo].[Register.Info.RoyaltySales](
+      company,date,id
+    )
+    GO
+    
