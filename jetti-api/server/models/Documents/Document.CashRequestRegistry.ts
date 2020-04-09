@@ -6,6 +6,13 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   icon: 'far fa-file-alt',
   menu: 'Реестр оплат',
   prefix: 'CRR-',
+  dimensions: [
+    { Status: 'enum' },
+    { company: 'Catalog.Company' },
+    { Amount: 'number' },
+    { user: 'Catalog.User' },
+    { CashFlow: 'Catalog.CashFlow' }
+  ],
   commands: [
     { method: 'Fill', icon: 'pi pi-plus', label: 'Заполнить', order: 1 },
     { method: 'Create', icon: 'pi pi-plus', label: 'Создать документы', order: 2 },
@@ -41,14 +48,14 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Types.Document', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Company', order: 4, required: false, style: { width: '250px' } })
+  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' } })
   company: Ref = null;
 
   @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
   Status = 'PREPARED';
 
   @Props({
-    type: 'enum', required: true, order: 8, label: 'Вид операции', value: [
+    type: 'enum', order: 8, label: 'Вид операции', value: [
       'Оплата поставщику',
       'Перечисление налогов и взносов',
       'Оплата ДС в другую организацию',
@@ -91,6 +98,9 @@ export class DocumentCashRequestRegistry extends DocumentBase {
 }
 
 export class CashRequest {
+
+  @Props({ type: 'string', label: 'Operation type', readOnly: true, style: { width: '320px', textAlign: 'left' } })
+  OperationType: Ref = null;
 
   @Props({ type: 'Document.CashRequest', label: 'Cash request', readOnly: true, style: { width: '320px', textAlign: 'left' } })
   CashRequest: Ref = null;

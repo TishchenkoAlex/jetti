@@ -44,6 +44,7 @@ export type CatalogTypes =
   'Catalog.Unit' |
   'Catalog.TaxRate' |
   'Catalog.ProductCategory' |
+  'Catalog.Product.Report' |
   'Catalog.ProductKind' |
   'Catalog.ObjectsExploitation' |
   'Catalog.OrderSource' |

@@ -1,3 +1,4 @@
+import { CatalogProductReport } from './Catalogs/Catalog.Product.Report';
 import { CatalogDepartmentStatusReason } from './Catalogs/Catalog.Department.StatusReason';
 import { CatalogDepartmentKind } from './Catalogs/Catalog.Department.Kind';
 import { CatalogContractIntercompany } from './Catalogs/Catalog.Contract.Intercompany';
@@ -158,6 +159,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.PlanningScenario', Class: CatalogPlanningScenario },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategory },
   { type: 'Catalog.ProductKind', Class: CatalogProductKind },
+  { type: 'Catalog.Product.Report', Class: CatalogProductReport },
   { type: 'Catalog.Storehouse', Class: CatalogStorehouse },
   { type: 'Catalog.Operation', Class: CatalogOperation },
   { type: 'Catalog.Operation.Group', Class: CatalogOperationGroup },

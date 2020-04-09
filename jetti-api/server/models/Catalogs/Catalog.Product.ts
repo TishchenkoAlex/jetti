@@ -37,4 +37,10 @@ export class CatalogProduct extends DocumentBase {
   })
   Analytics: Ref = null;
 
+  @Props({ type: 'Catalog.Product.Report' })
+  ProductReport: Ref = null;
+
+  @Props({ type: 'boolean' })
+  Purchased = false;
+
 }

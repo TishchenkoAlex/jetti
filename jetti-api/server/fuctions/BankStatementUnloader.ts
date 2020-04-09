@@ -10,15 +10,20 @@ export class BankStatementUnloader {
   static isSalaryProject = false;
   static country = '';
   static operation = '';
+  static operationTypes: string[];
+  static docsByTypes: { id: string, operation: string }[];
 
-  static countryKAZAKHSTAN = '381AA090-4D6B-11EA-9419-5B6F020710B8';
-  static countryUKRAINE = 'E04BAF30-4D6A-11EA-9419-5B6F020710B8';
-  // static countryUKRAINE = 'BA065230-4D6A-11EA-9419-5B6F020710B8';
-  static countryRUSSIA = 'BA065230-4D6A-11EA-9419-5B6F020710B8';
+  private static isUKRAINE(): boolean {
+    return this.country === 'E04BAF30-4D6A-11EA-9419-5B6F020710B8';
+  }
+
+  private static isKAZAKHSTAN(): boolean {
+    return this.country === '381AA090-4D6B-11EA-9419-5B6F020710B8';
+  }
 
   private static getQueryTextSalaryProjectCommon() {
 
-    if (this.country === this.countryUKRAINE) {
+    if (this.isUKRAINE()) {
       return `
       select
         sp.code N'N_D',
@@ -101,7 +106,7 @@ export class BankStatementUnloader {
 
   private static async getQueryTextCommon(): Promise<string> {
 
-    if (this.country === this.countryUKRAINE) {
+    if (this.isUKRAINE()) {
       switch (this.operation) {
         case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
           return this.getQueryTextCommonUKRAINEВыплатаЗарплаты();
@@ -124,7 +129,7 @@ export class BankStatementUnloader {
         case '433D63DE-D849-11E7-83D2-2724888A9E4F': // С р/с - на расчетный счет  (в путь)
           return this.getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть();
         case '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9': // С р/с -  оплата поставщику
-          if (this.country === this.countryKAZAKHSTAN) return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику();
+          if (this.isKAZAKHSTAN()) return this.getQueryTextCommonKAZAKHSTANОплатаПоставщику();
           else return this.getQueryTextCommonRUSSIAОплатаПоставщику();
       }
     }
@@ -234,31 +239,11 @@ export class BankStatementUnloader {
     ,JSON_VALUE(Supp.doc, '$.Code2') as N'ПолучательКПП'
     ,5 as N'Очередность'
     ,Obj.[info] as N'НазначениеПлатежа'
-
-    ,N'1.02' as ВерсияФормата_ig_head
-    ,'UTF-8' as Кодировка_ig_head
-    ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
-    ,'' as N'Получатель_ig_head'
-    ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-    ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-    ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-    ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-    ,BAComp.[code] as N'РасчСчет_ig_head'
-    ,N'Платежное поручение' as N'Документ_ig_head'
-
     ,Obj.company  as Company_ig
     ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
     ,Obj.[date] as ObjDate_ig
     ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
     FROM [dbo].[Documents] as Obj
-    LEFT JOIN (
-    SELECT
-    MAX(docs.[date]) as ed,
-    MIN(docs.[date]) as bd,
-    docs.company as company
-    FROM [dbo].[Documents] as docs
-    WHERE docs.[id] in (@p1)
-    GROUP BY company) as Dates on Dates.company = Obj.company
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
@@ -296,32 +281,12 @@ export class BankStatementUnloader {
         ,JSON_VALUE(CompIn.doc, '$.Code2') as N'ПолучательКПП'
         ,5 as N'Очередность'
         ,Obj.[info] as N'НазначениеПлатежа'
-
-        ,N'1.02' as ВерсияФормата_ig_head
-        ,'UTF-8' as Кодировка_ig_head
-        ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
-        ,'' as N'Получатель_ig_head'
-        ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-        ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-        ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-        ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-        ,BAComp.[code] as N'РасчСчет_ig_head'
         ,N'Платежное поручение' as N'Документ_ig_head'
-
         ,Obj.company  as Company_ig
         ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
         ,Obj.[date] as ObjDate_ig
         ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
-
         FROM [dbo].[Documents] as Obj
-        LEFT JOIN (
-        SELECT
-        MAX(docs.[date]) as ed,
-        MIN(docs.[date]) as bd,
-        docs.company as company
-        FROM [dbo].[Documents] as docs
-        WHERE docs.[id] in (@p1)
-        GROUP BY company) as Dates on Dates.company = Obj.company
         LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
         LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccountOut') and BAComp.[type] = 'Catalog.BankAccount'
         LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
@@ -361,32 +326,7 @@ export class BankStatementUnloader {
     ,JSON_VALUE(Supp.doc, '$.Code2') as N'ПолучательКПП'
     ,5 as N'Очередность'
     ,Obj.[info] as N'НазначениеПлатежа'
-
-    ,N'1.02' as ВерсияФормата_ig_head
-    ,'UTF-8' as Кодировка_ig_head
-    ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
-    ,'' as N'Получатель_ig_head'
-    ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-    ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-    ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-    ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-    ,BAComp.[code] as N'РасчСчет_ig_head'
-    ,N'Платежное поручение' as N'Документ_ig_head'
-
-    ,Obj.company  as Company_ig
-    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
-    ,Obj.[date] as ObjDate_ig
-    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
-
     FROM [dbo].[Documents] as Obj
-    LEFT JOIN (
-    SELECT
-    MAX(docs.[date]) as ed,
-    MIN(docs.[date]) as bd,
-    docs.company as company
-    FROM [dbo].[Documents] as docs
-    WHERE docs.[id] in (@p1)
-    GROUP BY company) as Dates on Dates.company = Obj.company
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
@@ -425,7 +365,6 @@ export class BankStatementUnloader {
     ,JSON_VALUE(Supp.doc, '$.Code2') as N'ПолучательКПП'
     ,5 as N'Очередность'
     ,Obj.[info] as N'НазначениеПлатежа'
-
     ,'02' as N'СтатусСоставителя'
     ,'' as N'ПоказательТипа'
     ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxKPP') = '' THEN '0' ELSE ISNULL(JSON_VALUE(Obj.doc, '$.TaxKPP'),'0') END as N'ПлательщикКПП'
@@ -436,32 +375,7 @@ export class BankStatementUnloader {
     ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxDocNumber') = '' THEN '0' ELSE ISNULL(JSON_VALUE(Obj.doc, '$.TaxDocNumber'),'0') END as N'ПоказательНомера'
     ,CASE WHEN JSON_VALUE(Obj.doc, '$.TaxDocDate') = '' THEN '0' ELSE ISNULL(FORMAT (CAST(JSON_VALUE(Obj.doc, '$.TaxDocDate') as date), 'dd.MM.yyyy'),'0') END as N'ПоказательДаты'
     ,'0' as N'Код'
-
-    ,N'1.02' as ВерсияФормата_ig_head
-    ,'UTF-8' as Кодировка_ig_head
-    ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
-    ,'' as N'Получатель_ig_head'
-    ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-    ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-    ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-    ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-    ,BAComp.[code] as N'РасчСчет_ig_head'
-    ,N'Платежное поручение' as N'Документ_ig_head'
-
-    ,Obj.company  as Company_ig
-    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
-    ,Obj.[date] as ObjDate_ig
-    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
-
     FROM [dbo].[Documents] as Obj
-    LEFT JOIN (
-    SELECT
-    MAX(docs.[date]) as ed,
-    MIN(docs.[date]) as bd,
-    docs.company as company
-    FROM [dbo].[Documents] as docs
-    WHERE docs.[id] in (@p1)
-    GROUP BY company) as Dates on Dates.company = Obj.company
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
@@ -505,31 +419,7 @@ export class BankStatementUnloader {
     ,ISNULL(JSON_VALUE(Comp.doc, '$.Code2'),'') as N'ПлательщикКПП'
     ,3 as N'Очередность'
     ,Obj.[info] as N'НазначениеПлатежа'
-
-    ,N'1.02' as ВерсияФормата_ig_head
-    ,'UTF-8' as Кодировка_ig_head
-    ,N'1С:ERP Управление предприятием 2' as N'Отправитель_ig_head'
-    ,'' as N'Получатель_ig_head'
-    ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-    ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-    ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-    ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-    ,BAComp.[code] as N'РасчСчет_ig_head'
-    ,N'Платежное поручение' as N'Документ_ig_head'
-
-    ,Obj.company  as Company_ig
-    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
-    ,Obj.[date] as ObjDate_ig
-    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
     FROM [dbo].[Documents] as Obj
-    LEFT JOIN (
-    SELECT
-    MAX(docs.[date]) as ed,
-    MIN(docs.[date]) as bd,
-    docs.company as company
-    FROM [dbo].[Documents] as docs
-    WHERE docs.[id] in (@p1)
-    GROUP BY company) as Dates on Dates.company = Obj.company
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
@@ -565,30 +455,7 @@ export class BankStatementUnloader {
     ,TaxAssignmentCode.Code as N'КодНазначенияПлатежа'
     ,FORMAT (Obj.[date], 'dd.MM.yyyy') as N'ДатаВалютирования'
     ,ISNULL(Curr.description,'') as N'Валюта'
-
-    ,N'2.00' as ВерсияФормата_ig_head
-    ,'UTF8' as Кодировка_ig_head
-    ,N'Бухгалтерия для Казахстана, редакция 3.0' as N'Отправитель_ig_head'
-    ,'' as N'Получатель_ig_head'
-    ,FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания_ig_head'
-    ,FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания_ig_head'
-    ,FORMAT (Dates.bd, 'dd.MM.yyyy') as N'ДатаНачала_ig_head'
-    ,FORMAT (Dates.ed, 'dd.MM.yyyy') as N'ДатаКонца_ig_head'
-    ,BAComp.[code] as N'РасчСчет_ig_head'
-
-    ,Obj.company  as Company_ig
-    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
-    ,Obj.[date] as ObjDate_ig
-    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
     FROM [dbo].[Documents] as Obj
-    LEFT JOIN (
-    SELECT
-    MAX(docs.[date]) as ed,
-    MIN(docs.[date]) as bd,
-    docs.company as company
-    FROM [dbo].[Documents] as docs
-    WHERE docs.[id] in (@p1)
-    GROUP BY company) as Dates on Dates.company = Obj.company
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
     LEFT JOIN [dbo].[Documents] as TaxAssignmentCode on TaxAssignmentCode.id = JSON_VALUE(Obj.doc, '$.TaxAssignmentCode') and TaxAssignmentCode.[type] = 'Catalog.TaxAssignmentCode'
     LEFT JOIN [dbo].[Documents] as Curr on Curr.id = JSON_VALUE(Obj.doc, '$.currency') and Curr.[type] = 'Catalog.Currency'
@@ -603,38 +470,20 @@ export class BankStatementUnloader {
 
   private static async executeQuery(query: string, params: any[] = []) {
     query = query.replace(/@p1/g, this.docsIdsString);
-    return await this.tx.manyOrNone<[{ key: string, value }]>(query, params);
+    return await this.tx.manyOrNone<{ key: string, value }>(query, params);
   }
 
-  private static async init(docsID: any[], tx: MSSQL): Promise<number> {
-    if (!docsID.length) return 0;
-    const doc = await lib.doc.byId(docsID[0], tx);
-    if (!doc) return 0;
-    const parentCompany = await lib.doc.Ancestors(doc.company as Ref, tx, 1) as string;
-    const country = await lib.util.getObjectPropertyById(parentCompany, 'Country.id', tx);
-    if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))?.description}`);
-    this.country = country.id;
-    this.operation = doc['Operation'];
-    this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
-    this.docsIds = docsID;
-    this.tx = tx;
-    return this.docsIds.length;
+  private static async getSalaryProjectEmployeesDataFromJSON(EmployeesDataJSON: string): Promise<{ key: string, value }[]> {
+    return await this.tx.manyOrNone<{ key: string, value }>(this.getQueryTextSalaryEmployees(), [EmployeesDataJSON]);
   }
 
-  private static async getBankStatementData(): Promise<[{ key: string, value }][]> {
-    let result = await this.executeQuery(this.getQueryTextSalaryProjectCommon());
-    this.isSalaryProject = result.length > 0;
-    if (!this.isSalaryProject) result = await this.executeQuery(await this.getQueryTextCommon());
-    return result;
-  }
+  private static async BankStatementDataAsSalaryProjectBankStatementString(): Promise<string> {
 
-  private static async getSalaryProjectEmployeesDataFromJSON(EmployeesDataJSON: string): Promise<[{ key: string, value }][]> {
-    return await this.tx.manyOrNone<[{ key: string, value }]>(this.getQueryTextSalaryEmployees(), [EmployeesDataJSON]);
-  }
+    const bankStatementData = await this.executeQuery(this.getQueryTextSalaryProjectCommon());
 
-  private static async BankStatementDataAsSalaryProjectBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
+    if (!bankStatementData.length) return '';
 
-    if (this.country === this.countryUKRAINE) {
+    if (this.isUKRAINE()) {
       return await this.BankStatementDataAsSalaryProjectBankStatementStringUKRAINE(bankStatementData);
     }
 
@@ -681,7 +530,7 @@ export class BankStatementUnloader {
   }
 
 
-  private static async BankStatementDataAsCommonBankStatementStringUKRAINE(bankStatementData: [{ key: string, value }][]): Promise<string> {
+  private static async BankStatementDataAsCommonBankStatementStringUKRAINE(bankStatementData: { key: string, value }[]): Promise<string> {
     let result = '';
     for (const prop of Object.keys(bankStatementData[0])) {
       result += prop + ';';
@@ -710,7 +559,7 @@ export class BankStatementUnloader {
   }
 
   // tslint:disable-next-line: max-line-length
-  private static async BankStatementDataAsSalaryProjectBankStatementStringUKRAINE(bankStatementData: [{ key: string, value }][]): Promise<string> {
+  private static async BankStatementDataAsSalaryProjectBankStatementStringUKRAINE(bankStatementData: { key: string, value }[]): Promise<string> {
     let result = 'N_D;SUMMA;COUNT_A;NAME_B;COUNT_B;N_P;OKPO_B;SER_PAS_B;NOM_PAS_B';
     const common = bankStatementData[0];
     const EmployeesInJSON = `{"PayRolls":${JSON.stringify(common['ig_PayRolls'])}}`;
@@ -724,31 +573,15 @@ export class BankStatementUnloader {
     return result;
   }
 
-  private static async BankStatementDataAsCommonBankStatementString(bankStatementData: [{ key: string, value }][]): Promise<string> {
-
-    if (this.country === this.countryUKRAINE) {
+  private static async BankStatementDataAsCommonBankStatementString(bankStatementData: { key: string, value }[]): Promise<string> {
+    if (!bankStatementData.length) return '';
+    if (this.isUKRAINE()) {
       return this.BankStatementDataAsCommonBankStatementStringUKRAINE(bankStatementData);
     }
-
     let result = '';
-    const companySpliter = `---------------------------------------------------------------------`;
-    let currentCompany = '';
-    let companyCount = 0;
     const naznMaxLength = 210;
-
     for (const row of bankStatementData) {
 
-      if (currentCompany !== String(row['Плательщик_ig'])) {
-        if (result.length) {
-          result += '\nКонецФайла';
-        }
-        currentCompany = String(row['Плательщик_ig']);
-        companyCount++;
-        if (companyCount > 1) {
-          result += `\n\n${companySpliter}\n${currentCompany}\n${companySpliter}\n\n`;
-        }
-        result += `${this.getHeaderText(row)}`;
-      }
       for (const prop of Object.keys(row)) {
 
         if (prop.search('_ig') === -1) {
@@ -788,43 +621,104 @@ export class BankStatementUnloader {
       result += '\nКонецДокумента';
     }
 
-    if (result.length) {
-      result += '\nКонецФайла';
-    }
-
-    if (companyCount > 1) {
-      result = `${companySpliter}\n${bankStatementData[0]['Плательщик_ig']}\n${companySpliter}\n\n${result.trim()}`;
-    }
-
     return result.trim();
 
   }
 
-  static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
-    if (!await this.init(docsID, tx)) return '';
-    const BankStatementData = await this.getBankStatementData();
-    if (!BankStatementData.length) return '';
-    return this.isSalaryProject ?
-      await this.BankStatementDataAsSalaryProjectBankStatementString(BankStatementData)
-      :
-      await this.BankStatementDataAsCommonBankStatementString(BankStatementData);
+  private static async init(docsID: any[], tx: MSSQL): Promise<number> {
+    if (!docsID.length) return 0;
+    const doc = await lib.doc.byId(docsID[0], tx);
+    if (!doc) return 0;
+    const parentCompany = await lib.doc.Ancestors(doc.company as Ref, tx, 1) as string;
+    const country = await lib.util.getObjectPropertyById(parentCompany, 'Country.id', tx);
+    if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))?.description}`);
+    this.country = country.id;
+    this.tx = tx;
+    this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
+    const query = `
+    SELECT d.id,
+      d.Operation operation
+    FROM [dbo].[Document.Operation.v] d
+    WHERE d.id in (@p1)`;
+    this.docsByTypes = await this.executeQuery(query) as any;
+    this.operationTypes = [...new Set(this.docsByTypes.map(x => x.operation))];
+
+    return this.operationTypes.length;
   }
 
-  private static getHeaderText(StatementData): string {
-    let result = '1CClientBankExchange';
-    for (const prop of Object.keys(StatementData)) {
-      if (prop.search('_ig_head') === -1) continue;
-      result += `\n${prop.replace('_ig_head', '')}=${StatementData[prop]}`;
+  static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
+    if (!await this.init(docsID, tx)) return '';
+    let result = await this.BankStatementDataAsSalaryProjectBankStatementString();
+    if (result) return result;
+    result = await this.getHeaderText();
+    for (const operationType of this.operationTypes) {
+      result += await this.getBankStatementAsStringForOperationType(operationType);
+      result += '\n';
     }
-
+    if (result.length) result += 'КонецФайла';
     return result;
+  }
+
+  static async getBankStatementAsStringForOperationType(operationType: string): Promise<string> {
+    this.operation = operationType;
+    this.docsIds = this.docsByTypes.filter(e => e.operation === operationType).map(e => e.id);
+    this.docsIdsString = this.docsIds.map(el => '\'' + el + '\'').join(',');
+    const BankStatementData = await this.executeQuery(await this.getQueryTextCommon());
+    return await this.BankStatementDataAsCommonBankStatementString(BankStatementData);
+  }
+
+  private static async getHeaderText(): Promise<string> {
+    let result = '1CClientBankExchange';
+    const headerFields = await this.getHeaderFields();
+    for (const prop of Object.keys(headerFields)) {
+      result += `\n${prop}=${headerFields[prop]}`;
+    }
+    result += '\n';
+    result += await this.getBankAccounts();
+    result += '\n';
+    return result;
+  }
+
+  private static async getBankAccounts(): Promise<string> {
+    const query = `SELECT DISTINCT
+        ba.[code] as BankAccount
+    FROM [dbo].[Documents] as oper
+        LEFT JOIN [dbo].[Documents] as ba on ba.id = JSON_VALUE(oper.doc, '$.BankAccount')
+    WHERE oper.[id] in (@p1) AND JSON_VALUE(oper.doc, '$.Operation') IN ('68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9','54AA5310-102E-11EA-AA50-31ECFB22CD33','8D128C20-3E20-11EA-A722-63A01E818155','E47A8910-4599-11EA-AAE2-A1796B9A826A')
+    -- С р/с -  оплата поставщику,  р/с - Выдача/Возврат кредитов и займов (Контрагент), перечисление налогов и взносов, С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+    UNION
+    SELECT DISTINCT
+        ba.[code]
+    FROM [dbo].[Documents] as oper
+        LEFT JOIN [dbo].[Documents] as ba on ba.id = JSON_VALUE(oper.doc, '$.BankAccountOut')
+    WHERE oper.[id] in (@p1) and JSON_VALUE(oper.doc, '$.Operation') = '433D63DE-D849-11E7-83D2-2724888A9E4F' -- С р/с - на расчетный счет  (в путь)`;
+    const ba = await this.executeQuery(query);
+    return ba.filter(e => e).map(e => `РасчСчет=${(e as any).BankAccount}`).join('\n');
+  }
+
+  private static async getHeaderFields() {
+    const query = `
+    SELECT
+        IIF(@p2=1,N'2.00',N'1.02') as N'ВерсияФормата'
+        , 'UTF8' as N'Кодировка'
+        , IIF(@p2=1,N'Бухгалтерия для Казахстана, редакция 3.0',N'1С:ERP Управление предприятием 2')  as N'Отправитель'
+        , '' as N'Получатель'
+        , FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания'
+        , FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания'
+        , FORMAT (MIN(docs.[date]), 'dd.MM.yyyy') as N'ДатаНачала'
+        , FORMAT (MAX(docs.[date]), 'dd.MM.yyyy') as N'ДатаКонца'
+      , N'Платежное поручение' as N'Документ'
+    FROM [dbo].[Documents] as docs
+    WHERE docs.[id] in (@p1)`;
+    const result = await this.executeQuery(query, [null, this.isKAZAKHSTAN() ? 1 : 0]);
+    return result ? result[0] : {};
   }
 
   private static getShortDocNumber(docNumber: string, withZeros: boolean): string {
 
     if (docNumber.split('-').length === 2) {
       const docNumberArr = docNumber.split('-');
-      if (!withZeros || this.country === this.countryKAZAKHSTAN) {
+      if (!withZeros || this.isKAZAKHSTAN()) {
         return Number(docNumberArr[1]).toString();  // казахстан без лид. нулей
       }
       return docNumberArr[1];
