@@ -700,7 +700,7 @@ export class BankStatementUnloader {
     const query = `
     SELECT
         IIF(@p2=1,N'2.00',N'1.02') as N'ВерсияФормата'
-        , 'UTF8' as N'Кодировка'
+        , IIF(@p2=1,'UTF8','UTF-8') as N'Кодировка'
         , IIF(@p2=1,N'Бухгалтерия для Казахстана, редакция 3.0',N'1С:ERP Управление предприятием 2')  as N'Отправитель'
         , '' as N'Получатель'
         , FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания'

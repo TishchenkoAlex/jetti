@@ -59,8 +59,22 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
   }
 
+  private async FillOperationTypes(tx: MSSQL) {
+    const CashRequests = [...new Set(this.CashRequests.map(x => '\'' + x.CashRequest + '\''))].join(',');
+    const query = `SELECT id CashRequest, Operation OperationType FROM [dbo].[Document.CashRequest.v] WHERE id IN (${CashRequests})`;
+    const operations = await tx.manyOrNone<{ CashRequest, OperationType }>(query);
+    for (const row of this.CashRequests) {
+      const operType = operations.find(e => e.CashRequest === row.CashRequest);
+      if (operType) row.OperationType = operType.OperationType;
+    }
+  }
+
   private async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Создание возможно только в документе со статусом "APPROVED"!`);
+    if (this.CashRequests.filter(c => !c.OperationType)) {
+      await this.FillOperationTypes(tx);
+      await updateDocument(this, tx);
+    }
     await lib.doc.postById(this.id, tx);
     const OperationTypes = [...new Set(this.CashRequests.filter(c => (c.Amount > 0)).map(x => x.OperationType))];
     for (const OperationType of OperationTypes) {
