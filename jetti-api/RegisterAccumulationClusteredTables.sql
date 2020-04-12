@@ -371,7 +371,7 @@
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [Department], [Balance], [Analytics]
-      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.Balance]
     FROM [Accumulation] r
     CROSS APPLY OPENJSON (data, N'$')
@@ -381,6 +381,7 @@
         , [Balance] CHAR(36) N'$.Balance'
         , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
+        , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance';
     GO
@@ -394,7 +395,7 @@
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [Department], [Balance], [Analytics]
-      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -403,6 +404,7 @@
         , [Balance] CHAR(36) N'$.Balance'
         , [Analytics] CHAR(36) N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
+        , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance';
     END
@@ -412,7 +414,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount], [Info]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance](id) WITH (MAXDOP=4);
 
@@ -428,7 +430,7 @@
       d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
-      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], [Info]
     INTO [Register.Accumulation.Balance.Report]
     FROM [Accumulation] r
     CROSS APPLY OPENJSON (data, N'$')
@@ -441,6 +443,7 @@
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance.Report';
     GO
@@ -456,7 +459,7 @@
         d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
-      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -468,6 +471,7 @@
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance.Report';
     END
@@ -477,7 +481,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting], [Info]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report](id) WITH (MAXDOP=4);
 

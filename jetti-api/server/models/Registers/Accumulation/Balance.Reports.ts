@@ -27,6 +27,9 @@ export class RegisterAccumulationBalanceReport extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
+  @Props({ type: 'string' })
+  Info = '';
+
   constructor (init: Partial<RegisterAccumulationBalanceReport>) {
     super(init);
     Object.assign(this, init);

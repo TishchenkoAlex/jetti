@@ -86,6 +86,12 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.User', hiddenInList: false, readOnly: true })
   user: Ref = null;
 
+  @Props({ type: 'date', isAdditional: true })
+  BankUploadDate = null;
+
+  @Props({ type: 'date', isAdditional: true })
+  DocumentsCreationDate = null;
+
   @Props({
     type: 'table', required: false, order: 1, label: 'Cash requests',
     onChange: function (doc: CashRequest, value: CashRequest[]) {

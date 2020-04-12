@@ -2676,6 +2676,8 @@
         , ISNULL([BusinessDirection.v].description, '') [BusinessDirection.value], d.[BusinessDirection] [BusinessDirection.id], [BusinessDirection.v].type [BusinessDirection.type]
         , d.[Amount] [Amount]
         , ISNULL([сurrency.v].description, '') [сurrency.value], d.[сurrency] [сurrency.id], [сurrency.v].type [сurrency.type]
+        , d.[BankUploadDate] [BankUploadDate]
+        , d.[DocumentsCreationDate] [DocumentsCreationDate]
       
         , ISNULL(l5.description, d.description) [CashRequestRegistry.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequestRegistry.Level4]

@@ -153,7 +153,7 @@
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, Department, Balance, Analytics
-      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], Info
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -162,6 +162,7 @@
         , [Balance] UNIQUEIDENTIFIER N'$.Balance'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
+        , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance';
     GO
@@ -176,7 +177,7 @@
         d.exchangeRate, currency, Department, Balance, Analytics
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
-      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], Info
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -188,6 +189,7 @@
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance.Report';
     GO

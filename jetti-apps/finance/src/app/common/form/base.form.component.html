@@ -53,19 +53,13 @@
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
               *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
               <div fxFlex>
-                <j-control
-                  *ngIf="v[i+0] && !v[i+0].isAdditional && v[i+0].order > 0 && v[i+0].order !== 1000 && v[i+0].order !== 777 && v[i+0].controlType !== 'table' && v[i+0].controlType !== 'script'"
-                  [control]="v[i+0]" [form]="form"></j-control>
+                <j-control *ngIf="headFields[i+0]" [control]="headFields[i+0]" [form]="form"></j-control>
               </div>
               <div fxFlex>
-                <j-control
-                  *ngIf="v[i+1] && !v[i+1].isAdditional && v[i+1].order > 0 && v[i+1].order !== 1000 && v[i+0].order !== 777 && v[i+1].controlType !== 'table' && v[i+1].controlType !== 'script'"
-                  [control]="v[i+1]" [form]="form"></j-control>
+                <j-control *ngIf="headFields[i+1]" [control]="headFields[i+1]" [form]="form"></j-control>
               </div>
               <div fxFlex>
-                <j-control
-                  *ngIf="v[i+2] && !v[i+2].isAdditional && v[i+2].order > 0 && v[i+2].order !== 1000 && v[i+0].order !== 777 && v[i+2].controlType !== 'table' && v[i+2].controlType !== 'script'"
-                  [control]="v[i+2]" [form]="form"></j-control>
+                <j-control *ngIf="headFields[i+2]" [control]="headFields[i+2]" [form]="form"></j-control>
               </div>
             </div>
 
@@ -74,13 +68,13 @@
               <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
                 *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
                 <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+0] && fieldsetsFields[i+0].order === 777" [control]="fieldsetsFields[i+0]" [form]="form"></j-control>
+                  <j-control *ngIf="fieldsetsFields[i+0]" [control]="fieldsetsFields[i+0]" [form]="form"></j-control>
                 </div>
                 <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+1] && fieldsetsFields[i+1].order === 777" [control]="fieldsetsFields[i+1]" [form]="form"></j-control>
+                  <j-control *ngIf="fieldsetsFields[i+1]" [control]="fieldsetsFields[i+1]" [form]="form"></j-control>
                 </div>
                 <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+2] && fieldsetsFields[i+2].order === 777" [control]="fieldsetsFields[i+2]" [form]="form"></j-control>
+                  <j-control *ngIf="fieldsetsFields[i+2]" [control]="fieldsetsFields[i+2]" [form]="form"></j-control>
                 </div>
               </div>
             </p-fieldset>
@@ -114,13 +108,16 @@
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
             *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+0] && additionalFields[i+0].isAdditional" [control]="additionalFields[i+0]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+0]"
+                [control]="additionalFields[i+0]" [form]="form"></j-control>
             </div>
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+1] && additionalFields[i+1].isAdditional" [control]="additionalFields[i+1]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+1]"
+                [control]="additionalFields[i+1]" [form]="form"></j-control>
             </div>
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+2] && additionalFields[i+2].isAdditional" [control]="additionalFields[i+2]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+2]"
+                [control]="additionalFields[i+2]" [form]="form"></j-control>
             </div>
           </div>
         </p-panel>
