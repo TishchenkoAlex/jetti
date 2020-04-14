@@ -10,6 +10,9 @@ export interface Ix100Lib {
   };
   register: {
   };
+  catalog: {
+    counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
+  };
   doc: {
   };
   info: {
@@ -31,6 +34,9 @@ export const x100: Ix100Lib = {
   },
   register: {
   },
+  catalog: {
+    counterpartieByINNAndKPP
+  },
   doc: {
   },
   info: {
@@ -46,6 +52,12 @@ export const x100: Ix100Lib = {
     x100DataDB
   }
 };
+
+async function counterpartieByINNAndKPP(INN: string, KPP: string, tx: MSSQL): Promise<Ref | null> {
+  const query = `SELECT TOP 1 cp.id FROM [dbo].[Catalog.Counterpartie.v] cp WHERE cp.Code1 = @p1 and  cp.Code2 = @p2`;
+  const res = await tx.oneOrNone<{ id }>(query, [INN, KPP]);
+  return res ? res.id : null;
+}
 
 async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<string> {
   return await BankStatementUnloader.getBankStatementAsString(docsID, tx);

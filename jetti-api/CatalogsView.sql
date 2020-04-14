@@ -475,6 +475,7 @@
         , d.[RoyaltyArrangements] [RoyaltyArrangements]
         , d.[RoyaltyDelayTo] [RoyaltyDelayTo]
         , d.[PaymentKC] [PaymentKC]
+        , d.[RoyaltyPercent] [RoyaltyPercent]
         , d.[PaymentOVM] [PaymentOVM]
         , d.[PaymentOKK] [PaymentOKK]
         , d.[PaymentKRO] [PaymentKRO]
