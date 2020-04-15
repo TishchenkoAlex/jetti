@@ -69,8 +69,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
   }
 
-  private async Create(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`Создание возможно только в документе со статусом "APPROVED"!`);
+  public async Create(tx: MSSQL) {
+    if (this.Status !== 'APPROVED') throw new Error(`${this.description} cоздание возможно только в документе со статусом "APPROVED"!`);
     if (this.CashRequests.filter(c => !c.OperationType)) {
       await this.FillOperationTypes(tx);
       await updateDocument(this, tx);
@@ -80,6 +80,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     for (const OperationType of OperationTypes) {
       await this.CreateByOperationType(OperationType, tx);
     }
+    this.DocumentsCreationDate = new Date as any;
     await updateDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
@@ -148,9 +149,10 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async UnloadToText(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`Creating is possible only in the APPROVED document!`);
+    if (this.Status !== 'APPROVED') throw new Error(`${this.description} выгрузка возможна только в документе со статусом "APPROVED"!`);
     const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
     this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
+    this.BankUploadDate = new Date as any;
     await updateDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
@@ -382,6 +384,8 @@ HAVING SUM(Balance.[Amount]) > 0;
     this.CashRequests = [];
     this.Amount = 0;
     this.info = '';
+    this.DocumentsCreationDate = null;
+    this.BankUploadDate = null;
     return this;
   }
 

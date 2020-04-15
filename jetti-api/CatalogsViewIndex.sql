@@ -452,6 +452,7 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."RoyaltyArrangements"')), '') [RoyaltyArrangements]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.RoyaltyDelayTo'),127) [RoyaltyDelayTo]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."PaymentKC"')), '') [PaymentKC]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."RoyaltyPercent"')), 0) [RoyaltyPercent]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."PaymentOVM"')), '') [PaymentOVM]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."PaymentOKK"')), '') [PaymentOKK]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."PaymentKRO"')), '') [PaymentKRO]

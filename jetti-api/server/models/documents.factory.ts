@@ -1,3 +1,4 @@
+import { CatalogJobTitleCategory } from './Catalogs/Catalog.JobTitle.Category';
 import { CatalogProductReport } from './Catalogs/Catalog.Product.Report';
 import { CatalogDepartmentStatusReason } from './Catalogs/Catalog.Department.StatusReason';
 import { CatalogDepartmentKind } from './Catalogs/Catalog.Department.Kind';
@@ -171,6 +172,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Role', Class: CatalogRole },
   { type: 'Catalog.SubSystem', Class: CatalogSubSystem },
   { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
+  { type: 'Catalog.JobTitle.Category', Class: CatalogJobTitleCategory },
   { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },

@@ -75,6 +75,9 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentKC = 'NONE';
 
+  @Props({ type: 'number', label: 'Rotalty fix %', order: 777 })
+  RoyaltyPercent = 0;
+
   @Props({ type: 'enum', value: ['INVOICE', 'ROYALTY', 'NONE'], order: 777 })
   PaymentOVM = 'NONE';
 

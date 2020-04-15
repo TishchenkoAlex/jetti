@@ -1,3 +1,4 @@
+import { x100 } from './../x100.lib';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions } from '../../server/models/document';
@@ -551,6 +552,32 @@ router.post('/setApprovingStatus/:id/:Status', async (req: Request, res: Respons
         }
         await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
+      }
+    });
+  } catch (err) { next(err); }
+});
+
+router.post('/createDocument/:type', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const body = req.body;
+      let flatDoc: IFlatDocument;
+      let servDoc;
+      const resOb = { id: '', code: '', error: '' };
+      if (req.params.type !== 'Document.CashRequest') resOb.error = `Unsupported doc type: ${req.params.type}`;
+      else {
+        if (body.Id) {
+          flatDoc = await lib.doc.byId(body.Id, tx) as any;
+          if (!flatDoc) resOb.error = `Cant find doc with id: ${body.Id}`;
+          else servDoc = await lib.doc.createDocServer(req.params.type as DocTypes, flatDoc, tx);
+        } else servDoc = await lib.doc.createDocServer(req.params.type as DocTypes, undefined, tx);
+        if (!resOb.error) {
+          await servDoc.FillByWebAPIBody(body, tx);
+          resOb.id = servDoc.id;
+          resOb.code = servDoc.code;
+          res.json(resOb);
+        }
       }
     });
   } catch (err) { next(err); }
