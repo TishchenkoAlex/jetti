@@ -175,6 +175,7 @@ async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseSer
   const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
+  if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
   if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx);
   else servDoc = await updateDocument(servDoc, tx);
   if (isPostedAfter) await postDocument(servDoc, tx);
