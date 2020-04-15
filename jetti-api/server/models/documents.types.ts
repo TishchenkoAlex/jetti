@@ -59,6 +59,7 @@ export type CatalogTypes =
   'Catalog.LoanTypes' |
   'Catalog.BusinessDirection' |
   'Catalog.JobTitle' |
+  'Catalog.JobTitle.Category' |
   'Catalog.BusinessRegion' |
   'Catalog.TaxPaymentCode' |
   'Catalog.TaxAssignmentCode' |

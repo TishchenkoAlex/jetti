@@ -12,4 +12,10 @@ export class CatalogJobTitle extends DocumentBase {
   @Props({ type: 'Catalog.JobTitle', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'boolean', label: 'ТТ' })
+  TO = false;
+
+  @Props({ type: 'boolean', label: 'ЦО' })
+  CO = false;
+
 }
