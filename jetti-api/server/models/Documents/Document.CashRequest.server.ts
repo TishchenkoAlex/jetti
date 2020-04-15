@@ -19,6 +19,7 @@ import { CatalogPerson } from '../Catalogs/Catalog.Person';
 import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
 import { getUser } from '../../routes/auth';
+import { x100 } from '../../x100.lib';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -135,6 +136,37 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   async isSuperuser(tx: MSSQL) {
     const user = await getUser(tx.user.email);
     return user && await lib.util.isRoleAvailable('Cash request admin', user);
+  }
+
+  async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
+    const query = `
+          SELECT [id]
+                ,[company]
+            FROM [dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
+    const dep = await tx.oneOrNone<{ id, company }>(query, [body.DepartmentId]);
+    if (dep) {
+      this['Department'] = dep.id;
+      this['company'] = dep.company;
+    }
+    this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx);
+    this['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP, tx);
+    this['Amount'] = body.Amount;
+    this['TaxRate'] = '7CFE6E50-35EA-11EA-A185-21EAFAF35D68'; // Без НДС
+    this['Status'] = 'PREPARED';
+    this['Operation'] = 'Оплата поставщику';
+    this['CashKind'] = 'BANK';
+    this['Status'] = 'PREPARED';
+    this['PayDay'] = body.PayDay;
+    this['info'] = body.Info;
+    this['date'] = body.Date ? body.Date : new Date;
+    this['user'] = 'E050B6D0-FAED-11E9-B75B-A35013C043AE'; // Exchange-PORTAL
+    if (this.workflowID) {
+      await DeleteProcess(this.workflowID);
+      this.workflowID = '';
+    }
+    this.posted = false;
+    this.deleted = false;
+    this.map(await lib.doc.saveDoc(this, tx));
   }
 
   async FillTaxInfo(tx: MSSQL) {

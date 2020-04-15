@@ -561,35 +561,19 @@ router.post('/createDocument/:type', async (req: Request, res: Response, next: N
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      const body = JSON.parse(req.body);
+      const body = req.body;
       let flatDoc: IFlatDocument;
       let servDoc;
       const resOb = { id: '', code: '', error: '' };
       if (req.params.type !== 'Document.CashRequest') resOb.error = `Unsupported doc type: ${req.params.type}`;
       else {
-        if (body.id) {
+        if (body.Id) {
           flatDoc = await lib.doc.byId(body.Id, tx) as any;
           if (!flatDoc) resOb.error = `Cant find doc with id: ${body.Id}`;
           else servDoc = await lib.doc.createDocServer(req.params.type as DocTypes, flatDoc, tx);
         } else servDoc = await lib.doc.createDocServer(req.params.type as DocTypes, undefined, tx);
         if (!resOb.error) {
-          servDoc['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx);
-          servDoc['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP, tx);
-          servDoc['Amount'] = body.Amount;
-          servDoc['Department'] = body.DepartmentId;
-          servDoc['company'] = await lib.util.getObjectPropertyById(servDoc['Department'], 'company', tx);
-          servDoc['TaxRate'] = '7CFE6E50-35EA-11EA-A185-21EAFAF35D68'; // Без НДС
-          servDoc['Status'] = 'PREPARED';
-          servDoc['Operation'] = 'Оплата поставщику';
-          servDoc['CashKind'] = 'BANK';
-          servDoc['Status'] = 'PREPARED';
-          servDoc['PayDay'] = body.PayDay;
-          servDoc['info'] = body.Info;
-          servDoc['date'] = body.Date;
-          servDoc['user'] = 'E050B6D0-FAED-11E9-B75B-A35013C043AE'; // Exchange-PORTAL
-          servDoc = await lib.doc.saveDoc(servDoc, tx);
-          servDoc.posted = 0;
-          servDoc.deleted = 0;
+          await servDoc.FillByWebAPIBody(body, tx);
           resOb.id = servDoc.id;
           resOb.code = servDoc.code;
           res.json(resOb);
