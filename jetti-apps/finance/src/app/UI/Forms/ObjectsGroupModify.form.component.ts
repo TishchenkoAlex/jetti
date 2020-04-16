@@ -42,6 +42,39 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     super.close();
   }
 
+  PasteTable() {
+    const pastedValue = this.form.get('Text').value as string;
+    if (!pastedValue) this.throwError('!', 'Не задан текст');
+    const sep = this.getSeparators();
+    const rows = pastedValue.split(sep.rows);
+    if (!rows.length) this.throwError('!', 'Не найден разделитель строк');
+    const cols = rows[0].split(sep.columns);
+    if (!cols.length) this.throwError('!', 'Не найден разделитель колонок');
+  }
+
+  getSeparators(): { rows: string, columns: string } {
+    return { rows: this.form.get('RowsSeparator').value || '\n', columns: this.form.get('ColumnsSeparator').value || '\t' };
+  }
+
+  async getViewModel() {
+    await this.ExecuteServerMethod('ReadRecieverStructure');
+    return;
+    const Operation = this.form.get('Operation');
+    const queryParams: { [key: string]: any } = {};
+    let type = '';
+    if (Operation && Operation.value && Operation.value.value) {
+      type = 'Document.Operation';
+      queryParams.Operation = Operation.value.id;
+    } else {
+      const typeControl = this.form.get('Catalog');
+      if (typeControl && typeControl.value && typeControl.value.id) type = typeControl.value.id;
+    }
+    if (!type) this.throwError('!', 'Не задан тип приемника');
+    this.ds.api.getViewModel(type, '', queryParams).pipe(take(1)).subscribe(vm => {
+      console.log(vm);
+    });
+  }
+
   async ExecuteServerMethod(methodName: string) {
 
     this.ds.api.execute(this.type as FormTypes, methodName, this.form.getRawValue() as FormBase).pipe(take(1))

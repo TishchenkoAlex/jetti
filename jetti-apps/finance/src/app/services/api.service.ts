@@ -225,9 +225,6 @@ export class ApiService {
     if (columns.length) {
       result.pipe(take(1)).subscribe(hierarchyList => {
         this.getDocList(type, '', 'first').toPromise().then(docList => {
-          console.log('columns', columns);
-          console.log('docList', docList);
-          console.log('result', hierarchyList);
         });
       });
     }
@@ -236,7 +233,7 @@ export class ApiService {
   }
 
   execute(type: FormTypes, method: string, doc: FormBase) {
-    const apiDoc = viewModelToFlatDocument(doc as any);
+    const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}form/${type}/${method}`;
     return this.http.post<{ [x: string]: any }>(query, apiDoc);
   }

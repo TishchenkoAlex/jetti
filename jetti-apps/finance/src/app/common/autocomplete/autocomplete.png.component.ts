@@ -7,7 +7,7 @@ import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription, of } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
-import { FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
+import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
@@ -157,7 +157,8 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
   handleSearch = (event: Event) => {
     this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders' && this.auth.isRoleAvailableTester();
-    if (!this.isTypeValue) this.filters = this.calcFilters(); else this.filters = new FormListSettings();
+    this.filters = new FormListSettings();
+    if (!this.isTypeValue) this.filters = this.calcFilters();
     this.showDialog = true;
   }
 
@@ -182,9 +183,13 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     const result = new FormListSettings();
     if (this.owner && this.owner.length) {
       for (const row of this.owner) {
-        const fc = this.formControl.parent.get(row.dependsOn) || this.formControl.root.get(row.dependsOn);
-        if (fc && fc.value)
-          result.filter.push({ left: row.filterBy, center: '=', right: fc!.value });
+        let rightValue = '';
+        if (row.dependsOn.length === 36) rightValue = row.dependsOn; // is GUID
+        else {
+          const fc = this.formControl.parent.get(row.dependsOn) || this.formControl.root.get(row.dependsOn);
+          if (fc && fc.value) rightValue = fc!.value;
+        }
+        if (rightValue) result.filter.push({ left: row.filterBy, center: '=', right: rightValue });
       }
     }
     if (!this.useHierarchyList || suggest) {
@@ -192,16 +197,44 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
       if (this.storageType === 'elements') { result.filter.push({ left: 'isfolder', center: '=', right: 0 }); }
       if (this.storageType === 'all') { result.filter.push({ left: 'isfolder', center: '=', right: undefined }); }
     }
-    let company;
-    if (this.type.startsWith('Document.')) {
-      const doc = this.formControl && this.formControl.root.value;
-      if (doc && doc.company.id) company = doc.company;
-    } else if (this.type === 'Types.Document') {
-      const doc = this.formControl && this.formControl.root['controls'];
-      if (doc && doc.company && doc.company.value && doc.company.value.id) company = doc.company.value.id;
+    if (!result.filter.find(e => e.left === 'company')) {
+      let company;
+      if (this.type.startsWith('Document.')) {
+        const doc = this.formControl && this.formControl.root.value;
+        if (doc && doc.company.id) company = doc.company;
+      } else if (this.type === 'Types.Document') {
+        const doc = this.formControl && this.formControl.root['controls'];
+        if (doc && doc.company && doc.company.value && doc.company.value.id) company = doc.company.value.id;
+      }
+      if (company) result.filter.push({ left: 'company', center: '=', right: company });
     }
-    if (company) result.filter.push({ left: 'company', center: '=', right: company });
+    result.filter = this.getFilterFromModule(result.filter);
+
     return result;
+  }
+
+  getFilterFromModule(Filter: FormListFilter[]): FormListFilter[] {
+    if (!this.formControl) return Filter; // list form
+    const form = this.formControl.root as FormGroup;
+    const funcName = `getFilter_${this.id}`;
+    if (!form['metadata'] || !form['metadata']['module'] || !(form['metadata']['module'] as string).includes(funcName)) return Filter;
+    const functions = new Function('', form['metadata']['module']).bind(this)();
+    const funcBody = `f = ${functions[funcName].toString()}; return f();`;
+    const func = new Function('doc, row, value, filter', funcBody);
+    return func.bind(this, form.getRawValue(), this.formControl.parent.value, this.formControl.value, Filter)();
+  }
+
+
+  async asyncgetFilterFromModule(Filter: FormListFilter[]): Promise<FormListFilter[]> {
+    const form = this.formControl.root as FormGroup;
+    const funcName = `getFilter_${this.id}`;
+    if (!form['metadata'] || !form['metadata']['module'] || !(form['metadata']['module'] as String).includes(funcName)) return Filter;
+    const functions = new Function('', form['metadata']['module']).bind(this)();
+    let funcBody = functions[funcName].toString().replace(/\api\./g, 'await api.') as String;
+    funcBody = `f = async ${funcBody}; return f();`;
+    const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+    const func = new AsyncFunction('doc, row, value, filter, api', funcBody);
+    return await func.bind(this, form.getRawValue(), this.formControl.parent.value, this.formControl.value, Filter, this.api)();
   }
 
   calcDialogWidth() {

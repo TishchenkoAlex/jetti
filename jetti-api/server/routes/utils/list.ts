@@ -128,6 +128,9 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
           if (interval.start)
             where += ` AND "${f.left}" BEETWEN '${interval.start}' AND '${interval.end}' `;
           break;
+        case 'in':
+          where += ` AND "${f.left}" IN (${(f.right['value'] || f.right)}) `;
+          break;
         case 'is null':
           where += ` AND "${f.left}" IS NULL `;
           break;

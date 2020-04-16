@@ -4,6 +4,7 @@ import { dateReviverUTC } from '../../fuctions/dateReviver';
 import PostAfterEchangeServer from './Form.PostAfterEchange.server';
 import { FormBusinessProcessTasks } from './Form.BusinessProcessTasks';
 import FormSearchAndReplaceServer from './Form.SearchAndReplace.Server';
+import FormObjectsGroupModifyServer from './Form.ObjectsGroupModify.Server';
 
 export interface IServerForm {
   Execute (): Promise<FormBase>;
@@ -27,4 +28,5 @@ const RegisteredServerForms = new Map<FormTypes, typeof FormBase>([
   ['Form.PostAfterEchange', PostAfterEchangeServer],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
   ['Form.SearchAndReplace', FormSearchAndReplaceServer],
+  ['Form.ObjectsGroupModify', FormObjectsGroupModifyServer]
 ]);

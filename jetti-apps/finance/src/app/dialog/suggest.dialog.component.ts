@@ -8,7 +8,7 @@ import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { createDocument } from '../../../../../jetti-api/server/models/documents.factory';
-import { DocTypes } from '../../../../../jetti-api/server/models/documents.types';
+import { DocTypes, AllTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
 import { ApiDataSource } from '../common/datatable/api.datasource.v2';
 import { calendarLocale, dateFormat } from '../primeNG.module';
@@ -66,7 +66,8 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.readonly = this.auth.isRoleAvailableReadonly();
     const columns: ColumnDef[] = [];
-    const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
+    const data: { [x: string]: AllTypes }[] = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
+    if (this.type.startsWith('Document.')) data.push({ date: 'datetime' });
     try { this.doc = createDocument(this.type); } catch { }
     const schema = this.doc ? this.doc.Props() : {};
     const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];

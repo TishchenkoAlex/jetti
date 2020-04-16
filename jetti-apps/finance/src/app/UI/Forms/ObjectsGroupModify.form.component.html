@@ -5,10 +5,11 @@
         <p-panel #mp [header]='header' [toggleable]="true">
           <p-toolbar *ngIf="!onlyViewMode">
             <div class="ui-toolbar-group-left">
-              <!-- <button pButton type="button" id="Search" icon="fab fa-searchengin" label="Search"
-                pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
-                (click)="ExecuteServerMethod('Search')"></button>
-              <button pButton type="button" id="ExchangeData" icon="fas fa-exchange-alt" label="Fill exchange data"
+              <button pButton type="button" id="PasteForm" label="Загрузить колонки" class="ui-button-warning"
+                (click)="PasteTable()"></button>
+              <button pButton type="button" id="ReadReciever" label="Загрузить структуру приемника"
+                class="ui-button-warning" (click)="getViewModel()"></button>
+              <!-- <button pButton type="button" id="ExchangeData" icon="fas fa-exchange-alt" label="Fill exchange data"
                 class="ui-button-warning" (click)="ExecuteServerMethod('FillExchangeData')"></button>
               <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace" pTooltip="Replace"
                 tooltipPosition="top" showDelay="2000" class="ui-button-danger"
