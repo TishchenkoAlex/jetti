@@ -1,7 +1,7 @@
 import { x100 } from './../x100.lib';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { DocumentBase, DocumentOptions } from '../../server/models/document';
+import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
 import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/common-types';
@@ -44,7 +44,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     const email = User(req).email;
     const id: string | undefined = params.id;
     const type: DocTypes = params.type;
-    const Operation: string | undefined = req.query.Operation || undefined;
+    const Operation: string | undefined = req.query.Operation as string || undefined;
     const isFolder: boolean = req.query.isfolder === 'true';
 
     let doc: IFlatDocument | DocumentOperation | null = null;
@@ -83,7 +83,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           if (ServerDoc.onCreate) { await ServerDoc.onCreate(sdb); }
           break;
         case 'copy':
-          const copy = await lib.doc.byId(req.query.copy, sdb);
+          const copy = await lib.doc.byId(req.query.copy as Ref, sdb);
           if (!copy) throw new Error(`base document ${req.query.copy} for copy is not found!`);
           const copyDoc = await createDocumentServer(type, copy, sdb);
           copyDoc.id = id; copyDoc.date = ServerDoc.date; copyDoc.code = '';
@@ -100,7 +100,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           if (userID) ServerDoc.user = userID;
           break;
         case 'history':
-          const history = await lib.doc.historyById(req.query.history, sdb);
+          const history = await lib.doc.historyById(req.query.history as Ref, sdb);
           if (!history) throw new Error(`history version of document ${req.query.history} is not found!`);
           const histDoc = await createDocumentServer(type, history, sdb);
           ServerDoc.map(histDoc);

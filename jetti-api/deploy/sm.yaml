@@ -54,7 +54,7 @@ spec:
             - name: EXCHANGE_ACCESS_KEY
               value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
             - name: REFRESH_ID
-              value: "0009"
+              value: "0001"
             - name: NODE_ENV
               value: "production"
 ---
