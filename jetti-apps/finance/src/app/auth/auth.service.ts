@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   public isRoleAvailableTester(): boolean {
-    return this.isRoleAvailable('New features tester');
+    return true; // this.isRoleAvailable('New features tester');
   }
 
   private init(loginResponse: ILoginResponse) {
