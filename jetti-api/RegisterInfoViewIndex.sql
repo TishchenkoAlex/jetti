@@ -275,6 +275,28 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.IncomeDocumentRegistry]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) "Currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , ISNULL(JSON_VALUE(data, '$.DocNumber'), '') "DocNumber"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DocJETTI"')) "DocJETTI"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountIncome')) "AmountIncome"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountJETTI')) "AmountJETTI"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.IncomeDocumentRegistry';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.IncomeDocumentRegistry] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.IncomeDocumentRegistry] ON [dbo].[Register.Info.IncomeDocumentRegistry](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
     WITH SCHEMABINDING
     AS

@@ -6,6 +6,7 @@ import { configSchema } from './../../models/config';
 import { FilterInterval, FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
+import { filterBuilder } from '../../fuctions/filterBuilder';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
@@ -48,7 +49,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   let row: DocumentBase | null = null;
   let query = '';
-  let tempTabe = '';
 
   if (params.id) row = (await tx.oneOrNone<DocumentBase>(`SELECT * FROM (${QueryList}) d WHERE d.id = '${params.id}'`));
   if (!row && params.command !== 'last') params.command = 'first';
@@ -73,80 +73,13 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
 
-  const filterBuilder = (filter: FormListFilter[]) => {
-    let where = ' (1 = 1) ';
-
-    const filterList = filter.filter(f => !(f.right === null || f.right === undefined));
-    for (const f of filterList) {
-      switch (f.center) {
-        case '=':
-        case '>=':
-        case '<=':
-        case '>':
-        case '<':
-          if (Array.isArray(f.right)) { // time interval
-            if (f.right[0])
-              where += ` AND "${f.left}" >= '${f.right[0]}'`;
-            if (f.right[1])
-              where += ` AND "${f.left}" <= '${f.right[1]}'`;
-            break;
-          }
-          if (typeof f.right === 'number') {
-            where += ` AND "${f.left}" ${f.center} '${f.right}'`;
-            break;
-          }
-          if (typeof f.right === 'boolean') {
-            where += ` AND "${f.left}" ${f.center} '${f.right}'`;
-            break;
-          }
-          if (typeof f.right === 'object') {
-            if (!f.right.id)
-              where += ` AND "${f.left}" IS NULL `;
-            else {
-              if (f.left === 'parent.id') {
-                where += ` AND "${f.left}" = '${f.right.id}'`;
-              } else {
-                if (tempTabe.indexOf(`[#${f.left}]`) < 0)
-                  tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
-                where += ` AND "${f.left}" IN (SELECT id FROM [#${f.left}])`;
-              }
-            }
-            break;
-          }
-          if (typeof f.right === 'string')
-            f.right = f.right.toString().replace('\'', '\'\'');
-          if (!f.right)
-            where += ` AND "${f.left}" IS NULL `;
-          else
-            where += ` AND "${f.left}" ${f.center} N'${f.right}'`;
-          break;
-        case 'like':
-          where += ` AND "${f.left}" LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
-          break;
-        case 'beetwen':
-          const interval = f.right as FilterInterval;
-          if (interval.start)
-            where += ` AND "${f.left}" BEETWEN '${interval.start}' AND '${interval.end}' `;
-          break;
-        case 'in':
-          where += ` AND "${f.left}" IN (${(f.right['value'] || f.right)}) `;
-          break;
-        case 'is null':
-          where += ` AND "${f.left}" IS NULL `;
-          break;
-      }
-    }
-    return where;
-  };
-
   const queryBuilder = (isAfter: boolean) => {
     if (valueOrder.length === 0) return '';
-    const fb = filterBuilder(params.filter);
     const order = valueOrder.slice();
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
     let queryBuilderResult = `
       SELECT TOP ${params.count + 1} id FROM (${QueryList}) d
-      WHERE ${(filterBuilder(params.filter))} AND (`;
+      WHERE ${(filterBuilder(params.filter).where)} AND (`;
 
     valueOrder.forEach(_or => {
       let where = '(';
@@ -166,10 +99,11 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     return queryBuilderResult;
   };
 
+  const queryFilter = filterBuilder(params.filter);
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter && row) {
-    query = `${tempTabe}
+    query = `${queryFilter.tempTable}
     SELECT * FROM (${QueryList}) d WHERE id IN (
       SELECT id FROM (${queryBefore}) q1
       UNION ALL
@@ -177,11 +111,11 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     )
     ${orderbyAfter}`;
   } else {
-    const filter = filterBuilder(params.filter);
+    // const filter = filterBuilder(params.filter);
     if (params.command === 'last')
-      query = `${tempTabe}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyBefore}) d ${orderbyAfter}`;
+      query = `${queryFilter.tempTable}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyBefore}) d ${orderbyAfter}`;
     else
-      query = `${tempTabe}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(filter)} ${orderbyAfter}`;
+      query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyAfter}`;
   }
   // if (process.env.NODE_ENV !== 'production') console.log(query);
   const data = await tx.manyOrNone<any>(query);

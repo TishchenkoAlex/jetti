@@ -15,6 +15,7 @@ import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
 import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
 import { RegisterInfoMainSpecification } from './MainSpecification';
 import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
+import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
@@ -32,6 +33,7 @@ export type RegisterInfoTypes =
     'Register.Info.CompanyResponsiblePersons' |
     'Register.Info.IntercompanyHistory' |
     'Register.Info.RoyaltySales' |
+    'Register.Info.IncomeDocumentRegistry' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
@@ -46,6 +48,7 @@ export type RegistersInfo =
     RegisterInfoSettings |
     RegisterInfoMainSpecification |
     RegisterInfoIntercompanyHistory |
+    RegisterInfoIncomeDocumentRegistry |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -69,6 +72,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.DepartmentStatus', Class: RegisterInfoDepartmentStatus },
     { type: 'Register.Info.CounterpartiePriceList', Class: RegisterInfoCounterpartiePriceList },
     { type: 'Register.Info.CompanyResponsiblePersons', Class: RegisterInfoCompanyResponsiblePersons },
+    { type: 'Register.Info.IncomeDocumentRegistry', Class: RegisterInfoIncomeDocumentRegistry },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
 ];
 
