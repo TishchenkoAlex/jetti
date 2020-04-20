@@ -60,6 +60,10 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async FillOperationTypes(tx: MSSQL) {
+    if (this.Operation === 'Выплата заработной платы (наличные)') {
+      for (const row of this.CashRequests) { row.OperationType = this.Operation; }
+      return;
+    }
     const CashRequests = [...new Set(this.CashRequests.map(x => '\'' + x.CashRequest + '\''))].join(',');
     const query = `SELECT id CashRequest, Operation OperationType FROM [dbo].[Document.CashRequest.v] WHERE id IN (${CashRequests})`;
     const operations = await tx.manyOrNone<{ CashRequest, OperationType }>(query);
@@ -71,7 +75,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   public async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`${this.description} cоздание возможно только в документе со статусом "APPROVED"!`);
-    if (this.CashRequests.filter(c => !c.OperationType)) {
+    if (this.CashRequests.filter(c => !c.OperationType || (this.Operation && this.Operation !== c.OperationType))) {
       await this.FillOperationTypes(tx);
       await updateDocument(this, tx);
     }
@@ -142,7 +146,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
       if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
       if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
-      if (LinkedDocument) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+      if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
       await lib.doc.postById(OperationServer.id, tx);
       rowsWithAmount.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
     }
