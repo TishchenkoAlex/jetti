@@ -29,6 +29,8 @@ export interface PropOptions {
   resource?: boolean;
   isAdditional?: boolean;
   storageType?: StorageType;
+  useIn?: StorageType;
+  isIndexed?: boolean;
   validators?: { key: string, value?: any }[];
 }
 
@@ -45,7 +47,7 @@ export interface DocumentOptions {
   prefix?: string;
   commands?: Command[];
   presentation?: 'code' | 'description';
-  hierarchy?: 'folders' | 'elements' | 'all';
+  hierarchy?: StorageType;
   copyTo?: CopyTo[];
   relations?: Relation[];
   module?: string;
@@ -84,7 +86,7 @@ export class DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '300px' } })
   description = '';
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }})
+  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' } })
   company: Ref = null;
 
   @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
@@ -144,9 +146,15 @@ export class DocumentBase {
     else this.targetProp(proto, 'parent').storageType = 'elements';
 
     const result: { [x: string]: PropOptions } = {};
+    // const commonProps = `id,type,date,code,description,company,user,posted,deleted,parent,isfolder,info,timestamp`.split(',');
+    const commonProps = Object.keys(new DocumentBase);
+    commonProps.push('type');
     for (const prop of Object.keys(proto)) {
-      const Prop = proto.targetProp(this, prop);
-      if (!Prop) { continue; }
+      const Prop = proto.targetProp(this, prop) as PropOptions;
+      if (!Prop ||
+        (commonProps.indexOf(prop) === -1 && (
+          (Prop.useIn === 'folders' && !this.isfolder) ||
+          ((Prop.useIn === 'elements' || !Prop.useIn) && this.isfolder)))) { continue; }
       result[prop] = Object.assign({}, Prop);
       const metadata = proto.Prop() as DocumentOptions;
       if (metadata && metadata.hierarchy === undefined) metadata.hierarchy = 'elements';

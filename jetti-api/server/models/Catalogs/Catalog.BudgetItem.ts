@@ -23,7 +23,7 @@ export class CatalogBudgetItem extends DocumentBase {
   @Props({ type: 'boolean', hiddenInList: false })
   isfolder = false;
 
-  @Props({ type: 'enum', value: [
+  @Props({ type: 'enum', useIn: 'all', value: [
     '+',
     '-',
     '*',

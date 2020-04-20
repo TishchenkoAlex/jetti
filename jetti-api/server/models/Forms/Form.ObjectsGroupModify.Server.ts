@@ -1,3 +1,4 @@
+import { DocumentBase } from './../document';
 import { Type } from './../common-types';
 import { IServerForm } from './form.factory.server';
 import { FormObjectsGroupModify, СolumnMatching } from './Form.ObjectsGroupModify';
@@ -20,9 +21,9 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     const Operation: string | undefined = this.OperationType || undefined;
     if (!type) throw new Error('Не задан тип приемника');
     const sdbl = new MSSQL(TASKS_POOL, this.user);
-    const doc = Operation ?
+    const doc = (Operation ?
       { ...createDocument(type), Operation } :
-      createDocument(type);
+      createDocument(type)) as DocumentBase;
     const ServerDoc = await createDocumentServer(type, doc, sdbl);
     if (!ServerDoc) throw new Error(`wrong type ${type}`);
     const recieverProps = ServerDoc.Props();

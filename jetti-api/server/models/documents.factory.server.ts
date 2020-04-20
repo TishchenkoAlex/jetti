@@ -69,27 +69,28 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   }
   result['serverModule'] = {};
 
-  let Props = Object.assign({}, result.Props());
-  if (document && document.isfolder) {
+  const Props = Object.assign({}, result.Props());
+  // if (document && document.isfolder) {
     // упрощенные метаданные формы для Папки
-    Props = {
-      id: Props.id,
-      type: Props.type,
-      date: Props.date,
-      code: Props.code,
-      description: Props.description,
-      company: Props.company,
-      user: Props.user,
-      posted: Props.posted,
-      deleted: Props.deleted,
-      parent: Props.parent,
-      isfolder: Props.isfolder,
-      info: Props.info,
-      timestamp: Props.timestamp
-    };
-  }
+    // Object.keys(Props).;
+    // Props = {
+    //   id: Props.id,
+    //   type: Props.type,
+    //   date: Props.date,
+    //   code: Props.code,
+    //   description: Props.description,
+    //   company: Props.company,
+    //   user: Props.user,
+    //   posted: Props.posted,
+    //   deleted: Props.deleted,
+    //   parent: Props.parent,
+    //   isfolder: Props.isfolder,
+    //   info: Props.info,
+    //   timestamp: Props.timestamp
+    // };
+  // }
 
-  const Prop = { ...result.Prop() as DocumentOptions};
+  const Prop = { ...result.Prop() as DocumentOptions };
   let Operation: CatalogOperation | null = null;
   let Grop: RefValue | null = null;
   if (result instanceof DocumentOperation && document && document.id) {

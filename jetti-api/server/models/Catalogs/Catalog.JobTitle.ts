@@ -13,7 +13,7 @@ export class CatalogJobTitle extends DocumentBase {
   parent: Ref = null;
 
   @Props({ type: 'Catalog.JobTitle.Category', label: 'Категория' })
-  Category = false;
+  Category: Ref = null;
 
   @Props({ type: 'boolean', label: 'ТТ' })
   TO = false;
