@@ -4,7 +4,7 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp
           [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ' [posted]' : ' [unposted]') + (readonly ? ' [readonly]' : '')"
-          [toggleable]="true">
+          [toggleable]="true"  toggler="header">
           <p-toolbar *ngIf="!readonly && !isHistory">
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="PostClose" icon="fa fa-check-square" label="Post&Close"
@@ -104,7 +104,7 @@
 
         </p-panel>
 
-        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true">
+        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true" toggler="header">
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
             *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
             <div fxFlex>
@@ -122,7 +122,7 @@
           </div>
         </p-panel>
 
-        <p-panel #pad [toggleable]="true" header="Additional info" [collapsed]="isDoc ? true : false">
+        <p-panel #pad [toggleable]="true" header="Additional info" [collapsed]="isDoc ? true : false" toggler="header">
           <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
             <j-control *ngIf="vk.parent" [control]="vk.parent" [form]="form"></j-control>
             <j-control *ngIf="vk.user" [control]="vk.user" [form]="form"></j-control>
@@ -132,24 +132,24 @@
 
         <div *ngIf="!isHistory">
           <p-panel *ngIf="type === 'Catalog.Operation' && (isFolder$ | async) === false" [toggleable]="true"
-            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
+            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)" toggler="header">
             <j-control *ngIf="vk.script" [control]="vk.script" [form]="form"></j-control>
           </p-panel>
 
           <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module"
-            [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)">
+            [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)" toggler="header">
             <j-control *ngIf="vk.module" [control]="vk.module" [form]="form"></j-control>
           </p-panel>
 
           <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #movements
-            *ngIf="isDoc && (isPosted$ | async)">
+            *ngIf="isDoc" toggler="header">
             <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel">
             </j-register-movements-list>
           </p-panel>
 
           <div *ngIf="(isFolder$ | async) === false">
             <div *ngFor="let r of relations$ | async">
-              <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
+              <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name" toggler="header">
                 <j-list *ngIf="!relation.collapsed && !r.type.startsWith('Register.')" [type]="r.type" [pageSize]=10
                   [settings]="{order: [], filter: [
                   {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
@@ -163,11 +163,11 @@
 
           <p-panel [toggleable]="true" [collapsed]="true"
             [header]="'Descendants ' + (isCatalog ? 'objects' : 'documents')" #descendants
-            *ngIf="isDoc && (isNew$ | async) === false">
+            *ngIf="isDoc && (isNew$ | async) === false" toggler="header">
             <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
           </p-panel>
 
-          <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false">
+          <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false" toggler="header">
             <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
           </p-panel>
         </div>

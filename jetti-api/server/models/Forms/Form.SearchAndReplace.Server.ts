@@ -174,6 +174,8 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
                 RAISERROR('clear ExchangeBase', 0 ,1) WITH NOWAIT;
             end
         END
+        update CatalogMatching  set id = @p2 where id = @p1;
+        RAISERROR('id', 0 ,1) WITH NOWAIT;
         update documents set company = @p2 where company = @p1;
         RAISERROR('company', 0 ,1) WITH NOWAIT;
         update documents set parent = @p2 where parent = @p1;

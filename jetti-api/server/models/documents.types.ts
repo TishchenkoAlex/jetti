@@ -69,7 +69,8 @@ export type CatalogTypes =
   'Catalog.TaxOffice' |
   'Catalog.RetailClient' |
   'Catalog.Contract.Intercompany' |
-  'Catalog.ResourceSpecification'
+  'Catalog.ResourceSpecification' |
+  'Catalog.InvestorGroup'
   ;
 
 export type DocumentTypes =

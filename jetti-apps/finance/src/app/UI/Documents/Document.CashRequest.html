@@ -2,7 +2,7 @@
   <form novalidate [formGroup]="form" cdkTrapFocus>
     <p-panel #mp
       [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]').concat(isSuperUser ? ' *GODMODE' : '')"
-      [toggleable]="true">
+      [toggleable]="true" toggler="header">
       <p-toolbar *ngIf="!isHistory">
         <div class="ui-toolbar-group-left">
           <button pButton type="button" id="PostClose " icon="fa fa-check-square" label="Post&Close"
@@ -128,20 +128,20 @@
 
         <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-            <p-fieldset legend="Налоговые реквизиты" [toggleable]="true" collapsed=true>
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-                <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
-                <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
-                <j-control [control]="vk.TaxKPP" [form]="form"></j-control>
-              </div>
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-                <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
-                <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
-                <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
-                <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
-                <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
-              </div>
-            </p-fieldset>
+          <p-fieldset legend="Налоговые реквизиты" [toggleable]="true" collapsed=true>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+              <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
+              <j-control [control]="vk.TaxOfficeCode2" [form]="form"></j-control>
+              <j-control [control]="vk.TaxKPP" [form]="form"></j-control>
+            </div>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+              <j-control [control]="vk.TaxPayerStatus" [form]="form"></j-control>
+              <j-control [control]="vk.TaxBasisPayment" [form]="form"></j-control>
+              <j-control [control]="vk.TaxPaymentPeriod" [form]="form"></j-control>
+              <j-control [control]="vk.TaxDocNumber" [form]="form"></j-control>
+              <j-control [control]="vk.TaxDocDate" [form]="form"></j-control>
+            </div>
+          </p-fieldset>
         </div>
 
         <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0px" fxLayoutGap.xs="0px">
@@ -165,7 +165,7 @@
 
     </p-panel>
 
-    <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false">
+    <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false" toggler="header">
       <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
         <j-control [control]="vk.parent" [form]="form"></j-control>
         <j-control [control]="vk.user" [form]="form"></j-control>
@@ -176,17 +176,18 @@
 
   </form>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #movements *ngIf="isDoc && isPosted">
+  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #movements *ngIf="isDoc" toggler="header">
     <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel"></j-register-movements-list>
   </p-panel>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value" #bp>
+  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value" #bp
+    toggler="header">
     <bp-task *ngIf="!bp.collapsed" [ProcessID]="form.get('workflowID').value"></bp-task>
   </p-panel>
 
   <div *ngIf="(isFolder$ | async) === false">
     <div *ngFor="let r of relations$ | async">
-      <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name">
+      <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name" toggler="header">
         <j-list *ngIf="!relation.collapsed" [type]="r.type" [pageSize]=10
           [settings]="{order: [], filter: [
           {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
@@ -196,11 +197,12 @@
   </div>
 
   <p-panel [toggleable]="true" [collapsed]="true" header="Связанные документы" #descendants
-    *ngIf="(isNew$ | async) === false">
+    *ngIf="(isNew$ | async) === false" toggler="header">
     <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
   </p-panel>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="История" #history *ngIf="(isNew$ | async) === false">
+  <p-panel [toggleable]="true" [collapsed]="true" header="История" #history *ngIf="(isNew$ | async) === false"
+    toggler="header">
     <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
   </p-panel>
 

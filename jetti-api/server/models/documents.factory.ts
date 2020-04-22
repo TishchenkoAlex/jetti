@@ -80,6 +80,7 @@ import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
 import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
 import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
+import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -201,6 +202,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
   { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
+  { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },

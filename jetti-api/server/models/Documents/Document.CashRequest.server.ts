@@ -1,3 +1,4 @@
+import { CatalogCounterpartieBankAccount } from './../Catalogs/Catalog.Counterpartie.BankAccount';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
 import { lib } from '../../std.lib';
@@ -651,8 +652,16 @@ ORDER BY
       docOperation['BankAccount'] = CashOrBank.id;
       docOperation['BankAccountPerson'] = this.CashRecipientBankAccount;
       docOperation.f1 = docOperation['BankAccount'];
-    }
 
+      if (this.CashRecipientBankAccount) {
+        const ba = await lib.doc.byIdT<CatalogCounterpartieBankAccount>(this.CashRecipientBankAccount, tx);
+        if (ba) {
+          const owner = await lib.doc.byId(ba.owner, tx);
+          const prefix = ba.code.trim().startsWith('408208') ? '{VO70060}' : '';
+          docOperation.info = `${prefix}Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}. Без налога (НДС) `;
+        }
+      }
+    }
   }
 
   async FillOperationОплатаПоКредитамИЗаймамПолученным(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
