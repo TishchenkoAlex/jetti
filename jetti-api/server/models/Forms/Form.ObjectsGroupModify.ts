@@ -1,28 +1,28 @@
 import { FormBase, JForm } from './form';
 import { Props, Ref } from '../document';
 
+export enum errorKinds {
+  ObjectNotFound = 'Object not found',
+  OnSave = 'On save',
+  IncorrectType = 'Incorrect type',
+  IncorrectTablePartLength = 'Incorrect table part length',
+}
+export type errorKind = keyof typeof errorKinds;
+
 @JForm({
   type: 'Form.ObjectsGroupModify',
   description: 'Групповое изменение объектов',
   icon: 'fas fa-edit',
   menu: 'Изменение объектов',
 })
-export class FormObjectsGroupModify extends FormBase {
 
-  @Props({ type: 'string', controlType: 'textarea' })
-  Text = '';
+export class FormObjectsGroupModify extends FormBase {
 
   @Props({ type: 'enum', value: ['LOAD', 'MODIFY'] })
   Mode = 'LOAD';
 
-  @Props({ type: 'boolean' })
-  CustomSeparators = false;
-
-  @Props({ type: 'string' })
-  ColumnsSeparator = '\t';
-
-  @Props({ type: 'string' })
-  RowsSeparator = '\n';
+  @Props({ type: 'string', controlType: 'textarea' })
+  Text = '';
 
   @Props({ type: 'Catalog.Operation' })
   OperationType = null;
@@ -30,14 +30,48 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Catalog.Catalogs' })
   Catalog = null;
 
-  @Props({ type: 'string' })
-  СolumnFromString = '';
+  @Props({ type: 'boolean', isAdditional: true })
+  CheckTypes = true;
+
+  @Props({ type: 'boolean', isAdditional: true })
+  ClearTableParts = false;
+
+  @Props({ type: 'boolean', isAdditional: true })
+  SaveInAdminMode = false;
+
+  @Props({ type: 'string', isAdditional: true })
+  ColumnsSeparator = '\t';
+
+  @Props({ type: 'string', isAdditional: true })
+  RowsSeparator = '\n';
 
   @Props({ type: 'table' })
-  СolumnsMatching: СolumnMatching[] = [new СolumnMatching()];
+  ColumnsMatching: ColumnMatching[] = [new ColumnMatching()];
 
   @Props({ type: 'table' })
   SelectedObjects: SelectedObject[] = [new SelectedObject()];
+
+  @Props({ type: 'table' })
+  Errors: ErrorRow[] = [new ErrorRow()];
+
+}
+
+export class ErrorRow {
+
+  @Props({ type: 'time' })
+  Time = new Date;
+
+  @Props({ type: 'number' })
+  RowNumber = 0;
+
+  @Props({ type: 'string' })
+  ObjectId = '';
+
+  @Props({ type: 'enum', value: Object.keys(errorKinds), readOnly: true })
+  ErrorKind = '';
+
+  @Props({ type: 'string', readOnly: true })
+  Text = '';
 
 }
 
@@ -57,21 +91,30 @@ export class SelectedObject {
 
 }
 
-export class СolumnMatching {
+export class ColumnMatching {
 
   @Props({ type: 'enum', value: [] })
-  СolumnFrom = '';
+  ColumnFrom = '';
 
   @Props({ type: 'string', readOnly: true })
-  СolumnTo = '';
+  ColumnTo = '';
 
   @Props({ type: 'string', readOnly: true })
-  СolumnToLabel = '';
+  ColumnToLabel = '';
 
   @Props({ type: 'string', readOnly: true })
   TablePartTo = '';
 
   @Props({ type: 'string', readOnly: true })
-  СolumnToType = '';
+  ColumnToType = '';
+
+  @Props({ type: 'enum', value: ['Object id', 'Object key', 'Table part row id', 'Table part row key', ''] })
+  ColumnRole = '';
+
+  @Props({ type: 'boolean' })
+  LoadIfEmptyInObject = false;
+
+  @Props({ type: 'boolean' })
+  LoadEmptyValues = false;
 
 }

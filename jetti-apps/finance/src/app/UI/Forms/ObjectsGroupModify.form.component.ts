@@ -19,6 +19,7 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
 
   onlyViewMode = false;
   header = 'Objects group modify';
+  clientDataStorage = '';
 
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
@@ -55,6 +56,25 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   getSeparators(): { rows: string, columns: string } {
     return { rows: this.form.get('RowsSeparator').value || '\n', columns: this.form.get('ColumnsSeparator').value || '\t' };
   }
+  async matchColumnsByName() {
+    await this.ExecuteServerMethod('matchColumnsByName');
+  }
+
+  async prepareToLoading() {
+    await this.ExecuteServerMethod('prepareToLoading');
+  }
+
+  async fillLoadingTable() {
+    await this.ExecuteServerMethod('fillLoadingTable');
+  }
+
+  async loadToTable() {
+    await this.ExecuteServerMethod('loadToTable');
+  }
+
+  async saveDataIntoDB() {
+    await this.ExecuteServerMethod('saveDataIntoDB');
+  }
 
   async getViewModel() {
     await this.ExecuteServerMethod('ReadRecieverStructure');
@@ -77,11 +97,13 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
 
   async ExecuteServerMethod(methodName: string) {
 
+    this.clientDataStorage = this.form.get('Text').value;
     this.ds.api.execute(this.type as FormTypes, methodName, this.form.getRawValue() as FormBase).pipe(take(1))
       .subscribe(value => {
         const form = getFormGroup(value.schema, value.model, true);
         form['metadata'] = value.metadata;
         super.Next(form);
+        this.form.get('Text').setValue(this.clientDataStorage);
         this.form.markAsDirty();
       });
   }

@@ -43,6 +43,7 @@ export interface JTL {
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
+    createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
     saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
@@ -84,6 +85,7 @@ export const lib: JTL = {
     byIdT: byIdT,
     createDoc,
     createDocServer,
+    createDocServerById,
     saveDoc,
     historyById: historyById,
     Ancestors,
@@ -168,6 +170,12 @@ async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFla
 
 async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL): Promise<T> {
   return await createDocumentServer<T>(type, document, tx);
+}
+
+async function createDocServerById<T extends DocumentBaseServer>(id: string, tx: MSSQL): Promise<T | null> {
+  const flatDoc = await byId(id, tx);
+  if (!flatDoc) return null;
+  return await createDocServer<T>(flatDoc.type, flatDoc, tx);
 }
 
 async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
