@@ -25,6 +25,8 @@ export class CatalogSubcount extends DocumentBase {
     select.push({type: 'table', description: 'table'});
     select.push({type: 'javascript', description: 'javascript'});
     select.push({type: 'enum', description: 'emum'});
+    select.push({type: 'link', description: 'link'});
+    select.push({type: 'URL', description: 'URL'});
 
     return buildSubcountQueryList(select);
   }

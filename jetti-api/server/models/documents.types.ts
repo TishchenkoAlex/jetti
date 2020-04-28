@@ -70,7 +70,8 @@ export type CatalogTypes =
   'Catalog.RetailClient' |
   'Catalog.Contract.Intercompany' |
   'Catalog.ResourceSpecification' |
-  'Catalog.InvestorGroup'
+  'Catalog.InvestorGroup' |
+  'Catalog.ReasonTypes'
   ;
 
 export type DocumentTypes =
@@ -107,7 +108,8 @@ export type PrimitiveTypes =
   'javascript' |
   'textarea' |
   'enum' |
-  'link';
+  'link' |
+  'URL';
 
 export type ComplexTypes =
   'Types.Document' |

@@ -6,7 +6,7 @@ import { createForm } from '../../../../../../jetti-api/server/models/Forms/form
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
-import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes, LinkFormControl } from './dynamic-form-base';
+import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes, LinkFormControl, URLFormControl } from './dynamic-form-base';
 import { StorageType } from '../../../../../../jetti-api/server/models/document';
 import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
@@ -122,6 +122,9 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
           break;
         case 'link':
           newControl = new LinkFormControl(controlOptions);
+          break;
+        case 'URL':
+          newControl = new URLFormControl(controlOptions);
           break;
         default:
           if (type.includes('.')) {

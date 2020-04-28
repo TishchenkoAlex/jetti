@@ -126,7 +126,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         await this.FillTaxInfo(tx);
         return this;
       default:
-        return {};
+        return this;
     }
   }
 
@@ -167,6 +167,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
     this.posted = false;
     this.deleted = false;
+    if (body.RelatedURL) this['RelatedURL'] = body.RelatedURL;
     this.map(await lib.doc.saveDoc(this, tx));
   }
 
@@ -630,10 +631,10 @@ ORDER BY
   async FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
     let CashOrBank;
     CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
     if (docOperation['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
       CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     }
-    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
     docOperation.Amount = await this.getAmountBalance(tx);
     docOperation['SalaryAnalytics'] = this.SalaryAnalitics;
     docOperation['Employee'] = this.CashRecipient;

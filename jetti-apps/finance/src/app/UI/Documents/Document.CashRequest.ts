@@ -42,6 +42,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   onOperationChanges(operation: string) {
 
+    if (!operation) return;
+
     // 'Оплата поставщику',
     // 'Перечисление налогов и взносов',
     // 'Оплата ДС в другую организацию',
@@ -88,6 +90,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     TaxPaymentPeriod`.split('\n').forEach(el => { this.vk[el.trim()].required = operation === 'Перечисление налогов и взносов' });
 
     this.vk['CashOrBank'].required = operation === 'Выплата заработной платы';
+    this.vk['SalaryAnalitics'].required = operation.includes('Выплата заработной платы');
+
     this.form.markAsTouched();
 
     let CashRecipient = null;
@@ -170,8 +174,9 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.setValue('PayDay', null, { emitEvent: false });
       if (this.getValue('Amount') === 0) this.setValue('Amount', null, { emitEvent: false });
       if (!this.getValue('Operation')) this.setValue('Operation', 'Оплата поставщику', { emitEvent: false });
-      this.onOperationChanges(this.getValue('Operation'));
     }
+
+    this.onOperationChanges(this.getValue('Operation'));
 
     if (this.readonlyMode) {
       this.form.disable({ emitEvent: false });
@@ -215,7 +220,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.viewModel as DocumentBase,
       this.metadata.type,
       this.auth.userProfile.account.email,
-      this.getValue('workflowID')).pipe(take(1)).subscribe(data => {this.canModifyProcess = false; this.handleBpApiResponse(data, true );});
+      this.getValue('workflowID')).pipe(take(1)).subscribe(data => { this.canModifyProcess = false; this.handleBpApiResponse(data, true); });
   }
 
   handleBpApiResponse(response: any, isModifyEvent = false) {

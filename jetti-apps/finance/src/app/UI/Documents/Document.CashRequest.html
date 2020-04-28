@@ -165,6 +165,24 @@
 
     </p-panel>
 
+    <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Дополнительные реквизиты" [collapsed]="true" toggler="header">
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+        *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
+        <div fxFlex>
+          <j-control *ngIf="additionalFields[i+0]"
+            [control]="additionalFields[i+0]" [form]="form"></j-control>
+        </div>
+        <div fxFlex>
+          <j-control *ngIf="additionalFields[i+1]"
+            [control]="additionalFields[i+1]" [form]="form"></j-control>
+        </div>
+        <div fxFlex>
+          <j-control *ngIf="additionalFields[i+2]"
+            [control]="additionalFields[i+2]" [form]="form"></j-control>
+        </div>
+      </div>
+    </p-panel>
+
     <p-panel #pad [toggleable]="true" header="Дополнительно" [collapsed]="isDoc ? true : false" toggler="header">
       <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
         <j-control [control]="vk.parent" [form]="form"></j-control>

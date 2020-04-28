@@ -24,6 +24,11 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
     { method: 'FillSalaryBalanceByDepartment', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению', order: 4 },
     { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам', order: 5 },
+    // {
+    //   method: 'OpenRelatedURL', icon: 'pi pi-plus', label: 'Перейти по связанной ссылке', order: 6,
+    //   clientModule: `if (this.form.get('RelatedURL').value)
+    //  window.open(this.form.get('RelatedURL').value, '_blank');
+    //   else this.throwError('', 'Ссылка отсутствует')` },
   ],
 })
 export class DocumentCashRequest extends DocumentBase {
@@ -235,7 +240,8 @@ export class DocumentCashRequest extends DocumentBase {
   TaxPaymentCode: Ref = null;
 
   @Props({
-    type: 'Catalog.TaxAssignmentCode', label: 'КНП', hiddenInList: true })
+    type: 'Catalog.TaxAssignmentCode', label: 'КНП', hiddenInList: true
+  })
   TaxAssignmentCode: Ref = null;
 
   @Props({
@@ -280,6 +286,9 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'boolean', label: 'Ручной ввод назначения платежа', hiddenInList: true })
   ManualInfo = false;
+
+  @Props({ type: 'URL', hiddenInList: true, isAdditional: true })
+  RelatedURL = '';
 
   @Props({ type: 'Catalog.Company', hiddenInList: true })
   tempCompanyParent: Ref = null;

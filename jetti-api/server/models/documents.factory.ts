@@ -1,3 +1,4 @@
+import { CatalogReasonTypes } from './Catalogs/Catalog.ReasonTypes';
 import { CatalogJobTitleCategory } from './Catalogs/Catalog.JobTitle.Category';
 import { CatalogProductReport } from './Catalogs/Catalog.Product.Report';
 import { CatalogDepartmentStatusReason } from './Catalogs/Catalog.Department.StatusReason';
@@ -175,6 +176,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.JobTitle', Class: CatalogJobTitle },
   { type: 'Catalog.JobTitle.Category', Class: CatalogJobTitleCategory },
   { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
+  { type: 'Catalog.ReasonTypes', Class: CatalogReasonTypes },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },

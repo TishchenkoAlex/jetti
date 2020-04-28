@@ -7,6 +7,9 @@ import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 })
 export class RegisterInfoIncomeDocumentRegistry extends RegisterInfo {
 
+  @Props({ type: 'string' })
+  StatusRegistry = '';
+
   @Props({ type: 'Catalog.Operation.Type' })
   OperationType: Ref = null;
 
@@ -30,6 +33,9 @@ export class RegisterInfoIncomeDocumentRegistry extends RegisterInfo {
 
   @Props({ type: 'number' })
   AmountJETTI = 0;
+
+  @Props({ type: 'Catalog.ReasonTypes' })
+  ReasonType: Ref = null;
 
   constructor(init: Partial<RegisterInfoIncomeDocumentRegistry>) {
     super(init);

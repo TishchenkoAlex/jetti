@@ -5,7 +5,7 @@ export interface OwnerRef { dependsOn: string; filterBy: string; }
 
 export type ControlTypes =
   'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'table' |
-  'enum' | 'link' | 'textarea' | 'autocomplete' | 'script';
+  'enum' | 'link' | 'textarea' | 'autocomplete' | 'script' | 'URL';
 
 export interface IFormControlInfo {
   type: AllTypes;
@@ -98,6 +98,16 @@ export class LinkFormControl extends FormControlInfo {
     super(options);
     this.type = 'string';
     this.controlType = 'link';
+    if (options.style) this.style = { ...this.style, ...options.style };
+    if (this.value === undefined) this.value = '';
+  }
+}
+export class URLFormControl extends FormControlInfo {
+  constructor(options: IFormControlInfo) {
+    super(options);
+    this.type = 'string';
+    this.controlType = 'URL';
+    this.style = { 'width': '250px', 'min-width': '250px', 'max-width': '250px' };
     if (options.style) this.style = { ...this.style, ...options.style };
     if (this.value === undefined) this.value = '';
   }

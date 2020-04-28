@@ -263,6 +263,15 @@ j-autocomplete-png {
 
 j-control {
   width: 100% !important;
+  .ui-button.ui-button-icon-only .ui-button-text {
+    padding: 0px;
+    width: 1.8em;
+  }
+  .ui-inputtext {
+    width: 100%;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
 }
 
 .profile-image {

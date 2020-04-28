@@ -23,6 +23,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   _dateTimeValue: Date | null | string;
   get dateTimeValue() { return this._dateTimeValue instanceof Date ? this._dateTimeValue : null; }
   set dateTimeValue(value: null | string | Date) { this._dateTimeValue = value instanceof Date ? value : null; }
+  get isEMPTY() { return !this.formControl.value; }
 
   parseDate(dateString: string) {
     const date = dateString ? new Date(dateString) : null;
@@ -69,6 +70,18 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  emptyValueByType = (type: string) => {
+    switch (type) {
+      case 'number':
+        return 0;
+      default:
+        return '';
+    }
+  }
+
+  handleReset = (event: Event) => this.formControl.setValue(this.emptyValueByType(this.control.type));
+  handleOpenURL = (event?: Event) => window.open(this.formControl.value, '_blank');
 
   marginTop() {
     if (!this.control.showLabel) return;
