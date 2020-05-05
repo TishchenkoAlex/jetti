@@ -11,6 +11,9 @@ export class CatalogSalaryProject extends DocumentBase {
   @Props({ type: 'Catalog.SalaryProject', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Company', required: true, hiddenInList: false })
+  company: Ref = null;
+
   @Props({ type: 'Catalog.Bank', required: true, style: { width: '100px' } })
   bank: Ref = null;
 
@@ -19,10 +22,10 @@ export class CatalogSalaryProject extends DocumentBase {
 
   @Props({ type: 'date', required: true, style: { width: '100px' } })
   OpenDate = new Date;
-  
+
   @Props({ type: 'string' })
   BankBranch = '';
-  
+
   @Props({ type: 'string' })
   BankBranchOffice = '';
 

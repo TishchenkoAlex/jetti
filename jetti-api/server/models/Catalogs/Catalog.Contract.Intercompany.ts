@@ -12,6 +12,9 @@ export class CatalogContractIntercompany extends DocumentBase {
   @Props({ type: 'Catalog.Contract.Intercompany', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Company', required: true, hiddenInList: false })
+  company: Ref = null;
+
   @Props({ type: 'Catalog.Company', required: true, order: 1 })
   KorrCompany: Ref = null;
 
@@ -36,7 +39,7 @@ export class CatalogContractIntercompany extends DocumentBase {
   @Props({ type: 'boolean', required: false })
   isDefault = false;
 
-  @Props({ type: 'boolean', label: 'Ф2'})
+  @Props({ type: 'boolean', label: 'Ф2' })
   notAccounting = false;
 
 }

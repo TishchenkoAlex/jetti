@@ -21,7 +21,7 @@ export class CatalogBankAccount extends DocumentBase {
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false })
+  @Props({ type: 'Catalog.Company', required: true, hiddenInList: false })
   company: Ref = null;
 
   @Props({ type: 'Catalog.Bank', required: true })

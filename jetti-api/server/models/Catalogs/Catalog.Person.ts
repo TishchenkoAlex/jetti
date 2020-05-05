@@ -68,8 +68,6 @@ export class CatalogPerson extends DocumentBase {
   DocumentDate = null;
 
   @Props({ type: 'string' })
-  DocumentAuthority= '';
-
-
+  DocumentAuthority = '';
 
 }

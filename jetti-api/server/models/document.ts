@@ -86,7 +86,7 @@ export class DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '300px' } })
   description = '';
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' } })
+  @Props({ type: 'Catalog.Company', required: false, order: 4, style: { width: '250px' } })
   company: Ref = null;
 
   @Props({ type: 'Catalog.User', hiddenInList: true, order: -1 })
@@ -138,7 +138,6 @@ export class DocumentBase {
     this.targetProp(proto, 'description').hidden = proto.isDoc;
     this.targetProp(proto, 'date').hidden = proto.isCatalog;
     this.targetProp(proto, 'date').required = proto.isDoc;
-    this.targetProp(proto, 'company').required = proto.isCatalog !== true;
     const p = this.Prop() as DocumentOptions;
     if (p && p.hierarchy === 'folders') this.targetProp(proto, 'parent').storageType = 'folders';
     else if (p && p.hierarchy === 'elements') this.targetProp(proto, 'parent').storageType = 'elements';
@@ -181,6 +180,7 @@ export class DocumentBase {
         result[prop][prop] = arrayProp;
       }
     }
+    if (this.isDoc) result['company'].required = true;
     this.Props = () => result;
     return result;
   }

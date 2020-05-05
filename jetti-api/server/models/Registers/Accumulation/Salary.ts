@@ -34,6 +34,9 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Types.Catalog', required: false, dimension: true })
   PLAnalytics: Ref = null;
 
+  @Props({ type: 'enum', value: ['APPROVED', 'PREPARED'], resource: true })
+  Status = 'APPROVED';
+
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
