@@ -387,7 +387,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, KorrCompany, Department, Person, Employee, SalaryKind, Analytics, PL, PLAnalytics
+        d.exchangeRate, currency, KorrCompany, Department, Person, Employee, SalaryKind, Analytics, PL, PLAnalytics, Status
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -404,6 +404,7 @@
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [PLAnalytics] UNIQUEIDENTIFIER N'$.PLAnalytics'
+        , [Status] NVARCHAR(250) N'$.Status'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
