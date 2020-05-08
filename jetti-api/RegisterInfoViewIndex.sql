@@ -281,6 +281,7 @@
     AS
     SELECT
       id, date, document, company
+        , ISNULL(JSON_VALUE(data, '$.StatusRegistry'), '') "StatusRegistry"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) "Currency"
@@ -289,6 +290,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DocJETTI"')) "DocJETTI"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountIncome')) "AmountIncome"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountJETTI')) "AmountJETTI"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ReasonType"')) "ReasonType"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.IncomeDocumentRegistry';
     GO
     GRANT SELECT,DELETE ON [Register.Info.IncomeDocumentRegistry] TO JETTI;
