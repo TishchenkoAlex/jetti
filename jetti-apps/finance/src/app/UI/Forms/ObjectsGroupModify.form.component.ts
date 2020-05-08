@@ -94,9 +94,9 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   }
 
   async callLibMethod() {
-    const f = this.form;
-    const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
-    f.get('CallResult').setValue(res);
+    // const f = this.form;
+    // const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
+    // f.get('CallResult').setValue(res);
   }
 
   async addAttachment() {
