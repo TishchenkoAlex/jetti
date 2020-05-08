@@ -4,30 +4,41 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp [header]='header' [toggleable]="true">
           <p-toolbar *ngIf="!onlyViewMode">
-            <div class="ui-toolbar-group-left">
-              <button pButton type="button" id="PasteForm" label="1. Загрузить колонки" class="ui-button-info"
-                (click)="PasteTable()"></button>
-              <button pButton type="button" id="ReadReciever" label="2. Загрузить структуру приемника"
-                class="ui-button-info" (click)="getViewModel()"></button>
 
+            <div *ngIf="isModeLoad" class="ui-toolbar-group-left">
+              <button pButton type="button" id="ReadReciever" label="2. Загрузить структуру приемника"
+                class="ui-button-info" (click)="ReadRecieverStructure()"></button>
               <button pButton type="button" id="matchColumnsByName" label="3. Сопоставить колонки по именам"
                 class="ui-button-info" (click)="matchColumnsByName()"></button>
-
-              <button pButton type="button" id="prepareToLoading" label="1-3. Подготовить загрузку"
-                class="ui-button-info" (click)="prepareToLoading()"></button>
-
-              <button pButton type="button" id="fillLoadingTable" label="4. Найти соответствия в БД"
+              <button pButton type="button" id="loadToTempTable" label="4. Загрузить в таблицу (строками)"
+                class="ui-button-info" (click)="loadToTempTable()"></button>
+              <button pButton type="button" id="fillLoadingTable" label="5. Найти соответствия в БД"
                 class="ui-button-info" (click)="fillLoadingTable()"></button>
-
-                <button pButton type="button" id="saveDataIntoDB" label="5. Загрузить в БД!"
-                class="ui-button-danger" (click)="saveDataIntoDB()"></button>
-
-              <!-- <button pButton type="button" id="ExchangeData" icon="fas fa-exchange-alt" label="Fill exchange data"
-                class="ui-button-warning" (click)="ExecuteServerMethod('FillExchangeData')"></button>
-              <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace" pTooltip="Replace"
-                tooltipPosition="top" showDelay="2000" class="ui-button-danger"
-                (click)="ExecuteServerMethod('Replace')"></button> -->
+              <button pButton type="button" id="prepareToLoading" label="1-5. Подготовить загрузку"
+                class="ui-button-info" (click)="prepareToLoading()"></button>
+              <button pButton type="button" id="saveDataIntoDB" label="6. Загрузить в БД!" class="ui-button-danger"
+                (click)="saveDataIntoDB()"></button>
+              <button pButton type="button" id="prepareToLoading" label=". Подготовить загрузку" class="ui-button-info"
+                (click)="prepareToLoading()"></button>
             </div>
+            <div *ngIf="isModeModify" class="ui-toolbar-group-left">
+              <button pButton type="button" id="buildFilter" label="1. Построить фильтр" class="ui-button-info"
+                (click)="buildFilter()"></button>
+              <button pButton type="button" id="createFilterElements" label="2. Создать элементы" class="ui-button-info"
+                (click)="createFilterElements()"></button>
+              <button pButton type="button" id="selectFilter" label="3. Отобрать" class="ui-button-info"
+                (click)="selectFilter()"></button>
+            </div>
+
+            <div *ngIf="isModeTesting" class="ui-toolbar-group-left">
+              <button pButton type="button" id="callLibMethod" label="Вызвать либ-метод" class="ui-button-info"
+                (click)="callLibMethod()"></button>
+              <button pButton type="button" id="addAttachment" label="Добавить вложение" class="ui-button-info"
+                (click)="addAttachment()"></button>
+              <button pButton type="button" id="delAttachment" label="Удалить вложение" class="ui-button-info"
+                (click)="delAttachment()"></button>
+            </div>
+
           </p-toolbar>
 
           <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
@@ -84,8 +95,8 @@
           </div>
         </p-panel>
 
-        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Параметры"
-          [collapsed]="true" toggler="header">
+        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Параметры" [collapsed]="true"
+          toggler="header">
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
             *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
             <div fxFlex>

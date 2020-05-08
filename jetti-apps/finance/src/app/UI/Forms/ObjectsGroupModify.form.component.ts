@@ -21,6 +21,11 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   header = 'Objects group modify';
   clientDataStorage = '';
 
+  get Mode() { return this.form.get('Mode').value; }
+  get isModeLoad() { return this.Mode === 'LOAD'; }
+  get isModeModify() { return this.Mode === 'MODIFY'; }
+  get isModeTesting() { return this.Mode === 'TESTING'; }
+
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
     public ds: DocService, public tabStore: TabsStore, public dss: DynamicFormService,
@@ -68,15 +73,45 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     await this.ExecuteServerMethod('fillLoadingTable');
   }
 
-  async loadToTable() {
-    await this.ExecuteServerMethod('loadToTable');
+  async loadToTempTable() {
+    await this.ExecuteServerMethod('loadToTempTable');
   }
 
   async saveDataIntoDB() {
     await this.ExecuteServerMethod('saveDataIntoDB');
   }
 
-  async getViewModel() {
+  async buildFilter() {
+    await this.ExecuteServerMethod('buildFilter');
+  }
+
+  async createFilterElements() {
+    await this.ExecuteServerMethod('createFilterElements');
+  }
+
+  async selectFilter() {
+    await this.ExecuteServerMethod('selectFilter');
+  }
+
+  async callLibMethod() {
+    const f = this.form;
+    const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
+    f.get('CallResult').setValue(res);
+  }
+
+  async addAttachment() {
+    // const f = this.form;
+    // const res = await this.ds.api.attachmentCommand(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
+    // f.get('CallResult').setValue(res);
+  }
+
+  async delAttachment() {
+    // const f = this.form;
+    // const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
+    // f.get('CallResult').setValue(res);
+  }
+
+  async ReadRecieverStructure() {
     await this.ExecuteServerMethod('ReadRecieverStructure');
     return;
     const Operation = this.form.get('Operation');

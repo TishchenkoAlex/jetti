@@ -1,3 +1,5 @@
+import { FormListFilter } from './../user.settings';
+import { AllTypes } from './../documents.types';
 import { FormBase, JForm } from './form';
 import { Props, Ref } from '../document';
 
@@ -18,7 +20,7 @@ export type errorKind = keyof typeof errorKinds;
 
 export class FormObjectsGroupModify extends FormBase {
 
-  @Props({ type: 'enum', value: ['LOAD', 'MODIFY'] })
+  @Props({ type: 'enum', value: ['LOAD', 'MODIFY', 'TESTING'] })
   Mode = 'LOAD';
 
   @Props({ type: 'string', controlType: 'textarea' })
@@ -27,8 +29,20 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Catalog.Operation' })
   OperationType = null;
 
-  @Props({ type: 'Catalog.Catalogs' })
-  Catalog = null;
+  @Props({ type: 'Types.Object' })
+  CatalogType = '';
+
+  @Props({ type: 'string', isAdditional: true })
+  LibId = '';
+
+  @Props({ type: 'string', isAdditional: true })
+  MethodName = '';
+
+  @Props({ type: 'string', isAdditional: true })
+  ArgsJSON = '';
+
+  @Props({ type: 'string', isAdditional: true })
+  CallResult = '';
 
   @Props({ type: 'boolean', isAdditional: true })
   CheckTypes = true;
@@ -53,6 +67,25 @@ export class FormObjectsGroupModify extends FormBase {
 
   @Props({ type: 'table' })
   Errors: ErrorRow[] = [new ErrorRow()];
+
+  @Props({ type: 'table' })
+  RecieverProps: RecieverProp[] = [new RecieverProp()];
+
+}
+
+export class RecieverProp {
+
+  @Props({ type: 'enum', value: [''] })
+  Label = '';
+
+  @Props({ type: 'string' })
+  Key = '';
+
+  @Props({ type: 'string' })
+  Type = '';
+
+  // @Props({ type: 'enum', value: ['=', '>=', '<=', '<', '>', 'like', 'in', 'beetwen', 'is null'] })
+  // matchOperator = '=';
 
 }
 
@@ -108,7 +141,7 @@ export class ColumnMatching {
   @Props({ type: 'string', readOnly: true })
   ColumnToType = '';
 
-  @Props({ type: 'enum', value: ['Object id', 'Object key', 'Table part row id', 'Table part row key', ''] })
+  @Props({ type: 'enum', value: ['Object id', 'Object key', 'Table part row id', ''] })
   ColumnRole = '';
 
   @Props({ type: 'boolean' })

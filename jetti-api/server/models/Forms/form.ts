@@ -155,7 +155,7 @@ export class FormBase {
       const tableOb = { type: 'table' };
       tableOb[tableName] = {};
       for (const tableProp of tableProps) {
-        tableOb[tableProp.Options] = tableProp.OptionsValue;
+        tableOb[tableProp.Options] = JSON.parse(tableProp.OptionsValue);
       }
       const tableFiledsProps = addTable.filter(e => e.Table === tableName && e.Filed);
       const tableFileds = [...new Set(tableFiledsProps.map(e => e.Filed))];
@@ -163,7 +163,7 @@ export class FormBase {
         const tableFiledProps = addTable.filter(e => e.Table === tableName && e.Filed === tableFiledName);
         const tableFieldOb = {};
         for (const tableFiledProp of tableFiledProps) {
-          tableFieldOb[tableFiledProp.Options] = tableFiledProp.OptionsValue;
+          tableFieldOb[tableFiledProp.Options] = JSON.parse(tableFiledProp.OptionsValue);
         }
         tableOb[tableName][tableFiledName] = tableFieldOb;
       }
@@ -178,7 +178,7 @@ export class FormBase {
       const filedProps = addfileds.filter(e => e.Filed === fieldName);
       const fieldOb = {};
       for (const filedProp of filedProps) {
-        fieldOb[filedProp.Options] = filedProp.OptionsValue;
+        fieldOb[filedProp.Options] = JSON.parse(filedProp.OptionsValue);
       }
       props[fieldName] = fieldOb as any;
       if (!Object.keys(this).includes(fieldName)) this[fieldName] = null;
@@ -194,7 +194,7 @@ export class FormBase {
       const tableProps = dynamicTables.filter(e => e.Table === tableName && !e.Filed);
       const tableOb = props[tableName];
       for (const tableProp of tableProps) {
-        tableOb[tableProp.Options] = tableProp.OptionsValue;
+        tableOb[tableProp.Options] = JSON.parse(tableProp.OptionsValue);
       }
       const tableFiledsProps = dynamicTables.filter(e => e.Table === tableName && e.Filed);
       const tableFileds = [...new Set(tableFiledsProps.map(e => e.Filed))];
@@ -202,7 +202,7 @@ export class FormBase {
         const tableFiledProps = dynamicTables.filter(e => e.Table === tableName && e.Filed === tableFiledName);
         const tableFieldOb = tableOb[tableName][tableFiledName];
         for (const tableFiledProp of tableFiledProps) {
-          tableFieldOb[tableFiledProp.Options] = tableFiledProp.OptionsValue;
+          tableFieldOb[tableFiledProp.Options] = JSON.parse(tableFiledProp.OptionsValue);
         }
         tableOb[tableName][tableFiledName] = tableFieldOb;
       }
@@ -216,7 +216,7 @@ export class FormBase {
       const filedProps = dynamicFileds.filter(e => e.Filed === fieldName);
       const fieldOb = props[fieldName];
       for (const filedProp of filedProps) {
-        fieldOb[filedProp.Options] = filedProp.OptionsValue;
+        fieldOb[filedProp.Options] = JSON.parse(filedProp.OptionsValue);
       }
       props[fieldName] = fieldOb as any;
     }
@@ -248,7 +248,7 @@ export class FormBase {
 
   DynamicPropsPush(kind: 'add' | 'mod' |'del', options: PropOption, optionsValue: any, filed = '', table = '', setId = '') {
     this.dynamicProps.push({
-      Kind: kind, Table: table, Filed: filed, Options: options.toString(), OptionsValue: optionsValue, SetId: setId
+      Kind: kind, Table: table, Filed: filed, Options: options.toString(), OptionsValue: JSON.stringify(optionsValue), SetId: setId
     });
   }
 

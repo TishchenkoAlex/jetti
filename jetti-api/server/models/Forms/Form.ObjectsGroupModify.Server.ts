@@ -1,5 +1,6 @@
+import { FormListOrder } from './../user.settings';
 import { DocumentBaseServer } from './../documents.factory.server';
-import { AllTypes } from './../documents.types';
+import { AllTypes, DocTypes } from './../documents.types';
 import { DocumentBase } from './../document';
 import { Type } from './../common-types';
 import { IServerForm } from './form.factory.server';
@@ -9,12 +10,14 @@ import { TASKS_POOL } from '../../sql.pool.tasks';
 import { createDocument } from '../documents.factory';
 import { createDocumentServer } from '../documents.factory.server';
 import { PropOptions } from '../document';
-import { v1 } from 'uuid';
 import { lib } from '../../std.lib';
+import { List } from '../../routes/utils/list';
+import { FormListFilter } from '../user.settings';
 
 export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify implements IServerForm {
 
   tx: MSSQL;
+  compareMode: false;
   checkedOnTypes: { value: any, type: string, correct: boolean }[] = [];
   propMatching: {
     Head: ColumnMatching[], Tables: { [x: string]: ColumnMatching[] }
@@ -24,9 +27,84 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     return this;
   }
 
-  async ReadRecieverStructure() {
+  async buildFilter() {
 
-    const type = this.OperationType ? 'Document.Operation' : this.Catalog;
+    const setId = 'buildFilterProps';
+    const filterProps = await this.getRecieverProps();
+    const enumValues: string[] = [];
+    this.RecieverProps = [];
+
+    Object.keys(filterProps).filter(key => filterProps[key].type !== 'table').forEach(key => {
+      const prop = filterProps[key];
+      const label = prop['label'] ? prop['label'] : key;
+      this.RecieverProps.push({ Key: key, Type: prop.type.toString(), Label: label });
+      enumValues.push(label);
+    });
+    this.DynamicPropsClearSet(setId);
+    this.DynamicPropsPush('add', 'type', 'table', '', 'Filter', setId);
+    this.DynamicPropsPush('add', 'type', 'enum', 'Field', 'Filter', setId);
+    this.DynamicPropsPush('add', 'value', enumValues, 'Field', 'Filter', setId);
+  }
+
+  async createFilterElements() {
+
+    const setId = 'createFilterElements';
+    const filterFields = [...new Set(this['Filter'].map(e => e.Field))] as string[];
+    const matchOperator = ['=', '>=', '<=', '<', '>', 'like', 'in', 'beetwen', 'is null'];
+    this.DynamicPropsClearSet(setId);
+    for (const filterField of filterFields) {
+      const prop = this.RecieverProps.find(e => e.Label === filterField);
+      if (!prop) continue;
+      this.DynamicPropsPush('add', 'type', prop.Type, `${prop.Key}_right`, '', setId);
+      this.DynamicPropsPush('add', 'label', prop.Label, `${prop.Key}_right`, '', setId);
+      this.DynamicPropsPush('add', 'type', 'enum', `${prop.Key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'value', matchOperator, `${prop.Key}_center`, '', setId);
+    }
+
+  }
+
+  async selectFilter() {
+
+    const setId = 'selectFilter';
+    const filterFields = [...new Set(this['Filter'].map(e => e.Field))] as string[];
+    const listFilter: FormListFilter[] = [];
+    this.DynamicPropsClearSet(setId);
+    this.DynamicPropsPush('add', 'type', 'table', '', 'FilterResult', setId);
+    for (const filterField of filterFields) {
+      const prop = this.RecieverProps.find(e => e.Label === filterField);
+      if (!prop) continue;
+      listFilter.push({ left: prop.Key, center: this[`${prop.Key}_center`], right: this[`${prop.Key}_right`] });
+      this.DynamicPropsPush('add', 'type', prop.Type, prop.Key, 'FilterResult', setId);
+      this.DynamicPropsPush('add', 'label', prop.Label, prop.Label, 'FilterResult', setId);
+    }
+
+    const filterBody = {
+      id: '',
+      type: await this.getType() as DocTypes,
+      command: 'first',
+      count: 100,
+      offset: 0,
+      filter: listFilter,
+      order: [new FormListOrder('description')]
+    };
+
+    this['FilterResult'] = (await List(filterBody, this.getTX())).data;
+  }
+
+
+  async getType(): Promise<DocTypes | string> {
+    if (this.OperationType) return 'Document.Operation';
+    let result = '';
+    if (this.CatalogType) {
+      const ob = await lib.doc.byId(this.CatalogType, this.getTX());
+      if (ob) result = ob.type;
+    }
+    return result;
+  }
+
+  async getRecieverProps() {
+
+    const type = await this.getType() as DocTypes;
     const Operation: string | undefined = this.OperationType || undefined;
     if (!type) throw new Error('Не задан тип приемника');
     const sdbl = new MSSQL(TASKS_POOL, this.user);
@@ -35,9 +113,15 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       createDocument(type)) as DocumentBase;
     const ServerDoc = await createDocumentServer(type, doc, sdbl);
     if (!ServerDoc) throw new Error(`wrong type ${type}`);
-    const recieverProps = ServerDoc.Props();
+    return ServerDoc.Props();
+
+  }
+
+  async ReadRecieverStructure() {
+
+    const type = await this.getType() as DocTypes;
+    const recieverProps = await this.getRecieverProps();
     this.ColumnsMatching = [];
-    this.id = v1().toLocaleUpperCase();
 
     const getСolumnMatching = (propName: string, prop: PropOptions, tablePartTo = ''): ColumnMatching => {
       let Role = '';
@@ -65,13 +149,21 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       else this.ColumnsMatching.push(getСolumnMatching(key, prop));
     });
 
+    await this.fillColumnsFrom();
+
     return this;
 
   }
 
   loadingTable = () => this['LoadingTable'];
 
+  getTX = (): MSSQL => {
+    if (!this.tx) this.createTransaction();
+    return this.tx;
+  }
+
   createTransaction = () => {
+    if (this.tx) return;
     this.user.isAdmin = this.SaveInAdminMode;
     this.tx = new MSSQL(TASKS_POOL, this.user);
   }
@@ -94,7 +186,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     if (!value || type === 'string') return true;
     if (Type.isRefType(type)) {
       if (!this.isGUID(value)) return false;
-      const ob = await lib.doc.byId(value, this.tx);
+      const ob = await lib.doc.byId(value, this.getTX());
       return !!ob && ob.type === type;
     }
     switch (type) {
@@ -125,7 +217,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
   }
 
   async saveDataIntoDB() {
-
+    await this.createComparedTable();
     const objectIdCol = this.ColumnsMatching.find(e => e.ColumnRole === 'Object id');
     if (!objectIdCol) throw new Error('Не задана колонка - идентфикатор объекта (Column role = "Object id")');
     this.fillPropMatching();
@@ -198,37 +290,11 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
             result = await this.setDocPropValue(table[rowIndex][col.ColumnTo], col, data[rowIndex][col.ColumnTo]) || result;
           }
         }
-      } else {
-        const findRowByKeys = this.propMatching[tablePartName].filter(e => e.ColumnRole === 'Table part row key'); // find by row nomber
-        if (findRowByKeys.length) {
-          if (table.length < data.length) {
-            this.addError('IncorrectTablePartLength'
-              , `Количество строк ТЧ ${tablePartName} - ${table.length}, не меньше количества загружаемых строк ${data.length}`
-              , 0
-              , doc.id);
-            return false;
-          }
-          for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
-            for (const col of this.propMatching[tablePartName]) {
-              result = await this.setDocPropValue(table[rowIndex][col.ColumnTo], col, data[rowIndex][col.ColumnTo]) || result;
-            }
-          }
-        }
       }
     }
     doc[tablePartName] = table;
     return result;
   }
-
-  // async getTableRow(table: any[], colFilter: ColumnMatching[], colValues: any[]) {
-  //   if (!colFilter.length || !table.length) return {};
-  //   if (colFilter)
-  //     table.find(e => {
-  //       if (condition) {
-
-  //       }
-  //     })
-  // }
 
   async setDocPropValue(doc: DocumentBaseServer, col: ColumnMatching, value: any): Promise<boolean> {
 
@@ -238,7 +304,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       || (doc[col.ColumnTo] && col.LoadIfEmptyInObject))
       return false;
 
-    if (this.CheckTypes && !this.checkType(value, col.ColumnToType)) return false;
+    if (this.CheckTypes && !await this.checkType(value, col.ColumnToType)) return false;
     doc[col.ColumnTo] = value;
     return true;
 
@@ -246,43 +312,59 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
   async prepareToLoading() {
     await this.ReadRecieverStructure();
-    await this.fillColumnsFrom();
     await this.matchColumnsByName();
-    await this.loadToTable();
+    await this.loadToTempTable();
     await this.fillLoadingTable();
   }
 
-  async fillLoadingTable() {
-    // const machColumns = this.ColumnsMatching.filter(e => e.ColumnFrom && e.ColumnTo);
-    // for (const col of machColumns) {
-    //   if (Type.isRefType(col.ColumnToType)) {
-    //     const vals = [...new Set(this['TempTable'].filter(e => e[col.ColumnTo]).map(e => e[col.ColumnTo]))];
-    //     const ids = vals.map(e => `\'${e}\'`).join();
-    //     const query = `SELECT * `
-    //   }
-    // }
+  async compareLoadingDataWithCurrent() {
+    await this.createComparedTable();
 
+  }
+
+  async createComparedTable() {
+
+    const machCol = this.ColumnsMatching.filter(e => e.ColumnFrom && e.ColumnTo);
+    if (!machCol.length) throw new Error('Не задано соответствие колонок');
+    const setId = 'createComparedTable';
+    this.DynamicPropsClearSet(setId);
+    this.DynamicPropsPush('add', 'type', 'table', '', 'ComparedTable', setId);
+    this.DynamicPropsPush('add', 'label', 'Compare', '', 'ComparedTable', setId);
+
+    for (const col of machCol) {
+      this.DynamicPropsPush('add', 'type', col.ColumnToType, `${col.ColumnTo}Current`, 'ComparedTable', setId);
+      this.DynamicPropsPush('add', 'type', col.ColumnToType, `${col.ColumnTo}New`, 'ComparedTable', setId);
+    }
+
+    this['ComparedTable'] = [];
+
+  }
+
+
+  async fillLoadingTable() {
     this['LoadingTable'] = this['TempTable'];
     if (!this['LoadingTable'].length) return;
     const cols = Object.keys(this['LoadingTable'][0]).filter(e => e !== 'Errors');
+    const refColumns = this.ColumnsMatching.filter(e => e.ColumnFrom && e.ColumnTo && Type.isRefType(e.ColumnToType)).map(e => e.ColumnTo);
     for (let index = 0; index < this['TempTable'].length; index++) {
       const rowTemp = this['TempTable'][index];
       const rowLoad = this['LoadingTable'][index];
       rowTemp.Errors = 0;
       for (const col of cols) {
         if (rowTemp[col] && !rowLoad[col]) rowTemp.Errors++;
+        if (rowLoad[col] && refColumns.includes(col) && !this.isGUID(rowLoad[col])) rowLoad[col] = null;
       }
       rowLoad.Errors = rowTemp.Errors;
     }
   }
 
-  async loadToTable() {
+  async loadToTempTable() {
 
     await this.createLoadingTable();
 
     const pastedValue = this.Text;
     if (!pastedValue) return new Set;
-    const sep = this.getSeparators();
+    const sep = await this.getSeparators();
     const rows = pastedValue.split(sep.rows);
     if (!rows.length) throw new Error('Не найден разделитель строк');
     const cols = rows[0].split(sep.columns);
@@ -293,11 +375,11 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       const matCol = this.ColumnsMatching.find(e => e.ColumnFrom === col && e.ColumnTo);
       if (matCol) colsSet.add({ colProp: matCol, index: cols.indexOf(col) });
     }
-    const colSep = this.getSeparators().columns;
+    const colSep = sep.columns;
     for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
       const row = rows[rowIndex].split(colSep);
       const rowOb = {};
-      colsSet.forEach(col => { rowOb[col.colProp.ColumnTo] = row[col.index].toLowerCase() === 'null' ? '' : row[col.index]; });
+      colsSet.forEach(col => { rowOb[col.colProp.ColumnTo] = row[col.index]; });
       this['TempTable'].push(rowOb);
     }
 
@@ -355,12 +437,12 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
   async fillColumnsFrom() {
     this.DynamicPropsClearSet('fillColumnsFrom');
-    this.DynamicPropsPush('mod', 'value', this.getColumnsFrom(), 'ColumnFrom', 'ColumnsMatching', 'fillColumnsFrom');
+    this.DynamicPropsPush('mod', 'value', await this.getColumnsFrom(), 'ColumnFrom', 'ColumnsMatching', 'fillColumnsFrom');
   }
 
   async matchColumnsByName() {
     if (!this.ColumnsMatching.length) throw new Error('Не загружена структура приемника');
-    const columns = this.getColumnsFrom();
+    const columns = await this.getColumnsFrom();
     if (!columns) throw new Error('Не удалось прочитать колонки из текста');
     for (const col of columns) {
       const matchedCol = this.ColumnsMatching.find(e => e.ColumnTo === col);
@@ -368,16 +450,15 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     }
   }
 
-
-
-  getColumnsFrom(): string[] {
+  async getColumnsFrom(): Promise<string[]> {
     const pastedValue = this.Text;
     if (!pastedValue) return [];
-    const sep = this.getSeparators();
+    const sep = await this.getSeparators();
     const rows = pastedValue.split(sep.rows);
     if (!rows.length) throw new Error('Не найден разделитель строк');
     const cols = rows[0].split(sep.columns);
     if (!cols.length) throw new Error('Не найден разделитель колонок');
+    cols.unshift('');
     return cols;
   }
 
