@@ -1,3 +1,5 @@
+import { RegisterInfoShareEmission } from './ShareEmission';
+import { RegisterInfoCompanyPrice } from './CompanyPrice';
 import { RegisterInfoRoyaltySales } from './RoyaltySales';
 import { RegisterInfoDepartmentStatus } from './DepartmentStatus';
 import { RegisterInfoHoliday } from './Holiday';
@@ -34,6 +36,8 @@ export type RegisterInfoTypes =
     'Register.Info.IntercompanyHistory' |
     'Register.Info.RoyaltySales' |
     'Register.Info.IncomeDocumentRegistry' |
+    'Register.Info.CompanyPrice' |
+    'Register.Info.ShareEmission' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
@@ -49,6 +53,8 @@ export type RegistersInfo =
     RegisterInfoMainSpecification |
     RegisterInfoIntercompanyHistory |
     RegisterInfoIncomeDocumentRegistry |
+    RegisterInfoCompanyPrice |
+    RegisterInfoShareEmission |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -73,6 +79,8 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.CounterpartiePriceList', Class: RegisterInfoCounterpartiePriceList },
     { type: 'Register.Info.CompanyResponsiblePersons', Class: RegisterInfoCompanyResponsiblePersons },
     { type: 'Register.Info.IncomeDocumentRegistry', Class: RegisterInfoIncomeDocumentRegistry },
+    { type: 'Register.Info.CompanyPrice', Class: RegisterInfoCompanyPrice },
+    { type: 'Register.Info.ShareEmission', Class: RegisterInfoShareEmission },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
 ];
 

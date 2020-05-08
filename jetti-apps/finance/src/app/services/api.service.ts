@@ -16,11 +16,37 @@ import { LoadingService } from '../common/loading.service';
 import { viewModelToFlatDocument } from '../common/mapping/document.mapping';
 import { FormTypes } from '../../../../../jetti-api/server/models/Forms/form.types';
 import { FormBase } from '../../../../../jetti-api/server/models/Forms/form';
+import { CatalogAttachment, IAttachmentsSettings } from '../../../../../jetti-api/server/models/Catalogs/Catalog.Attachment';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
 
   constructor(private http: HttpClient, public lds: LoadingService) { }
+
+  getAttachmentStorageById(attachmentId: string): Promise<string> {
+    const query = `${environment.api}attachments/getAttachmentStorageById/${attachmentId}`;
+    return this.http.get<string>(query).toPromise();
+  }
+
+  getAttachmentsByOwner(ownerId: string, withDeleted: boolean): Promise<any[]> {
+    const query = `${environment.api}attachments/getByOwner/${ownerId}/${withDeleted}`;
+    return this.http.get<any[]>(query).toPromise();
+  }
+
+  getAttachmentsSettingsByOwner(ownerId: string): Promise<IAttachmentsSettings[]> {
+    const query = `${environment.api}attachments/getAttachmentsSettingsByOwner/${ownerId}`;
+    return this.http.get<IAttachmentsSettings[]>(query).toPromise();
+  }
+
+  addAttachments(attach: CatalogAttachment[]): Promise<any[]> {
+    const query = `${environment.api}attachments/add`;
+    return this.http.post<any[]>(query, attach).toPromise();
+  }
+
+  delAttachments(attachmentsId: string[]): Promise<void> {
+    const query = `${environment.api}attachments/del`;
+    return this.http.post<void>(query, attachmentsId).toPromise();
+  }
 
   byId<T extends DocumentBase>(id: Ref): Promise<T> {
     const query = `${environment.api}byId/${id}`;

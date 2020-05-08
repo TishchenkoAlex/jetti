@@ -37,7 +37,7 @@ class Documents {
   @Props({ type: 'Catalog.Documents', required: true, style: { width: '100%' }})
   Document: Ref = null;
 
-  @Props({ type: 'Catalog.Operation.Group', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Operation.Group', style: { width: '100%' }})
   Group: Ref = null;
 
 }

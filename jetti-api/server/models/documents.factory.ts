@@ -1,3 +1,4 @@
+import { CatalogAttachmentType } from './Catalogs/Catalog.Attachment.Type';
 import { CatalogReasonTypes } from './Catalogs/Catalog.ReasonTypes';
 import { CatalogJobTitleCategory } from './Catalogs/Catalog.JobTitle.Category';
 import { CatalogProductReport } from './Catalogs/Catalog.Product.Report';
@@ -82,6 +83,7 @@ import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
 import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
+import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -130,6 +132,8 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
 export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; }
 
 export const RegisteredDocument: RegisteredDocumentType[] = [
+  { type: 'Catalog.Attachment', Class: CatalogAttachment },
+  { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
   { type: 'Catalog.Balance.Analytics', Class: CatalogBalanceAnalytics },

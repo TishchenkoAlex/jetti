@@ -140,6 +140,12 @@ export class Agreement {
   @Props({ type: 'Catalog.Company', label: 'Company share' })
   AgreementShareCompany: Ref = null;
 
+  @Props({ type: 'number', label: 'Share price', style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' } })
+  AgreementSharePrice = '';
+
+  @Props({ type: 'number', label: 'Share q-ty', style: { width: '100px', textAlign: 'right', background: 'lightgoldenrodyellow', color: 'black' }, totals: 1 })
+  AgreementShareQty = '';
+
   @Props({ type: 'string', label: 'Hologram №' })
   AgreementHologram = '';
 

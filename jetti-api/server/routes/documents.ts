@@ -1,4 +1,3 @@
-import { x100 } from './../x100.lib';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
@@ -579,6 +578,51 @@ router.post('/createDocument/:type', async (req: Request, res: Response, next: N
           res.json(resOb);
         }
       }
+    });
+  } catch (err) { next(err); }
+});
+
+router.post('/attachments/del', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      res.json(await lib.util.delAttachments(req.body, tx));
+    });
+  } catch (err) { next(err); }
+});
+
+router.post('/attachments/add', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      res.json(await lib.util.addAttachments(req.body, tx));
+    });
+  } catch (err) { next(err); }
+});
+
+router.get('/attachments/getByOwner/:id/:withDeleted', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      res.json(await lib.util.getAttachmentsByOwner(req.params.id, req.params.withDeleted === 'true', tx));
+    });
+  } catch (err) { next(err); }
+});
+
+router.get('/attachments/getAttachmentStorageById/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      res.json(await lib.util.getAttachmentStorageById(req.params.id, tx));
+    });
+  } catch (err) { next(err); }
+});
+
+router.get('/attachments/getAttachmentsSettingsByOwner/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      res.json(await lib.util.getAttachmentsSettingsByOwner(req.params.id, tx));
     });
   } catch (err) { next(err); }
 });

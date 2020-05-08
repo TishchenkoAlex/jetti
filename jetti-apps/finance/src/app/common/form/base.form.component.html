@@ -4,7 +4,7 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp
           [header]="(description$ | async)?.value + ' (' + (metadata$ | async).description + ')' + ((isPosted$ | async) ? ' [posted]' : ' [unposted]') + (readonly ? ' [readonly]' : '')"
-          [toggleable]="true"  toggler="header">
+          [toggleable]="true" toggler="header">
           <p-toolbar *ngIf="!readonly && !isHistory">
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="PostClose" icon="fa fa-check-square" label="Post&Close"
@@ -104,20 +104,18 @@
 
         </p-panel>
 
-        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true" toggler="header">
+        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true"
+          toggler="header">
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
             *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+0]"
-                [control]="additionalFields[i+0]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+0]" [control]="additionalFields[i+0]" [form]="form"></j-control>
             </div>
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+1]"
-                [control]="additionalFields[i+1]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+1]" [control]="additionalFields[i+1]" [form]="form"></j-control>
             </div>
             <div fxFlex>
-              <j-control *ngIf="additionalFields[i+2]"
-                [control]="additionalFields[i+2]" [form]="form"></j-control>
+              <j-control *ngIf="additionalFields[i+2]" [control]="additionalFields[i+2]" [form]="form"></j-control>
             </div>
           </div>
         </p-panel>
@@ -132,7 +130,8 @@
 
         <div *ngIf="!isHistory">
           <p-panel *ngIf="type === 'Catalog.Operation' && (isFolder$ | async) === false" [toggleable]="true"
-            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)" toggler="header">
+            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)"
+            toggler="header">
             <j-control *ngIf="vk.script" [control]="vk.script" [form]="form"></j-control>
           </p-panel>
 
@@ -141,8 +140,8 @@
             <j-control *ngIf="vk.module" [control]="vk.module" [form]="form"></j-control>
           </p-panel>
 
-          <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #movements
-            *ngIf="isDoc" toggler="header">
+          <p-panel [toggleable]="true" [collapsed]="true" header="Register movements" #movements *ngIf="isDoc"
+            toggler="header">
             <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel">
             </j-register-movements-list>
           </p-panel>
@@ -167,8 +166,14 @@
             <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
           </p-panel>
 
-          <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false" toggler="header">
+          <p-panel [toggleable]="true" [collapsed]="true" header="History" #history *ngIf="(isNew$ | async) === false"
+            toggler="header">
             <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
+          </p-panel>
+
+          <p-panel [toggleable]="true" [collapsed]="true" header="Attachments" #attachments
+            *ngIf="(isNew$ | async) === false" toggler="header">
+            <j-attachments *ngIf="!attachments.collapsed" [owner]="id"></j-attachments>
           </p-panel>
         </div>
 

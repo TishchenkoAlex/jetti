@@ -15,6 +15,7 @@ import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate,
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
+import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catalog.Attachment';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -55,6 +56,11 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
+    delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
+    getAttachmentsByOwner: (ownerId: Ref, withDeleted: boolean, tx: MSSQL) => Promise<CatalogAttachment[]>
+    getAttachmentStorageById: (attachmentId: Ref, tx: MSSQL) => Promise<string>
+    getAttachmentsSettingsByOwner: (ownerId: Ref, tx: MSSQL) => Promise<IAttachmentsSettings[]>
     salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
@@ -80,14 +86,14 @@ export const lib: JTL = {
     movementsByDoc
   },
   doc: {
-    byCode: byCode,
-    byId: byId,
-    byIdT: byIdT,
+    byCode,
+    byId,
+    byIdT,
     createDoc,
     createDocServer,
     createDocServerById,
     saveDoc,
-    historyById: historyById,
+    historyById,
     Ancestors,
     Descendants,
     haveDescendants,
@@ -103,10 +109,15 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
-    salaryCompanyByCompany: salaryCompanyByCompany,
-    bankStatementUnloadById: bankStatementUnloadById,
-    adminMode: adminMode,
-    closeMonth: closeMonth,
+    addAttachments,
+    delAttachments,
+    getAttachmentsByOwner,
+    getAttachmentStorageById,
+    getAttachmentsSettingsByOwner,
+    salaryCompanyByCompany,
+    bankStatementUnloadById,
+    adminMode,
+    closeMonth,
     getUserRoles,
     isRoleAvailable,
     GUID,
@@ -220,17 +231,32 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
   const CompanyParentId = await lib.doc.Ancestors(company, tx, 1);
   let CodeCompanySalary = '';
   switch (CompanyParentId) {
-    case 'E5850830-02D2-11EA-A524-E592E08C23A5':
+    case 'E5850830-02D2-11EA-A524-E592E08C23A5': // RUSSIA
       CodeCompanySalary = 'SALARY-RUSSIA';
       break;
-    case 'FE302460-0489-11EA-941F-EBDB19162587':
+    case '608F90F0-5480-11EA-8766-41CC929689CC': // RUSSIA (UKRAINE Branch)
       CodeCompanySalary = 'SALARY-UKRAINE';
       break;
-    case '7585EDB0-3626-11EA-A819-EB0BBE912314':
+    case 'FE302460-0489-11EA-941F-EBDB19162587': // UKRAINE - Украина
+      CodeCompanySalary = 'SALARY-UKRAINE';
+      break;
+    case '7585EDB0-3626-11EA-A819-EB0BBE912314': // КРАУДИВЕСТИНГ
       CodeCompanySalary = 'SALARY-CRAUD';
       break;
-    case '9C226AA0-FAFA-11E9-B75B-A35013C043AE':
+    case '9C226AA0-FAFA-11E9-B75B-A35013C043AE': // KAZAKHSTAN
       CodeCompanySalary = 'SALARY-KAZAKHSTAN';
+      break;
+    case 'D3B08C60-3F5E-11EA-AD91-F1F1060B7833': // JETTY
+      CodeCompanySalary = 'JETTI-COMPANY';
+      break;
+    case 'A1D8B8E0-F8FD-11E9-8CC0-4361F9AEA805': // HUNGARY
+      CodeCompanySalary = 'SALARY-HUNGARY';
+      break;
+    case 'D5B9D1D0-F8FD-11E9-8CC0-4361F9AEA805': // POLAND
+      CodeCompanySalary = 'SALARY-POLAND';
+      break;
+    case 'FB954970-F8FD-11E9-8CC0-4361F9AEA805': // ROMANIA
+      CodeCompanySalary = 'SALARY-ROMANIA';
       break;
     default:
       return company;
@@ -377,6 +403,143 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   } catch (ex) { throw new Error(ex); }
   finally { await lib.util.adminMode(false, tx); }
 }
+
+async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {
+  const keys = Object.keys(new CatalogAttachment);
+  const result: any[] = [];
+  let userId = '';
+  const getCurrentUserIdByMail = async () => {
+    return await byCode('Catalog.User', tx.user.email, tx);
+  };
+  for (const attachment of attachments) {
+    if (!attachment.owner) throw new Error('Attachment owner is empty!');
+    let ob;
+    if (attachment.id) ob = await createDocServerById(attachment.id, tx);
+    else {
+      ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
+      if (!userId) userId = await getCurrentUserIdByMail() as string;
+      ob.user = userId;
+      ob.date = new Date;
+      ob.company = (await byId(attachment.owner, tx))!.company;
+    }
+    Object.keys(attachment)
+      .filter(e => keys.includes(e))
+      .forEach(e => ob[e] = attachment[e]);
+
+    ob = await saveDoc(ob, tx);
+    const resOb = {
+      ...attachment,
+      timestamp: ob.timestamp,
+      date: ob.date,
+      user: ob.user,
+      id: ob.id
+    };
+    if (!resOb['userDescription'] && resOb.user) resOb['userDescription'] = (await byId(resOb.user as string, tx))!.description;
+
+    result.push(resOb);
+  }
+  return result;
+}
+
+async function delAttachments(attachmentsId: Ref[], tx: MSSQL): Promise<boolean> {
+  for (const id of attachmentsId) {
+    const ob = await createDocServerById<CatalogAttachment>(id as string, tx);
+    if (!ob || ob.deleted) continue;
+    ob.Storage = '';
+    ob.deleted = true;
+    await updateDocument(ob, tx);
+  }
+  return true;
+}
+
+async function getAttachmentsByOwner(ownerId: Ref, withDeleted: boolean, tx: MSSQL): Promise<CatalogAttachment[]> {
+  const query = `
+  SELECT
+    attach.*,
+    stor.Storage
+FROM
+    (
+        SELECT
+            a.id,
+            a.description,
+            a.timestamp,
+            a.owner,
+            a.date,
+            a.AttachmentType,
+            a.Tags,
+            a.MIMEType,
+            a.FileSize,
+            a.FileName,
+            us.description userDescription,
+            at.description AttachmentTypeDescription,
+            at.IconURL,
+            at.StorageType,
+            at.LoadDataOnInit
+        FROM
+            [Catalog.Attachment.v] a
+            LEFT JOIN [Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
+            LEFT JOIN [Catalog.User.v] us ON a.[user] = us.id
+        WHERE
+            a.owner = @p1
+            ${withDeleted ? '' : 'and a.deleted = 0'}
+    ) attach
+    LEFT JOIN dbo.[Documents] doc
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor ON attach.id = doc.id
+    and attach.LoadDataOnInit = 1
+ORDER BY
+    attach.timestamp DESC`;
+  return await tx.manyOrNone(query, [ownerId]);
+}
+
+async function getAttachmentStorageById(attachmentId: Ref, tx: MSSQL): Promise<string> {
+  const query = `
+  SELECT stor.Storage FROM dbo.[Documents] doc
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor WHERE doc.id = @p1`;
+  const res = await tx.oneOrNone<{ Storage: string }>(query, [attachmentId]);
+  return res ? res.Storage : '';
+}
+
+async function getAttachmentsSettingsByOwner(ownerId: Ref, tx: MSSQL): Promise<IAttachmentsSettings[]> {
+  const owner = await byId(ownerId as string, tx);
+  if (!owner) return [];
+  let query = `SELECT d.id AttachmentType,
+      d.description AttachmentTypeDescription,
+      JSON_VALUE(d.doc, N'$.StorageType')  StorageType,
+      JSON_VALUE(d.doc, N'$.FileFilter')  FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize')  MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
+
+  where d.type = 'Catalog.Attachment.Type'
+      and d.deleted = 0
+      and JSON_VALUE(d.doc, N'$.AllDocuments') = 'true'
+  UNION
+  SELECT d.id AttachmentType,
+      d.description AttachmentTypeDescription,
+      JSON_VALUE(d.doc, N'$.StorageType') StorageType,
+      JSON_VALUE(d.doc, N'$.FileFilter') FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize') MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
+  CROSS APPLY OPENJSON (d.doc, N'$.Owners')
+  WITH (
+      [OwnerType] VARCHAR(MAX)
+  ) AS owners
+  where d.type = 'Catalog.Attachment.Type'
+      and d.deleted = 0
+      and owners.[OwnerType] = @p1
+  ORDER by AttachmentTypeDescription`;
+  if (Type.isCatalog(owner.type)) query = query.replace('.AllDocuments', '.AllCatalogs');
+  const qRes = await tx.manyOrNone(query, [owner.type]) as any[];
+  if (!qRes.length) return [];
+  return [...new Set(qRes.map(e => {
+    return { ...e, Tags: [...new Set(e.Tags.split(';').map(tag => tag.trim()).filter(tag => tag))] };
+  }))];
+
+}
+
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `

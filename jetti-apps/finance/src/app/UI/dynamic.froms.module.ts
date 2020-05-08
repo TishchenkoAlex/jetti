@@ -1,3 +1,4 @@
+import { AttachmentsComponent } from './../common/attachment/attachments.component';
 import { BaseHierarchyListComponent } from './../common/datatable/base.hierarchy-list.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -59,6 +60,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
     OperationListComponent,
 
     HistoryComponent,
+    AttachmentsComponent,
     DescendantsComponent
 
   ],
@@ -105,6 +107,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
     OperationListComponent,
 
     HistoryComponent,
+    AttachmentsComponent,
     DescendantsComponent
   ],
   providers: [

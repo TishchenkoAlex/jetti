@@ -30,6 +30,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TreeTableModule } from 'primeng/treetable';
 import { SlideMenuModule } from 'primeng/slidemenu';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
+import { DataViewModule } from 'primeng/dataview';
+import {FileUploadModule} from 'primeng/fileupload';
+import {ListboxModule} from 'primeng/listbox';
 import { TableModule } from './common/datatable/table';
 
 @NgModule({
@@ -83,10 +86,12 @@ import { TableModule } from './common/datatable/table';
     ScrollPanelModule,
     TableModule,
     TabViewModule,
-
+    DataViewModule,
+    FileUploadModule,
+    ListboxModule,
     CovalentCodeEditorModule
   ],
-    providers: [ConfirmationService, MessageService]
+  providers: [ConfirmationService, MessageService]
 })
 export class PrimeNGModule { }
 
