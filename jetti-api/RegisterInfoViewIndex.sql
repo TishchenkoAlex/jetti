@@ -300,6 +300,39 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.CompanyPrice]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.CompanyPrice')) "CompanyPrice"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyPrice';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.CompanyPrice] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.CompanyPrice] ON [dbo].[Register.Info.CompanyPrice](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.ShareEmission]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.SharePrice')) "SharePrice"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.ShareQty')) "ShareQty"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.ShareEmission';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.ShareEmission] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.ShareEmission] ON [dbo].[Register.Info.ShareEmission](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
     WITH SCHEMABINDING
     AS

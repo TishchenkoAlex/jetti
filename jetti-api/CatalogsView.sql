@@ -13,6 +13,85 @@
 
     
 
+      CREATE OR ALTER VIEW dbo.[Catalog.Attachment] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Attachment", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([owner.v].description, '') [owner.value], d.[owner] [owner.id], [owner.v].type [owner.type]
+        , ISNULL([AttachmentType.v].description, '') [AttachmentType.value], d.[AttachmentType] [AttachmentType.id], [AttachmentType.v].type [AttachmentType.type]
+        , d.[Storage] [Storage]
+        , d.[Tags] [Tags]
+        , d.[FileSize] [FileSize]
+        , d.[FileName] [FileName]
+        , d.[MIMEType] [MIMEType]
+      
+        , ISNULL(l5.description, d.description) [Attachment.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Attachment.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Attachment.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Attachment.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Attachment.Level1]
+      FROM [Catalog.Attachment.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Attachment.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Attachment.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Attachment.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Attachment.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Attachment.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Documents] [owner.v] ON [owner.v].id = d.[owner]
+        LEFT JOIN dbo.[Catalog.Attachment.Type.v] [AttachmentType.v] WITH (NOEXPAND) ON [AttachmentType.v].id = d.[AttachmentType]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.Attachment] TO jetti;
+      GO
+      
+
+      CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "AttachmentType", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[AllDocuments] [AllDocuments]
+        , d.[AllCatalogs] [AllCatalogs]
+        , d.[MaxFileSize] [MaxFileSize]
+        , d.[FileFilter] [FileFilter]
+        , d.[StorageType] [StorageType]
+        , d.[IconURL] [IconURL]
+        , d.[Tags] [Tags]
+        , d.[LoadDataOnInit] [LoadDataOnInit]
+      
+        , ISNULL(l5.description, d.description) [AttachmentType.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AttachmentType.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [AttachmentType.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [AttachmentType.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [AttachmentType.Level1]
+      FROM [Catalog.Attachment.Type.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Attachment.Type.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Attachment.Type.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Attachment.Type.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Attachment.Type.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Attachment.Type.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.Attachment.Type] TO jetti;
+      GO
+      
+
       CREATE OR ALTER VIEW dbo.[Catalog.Account] AS
         
       SELECT
