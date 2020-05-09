@@ -64,6 +64,9 @@ export class CatalogLoan extends DocumentBase {
   })
   Status = 'PREPARED';
 
+  @Props({ type: 'Catalog.InvestorGroup' })
+  InvestorGroup: Ref = null;
+
   @Props({ type: 'number', order: 777 })
   InterestRate = 0;
 

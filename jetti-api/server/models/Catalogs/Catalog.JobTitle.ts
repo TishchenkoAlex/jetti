@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Должность',
   icon: 'fa fa-list',
   menu: 'Должности',
-  prefix: 'JT-'
+  prefix: 'JT-',
+  hierarchy: 'folders'
 })
 export class CatalogJobTitle extends DocumentBase {
 
