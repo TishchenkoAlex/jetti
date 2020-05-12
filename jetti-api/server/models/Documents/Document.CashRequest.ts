@@ -24,6 +24,14 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
     { method: 'FillSalaryBalanceByDepartment', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению', order: 4 },
     { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам', order: 5 },
+    {
+      method: 'FillSalaryBalanceByDepartmentWithCurrentMonth'
+      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению (с текущим месяцем)', order: 4
+    },
+    {
+      method: 'FillSalaryBalanceByPersonsWithCurrentMonth'
+      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)', order: 5
+    },
     // {
     //   method: 'OpenRelatedURL', icon: 'pi pi-plus', label: 'Перейти по связанной ссылке', order: 6,
     //   clientModule: `if (this.form.get('RelatedURL').value)

@@ -16,6 +16,7 @@ import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
 import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catalog.Attachment';
+import { x100 } from './x100.lib';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -227,41 +228,7 @@ async function haveDescendants(id: string, tx: MSSQL): Promise<boolean> {
 }
 
 async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string | null> {
-  if (!company) return null;
-  const CompanyParentId = await lib.doc.Ancestors(company, tx, 1);
-  let CodeCompanySalary = '';
-  switch (CompanyParentId) {
-    case 'E5850830-02D2-11EA-A524-E592E08C23A5': // RUSSIA
-      CodeCompanySalary = 'SALARY-RUSSIA';
-      break;
-    case '608F90F0-5480-11EA-8766-41CC929689CC': // RUSSIA (UKRAINE Branch)
-      CodeCompanySalary = 'SALARY-UKRAINE';
-      break;
-    case 'FE302460-0489-11EA-941F-EBDB19162587': // UKRAINE - Украина
-      CodeCompanySalary = 'SALARY-UKRAINE';
-      break;
-    case '7585EDB0-3626-11EA-A819-EB0BBE912314': // КРАУДИВЕСТИНГ
-      CodeCompanySalary = 'SALARY-CRAUD';
-      break;
-    case '9C226AA0-FAFA-11E9-B75B-A35013C043AE': // KAZAKHSTAN
-      CodeCompanySalary = 'SALARY-KAZAKHSTAN';
-      break;
-    case 'D3B08C60-3F5E-11EA-AD91-F1F1060B7833': // JETTY
-      CodeCompanySalary = 'JETTI-COMPANY';
-      break;
-    case 'A1D8B8E0-F8FD-11E9-8CC0-4361F9AEA805': // HUNGARY
-      CodeCompanySalary = 'SALARY-HUNGARY';
-      break;
-    case 'D5B9D1D0-F8FD-11E9-8CC0-4361F9AEA805': // POLAND
-      CodeCompanySalary = 'SALARY-POLAND';
-      break;
-    case 'FB954970-F8FD-11E9-8CC0-4361F9AEA805': // ROMANIA
-      CodeCompanySalary = 'SALARY-ROMANIA';
-      break;
-    default:
-      return company;
-  }
-  return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
+  return await x100.util.salaryCompanyByCompany(company, tx);
 }
 
 function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocument | null {

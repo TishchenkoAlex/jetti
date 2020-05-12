@@ -114,10 +114,16 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         await this.returnToStatusPrepared(tx);
         return this;
       case 'FillSalaryBalanceByPersons':
-        await this.FillSalaryBalance(tx, true);
+        await this.FillSalaryBalance(tx, true, false);
         return this;
       case 'FillSalaryBalanceByDepartment':
-        await this.FillSalaryBalance(tx, false);
+        await this.FillSalaryBalance(tx, false, false);
+        return this;
+      case 'FillSalaryBalanceByDepartmentWithCurrentMonth':
+        await this.FillSalaryBalance(tx, false, true);
+        return this;
+      case 'FillSalaryBalanceByPersonsWithCurrentMonth':
+        await this.FillSalaryBalance(tx, true, true);
         return this;
       case 'CloseCashRequest':
         await this.CloseCashRequest(tx);
@@ -248,11 +254,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     await updateDocument(this, tx);
   }
 
-  async FillSalaryBalance(tx: MSSQL, byPersons: boolean) {
+  async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean) {
     if (!(await this.isSuperuser(tx)) && this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
-    const query = `
+    let query = `
 DROP TABLE IF EXISTS #Person;
 DROP TABLE IF EXISTS #Salary;
+DROP TABLE IF EXISTS #ExceptDocs;
     SELECT id personId
     INTO #Person
     FROM
@@ -265,12 +272,23 @@ UNION
         [dbo].[Catalog.Person]
     WHERE id IN (@p5) AND @p6 = 1;
 
+    SELECT
+doc.id
+INTO #ExceptDocs
+FROM [dbo].[Register.Accumulation.Salary] s
+INNER JOIN [dbo].[Documents] doc
+ON doc.id = document
+and [ExchangeBase]='PortalNach'
+and s.date BETWEEN @p7 AND @p8
+and @p9 = 0;
+
 SELECT
     Person PersonID,
     SUM(Amount) Salary
 INTO #Salary
 FROM [dbo].[Register.Accumulation.Salary] register
 WHERE (1=1)
+    AND register.document NOT IN (SELECT id FROM #ExceptDocs)
     AND ((@p6 = 0
     AND (Person in (SELECT personId
     FROM #Person) OR @p1 is NULL))
@@ -302,6 +320,7 @@ FROM (        SELECT *
             FROM [dbo].[Register.Accumulation.CashToPay] ft
                 LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
             WHERE (1=1)
+                AND ft.document NOT IN (SELECT id FROM #ExceptDocs)
                 AND (ft.CashRecipient IN (SELECT personId
                 from #Person) or (@p1 is NULL and ft.CashRecipient IN (SELECT personId
                 from #Salary)))
@@ -322,16 +341,24 @@ GROUP BY
 HAVING SUM(Salary) >= 20 AND not PersonID is NULL
 ORDER BY
         p.Person`;
+
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
     let persons = '';
-    if (byPersons) persons = this.PayRolls.map(el => el.Employee).join(',');
+    if (byPersons) query = query.replace('@p5', this.PayRolls.map(el => '\'' + el.Employee + '\'').join(','));
+    const currentMounth = {
+      begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
+      end: new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0, 23, 59, 59)
+    };
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query,
       [byPersons ? null : this.Department,
       this.сurrency,
       this.date,
         CompanyEmployee,
         persons,
-      byPersons ? 1 : 0]);
+      byPersons ? 1 : 0,
+      currentMounth.begin,
+      currentMounth.end,
+      withCurrentMonth ? 1 : 0]);
     this.PayRolls = [];
     this.Amount = 0;
     this.PayDay = new Date;
