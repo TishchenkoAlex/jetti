@@ -212,8 +212,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     if (!this.formControl) return Filter; // list form
     const form = this.formControl.root as FormGroup;
     const funcName = `getFilter_${this.id}`;
-    if (!form['metadata'] || !form['metadata']['module'] || !(form['metadata']['module'] as string).includes(funcName)) return Filter;
+    if (!form['metadata'] || !form['metadata']['module']) return Filter;
     const functions = new Function('', form['metadata']['module']).bind(this)();
+    if (!functions[funcName]) return Filter;
     const funcBody = `f = ${functions[funcName].toString()}; return f();`;
     const func = new Function('doc, row, value, filter', funcBody);
     return func.bind(this, form.getRawValue(), this.formControl.parent.value, this.formControl.value, Filter)();
