@@ -333,6 +333,22 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.LoanOwner]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) "User"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LoanOwner"')) "LoanOwner"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.LoanOwner';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.LoanOwner] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.LoanOwner] ON [dbo].[Register.Info.LoanOwner](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
     WITH SCHEMABINDING
     AS
