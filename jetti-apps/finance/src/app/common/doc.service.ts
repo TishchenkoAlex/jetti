@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfirmationService } from 'primeng/components/common/confirmationservice';
-import { MessageService } from 'primeng/components/common/messageservice';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { DocumentBase } from './../../../../../jetti-api/server/models/document';
@@ -107,11 +106,11 @@ export class DocService {
   }
 
   download = (data, filename, type = 'text/xml') => {
-    var file = new Blob([data], { type: type });
+    const file = new Blob([data], { type: type });
     if (window.navigator.msSaveOrOpenBlob) // IE10+
       window.navigator.msSaveOrOpenBlob(file, filename);
     else { // Others
-      var a = document.createElement("a"),
+      const a = document.createElement('a'),
         url = URL.createObjectURL(file);
       a.href = url;
       a.download = filename;

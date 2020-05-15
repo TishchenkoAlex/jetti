@@ -46,6 +46,9 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'string' })
   Email: Ref = null;
 
+  @Props({ type: 'date' })
+  EmploymentDate = null;
+
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 

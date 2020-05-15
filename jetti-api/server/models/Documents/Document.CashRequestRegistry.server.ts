@@ -15,29 +15,7 @@ import { Ref } from '../document';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
-    switch (prop) {
-      case 'Operation':
-        // const Props = this.Props() as any;
-        // Props.CashRequests.CashRequests.BankAccountIn = {
-        //   ...Props.CashRequests.CashRequests.BankAccountIn, hidden: this.Operation !== 'Оплата ДС в другую организацию'
-        // };
-        // Props.CashRequests.CashRequests.CashRecipientBankAccount = {
-        //   ...Props.CashRequests.CashRequests.CashRecipientBankAccount, hidden: this.Operation === 'Оплата ДС в другую организацию' || this.Operation === 'Выплата заработной платы (наличные)'
-        // };
-        // Props.CashRequests.CashRequests.BankAccount = {
-        //   ...Props.CashRequests.CashRequests.BankAccount, hidden: this.Operation === 'Выплата заработной платы (наличные)'
-        // };
-        // Props.CashRequests.CashRequests.CountOfBankAccountCashRecipient = {
-        //   ...Props.CashRequests.CashRequests.CountOfBankAccountCashRecipient, hidden: this.Operation === 'Выплата заработной платы (наличные)'
-        // };
-        // Props.CashRequests.CashRequests.BankAccountPerson = {
-        //   ...Props.CashRequests.CashRequests.BankAccountPerson, hidden: this.Operation === 'Выплата заработной платы (наличные)'
-        // };
-        // this.Props = () => Props;
-        return this;
-      default:
-        return this;
-    }
+    return this;
   }
 
   async onCommand(command: string, args: any, tx: MSSQL) {

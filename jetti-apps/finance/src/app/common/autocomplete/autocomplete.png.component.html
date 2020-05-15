@@ -59,9 +59,11 @@
     <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
       <p-autoComplete #ac [formControl]="suggest" [suggestions]="Suggests$ | async" [required]="required"
         [readonly]="readOnly" autocomplete="off" (completeMethod)="getSuggests($event.query)" field="value"
-        (onSelect)="this.value = this.suggest.value" [inputStyle]="inputStyle" dataKey="id"
+        (onSelect)="searchComplete(suggest.value)" [inputStyle]="inputStyle" dataKey="id"
         (onFocus)="this.focus.emit($event)" (onBlur)="onBlur($event)" [autoHighlight]="true" spellcheck="false"
         appendTo="body" [disableControl]="suggest.disabled">
+
+
         <ng-template let-data pTemplate="item">
           <div fxLayout="row" fxLayoutGap="5px" style="align-content: center; align-items: center;">
             <i *ngIf="!data.isfolder && !data.deleted" class="fa fa-check-square" style="color: #5cb85c"></i>
@@ -69,13 +71,11 @@
             <i *ngIf="data.isfolder && data.deleted" class="fa fa-folder" style="color: #d9534f"></i>
             <i *ngIf="data.isfolder && !data.deleted" class="fa fa-folder" style="color: #5cb85c"></i>
 
-            <div *ngIf="data.deleted"><s style="color: #d9534f">{{data.value}}</s></div>
-            <div *ngIf="data.deleted"><s style="color: #d9534f">({{data.code}})</s></div>
-
-            <div *ngIf="!data.deleted">{{data.value}}</div>
-            <div *ngIf="!data.deleted">({{data.code}})</div>
+            <div *ngIf="data.deleted"><s style="color: #d9534f">{{data.description}}</s></div>
+            <div *ngIf="!data.deleted">{{data.description}}</div>
           </div>
         </ng-template>
+
       </p-autoComplete>
       <button pButton type="button" icon="pi pi-search" class="ui-button-secondary"
         *ngIf="showFind && !this.form.disabled" pTooltip="Select" tooltipPosition="top" showDelay="2000"

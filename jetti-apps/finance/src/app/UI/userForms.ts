@@ -21,8 +21,8 @@ const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<
     // add user's defined component for list- or doc-Form here
 };
 
-export function getListComponent(type: string, testComponent = false) {
-  return userForms[type] ? userForms[type].listComponent : (testComponent ? BaseHierarchyListComponent : BaseDocListComponent);
+export function getListComponent(type: string) {
+  return userForms[type] ? userForms[type].listComponent : BaseHierarchyListComponent;
 }
 
 export function getFormComponent(type: string) {

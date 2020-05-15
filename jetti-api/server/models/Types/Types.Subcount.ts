@@ -10,14 +10,26 @@ export class TypesSubcount extends TypesBase {
     const select = RegisteredDocument
       .map(el => ({ type: el.type as AllTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
 
-    select.push({type: 'number', description: 'number'});
-    select.push({type: 'date', description: 'date'});
-    select.push({type: 'datetime', description: 'datetime'});
-    select.push({type: 'string', description: 'string'});
-    select.push({type: 'boolean', description: 'boolean'});
-    select.push({type: 'table', description: 'table'});
+    select.push({ type: 'number', description: 'number' });
+    select.push({ type: 'date', description: 'date' });
+    select.push({ type: 'datetime', description: 'datetime' });
+    select.push({ type: 'string', description: 'string' });
+    select.push({ type: 'boolean', description: 'boolean' });
+    select.push({ type: 'table', description: 'table' });
 
     return buildTypesQueryList(select);
+  }
+
+  getTypes() {
+    return [
+      ...RegisteredDocument.map(e => e.type),
+      'number',
+      'date',
+      'datetime',
+      'string',
+      'boolean',
+      'table'
+    ];
   }
 
 }

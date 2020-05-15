@@ -5,11 +5,9 @@ import { TypesBase } from './TypesBase';
 
 export class TypesPersonOrCounterpartieBankAccount extends TypesBase {
 
-  QueryList() {
-    const select = RegisteredDocument.filter(d =>
-      d.type === 'Catalog.Counterpartie.BankAccount' ||
-      d.type === 'Catalog.Person.BankAccount')
-      .map(el => ({ type: el.type, description: (createDocument(el.type).Prop() as DocumentOptions).description }));
-    return buildTypesQueryList(select);
+  getTypes() {
+    return RegisteredDocument
+      .filter(d => d.type === 'Catalog.Counterpartie.BankAccount' || d.type === 'Catalog.Person.BankAccount')
+      .map(e => e.type);
   }
 }

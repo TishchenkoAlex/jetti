@@ -17,6 +17,7 @@ import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
 import { DocumentCashRequestServer } from './Documents/Document.CashRequest.server';
 import { PostResult } from './post.interfaces';
 import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequestRegistry.server';
+import { CatalogUserServer } from './Catalogs/Catalog.User.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -43,6 +44,7 @@ export type DocumentBaseServer = DocumentBase & IServerDocument;
 
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
+  { type: 'Catalog.User', Class: CatalogUserServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },

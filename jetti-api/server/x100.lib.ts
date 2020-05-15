@@ -54,8 +54,8 @@ export const x100: Ix100Lib = {
 };
 
 async function counterpartieByINNAndKPP(INN: string, KPP: string, tx: MSSQL): Promise<Ref | null> {
-  const query = `SELECT TOP 1 cp.id FROM [dbo].[Catalog.Counterpartie.v] cp WHERE cp.Code1 = @p1 and  cp.Code2 = @p2`;
-  const res = await tx.oneOrNone<{ id }>(query, [INN, KPP]);
+  const query = `SELECT TOP 1 cp.id FROM [dbo].[Catalog.Counterpartie.v] cp WHERE cp.Code1 = @p1 and (cp.Code2 = @p2 or @p2 is NULL)`;
+  const res = await tx.oneOrNone<{ id }>(query, [INN, KPP ? KPP : null]);
   return res ? res.id : null;
 }
 

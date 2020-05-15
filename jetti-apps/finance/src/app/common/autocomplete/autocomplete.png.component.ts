@@ -1,4 +1,3 @@
-import { AuthService } from './../../auth/auth.service';
 // tslint:disable:max-line-length
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
@@ -128,7 +127,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   }
   // end of implementation Validator interface
 
-  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService, private auth: AuthService) { }
+  constructor(private api: ApiService, private router: Router, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
     this._value = this.EMPTY;
@@ -141,22 +140,18 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
         this.handleSearch(undefined);
         this.cd.markForCheck();
       });
-
-    // this.hotkeys.addShortcut({ keys: 'Shift.F4', description: 'Clear' }).subscribe( () => {this.handleReset(new Event('keypress')); });
-    // this.hotkeys.addShortcut({ keys: 'F4', description: 'Choise' }).subscribe( () => {this.handleSearch(new Event('keypress')); });
-    // this.hotkeys.addShortcut({ keys: 'F2', description: 'Open' }).subscribe( () => {this.handleOpen(new Event('keypress')); });
   }
 
   getSuggests(text: string) {
-    if (this.isTypeValue) { this.Suggests$ = of([]); this.value = this.EMPTY; return; }
-    this.filters = this.calcFilters(true);
+    if (!text) { this.handleReset(undefined); return; }
+    if (!this.isTypeValue) this.filters = this.calcFilters(true);
     this.Suggests$ = this.api.getSuggests(this.value.type || this.type, text, this.filters.filter);
   }
 
   handleReset = (event: Event) => this.value = this.EMPTY;
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
   handleSearch = (event: Event) => {
-    this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders' && this.auth.isRoleAvailableTester();
+    this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders';
     this.filters = new FormListSettings();
     if (!this.isTypeValue) this.filters = this.calcFilters();
     this.showDialog = true;

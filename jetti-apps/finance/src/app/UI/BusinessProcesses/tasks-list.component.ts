@@ -3,7 +3,6 @@ import { BPApi } from 'src/app/services/bpapi.service';
 import { take } from 'rxjs/operators';
 import { SelectItem } from 'primeng/api';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { FilterUtils } from 'primeng/components/utils/filterutils';
 import { Observable } from 'rxjs';
 import { DocService } from 'src/app/common/doc.service';
 import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
@@ -44,16 +43,6 @@ export class TaskListComponent implements OnInit {
   ngOnInit() {
     this.loadTasks();
     this.fillColums();
-
-    FilterUtils['custom'] = (value, filter): boolean => {
-      if (filter === undefined || filter === null || filter.trim() === '') {
-        return true;
-      }
-      if (value === undefined || value === null) {
-        return false;
-      }
-      return parseInt(filter, 10) > value;
-    };
   }
 
   fillColums(): void {

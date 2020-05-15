@@ -5,11 +5,11 @@ import { TypesBase } from './TypesBase';
 
 export class TypesCompanyOrCompanyGroup extends TypesBase {
 
-  QueryList() {
-    const select = RegisteredDocument.filter(d =>
-      d.type === 'Catalog.Company' ||
-      d.type === 'Catalog.Company.Group')
-      .map(el => ({ type: el.type, description: (createDocument(el.type).Prop() as DocumentOptions).description }));
-    return buildTypesQueryList(select);
+  getTypes() {
+    return RegisteredDocument
+      .filter(d =>
+        d.type === 'Catalog.Company' ||
+        d.type === 'Catalog.Company.Group')
+      .map(e => e.type);
   }
 }

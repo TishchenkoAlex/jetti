@@ -9,6 +9,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   hierarchy: 'folders',
   relations: [
     { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: '[User].id' },
+    { name: 'Loan owner', type: 'Register.Info.LoanOwner', field: '[User].id' },
   ],
 })
 export class CatalogUser extends DocumentBase {
@@ -19,10 +20,10 @@ export class CatalogUser extends DocumentBase {
   @Props({ type: 'string', order: 1, required: true, style: { width: '250px' } })
   code = '';
 
-  @Props({ type: 'boolean'})
+  @Props({ type: 'boolean' })
   isAdmin = false;
 
-  @Props({ type: 'boolean'})
+  @Props({ type: 'boolean' })
   isDisabled = false;
 
   @Props({ type: 'Catalog.Person' })

@@ -1,5 +1,3 @@
-import { FormListFilter } from './../user.settings';
-import { AllTypes } from './../documents.types';
 import { FormBase, JForm } from './form';
 import { Props, Ref } from '../document';
 

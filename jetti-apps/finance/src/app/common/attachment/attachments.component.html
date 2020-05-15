@@ -50,7 +50,7 @@
 <p-dialog #dialog class="dialog"
   [header]="selectedAttachment && selectedAttachment.id ? 'Attachment detail' : 'New attachment'"
   [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true" (onAfterHide)="onDialogHide()"
-  (onShow)="dialog.center()" [style]="{'width': 'auto'}" [dismissableMask]="true" [blockScroll]="false">
+  [style]="{'width': 'auto'}" [dismissableMask]="true" [blockScroll]="false">
 
 
   <div style="text-align:center" *ngIf="selectedAttachment && !editMode" (click)="displayDialog = false">

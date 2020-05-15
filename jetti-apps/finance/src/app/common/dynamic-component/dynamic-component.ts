@@ -3,7 +3,7 @@ import { AuthService } from './../../auth/auth.service';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, Input, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { getFormComponent, getListComponent } from '../../UI/userForms';
 
-export class BaseDynamicCompoment {
+export class BaseDynamicComponent {
   constructor(public component: Type<any>) { }
 }
 
@@ -25,18 +25,18 @@ export class DynamicComponent implements OnInit, AfterViewInit {
   @Input() type: string;
   @Input() data: any;
   @Input() kind: 'list' | 'form';
-  component: BaseDynamicCompoment;
+  component: BaseDynamicComponent;
   componentRef: ComponentRef<any>;
 
   @ViewChild(DynamicComponentDirective, { static: false }) host: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef, private auth: AuthService) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
     if (this.kind === 'list') {
-      this.component = new BaseDynamicCompoment(getListComponent(this.type, this.auth.isRoleAvailableTester()));
+      this.component = new BaseDynamicComponent(getListComponent(this.type));
     } else {
-      this.component = new BaseDynamicCompoment(getFormComponent(this.type));
+      this.component = new BaseDynamicComponent(getFormComponent(this.type));
     }
   }
 

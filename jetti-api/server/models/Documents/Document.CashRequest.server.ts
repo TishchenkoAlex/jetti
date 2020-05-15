@@ -156,7 +156,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       this['company'] = dep.company;
     }
     this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx);
-    this['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP, tx);
+    this['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP ? body.KPP : '', tx);
     this['Amount'] = body.Amount;
     this['TaxRate'] = '7CFE6E50-35EA-11EA-A185-21EAFAF35D68'; // Без НДС
     this['Status'] = 'PREPARED';
@@ -343,7 +343,7 @@ ORDER BY
         p.Person`;
 
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
-    let persons = '';
+    const persons = '';
     if (byPersons) query = query.replace('@p5', this.PayRolls.map(el => '\'' + el.Employee + '\'').join(','));
     const currentMounth = {
       begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
@@ -484,7 +484,8 @@ ORDER BY
   // возвращает остаток по заявке в разрезе получателей и счетов
   // todo: обратится в базу х100
   public async  getAmountBalanceWithCashRecipientsAndBankAccounts(
-    tx: MSSQL): Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
+    tx: MSSQL, onlyWithPositiveBalance: boolean):
+    Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
     const query = `
     SELECT
         Balance.[CashRecipient] AS CashRecipient,
@@ -494,7 +495,8 @@ ORDER BY
     WHERE Balance.[CashRequest] = @p1
     GROUP BY
         Balance.[CashRecipient],Balance.[BankAccountPerson]
-    HAVING SUM(Balance.[Amount]) > 0`;
+    ${onlyWithPositiveBalance ? 'HAVING SUM(Balance.[Amount]) > 0' : ''}`;
+
     return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }>
       (query, [this.id]);
   }
@@ -520,7 +522,7 @@ ORDER BY
     if (await this.isSuperuser(tx)) return;
     if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
     if (this.Operation === 'Выплата заработной платы') {
-      const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+      const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx, false);
       const Errors: { Employee, BankAccount, Amount: number }[] = [];
       rest.forEach(el => {
         (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number }>)
@@ -533,17 +535,17 @@ ORDER BY
       if (Errors.length) {
         let ErrorText = '';
         const query = `
-        SELECT Description Employee FROM dbo.Documents WHERE id = @p1
-        SELECT Description BankAccount FROM dbo.Documents WHERE id = @p2`;
+          SELECT Description Employee FROM dbo.Documents WHERE id = @p1
+          SELECT Description BankAccount FROM dbo.Documents WHERE id = @p2`;
         for (const err of Errors) {
           const descriptions = await tx.oneOrNone<{ Employee: string, BankAccount: string }>(query, [err.Employee, err.BankAccount]);
-          ErrorText += `\n\t ${descriptions!.Employee} ${descriptions!.BankAccount ? 'по ' + descriptions!.BankAccount : ''} на ${err.Amount.toFixed(2)}`;
+          ErrorText += `\n\t ${descriptions!.Employee} ${descriptions!.BankAccount ? 'по ' + descriptions!.BankAccount : ''} на ${err.Amount.toFixed(2)} `;
         }
-        throw new Error(`${docOperation.description} не может быть проведен, первышение остатка по заявке для: ${ErrorText}`);
+        throw new Error(`${docOperation.description} не может быть проведен, первышение остатка по заявке для: ${ErrorText} `);
       }
     } else {
       const rest = await this.getAmountBalance(tx);
-      if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description}`);
+      if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description} `);
     }
   }
 
@@ -581,7 +583,7 @@ ORDER BY
         await this.FillOperationВыдачаДСПодотчетнику(docOperation, tx, params);
         break;
       default:
-        throw new Error(`Не реализовано создание документа для вида операции ${this.Operation}`);
+        throw new Error(`Не реализовано создание документа для вида операции ${this.Operation} `);
     }
   }
 
@@ -627,7 +629,7 @@ ORDER BY
     CashRecipientBankAccount = this.CashRecipientBankAccount;
     if (!CashRecipientBankAccount) {
       const query = `
-      SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${this.CashRecipient}'`;
+    SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE[owner.id] = '${this.CashRecipient}'`;
       const queryResult = await tx.oneOrNone<{ id: Ref }>(query);
       if (queryResult) CashRecipientBankAccount = queryResult.id;
     }
@@ -658,7 +660,7 @@ ORDER BY
   async FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
     let CashOrBank;
     CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
-    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
     if (docOperation['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
       CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     }
@@ -686,7 +688,7 @@ ORDER BY
         if (ba) {
           const owner = await lib.doc.byId(ba.owner, tx);
           const prefix = ba.code.trim().startsWith('408208') ? '{VO70060}' : '';
-          docOperation.info = `${prefix}Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}. Без налога (НДС) `;
+          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}.Без налога(НДС)`;
         }
       }
     }
@@ -698,7 +700,7 @@ ORDER BY
 
     if (docOperation['BankAccount']) CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     else CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
-    if (!CashOrBank) throw new Error(`Не указан источник ДС в ${this.description}`);
+    if (!CashOrBank) throw new Error(`Не указан источник ДС в ${this.description} `);
 
     if (CashOrBank.type === 'Catalog.CashRegister') {
       CashRecipient = (await lib.doc.byId(this.CashRecipient, tx));
@@ -730,12 +732,12 @@ ORDER BY
       CashRecipientBankAccount = this.CashRecipientBankAccount;
       if (!CashRecipientBankAccount) {
         const query = `
-        SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE [owner.id] = '${this.CashRecipient}'`;
+    SELECT TOP 1 id FROM dbo.[Catalog.Counterpartie.BankAccount] WHERE[owner.id] = '${this.CashRecipient}'`;
         const queryResult = await tx.oneOrNone<{ id: Ref }>(query);
         if (queryResult) CashRecipientBankAccount = queryResult.id;
       }
       if (!CashRecipientBankAccount) throw new Error(`Расчетный счет получателя не определен`);
-      if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+      if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
 
       docOperation['BankConfirm'] = false;
       docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4';
@@ -761,7 +763,7 @@ ORDER BY
     } else {
       CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
     }
-    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
 
     if (CashOrBank.type === 'Catalog.CashRegister') throw new Error('Создание платежного документа из кассы не поддерживается, обратитесь к разработчику');
     // docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
@@ -809,7 +811,7 @@ ORDER BY
   async FillOperationВыдачаДСПодотчетнику(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
 
     const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
-    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
 
     if (CashOrBank.type === 'Catalog.CashRegister') {
       docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
@@ -839,9 +841,9 @@ ORDER BY
     if (docOperation['BankAccount'] && CashOrBank.type === 'Catalog.BankAccount') {
       CashOrBank = { id: docOperation['BankAccount'], type: 'Catalog.BankAccount' };
     }
-    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description}`);
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
     // let AmountBalancFromDoc: { CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[] = [];
-    const AmountBalancFromDoc = params ? params : await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx);
+    const AmountBalancFromDoc = params ? params : await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx, true);
     docOperation['SalaryProject'] = this.SalaryProject;
     docOperation['PayRolls'] = [];
     docOperation['SalaryAnalytics'] = this.SalaryAnalitics;

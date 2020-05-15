@@ -1,7 +1,6 @@
 import { AuthService } from 'src/app/auth/auth.service';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FilterMetadata } from 'primeng/components/common/filtermetadata';
-import { SortMeta } from 'primeng/components/common/sortmeta';
+import { FilterMetadata, SortMeta } from 'primeng/api';
 import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';

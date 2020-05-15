@@ -1,7 +1,6 @@
-import { AllTypes } from '../documents.types';
 import { buildSubcountQueryList } from './../../fuctions/SQLGenerator.MSSQL';
-import { createDocument, RegisteredDocument } from './../../models/documents.factory';
-import { DocumentBase, DocumentOptions, JDocument, Props, Ref } from './../document';
+import { DocumentBase, JDocument, Props, Ref } from './../document';
+import { allTypes } from '../Types/Types.factory';
 
 @JDocument({
   type: 'Catalog.Subcount',
@@ -13,22 +12,6 @@ export class CatalogSubcount extends DocumentBase {
   @Props({ type: 'Catalog.Subcount', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  QueryList() {
-    const select = RegisteredDocument
-      .map(el => ({ type: el.type as AllTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
-
-    select.push({type: 'number', description: 'number'});
-    select.push({type: 'date', description: 'date'});
-    select.push({type: 'datetime', description: 'datetime'});
-    select.push({type: 'string', description: 'string'});
-    select.push({type: 'boolean', description: 'boolean'});
-    select.push({type: 'table', description: 'table'});
-    select.push({type: 'javascript', description: 'javascript'});
-    select.push({type: 'enum', description: 'emum'});
-    select.push({type: 'link', description: 'link'});
-    select.push({type: 'URL', description: 'URL'});
-
-    return buildSubcountQueryList(select);
-  }
+  QueryList = () => buildSubcountQueryList(allTypes());
 
 }

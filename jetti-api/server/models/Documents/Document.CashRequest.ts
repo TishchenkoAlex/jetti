@@ -38,6 +38,18 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     //  window.open(this.form.get('RelatedURL').value, '_blank');
     //   else this.throwError('', 'Ссылка отсутствует')` },
   ],
+  module: `
+      {
+        const getFilter_CashRecipientBankAccount = () => {
+            if (!this._value || !this._value.type) return Filter;
+            Filter = [];
+            Filter.push({ left: 'owner', center: '=', right: doc.CashRecipient.id });
+            if (this._value.type === 'Catalog.Counterpartie.BankAccount')
+                Filter.push({ left: 'currency', center: '=', right: doc.сurrency.id });
+            return Filter;
+        };
+        return { getFilter_CashRecipientBankAccount };
+    }`
 })
 export class DocumentCashRequest extends DocumentBase {
 
@@ -186,7 +198,7 @@ export class DocumentCashRequest extends DocumentBase {
   CashOrBank: Ref = null;
 
   @Props({
-    type: 'Catalog.Counterpartie.BankAccount',
+    type: 'Types.PersonOrCounterpartieBankAccount',
     label: 'Счет получателя',
     owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' },

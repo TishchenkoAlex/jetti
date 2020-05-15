@@ -18,6 +18,10 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
     }
   }
 
+  async ClearCompanyList(tx: MSSQL) {
+    this.CompanyList = [];
+  }
+
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
     switch (prop) {
       case 'company':
@@ -34,19 +38,26 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
       case 'AddDescendantsCompany':
         await this.AddDescendantsCompany(tx);
         return this;
+      case 'ClearCompanyList':
+        await this.ClearCompanyList(tx);
+        return this;
       default:
         return {};
     }
   }
 
   async beforeDelet(tx: MSSQL) {
-    await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
+    await this.deleteRLSMovements(tx);
     return this;
   }
 
   async onUnPost(tx: MSSQL) {
-    await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
+    await this.deleteRLSMovements(tx);
     return this;
+  }
+
+  async deleteRLSMovements(tx: MSSQL) {
+    await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
   }
 
   async onPost(tx: MSSQL) {
@@ -54,7 +65,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
 
     await lib.util.adminMode(true, tx);
     try {
-      await tx.none(`DELETE FROM [rls].[company] WHERE [document] = @p1`, [this.id]);
+      await this.deleteRLSMovements(tx);
       const Users = await tx.manyOrNone<{ code: string }>(`
         SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
           SELECT @p1 id
@@ -78,10 +89,17 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
             company: row.company,
             user: user.code,
           }));
-          await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
-            [user.code, row.company, this.id]);
+          // await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
+          //   [user.code, row.company, this.id]);
         }
       }
+
+      const query = (Registers.Info as RegisterInfoRLS[])
+        .map(e => `INSERT INTO [rls].[company]([user],[company],[document]) VALUES('${e.user}', '${e.company}', '${this.id}')`)
+        .join(';');
+
+      await tx.none(query);
+
       return Registers;
 
     } catch (ex) { throw new Error(ex); }

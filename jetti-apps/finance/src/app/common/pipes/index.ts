@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { EllipsisPipe } from './ellipsis';
+import { NumericPipe } from './numeric';
 
-export const PIPES = [EllipsisPipe];
+export const PIPES = [EllipsisPipe, NumericPipe];
 
 @NgModule({
   declarations: PIPES,
