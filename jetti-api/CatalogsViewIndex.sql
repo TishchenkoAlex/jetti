@@ -877,6 +877,7 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."CashKind"')), '') [CashKind]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."InvestorGroup"')) [InvestorGroup]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."InterestRate"')), 0) [InterestRate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.InterestDeadline'),127) [InterestDeadline]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."loanType"')) [loanType]
