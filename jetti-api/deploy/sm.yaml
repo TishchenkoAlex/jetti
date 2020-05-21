@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sm
 spec:
-  replicas: 10
+  replicas: 2
   template:
     metadata:
       labels:

@@ -33,23 +33,20 @@ export default async function (job: Queue.Job) {
       job.data.message = `job started for ${params.companyName}, total dosc = ${docs.length} documents`;
       await job.update(job.data);
       await job.progress(0);
-      while (offset < count) {
-        for (let i = 0; i < 10; i++) {
-          if (!docs[offset]) break;
-          const q = lib.doc.postById(docs[offset].id, sdbq);
-          TaskList.push(q);
-          offset = offset + 1;
+      for (const doc of docs) {
+        offset++;
+        job.data.message = `${params.companyName}, ${offset} of ${count}, last doc -> [${doc.description}]`;
+        try {
+          await sdbq.tx(async tx => { await lib.doc.postById(doc.id, tx); });
+        } catch (ex) {
+          job.data.message = `Error: ${ex}, ${params.companyName}, ${offset} of ${count}, last doc -> [${doc.description}]`;
         }
-        await Promise.all(TaskList);
-        TaskList.length = 0;
-        job.data.message = `${params.companyName}, ${offset} of ${count}, last doc -> [${docs[offset - 1].description}]`;
-        await job.update(job.data);
-        await job.progress(offset);
       }
+      await job.update(job.data);
+      await job.progress(offset);
     }
     job.data.message = `job complete for ${params.companyName}`;
     await job.progress(100);
   } catch (ex) { throw ex; }
   finally { await lib.util.adminMode(false, sdbq); }
 }
-
