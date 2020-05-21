@@ -30,18 +30,6 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Types.Object' })
   CatalogType = '';
 
-  @Props({ type: 'string', isAdditional: true })
-  LibId = '';
-
-  @Props({ type: 'string', isAdditional: true })
-  MethodName = '';
-
-  @Props({ type: 'string', isAdditional: true })
-  ArgsJSON = '';
-
-  @Props({ type: 'string', isAdditional: true })
-  CallResult = '';
-
   @Props({ type: 'boolean', isAdditional: true })
   CheckTypes = true;
 

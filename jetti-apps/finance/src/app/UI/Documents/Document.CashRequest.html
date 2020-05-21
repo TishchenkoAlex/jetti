@@ -66,14 +66,17 @@
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <j-control *ngIf="form.get('Operation').value  !== 'Выплата заработной платы'" [control]="vk.CashRecipient"
-            [form]="form"></j-control>
+          <j-control *ngIf="form.get('Operation').value !== 'Выплата заработной платы'" [control]="vk.CashRecipient"
+            [form]="form">
+          </j-control>
           <j-control *ngIf="form.get('CashKind').value === 'BANK' 
             && form.get('Operation').value !== 'Оплата ДС в другую организацию' 
-            && form.get('Operation').value  !== 'Выплата заработной платы'" [control]="vk['CashRecipientBankAccount']"
-            [form]="form"> </j-control>
+            && form.get('Operation').value !== 'Выплата заработной платы'" [control]="vk['CashRecipientBankAccount']"
+            [form]="form">
+          </j-control>
           <j-control *ngIf="form.get('Operation').value !== 'Оплата ДС в другую организацию'" [control]="vk.Department"
-            [form]="form"></j-control>
+            [form]="form">
+          </j-control>
         </div>
 
         <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column"
@@ -82,7 +85,7 @@
           <j-control [control]="vk.TaxAssignmentCode" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Оплата ДС в другую организацию'" fxLayout="row"
+        <div *ngIf="form.get('Operation').value === 'Оплата ДС в другую организацию'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
           <j-control [control]="vk.ContractIntercompany" [form]="form"></j-control>
@@ -94,13 +97,13 @@
           <j-control [control]="vk.PaymentKind" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="form.get('Operation').value === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
           <j-control [control]="vk.ExpenseAnalytics" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="form.get('Operation').value === 'Выплата заработной платы'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.PayRollKind" [form]="form"></j-control>
           <j-control [control]="vk.SalaryProject" [form]="form"></j-control>
@@ -121,7 +124,7 @@
           <j-control [control]="vk.Amount" [form]="form"></j-control>
           <j-control [control]="vk['сurrency']" [form]="form"></j-control>
           <j-control
-            *ngIf="form.get('Operation').value  !== 'Выплата заработной платы' && form.get('Operation').value  !== 'Выплата заработной платы без ведомости'"
+            *ngIf="form.get('Operation').value !== 'Выплата заработной платы' && form.get('Operation').value !== 'Выплата заработной платы без ведомости'"
             [control]="vk.TaxRate" [form]="form"></j-control>
           <j-control [control]="vk.PayDay" [form]="form"></j-control>
         </div>
@@ -152,17 +155,21 @@
       </div>
       <ng-content></ng-content>
 
-      <br *ngIf="tables.length">
-      <div *ngIf="form.get('Operation').value  === 'Выплата заработной платы'">
-        <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-          <div *ngFor="let control of tables; let i = index">
-            <p-tabPanel [header]="control.label">
-              <j-control [control]="control" [form]="form"></j-control>
-            </p-tabPanel>
-          </div>
+      <div *ngIf="form.get('Operation').value === 'Выплата заработной платы'" style="margin-top: 24px;">
+        <p-tabView class="tabViewClassInForm">
+          <p-tabPanel header="Сотрудники">
+            <j-control [control]="vk.PayRolls" [form]="form"></j-control>
+          </p-tabPanel>
         </p-tabView>
       </div>
 
+    </p-panel>
+
+    <p-panel *ngIf="useItemsTable" header="Товары/Услуги" toggleable="true" collapsed=true toggler="header">
+      <p-tabView class="tabViewClassInForm">
+        <j-control [control]="vk.Items" [form]="form">
+        </j-control>
+      </p-tabView>
     </p-panel>
 
     <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Дополнительные реквизиты"
@@ -192,7 +199,7 @@
 
   </form>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #movements *ngIf="isDoc" toggler="header">
+  <p-panel [toggleable]="true" [collapsed]="true" header="Движения" #movements toggler="header">
     <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel"></j-register-movements-list>
   </p-panel>
 
@@ -222,7 +229,7 @@
     <j-history *ngIf="!history.collapsed" [doc]="viewModel"></j-history>
   </p-panel>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Attachments" #attachments *ngIf="(isNew$ | async) === false"
+  <p-panel [toggleable]="true" [collapsed]="true" header="Вложения" #attachments *ngIf="(isNew$ | async) === false"
     toggler="header">
     <j-attachments *ngIf="!attachments.collapsed" [owner]="id"></j-attachments>
   </p-panel>

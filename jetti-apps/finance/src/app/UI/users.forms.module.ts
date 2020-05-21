@@ -1,3 +1,4 @@
+import { QueueManagerComponent } from './Forms/queue-manager.form.component';
 import { NgModule } from '@angular/core';
 import { SyncFormComponent } from './Forms/sync.form.component';
 import { DynamicFormsModule } from './dynamic.froms.module';
@@ -14,7 +15,8 @@ import { ObjectsGroupModifyComponent } from './Forms/ObjectsGroupModify.form.com
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,
-    DocumentCashRequestComponent
+    DocumentCashRequestComponent,
+    QueueManagerComponent
   ],
   imports: [
     DynamicFormsModule
@@ -29,7 +31,8 @@ import { ObjectsGroupModifyComponent } from './Forms/ObjectsGroupModify.form.com
     SyncFormComponent,
     TaskListComponent,
     TaskComponent,
-    DocumentCashRequestComponent
+    DocumentCashRequestComponent,
+    QueueManagerComponent
   ]
 })
 export class UserFormsModule { }

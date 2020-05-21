@@ -162,7 +162,7 @@
 
           <p-panel [toggleable]="true" [collapsed]="true"
             [header]="'Descendants ' + (isCatalog ? 'objects' : 'documents')" #descendants
-            *ngIf="isDoc && (isNew$ | async) === false" toggler="header">
+            *ngIf="(isNew$ | async) === false" toggler="header">
             <j-descendants *ngIf="!descendants.collapsed" [doc]="viewModel"></j-descendants>
           </p-panel>
 

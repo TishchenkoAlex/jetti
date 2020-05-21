@@ -1,9 +1,10 @@
+import { DocumentCashRequestServer } from './../models/Documents/Document.CashRequest.server';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
-import { DocListRequestBody, IViewModel, PatchValue, RefValue } from '../models/common-types';
+import { DocListRequestBody, IViewModel, PatchValue, RefValue, Type } from '../models/common-types';
 import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
@@ -468,7 +469,11 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
   try {
     const sdb = SDB(req);
     await sdb.tx(async tx => {
-      const query = `
+      const ob = await lib.doc.byId(req.params.id, tx);
+      const isCatalog = Type.isCatalog(ob?.type as any);
+      const firstLimit = isCatalog ? 20 : 0;
+
+      const getQueryText = (DocSelectText: string) => `
       select
       res.id,
       res.type,
@@ -485,8 +490,17 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
       (select
         id, type, date, code, description, posted, deleted, company as companyID, JSON_VALUE(doc, N'$.Amount') amount, JSON_VALUE(doc, N'$.info') info, [user] as userID
       from Documents
-      where id in (
-      select id
+      where id in (${DocSelectText})) res
+      left join [Catalog.User] us on us.id = userID
+      left join [Catalog.Company] comp on comp.id = companyID
+  order by res.date, res.type, res.description`;
+
+      let queryDocSelectText = isCatalog ?
+        `select distinct TOP ${firstLimit} document
+      from Accumulation
+      where contains(data, @p1)`
+        :
+        ` select id
           from Documents
           where parent = @p1
       union
@@ -496,12 +510,21 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
       UNION
       SELECT parent
           from Documents
-          WHERE id = @p1)
-      ) res
-      left join [Catalog.User] us on us.id = userID
-      left join [Catalog.Company] comp on comp.id = companyID
-  order by res.date, res.type, res.description`;
-      res.json(await tx.manyOrNone(query, [req.params.id]));
+          WHERE id = @p1`;
+
+      let resData = await tx.manyOrNone(getQueryText(queryDocSelectText), [req.params.id]);
+      if (false && isCatalog && resData.length < firstLimit) {
+        queryDocSelectText =
+          `select TOP ${firstLimit - resData.length} id
+      from Documents
+      where contains(doc, @p1)`;
+        // queryDocSelectText
+        // .replace('Accumulation', 'Documents')
+        // .replace('data', 'doc')
+        // .replace('' + firstLimit, (firstLimit - resData.length).toString());
+        resData = [...resData, ...await tx.manyOrNone(getQueryText(queryDocSelectText), [req.params.id])];
+      }
+      res.json(resData);
     });
   } catch (err) { next(err); }
 });
@@ -581,6 +604,18 @@ router.post('/createDocument/:type', async (req: Request, res: Response, next: N
     });
   } catch (err) { next(err); }
 });
+
+
+router.get('/CashReqest/getPayments/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const doc = await lib.doc.createDocServerById<DocumentCashRequestServer>(req.params.id, tx);
+      if (!doc) { res.statusCode = 422; res.json(`Document don't exist. Id: ${req.params.id}`); } else res.json(await doc.getPayments(tx));
+    });
+  } catch (err) { next(err); }
+});
+
 
 router.post('/attachments/del', async (req: Request, res: Response, next: NextFunction) => {
   try {

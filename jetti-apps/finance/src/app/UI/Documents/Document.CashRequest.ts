@@ -17,6 +17,10 @@ import { ApiService } from 'src/app/services/api.service';
 })
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy, IFormEventsModel {
   get readonlyMode() { return !this.isSuperUser && !this.isNew && ['PREPARED', 'MODIFY'].indexOf(this.form.get('Status').value) === -1; }
+  get Operation(): string { return this.form.get('Operation').value || ''; }
+  // tslint:disable-next-line: max-line-length
+  get useItemsTable(): boolean { return ['Оплата поставщику', 'Оплата ДС в другую организацию', 'Прочий расход ДС'].includes(this.Operation); }
+
   constructor(public router: Router, public route: ActivatedRoute, public lds: LoadingService, public auth: AuthService,
     public cd: ChangeDetectorRef, public ds: DocService, public tabStore: TabsStore,
     private bpApi: BPApi, public dss: DynamicFormService, private api: ApiService) {
@@ -140,6 +144,15 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   beforePost() {
+    if (this.useItemsTable) {
+      const Items = this.getValue('Items');
+      const Amount = this.getValue('Amount')
+      if (Items && Items.length && Amount) {
+        let ItemsAmount = 0;
+        (Items as Array<{ Amount: number }>).forEach(element => ItemsAmount += element.Amount);
+        if (ItemsAmount !== Amount) this.throwError(`Ошибка`, `Сумма товаров/услуг отличается от суммы документа`)
+      }
+    }
     const oper = this.getValue('Operation');
     const CashRecipient = this.getValue('CashRecipient');
     if ((!CashRecipient || !CashRecipient.value) && `Оплата поставщику

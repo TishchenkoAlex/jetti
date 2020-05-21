@@ -23,12 +23,19 @@ export class DescendantsComponent implements OnInit, OnDestroy {
   selection: any;
   private _subscription$: Subscription = Subscription.EMPTY;
   descendantsListSub$ = new Subject<any[]>();
+  infoText = '';
 
   dataSource = [];
   constructor(private apiService: ApiService, public router: Router, private ds: DocService, public lds: LoadingService) { }
 
   ngOnInit() {
     this.apiService.getDescedantsObjects(this.doc.id).pipe(take(1)).subscribe(data => { this.descendantsListSub$.next(data); });
+
+    if (this.isCatalog) this._subscription$ = this.descendantsListSub$.subscribe(data => {
+      this.infoText = '';
+      if (data.length === 20) this.infoText = 'First 20 objects';
+    });
+
   }
 
   search(searchedValue: string) {
@@ -43,8 +50,8 @@ export class DescendantsComponent implements OnInit, OnDestroy {
         }
         return false;
       });
-      this.descendantsListSub$.next(dataSourceFiltred)
-    })
+      this.descendantsListSub$.next(dataSourceFiltred);
+    });
   }
 
   openOnClick() {

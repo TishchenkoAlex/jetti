@@ -82,7 +82,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
   add() {
     const newFormGroup = cloneFormGroup(this.formGroup['sample']);
-    Object.values(newFormGroup.controls).forEach(c => { if (c.validator) { c.setValidators(TablePartValidator)} });
+    Object.values(newFormGroup.controls).forEach(c => { if (c.validator) { c.setValidators(TablePartValidator); } });
     this.addCopy(newFormGroup);
     setTimeout(() => {
       const rows = this.editableColumns.toArray();

@@ -5,9 +5,10 @@ import PostAfterEchangeServer from './Form.PostAfterEchange.server';
 import { FormBusinessProcessTasks } from './Form.BusinessProcessTasks';
 import FormSearchAndReplaceServer from './Form.SearchAndReplace.Server';
 import FormObjectsGroupModifyServer from './Form.ObjectsGroupModify.Server';
+import FormQueueManagerServer from './Form.QueueManager.server';
 
 export interface IServerForm {
-  Execute (): Promise<FormBase>;
+  Execute(): Promise<FormBase>;
 }
 
 export type FormBaseServer = FormBase & IServerForm;
@@ -28,5 +29,6 @@ const RegisteredServerForms = new Map<FormTypes, typeof FormBase>([
   ['Form.PostAfterEchange', PostAfterEchangeServer],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
   ['Form.SearchAndReplace', FormSearchAndReplaceServer],
-  ['Form.ObjectsGroupModify', FormObjectsGroupModifyServer]
+  ['Form.ObjectsGroupModify', FormObjectsGroupModifyServer],
+  ['Form.QueueManager', FormQueueManagerServer],
 ]);

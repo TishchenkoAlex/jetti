@@ -22,21 +22,23 @@
                 (click)="prepareToLoading()"></button>
             </div>
             <div *ngIf="isModeModify" class="ui-toolbar-group-left">
-              <button pButton type="button" id="buildFilter" label="1. Построить фильтр" class="ui-button-info"
-                (click)="buildFilter()"></button>
-              <button pButton type="button" id="createFilterElements" label="2. Создать элементы" class="ui-button-info"
-                (click)="createFilterElements()"></button>
+              <button pButton type="button" id="buildFilter" label="1. Задать поля" class="ui-button-info"
+                (click)="buildModifyControls()"></button>
+              <button pButton type="button" id="createFilterElements" label="2. Создать элементы фильтрации"
+                class="ui-button-info" (click)="createFilterElements()"></button>
               <button pButton type="button" id="selectFilter" label="3. Отобрать" class="ui-button-info"
                 (click)="selectFilter()"></button>
+              <button pButton type="button" id="createModifyElements" label="4. Создать элементы изменяемых полей"
+                class="ui-button-info" (click)="createModifyElements()"></button>
+              <button pButton type="button" id="selectFilter" label="5. Записать в CSV" class="ui-button-info"
+                (click)="saveToFile()"></button>
+              <button pButton type="button" id="selectFilter" label="5. ЗАПИСАТЬ" class="ui-button-danger"
+                (click)="modify()"></button>
             </div>
 
             <div *ngIf="isModeTesting" class="ui-toolbar-group-left">
-              <button pButton type="button" id="callLibMethod" label="Вызвать либ-метод" class="ui-button-info"
-                (click)="callLibMethod()"></button>
-              <button pButton type="button" id="addAttachment" label="Добавить вложение" class="ui-button-info"
-                (click)="addAttachment()"></button>
-              <button pButton type="button" id="delAttachment" label="Удалить вложение" class="ui-button-info"
-                (click)="delAttachment()"></button>
+              <button pButton type="button" id="selectFilter" label="Получить оплаты по заявке" class="ui-button-danger"
+                (click)="getPayments()"></button>
             </div>
 
           </p-toolbar>
@@ -89,7 +91,6 @@
                 </div>
               </p-tabView>
             </div>
-
 
             <ng-content></ng-content>
           </div>

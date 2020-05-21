@@ -81,53 +81,62 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     await this.ExecuteServerMethod('saveDataIntoDB');
   }
 
-  async buildFilter() {
-    await this.ExecuteServerMethod('buildFilter');
+  async buildModifyControls() {
+    await this.ExecuteServerMethod('buildModifyControls');
   }
 
   async createFilterElements() {
     await this.ExecuteServerMethod('createFilterElements');
   }
 
+  async createModifyElements() {
+    await this.ExecuteServerMethod('createModifyElements');
+  }
+
+  async modify() {
+    await this.ExecuteServerMethod('Modify');
+  }
+
   async selectFilter() {
     await this.ExecuteServerMethod('selectFilter');
   }
-
-  async callLibMethod() {
-    // const f = this.form;
-    // const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
-    // f.get('CallResult').setValue(res);
+  async getPayments() {
+    const res = await this.ds.api.getPaymentsCashReqest(this.form.get('Text').value);
+    console.log(res);
   }
 
-  async addAttachment() {
-    // const f = this.form;
-    // const res = await this.ds.api.attachmentCommand(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
-    // f.get('CallResult').setValue(res);
+
+  saveTableToCSV(tableName: string, colSplitter = ';') {
+    const tableControl = this.form.get(tableName);
+    if (!tableControl) this.throwError('!', `Table ${tableName} not found!`);
+    const val = tableControl.value;
+    if (!val || !val.length) this.throwError('!', `Table ${tableName} is empty!`);
+
+    const valueToString = (anyVal: any) => {
+      if (!anyVal) return '';
+      if (typeof anyVal === 'string' || typeof anyVal === 'number') return anyVal;
+      return anyVal && anyVal.type ? Object.values(anyVal).map(key => key).join(colSplitter) : JSON.stringify(anyVal);
+    };
+
+    const savedVal = val as Array<{}>;
+    const head = savedVal[0];
+    let res = Object.keys(head)
+      .map(col => head[col] && head[col].type ? Object.keys(head[col]).map(key => col + '.' + key).join(colSplitter) : col)
+      .join(colSplitter);
+    savedVal.forEach(row =>
+      res += '\n' + Object.values(row)
+        .map(value => valueToString(value))
+        .join(colSplitter)
+    );
+    this.ds.download(res, `T2C ${new Date}.csv`);
   }
 
-  async delAttachment() {
-    // const f = this.form;
-    // const res = await this.ds.api.callLibMethod(f.get('LibId').value, f.get('MethodName').value, JSON.parse(f.get('ArgsJSON').value));
-    // f.get('CallResult').setValue(res);
+  async saveToFile() {
+    this.saveTableToCSV('FilterResult');
   }
 
   async ReadRecieverStructure() {
     await this.ExecuteServerMethod('ReadRecieverStructure');
-    return;
-    const Operation = this.form.get('Operation');
-    const queryParams: { [key: string]: any } = {};
-    let type = '';
-    if (Operation && Operation.value && Operation.value.value) {
-      type = 'Document.Operation';
-      queryParams.Operation = Operation.value.id;
-    } else {
-      const typeControl = this.form.get('Catalog');
-      if (typeControl && typeControl.value && typeControl.value.id) type = typeControl.value.id;
-    }
-    if (!type) this.throwError('!', 'Не задан тип приемника');
-    this.ds.api.getViewModel(type, '', queryParams).pipe(take(1)).subscribe(vm => {
-      console.log(vm);
-    });
   }
 
   async ExecuteServerMethod(methodName: string) {

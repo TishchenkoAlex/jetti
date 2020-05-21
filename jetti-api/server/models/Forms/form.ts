@@ -246,7 +246,7 @@ export class FormBase {
 
   }
 
-  DynamicPropsPush(kind: 'add' | 'mod' |'del', options: PropOption, optionsValue: any, filed = '', table = '', setId = '') {
+  DynamicPropsPush(kind: 'add' | 'mod' | 'del', options: PropOption, optionsValue: any, filed = '', table = '', setId = '') {
     this.dynamicProps.push({
       Kind: kind, Table: table, Filed: filed, Options: options.toString(), OptionsValue: JSON.stringify(optionsValue), SetId: setId
     });
@@ -256,6 +256,26 @@ export class FormBase {
     this.dynamicProps = this.dynamicProps.filter(e => e.SetId !== setId);
   }
 
+  DynamicPropsAddForObject(object: any, propName: string, setId: string) {
+    if (object instanceof Array) {
+      this.DynamicPropsAddForArray(object, propName, setId);
+    }
+  }
+
+  DynamicPropsAddForArray(object: Array<any>, propName: string, setId: string) {
+    if (!object.length) return;
+    Object.keys(object[0]).forEach(key => {
+      this.DynamicPropsPush('add', 'type', getInnerSimpleTypeByObject(object[0][key]), key, propName, setId);
+    });
+  }
+}
+
+export function getInnerSimpleTypeByObject(obj: any): string {
+  const type = typeof obj;
+  if (type !== 'object') return type;
+  if (obj instanceof Date) return 'datetime';
+  if (obj instanceof Array) return 'array';
+  return 'string';
 }
 
 export class DynamicProps {

@@ -31,6 +31,7 @@ export interface PropOptions {
   storageType?: StorageType;
   useIn?: StorageType;
   isIndexed?: boolean;
+  isCritical?: boolean;
   validators?: { key: string, value?: any }[];
 }
 

@@ -4,6 +4,7 @@ import { FormTypes } from './form.types';
 import { PostAfterEchange } from './Form.PostAfterEchange';
 import { FormBusinessProcessTasks } from './Form.BusinessProcessTasks';
 import { FormSearchAndReplace } from './Form.SearchAndReplace';
+import { FormQueueManager } from './Form.QueueManager';
 
 export function createForm<T extends FormBase>(init?: Partial<FormBase>) {
   if (init && init.type) {
@@ -22,4 +23,5 @@ export const RegisteredForms = new Map<FormTypes, typeof FormBase>([
   ['Form.SearchAndReplace', FormSearchAndReplace],
   ['Form.BusinessProcessTasks', FormBusinessProcessTasks],
   ['Form.ObjectsGroupModify', FormObjectsGroupModify],
+  ['Form.QueueManager', FormQueueManager],
 ]);

@@ -5,11 +5,22 @@ export interface IQueryFilter {
     where: string;
 }
 
-export const filterBuilder = (filter: FormListFilter[]): IQueryFilter => {
+export const filterBuilder = (filter: FormListFilter[], quote = '"'): IQueryFilter => {
     let where = ' (1 = 1) ';
     let tempTabe = '';
 
-    const filterList = filter.filter(f => !(f.right === null || f.right === undefined));
+    const dateToSQLFormat = (date: Date): string => ''
+        + date.getUTCFullYear()
+        + addZeros(date.getUTCMonth() + 1)
+        + addZeros(date.getUTCDate());
+    // + addZeros(date.getUTCHours())
+    // + addZeros(date.getUTCMinutes())
+    // + addZeros(date.getUTCSeconds());
+    const addZeros = (numb: Number): string => ('' + numb).padStart(2, '0');
+
+    const filterList = filter
+        .filter(f => !(f.right === null || f.right === undefined))
+        .map(f => ({...f, leftQ: `${quote}${f.left}${quote}`}));
     for (const f of filterList) {
         switch (f.center) {
             case '=':
@@ -19,29 +30,33 @@ export const filterBuilder = (filter: FormListFilter[]): IQueryFilter => {
             case '<':
                 if (Array.isArray(f.right)) { // time interval
                     if (f.right[0])
-                        where += ` AND "${f.left}" >= '${f.right[0]}'`;
+                        where += ` AND ${f.leftQ} >= '${f.right[0]}'`;
                     if (f.right[1])
-                        where += ` AND "${f.left}" <= '${f.right[1]}'`;
+                        where += ` AND ${f.leftQ} <= '${f.right[1]}'`;
                     break;
                 }
                 if (typeof f.right === 'number') {
-                    where += ` AND "${f.left}" ${f.center} '${f.right}'`;
+                    where += ` AND ${f.leftQ} ${f.center} '${f.right}'`;
                     break;
                 }
                 if (typeof f.right === 'boolean') {
-                    where += ` AND "${f.left}" ${f.center} '${f.right}'`;
+                    where += ` AND ${f.leftQ} ${f.center} '${f.right}'`;
+                    break;
+                }
+                if (f.right instanceof Date) {
+                    where += ` AND ${f.leftQ} ${f.center} '${dateToSQLFormat(f.right)}'`;
                     break;
                 }
                 if (typeof f.right === 'object') {
                     if (!f.right.id)
-                        where += ` AND "${f.left}" IS NULL `;
+                        where += ` AND ${f.leftQ} IS NULL `;
                     else {
                         if (f.left === 'parent.id') {
-                            where += ` AND "${f.left}" = '${f.right.id}'`;
+                            where += ` AND ${f.leftQ} = '${f.right.id}'`;
                         } else {
                             if (tempTabe.indexOf(`[#${f.left}]`) < 0)
                                 tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
-                            where += ` AND "${f.left}" IN (SELECT id FROM [#${f.left}])`;
+                            where += ` AND ${f.leftQ} IN (SELECT id FROM [#${f.left}])`;
                         }
                     }
                     break;
@@ -49,23 +64,23 @@ export const filterBuilder = (filter: FormListFilter[]): IQueryFilter => {
                 if (typeof f.right === 'string')
                     f.right = f.right.toString().replace('\'', '\'\'');
                 if (!f.right)
-                    where += ` AND "${f.left}" IS NULL `;
+                    where += ` AND ${f.leftQ} IS NULL `;
                 else
-                    where += ` AND "${f.left}" ${f.center} N'${f.right}'`;
+                    where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
                 break;
             case 'like':
-                where += ` AND "${f.left}" LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
+                where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
                 break;
             case 'beetwen':
                 const interval = f.right as FilterInterval;
                 if (interval.start)
-                    where += ` AND "${f.left}" BEETWEN '${interval.start}' AND '${interval.end}' `;
+                    where += ` AND ${f.leftQ} BEETWEN '${interval.start}' AND '${interval.end}' `;
                 break;
             case 'in':
-                where += ` AND "${f.left}" IN (${(f.right['value'] || f.right)}) `;
+                where += ` AND ${f.leftQ} IN (${(f.right['value'] || f.right)}) `;
                 break;
             case 'is null':
-                where += ` AND "${f.left}" IS NULL `;
+                where += ` AND ${f.leftQ} IS NULL `;
                 break;
         }
     }

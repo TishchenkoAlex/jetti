@@ -47,6 +47,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
     const filter = req.body.filters as FormListFilter[];
     const filterQuery = filterBuilder(filter);
     let query = '';
+    const queryOrder = 'type, description, deleted, code'.split(', ');
     if (Type.isType(type)) {
       const select = createTypes(type as any).getTypes()
         .map(el => (
@@ -56,13 +57,16 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
           }));
       query = suggestQuery(select);
     } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
-    else query = `${filterQuery.tempTable}
+    else {
+      query = `${filterQuery.tempTable}
     SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
     FROM [${type}.v] WITH (NOEXPAND)
     WHERE ${filterQuery.where}`;
+      queryOrder.unshift('LEN([description])');
+    }
     query = query.concat(
       `AND (description LIKE @p1 OR code LIKE @p1)
-    ORDER BY type, description, deleted, code`);
+    ORDER BY ${queryOrder.join(', ')}`);
     const data = await sdb.manyOrNone<ISuggest>(query, ['%' + filterLike + '%']);
     res.json(data);
   } catch (err) { next(err); }

@@ -1,0 +1,91 @@
+<div *ngIf="form$ | async as form">
+  <div *ngIf="vk$ | async as vk">
+    <div *ngIf="viewModel$ | async as viewModel">
+      <form novalidate [formGroup]="form" cdkTrapFocus>
+        <p-panel #mp [toggleable]="true">
+          <p-toolbar>
+
+            <div class="ui-toolbar-group-left">
+              <button pButton type="button" id="getJobsStat" label="Статистика" class="ui-button-info"
+                (click)="executeServerMethod('getJobsStat')"></button>
+              <button pButton type="button" id="suspendJobs" label="Остановить" class="ui-button-success"
+                (click)="executeServerMethod('suspendJobs')"></button>
+              <button pButton type="button" id="processJobs" label="Запустить" class="ui-button-success"
+                (click)="executeServerMethod('processJobs')"></button>
+              <button pButton type="button" id="cancelJobs" label="Отменить все" class="ui-button-warning"
+                (click)="executeServerMethod('cancelJobs')"></button>
+              <button pButton type="button" id="cancelSelectedJobs" label="Отменить выбранные" class="ui-button-warning"
+                (click)="executeServerMethod('cancelSelectedJobs')"></button>
+            </div>
+
+            <div class="ui-toolbar-group-right">
+              <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
+                styleClass="ui-button-secondary" label="commands">
+              </p-splitButton>
+            </div>
+
+          </p-toolbar>
+
+          <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
+
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+              *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
+              <div fxFlex>
+                <j-control *ngIf="headFields[i+0]" [control]="headFields[i+0]" [form]="form"></j-control>
+              </div>
+              <div fxFlex>
+                <j-control *ngIf="headFields[i+1]" [control]="headFields[i+1]" [form]="form"></j-control>
+              </div>
+              <div fxFlex>
+                <j-control *ngIf="headFields[i+2]" [control]="headFields[i+2]" [form]="form"></j-control>
+              </div>
+            </div>
+
+            <br *ngIf="fieldsetsFields.length > 0">
+            <p-fieldset *ngIf="fieldsetsFields.length > 0" legend="Ещё..." [toggleable]="true" collapsed=true>
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+                *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
+                <div fxFlex>
+                  <j-control *ngIf="fieldsetsFields[i+0]" [control]="fieldsetsFields[i+0]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control *ngIf="fieldsetsFields[i+1]" [control]="fieldsetsFields[i+1]" [form]="form"></j-control>
+                </div>
+                <div fxFlex>
+                  <j-control *ngIf="fieldsetsFields[i+2]" [control]="fieldsetsFields[i+2]" [form]="form"></j-control>
+                </div>
+              </div>
+            </p-fieldset>
+
+            <!-- <div *ngFor="let control of v">
+              <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'"
+                style="height: 400px; width: 100%;">
+                <j-control [control]="control" [form]="form"></j-control>
+              </div>
+            </div> -->
+
+            <div *ngIf="tables$ | async as tables">
+              <br *ngIf="tables.length">
+              <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
+                <div *ngFor="let c of tables; let i = index">
+                  <p-tabPanel [header]="c.label">
+                    <j-control [control]="c" [form]="form"></j-control>
+                  </p-tabPanel>
+                </div>
+              </p-tabView>
+            </div>
+            <ng-content></ng-content>
+          </div>
+        </p-panel>
+
+        <!-- <p-panel header="JobScript" toggleable="true" collapsed="true"
+          toggler="header">
+          <div style="height: 400px; width: 100%;">
+            <j-control [control]="vk.JobScript" [form]="form"></j-control>
+          </div>
+        </p-panel> -->
+
+      </form>
+    </div>
+  </div>
+</div>

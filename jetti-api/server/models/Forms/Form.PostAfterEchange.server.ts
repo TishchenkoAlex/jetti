@@ -1,4 +1,4 @@
-import { JQueue } from '../Tasks/tasks';
+import { JQueue, processId } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
 import { PostAfterEchange } from './Form.PostAfterEchange';
 import { lib } from '../../std.lib';
@@ -8,11 +8,21 @@ import { TASKS_POOL } from '../../sql.pool.tasks';
 import { Ref } from '../document';
 
 export default class PostAfterEchangeServer extends PostAfterEchange implements IServerForm {
+
+  async AddDescendantsCompany(tx: MSSQL) {
+    if (!this.company) throw new Error(`Empty company!`);
+    const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
+    const companyItems = await sdbq.manyOrNone<{ company: string }>(query, [this.company]);
+    this.Companys = [...new Set([...this.Companys, ...companyItems])];
+  }
+
   async Execute() {
     this.user.isAdmin = true;
     if (this.EndDate) this.EndDate.setHours(23, 59, 59, 999);
+    const procId = processId();
     const sdbq = new MSSQL(TASKS_POOL, this.user);
-    const query = `
+    let query = `
       SELECT company, COUNT(*) count
       FROM [dbo].[Documents]
       WHERE (1 = 1) ${this.StartDate ? ' AND date between @p2 AND @p3 ' : ``}
@@ -24,6 +34,10 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       GROUP BY company
       HAVING COUNT(*) >0
       ORDER BY 2 DESC`;
+    if (this.Companys.length)
+      query = query.replace(`SELECT id FROM dbo.[Descendants](@p1, '')`
+        , `${this.Companys.map(el => '\'' + el.company + '\'').join(',')}`);
+
     const companyList = await sdbq.manyOrNone<{ company: Ref, count: number }>(query,
       [this.company, this.StartDate, this.EndDate, this.Operation]);
 
@@ -38,7 +52,8 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
         StartDate: this.StartDate,
         EndDate: this.EndDate,
         rePost: this.rePost,
-        Operation: this.Operation
+        Operation: this.Operation,
+        processId: procId
       };
       const activeJobs = await JQueue.getActive();
       const jobs = activeJobs.filter(j => j.data.job.id === `sync` && j.data.company === row.company);

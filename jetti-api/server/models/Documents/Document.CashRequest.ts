@@ -325,6 +325,15 @@ export class DocumentCashRequest extends DocumentBase {
   })
   PayRolls: PayRoll[] = [new PayRoll()];
 
+  @Props({
+    type: 'table', required: false, order: 1,
+    onChange: function (doc: Item, value: Item[]) {
+      let Amount = 0; value.forEach(el => { Amount += el.Amount; });
+      return { Amount: Math.round(Amount * 100) / 100 };
+    }
+  })
+  Items: Item[] = [new Item()];
+
 }
 
 export class PayRoll {
@@ -345,3 +354,14 @@ export class PayRoll {
   BankAccount: Ref = null;
 
 }
+
+export class Item {
+
+  @Props({ type: 'Catalog.Product', label: 'Товар/Услуга', style: { width: '350px' } })
+  Item: Ref = null;
+
+  @Props({ type: 'number', label: 'Сумма', totals: 1 })
+  Amount = 0;
+
+}
+

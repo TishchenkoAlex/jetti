@@ -4,6 +4,7 @@ import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
 import sync from './sync';
 import { RedisOptions } from 'ioredis';
+import * as os from 'os';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   sync: sync
@@ -42,7 +43,10 @@ const options: Queue.QueueOptions = {
 
 export const JQueue = new Queue(DB_NAME, options);
 
+export const processId = () => `${os.hostname()}:${process.pid}`;
+
 JQueue.process(1, job => {
+  if (job.data.processId && job.data.processId === processId() ) return null;
   const task = Jobs[job.data.job.id];
   if (task) return task(job);
 });
@@ -75,12 +79,23 @@ JQueue.on('completed', job => {
   userSocketsEmit(job.data.user, job.data.job.id, MapJob);
 });
 
+JQueue.on('removed', job => {
+  job.data.message = `${jobFullDescription(job)}"  is removed`;
+  const MapJob = mapJob(job);
+  MapJob.finishedOn = new Date().getTime();
+  userSocketsEmit(job.data.user, job.data.job.id, MapJob);
+});
+
 JQueue.on('stalled', job => {
   job.data.message = `${job.data.job.id} is stalled`;
   const MapJob = mapJob(job);
   MapJob.finishedOn = new Date().getTime();
   userSocketsEmit(job.data.user, job.data.job.id, MapJob);
 });
+
+export function jobFullDescription(j: Queue.Job): string {
+  return `${j.data.job.id}:${j.id} "${j.data.job.description}"`;
+}
 
 export function mapJob(j: Queue.Job) {
   const job = j.toJSON();

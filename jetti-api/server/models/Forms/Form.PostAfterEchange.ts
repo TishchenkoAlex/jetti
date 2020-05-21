@@ -5,7 +5,7 @@ import { Props, Ref } from '../document';
   type: 'Form.PostAfterEchange',
   description: 'Post after IIKO',
   icon: 'fas fa-hammer',
-  menu: 'Post after IIKO',
+  menu: 'Post after IIKO'
 })
 export class PostAfterEchange extends FormBase {
 
@@ -23,5 +23,15 @@ export class PostAfterEchange extends FormBase {
 
   @Props({ type: 'boolean', order: 5 })
   rePost = false;
+
+  @Props({ type: 'table' })
+  Companys: CompanyRow[] = [new CompanyRow()];
+
 }
 
+class CompanyRow {
+
+  @Props({ type: 'Catalog.Company', order: 1 })
+  company: Ref = null;
+
+}

@@ -166,7 +166,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     this['PayDay'] = body.PayDay;
     this['info'] = body.Info;
     this['date'] = body.Date ? body.Date : new Date;
-    this['user'] = 'E050B6D0-FAED-11E9-B75B-A35013C043AE'; // Exchange-PORTAL
+    this['user'] = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; // Exchange-PORTAL
     if (this.workflowID) {
       await DeleteProcess(this.workflowID);
       this.workflowID = '';
@@ -547,6 +547,23 @@ ORDER BY
       const rest = await this.getAmountBalance(tx);
       if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description} `);
     }
+  }
+
+  async getPayments(tx: MSSQL) {
+    const query = `
+      SELECT JSON_VALUE(doc.doc,N'$.BankConfirmDate') date,
+      pays.amount,
+      doc.code,
+      doc.id
+      FROM (
+        SELECT document, SUM([Amount.Out]) amount
+        FROM [dbo].[Register.Accumulation.CashToPay]
+        WHERE CashRequest = @p1 and kind = 0
+        GROUP by document) as pays
+      INNER JOIN [dbo].[Documents] doc
+      ON doc.id = pays.document and JSON_VALUE(doc.doc,N'$.BankConfirm') = 'true'
+      ORDER BY JSON_VALUE(doc.doc,N'$.BankConfirmDate')`;
+    return await tx.manyOrNone(query, [this.id]);
   }
 
   async FillDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {

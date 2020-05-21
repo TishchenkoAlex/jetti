@@ -9,7 +9,7 @@ import * as path from 'path';
 import 'reflect-metadata';
 import * as socketIO from 'socket.io';
 import * as ioredis from 'socket.io-redis';
-import { REDIS_DB_HOST, REDIS_DB_AUTH } from './env/environment';
+import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { JQueue } from './models/Tasks/tasks';
 import { router as auth } from './routes/auth';
@@ -66,7 +66,7 @@ IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
 IO.of('/').adapter.on('error', (error) => { });
 
 const port = (process.env.PORT) || '3000';
-HTTP.listen(port, () => console.log(`API running on port:${port}`));
+HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 let script = '';
