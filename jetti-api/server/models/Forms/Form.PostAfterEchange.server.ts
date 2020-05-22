@@ -1,3 +1,4 @@
+import { x100 } from './../../x100.lib';
 import { JQueue, processId } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
 import { PostAfterEchange } from './Form.PostAfterEchange';
@@ -11,10 +12,17 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
 
   async AddDescendantsCompany(tx: MSSQL) {
     if (!this.company) throw new Error(`Empty company!`);
-    const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
-    const sdbq = new MSSQL(TASKS_POOL, this.user);
-    const companyItems = await sdbq.manyOrNone<{ company: string }>(query, [this.company]);
-    this.Companys = [...new Set([...this.Companys, ...companyItems])];
+    if (this.EndDate) this.EndDate.setHours(23, 59, 59, 999);
+    this.user.isAdmin = true;
+    const descedants = await lib.doc.Descendants(this.company, new MSSQL(TASKS_POOL, this.user));
+    if (!descedants) return;
+    const query = `SELECT distinct company
+    FROM dbo.[Register.Accumulation.Inventory]
+    WHERE (1 = 1) ${this.StartDate ? ' AND date between @p2 AND @p3 ' : ``}
+    AND company IN (${descedants.map(el => '\'' + el.id + '\'').join(',')})`;
+    const companyItems = await x100.util.x100DataDB().manyOrNone<{ company: string }>(query, [this.company, this.StartDate, this.EndDate]);
+    this.Companys = [...new Set([...this.Companys.map(e => e.company), ...companyItems.map(e => e.company)])]
+      .map(e => ({ company: e }));
   }
 
   async Execute() {

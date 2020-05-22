@@ -15,10 +15,10 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Contract', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true, order: 1 })
+  @Props({ type: 'Catalog.Counterpartie', required: true, order: 1, isProtected: true })
   owner: Ref = null;
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }})
+  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }, isProtected: true })
   company: Ref = null;
 
   @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
@@ -45,7 +45,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.CashFlow', required: false })
   CashFlow: Ref = null;
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, isProtected: true })
   currency: Ref = null;
 
   @Props({
@@ -66,7 +66,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'boolean', label: 'Ф2' })
   notAccounting = false;
 
-  @Props({ type: 'enum', value: ['GRID', 'FIX'], order: 777})
+  @Props({ type: 'enum', value: ['GRID', 'FIX'], order: 777 })
   RoyaltyArrangements = null;
 
   @Props({ type: 'date', order: 777 })

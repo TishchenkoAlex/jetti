@@ -12,7 +12,7 @@ export interface DocListRequestBody {
   order: FormListOrder[];
   listOptions?: DocListOptions;
 }
-export interface DocListOptions{
+export interface DocListOptions {
   withHierarchy: boolean;
   hierarchyDirectionUp: boolean;
 }
