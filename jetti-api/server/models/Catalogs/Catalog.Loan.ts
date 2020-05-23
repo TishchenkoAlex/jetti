@@ -12,7 +12,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.Loan', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true, onChangeServer: true, style: { width: '250px' } })
+  @Props({ type: 'Catalog.Company', required: true, onChangeServer: true, style: { width: '250px' }, isProtected: true })
   company: Ref = null;
 
   @Props({ type: 'date', hiddenInForm: false, hiddenInList: false, hidden: false, order: 1 })
@@ -24,7 +24,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'date', label: 'Close date' })
   CloseDay: Date | null = null;
 
-  @Props({ type: 'Types.CompanyOrCounterpartieOrPerson', required: true })
+  @Props({ type: 'Types.CompanyOrCounterpartieOrPerson', required: true, isProtected: true })
   owner: Ref = null;
 
   @Props({
@@ -82,7 +82,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'number', order: 777 })
   AmountLoan = 0;
 
-  @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' } })
+  @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' }, isProtected: true })
   currency: Ref = null;
 
   @Props({ type: 'Catalog.Country' })

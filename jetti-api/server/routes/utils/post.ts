@@ -1,9 +1,11 @@
+import { CatalogTypes, AllTypes } from './../../models/documents.types';
 import { Ref } from '../../models/document';
 import { INoSqlDocument } from '../../models/documents.factory';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
 import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
+import { Type } from '../../models/common-types';
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
@@ -35,13 +37,8 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 }
 
 export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
-  const id = serverDoc.id;
 
-  const beforeSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforeSave'];
-  if (typeof beforeSave === 'function') await beforeSave(tx);
-  if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
-
-  serverDoc.timestamp = new Date();
+  await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
@@ -69,24 +66,16 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
     );
-    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
+    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, serverDoc.id]);
 
-  const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
-  if (typeof afterSave === 'function') await afterSave(tx);
-  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
-
+  await afterSaveDocument(serverDoc, tx);
   serverDoc.map(response);
   return serverDoc;
 }
 
 export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
-  const id = serverDoc.id;
 
-  const beforeSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforeSave'];
-  if (typeof beforeSave === 'function') await beforeSave(tx);
-  if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
-
-  serverDoc.timestamp = new Date();
+  await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
@@ -119,11 +108,9 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
         )
       ) i
     WHERE Documents.id = i.id;
-    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
+    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, serverDoc.id]);
 
-  const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
-  if (typeof afterSave === 'function') await afterSave(tx);
-  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
+  await afterSaveDocument(serverDoc, tx);
 
   serverDoc.map(response);
   return serverDoc;
@@ -140,4 +127,78 @@ export async function setPostedSate(id: Ref, tx: MSSQL) {
 
 export async function adminMode(mode: boolean, tx: MSSQL) {
   await tx.none(`EXEC sys.sp_set_session_context N'postMode', N'${mode}';`);
+}
+
+async function beforeSaveDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+  if (!tx.user.disableChecks) {
+    await checkDocumentUnique(serverDoc, tx);
+    await checkProtectedPropsModify(serverDoc, tx);
+  }
+  const beforeSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforeSave'];
+  if (typeof beforeSave === 'function') await beforeSave(tx);
+  if (serverDoc.beforeSave) await serverDoc.beforeSave(tx);
+  serverDoc.timestamp = new Date();
+}
+
+async function afterSaveDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+  const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
+  if (typeof afterSave === 'function') await afterSave(tx);
+  if (serverDoc.afterSave) await serverDoc.afterSave(tx);
+}
+
+async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
+
+  if (!serverDoc.isCatalog) return;
+  const uniqueProps = serverDoc.getPropsWithOption('isUnique', true);
+  const propsKeys = Object.keys(uniqueProps);
+  if (!propsKeys.length) return;
+
+  const cat = await lib.doc.findDocumentByProps<any>(
+    serverDoc.type as CatalogTypes,
+    propsKeys.map(e => ({ propKey: e, propValue: serverDoc[e] })),
+    tx,
+    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'] });
+  const exist = cat.filter(e => e.id !== serverDoc.id);
+  if (!exist.length) return;
+
+  const getValueDescription = async (type: AllTypes, value: any) => {
+    if (!value) return `<empty>`;
+    if (!Type.isRefType(type)) return value;
+    return (await lib.doc.byId(value, tx))?.description;
+  };
+
+  const existErrors: string[] = [];
+  for (const propKey of propsKeys) {
+    const descriptions = exist
+      .filter(e => e[propKey] === serverDoc[propKey])
+      .map(e => e.description)
+      .join('\n');
+    if (descriptions) existErrors.push(
+      `field "${uniqueProps[propKey].label || propKey}" value
+     "${await getValueDescription(uniqueProps[propKey].type as any, serverDoc[propKey])}" alredy exists:
+     ${descriptions}`);
+  }
+
+  throw new Error(`"${serverDoc.description}" non unique by\n${existErrors.join('\n')}`);
+}
+
+async function checkProtectedPropsModify(serverDoc: DocumentBaseServer, tx: MSSQL) {
+
+  if (!serverDoc.isCatalog || !serverDoc.timestamp) return;
+  const protectedProps = serverDoc.getPropsWithOption('isProtected', true);
+
+  if (!Object.keys(protectedProps).length) return;
+
+  const savedDoc = await lib.doc.byId(serverDoc.id, tx);
+  if (!savedDoc) return;
+
+  const modProps = Object.keys(protectedProps)
+    .filter(key => serverDoc[key] !== savedDoc[key])
+    .map(key => key);
+
+  for (const modProp of modProps) {
+    if (await lib.doc.isDocumentUsedInAccumulationWithPropValueById(serverDoc.id, savedDoc[modProp], tx))
+      throw new Error(`"${serverDoc.description}" can't be changed by protected field "${protectedProps[modProp].label || modProp}":\n used in accumulation movements"`);
+  }
+
 }

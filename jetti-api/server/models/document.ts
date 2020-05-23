@@ -31,7 +31,8 @@ export interface PropOptions {
   storageType?: StorageType;
   useIn?: StorageType;
   isIndexed?: boolean;
-  isCritical?: boolean;
+  isProtected?: boolean;
+  isUnique?: boolean;
   validators?: { key: string, value?: any }[];
 }
 
@@ -188,6 +189,16 @@ export class DocumentBase {
 
   map(doc: IFlatDocument) {
     if (doc) Object.assign(this, doc);
+  }
+
+  getPropsWithOption(propOptions: keyof PropOptions, propsValue: any): { [x: string]: PropOptions } {
+    const props = this.Props();
+    const res = {};
+    Object.keys(props)
+      .filter(propsName => Object.keys(props[propsName])
+        .find(propOpt => propOpt === propOptions && props[propsName][propOpt] === propsValue))
+      .forEach(propsName => res[propsName] = props[propsName]);
+    return res;
   }
 
 }

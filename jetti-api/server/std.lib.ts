@@ -6,7 +6,7 @@ import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { DocTypes } from './models/documents.types';
+import { DocTypes, CatalogTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
@@ -37,6 +37,19 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
+    findDocumentByProps: <T>(
+      type: CatalogTypes,
+      propsFilter: { propKey: string, propValue: any }[],
+      tx: MSSQL,
+      options?: {
+        matching?: 'OR' | 'AND',
+        selectedFields?: string[],
+        first?: number,
+        order?: string[],
+        excludeDeleted?: boolean
+      }
+    ) => Promise<T[]>;
+    isDocumentUsedInAccumulationWithPropValueById: (docId: string, propValue: any, tx: MSSQL) => Promise<boolean>
     Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
     Descendants: (id: Ref, tx: MSSQL) => Promise<{ id: Ref, parent: Ref }[] | null>;
     haveDescendants: (id: Ref, tx: MSSQL) => Promise<boolean>;
@@ -90,6 +103,7 @@ export const lib: JTL = {
     byCode,
     byId,
     byIdT,
+    findDocumentByProps,
     createDoc,
     createDocServer,
     createDocServerById,
@@ -103,7 +117,8 @@ export const lib: JTL = {
     unPostById,
     noSqlDocument,
     flatDocument,
-    docPrefix
+    docPrefix,
+    isDocumentUsedInAccumulationWithPropValueById
   },
   info: {
     sliceLast,
@@ -200,6 +215,61 @@ async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseSer
   else servDoc = await updateDocument(servDoc, tx);
   if (isPostedAfter) await postDocument(servDoc, tx);
   return servDoc;
+}
+
+async function findDocumentByProps<T>(
+  type: CatalogTypes,
+  propsFilter: { propKey: string, propValue: any }[],
+  tx: MSSQL,
+  options: {
+    matching?: 'OR' | 'AND',
+    selectedFields?: string[],
+    first?: number,
+    order?: string[],
+    excludeDeleted?: boolean
+  }): Promise<T[]> {
+
+  if (!propsFilter.length) return [];
+
+  const {
+    matching = 'AND',
+    selectedFields = ['id, description'],
+    first = 0,
+    order = ['description'],
+    excludeDeleted = false
+  } = options;
+
+  const fieldsQ = selectedFields
+    .map(e => `${e.trim()}`)
+    .join(`, \n`);
+
+  const filterQ = propsFilter
+    .map(e => `${e.propKey} = @p${propsFilter.indexOf(e) + 1} `)
+    .join(` ${matching} \n`);
+
+  const orderQ = order
+    .map(e => `${e} `)
+    .join(`, \n`);
+
+  const query = `
+  SELECT DISTINCT ${first ? 'TOP ' + first : ''}
+  ${fieldsQ}
+  FROM[dbo].[${ type}.v]
+  WHERE 1 = 1 AND
+  ${excludeDeleted ? 'deleted = 0 AND' : ''}
+  (${filterQ})
+  ORDER BY ${ orderQ} `;
+
+  return await tx.manyOrNone<T>(query, propsFilter.map(e => e.propValue));
+
+}
+
+async function isDocumentUsedInAccumulationWithPropValueById(docId: string, propValue: any, tx: MSSQL): Promise<boolean> {
+  const query = `
+  select TOP 1 id
+  from Accumulation
+  where contains(data, @p1) and contains(data, @p2)`;
+  return !!(await tx.oneOrNone(query, [docId, propValue]));
 }
 
 async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {

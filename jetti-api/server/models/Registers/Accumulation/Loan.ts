@@ -16,7 +16,7 @@ export class RegisterAccumulationLoan extends RegisterAccumulation {
   @Props({ type: 'Catalog.CashFlow', required: true, dimension: true })
   CashFlow: Ref = null;
 
-  @Props({ type: 'Catalog.Currency', required: true, dimension: true, })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true, isProtected: true })
   currency: Ref = null;
 
   @Props({

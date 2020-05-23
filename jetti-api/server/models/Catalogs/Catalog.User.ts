@@ -17,7 +17,7 @@ export class CatalogUser extends DocumentBase {
   @Props({ type: 'Catalog.User', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
-  @Props({ type: 'string', order: 1, required: true, style: { width: '250px' } })
+  @Props({ type: 'string', order: 1, required: true, style: { width: '250px' }, isUnique: true })
   code = '';
 
   @Props({ type: 'boolean' })
