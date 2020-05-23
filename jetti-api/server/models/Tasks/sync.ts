@@ -8,8 +8,8 @@ export default async function (job: Queue.Job) {
   const params = job.data;
   const sdbq = new MSSQL(TASKS_POOL, params.user);
 
-  await lib.util.adminMode(true, sdbq);
   try {
+    await lib.util.adminMode(true, sdbq);
     const query = `
       SELECT d.id, d.date, d.description
       FROM [dbo].[Documents] d
@@ -31,19 +31,17 @@ export default async function (job: Queue.Job) {
       let offset = 0;
       job.data.job['total'] = docs.length;
       job.data.message = `job started for ${params.companyName}, total dosc = ${docs.length} documents`;
-      await job.update(job.data);
-      await job.progress(0);
+      await job.update(job.data); await job.progress(0);
       for (const doc of docs) {
-        offset++;
+        offset = offset + 1;
         job.data.message = `${params.companyName}, ${offset} of ${count}, last doc -> [${doc.description}]`;
         try {
           await sdbq.tx(async tx => { await lib.doc.postById(doc.id, tx); });
         } catch (ex) {
-          job.data.message = `Error: ${ex}, ${params.companyName}, ${offset} of ${count}, last doc -> [${doc.description}]`;
+          job.data.message = `!${ex}, ${job.data.message}`;
         }
+        await job.update(job.data); await job.progress(offset);
       }
-      await job.update(job.data);
-      await job.progress(offset);
     }
     job.data.message = `job complete for ${params.companyName}`;
     await job.progress(100);

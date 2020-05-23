@@ -46,7 +46,7 @@ export const JQueue = new Queue(DB_NAME, options);
 export const processId = () => `${os.hostname()}:${process.pid}`;
 
 JQueue.process(1, job => {
-  if (job.data.processId && job.data.processId === processId() ) return null;
+  // if (job.data.processId && job.data.processId === processId()) return;
   const task = Jobs[job.data.job.id];
   if (task) return task(job);
 });
