@@ -602,6 +602,9 @@ ORDER BY
       case 'Выдача ДС подотчетнику':
         await this.FillOperationВыдачаДСПодотчетнику(docOperation, tx, params);
         break;
+      case 'Выдача займа контрагенту':
+        await this.FillOperationВыдачаЗаймаКонтрагенту(docOperation, tx, params);
+        break;
       default:
         throw new Error(`Не реализовано создание документа для вида операции ${this.Operation} `);
     }
@@ -846,12 +849,37 @@ ORDER BY
       docOperation.Operation = 'BF4B4126-D835-11E7-9D5E-E7807DB3B488'; // С р/с - подотчетному
       docOperation['Person'] = this.CashRecipient;
       docOperation['BankAccount'] = this.CashOrBank;
+      docOperation['BankAccountPerson'] = this.CashRecipientBankAccount;
       docOperation['BankConfirm'] = false;
       docOperation['BankDocNumber'] = '';
       docOperation['BankConfirmDate'] = null;
       docOperation.f1 = docOperation['BankAccount'];
       docOperation.f2 = docOperation['Person'];
       docOperation.f3 = docOperation['Department'];
+    }
+  }
+
+  async FillOperationВыдачаЗаймаКонтрагенту(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
+
+    if (CashOrBank.type === 'Catalog.CashRegister') {
+      throw Error(`Не верно указан источник: ${CashOrBank}, может быть только банк!`);
+    } else if (CashOrBank.type === 'Catalog.BankAccount') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // Списание безналичных ДС
+      docOperation.Operation = '54AA5310-102E-11EA-AA50-31ECFB22CD33'; // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
+      docOperation['Counterpartie'] = this.CashRecipient;
+      docOperation['BankAccount'] = this.CashOrBank;
+      docOperation['BankAccountSupplier'] = this.CashRecipientBankAccount;
+      docOperation['BankConfirm'] = false;
+      docOperation['PaymentKind'] = this.PaymentKind || 'BODY';
+      docOperation['BankDocNumber'] = '';
+      docOperation['Loan'] = this.Loan;
+      docOperation['BankConfirmDate'] = null;
+      docOperation.f1 = docOperation['BankAccount'];
+      docOperation.f2 = docOperation['Counterpartie'];
+      docOperation.f3 = docOperation['Loan'];
     }
   }
 

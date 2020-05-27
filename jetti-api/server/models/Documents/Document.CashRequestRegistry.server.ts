@@ -188,7 +188,6 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   unsupportedOperations(): string[] {
     return ['Прочий расход ДС',
-      'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
     ];
   }

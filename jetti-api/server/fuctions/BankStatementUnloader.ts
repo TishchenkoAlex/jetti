@@ -122,6 +122,8 @@ export class BankStatementUnloader {
       switch (this.operation) {
         case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
           return this.getQueryTextCommonRUSSIAВыплатаЗарплаты();
+        case 'BF4B4126-D835-11E7-9D5E-E7807DB3B488': // С р/с - подотчетному
+          return this.getQueryTextCommonRUSSIAВыдачаДСПодотчетнику();
         case '8D128C20-3E20-11EA-A722-63A01E818155': // перечисление налогов и взносов
           return this.getQueryTextCommonRUSSIAперечислениеНалоговИВзносов();
         case '54AA5310-102E-11EA-AA50-31ECFB22CD33': // С р/с - Выдача/Возврат кредитов и займов (Контрагент)
@@ -210,7 +212,6 @@ export class BankStatementUnloader {
     order by Obj.company, BAComp.[code], Obj.[date]`;
 
   }
-
   private static getQueryTextCommonRUSSIAОплатаПоставщику() {
     return `     SELECT
     N'Платежное поручение' as N'СекцияДокумент'
@@ -253,6 +254,49 @@ export class BankStatementUnloader {
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
     order by Obj.company, BAComp.[code], Obj.[date]`;
   }
+
+  private static getQueryTextCommonRUSSIAВыдачаДСПодотчетнику() {
+    return `     SELECT
+    N'Платежное поручение' as N'СекцияДокумент'
+    ,Obj.[code] as N'Номер'
+    ,FORMAT (Obj.[date], 'dd.MM.yyyy') as N'Дата'
+    ,CAST(JSON_VALUE(Obj.doc, '$.Amount') as money) as N'Сумма'
+    ,BAComp.[code] as N'ПлательщикСчет'
+    ,N'ИНН ' + JSON_VALUE(Comp.doc, '$.Code1') + ' ' + JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик'
+    ,JSON_VALUE(Comp.doc, '$.Code1') as N'ПлательщикИНН'
+    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик1'
+    ,BAComp.[code] as N'ПлательщикРасчСчет'
+    ,BankComp.description as N'ПлательщикБанк1'
+    ,JSON_VALUE(BankComp.doc, '$.Address') as N'ПлательщикБанк2'
+    ,BankComp.[code] as N'ПлательщикБИК'
+    ,JSON_VALUE(BankComp.doc, '$.KorrAccount') as N'ПлательщикКорсчет'
+    ,BAPers.[code] as N'ПолучательСчет'
+    ,N'ИНН ' + Pers.[code] + ' ' + Pers.[description] as N'Получатель'
+    ,Pers.[code] as N'ПолучательИНН'
+    ,Pers.description as N'Получатель1'
+    ,BAPers.[code] as N'ПолучательРасчСчет'
+    ,BankPers.description as N'ПолучательБанк1'
+    ,JSON_VALUE(BankPers.doc, '$.Address') as N'ПолучательБанк2'
+    ,BankPers.[code] as N'ПолучательБИК'
+    ,JSON_VALUE(BankPers.doc, '$.KorrAccount') as N'ПолучательКорсчет'
+    ,'01' as N'ВидОплаты'
+    ,5 as N'Очередность'
+    ,Obj.[info] as N'НазначениеПлатежа'
+    ,Obj.company  as Company_ig
+    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
+    ,Obj.[date] as ObjDate_ig
+    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
+    FROM [dbo].[Documents] as Obj
+    LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount')
+    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank')
+    LEFT JOIN [dbo].[Documents] as Pers on Pers.id = JSON_VALUE(Obj.doc, '$.Person')
+    LEFT JOIN [dbo].[Documents] as BAPers on BAPers.id = JSON_VALUE(Obj.doc, '$.BankAccountPerson')
+    LEFT JOIN [dbo].[Documents] as BankPers on BankPers.id = JSON_VALUE(BAPers.doc, '$.Bank')
+    WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = 'BF4B4126-D835-11E7-9D5E-E7807DB3B488' -- С р/с - подотчетному
+    order by Obj.company, BAComp.[code], Obj.[date]`;
+  }
+
   private static getQueryTextCommonRUSSIAНаРасчетныйСчетВПуть() {
     return `      SELECT
         N'Платежное поручение' as N'СекцияДокумент'
@@ -684,8 +728,8 @@ export class BankStatementUnloader {
         ba.[code] as BankAccount
     FROM [dbo].[Documents] as oper
         LEFT JOIN [dbo].[Documents] as ba on ba.id = JSON_VALUE(oper.doc, '$.BankAccount')
-    WHERE oper.[id] in (@p1) AND JSON_VALUE(oper.doc, '$.Operation') IN ('68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9','54AA5310-102E-11EA-AA50-31ECFB22CD33','8D128C20-3E20-11EA-A722-63A01E818155','E47A8910-4599-11EA-AAE2-A1796B9A826A')
-    -- С р/с -  оплата поставщику,  р/с - Выдача/Возврат кредитов и займов (Контрагент), перечисление налогов и взносов, С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+    WHERE oper.[id] in (@p1) AND JSON_VALUE(oper.doc, '$.Operation') IN ('68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9','54AA5310-102E-11EA-AA50-31ECFB22CD33','8D128C20-3E20-11EA-A722-63A01E818155','E47A8910-4599-11EA-AAE2-A1796B9A826A','BF4B4126-D835-11E7-9D5E-E7807DB3B488')
+    -- С р/с -  оплата поставщику,  р/с - Выдача/Возврат кредитов и займов (Контрагент), перечисление налогов и взносов, С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA),  С р/с - подотчетному
     UNION
     SELECT DISTINCT
         ba.[code]
