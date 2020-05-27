@@ -76,4 +76,7 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
   TaxOffice: Ref = null;
 
+  @Props({ type: 'string', readOnly: true, isAdditional: true })
+  GLN = '';
+
 }

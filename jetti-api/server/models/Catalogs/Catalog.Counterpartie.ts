@@ -57,4 +57,7 @@ export class CatalogCounterpartie extends DocumentBase {
   @Props({ type: 'string', required: false })// Код Бенефициара (для Казахастана)
   BC = '';
 
+  @Props({ type: 'string', readOnly: true, isAdditional: true })
+  GLN = '';
+
 }
