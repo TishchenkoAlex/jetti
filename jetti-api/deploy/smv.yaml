@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: sm
-  name: sm
+    app: smv
+  name: smv
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sm
+      app: smv
       tier: web
   template:
     metadata:
       labels:
-        app: sm
+        app: smv
         tier: web
     spec:
       containers:
@@ -24,7 +24,7 @@ spec:
         - name: DB_HOST
           value: JETTI-DB-01
         - name: DB_NAME
-          value: sm
+          value: smv
         - name: DB_USER
           value: jetti
         - name: DB_PASSWORD
@@ -66,14 +66,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sm
+  name: smv
   labels:
-    app: sm
+    app: smv
 spec:
   type: NodePort
   sessionAffinity: ClientIP
   selector:
-    app: sm
+    app: smv
   ports:
   - port: 8080
     targetPort: 8080

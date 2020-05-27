@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "x100-jetti"
+  },
+  "targets": {
+    "x100-jetti": {
+      "hosting": {
+        "smv": [
+          "smv-jetti"
+        ],
+        "x100": [
+          "x100-jetti"
+        ]
+      }
+    }
   }
 }
