@@ -5,10 +5,12 @@ import { IJob } from '../common-types';
 import sync from './sync';
 import { RedisOptions } from 'ioredis';
 import * as os from 'os';
+import customTask from './customTask';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   sync: sync,
-  timeout: async (job: Queue.Job) => { await setTimeout(() => console.log('Jobs done!', job), job.data.timeout || 10000); }
+  timeout: async (job: Queue.Job) => { await setTimeout(() => console.log('Jobs done!', job), job.data.timeout || 10000); },
+  customTask: customTask
 };
 
 const redis: RedisOptions = {
@@ -46,10 +48,10 @@ export const JQueue = new Queue(DB_NAME, options);
 
 export const processId = () => `${os.hostname()}:${process.pid}`;
 
-JQueue.process(1, job => {
+JQueue.process(1, async job => {
   // if (job.data.processId && job.data.processId === processId()) return;
   const task = Jobs[job.data.job.id];
-  if (task) return task(job);
+  if (task) return await task(job);
 });
 
 JQueue.on('error', err => {

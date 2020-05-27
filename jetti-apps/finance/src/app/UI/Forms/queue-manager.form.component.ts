@@ -63,6 +63,8 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
       }],
       add: [{
         label: 'Таймаут', command: () => this.executeServerMethod('addJobTimeout')
+      }, {
+        label: 'Произвольная', command: () => this.executeServerMethod('addJobCustomTask')
       }],
       remove: [{
         label: 'Выделенные', command: () => this.executeServerMethod('removeJobsSelected')

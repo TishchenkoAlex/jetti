@@ -110,6 +110,7 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     }
     result.sort((a, b) => b.code - a.code);
     this['AnyTable'] = result;
+
   }
 
   getInnerJobProps(job: Bull.Job) {
@@ -129,7 +130,16 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
       processId: procId
     };
     const job = await JQueue.add(data, { attempts: 3, priority: 100 });
+  }
 
-    job.takeLock();
+  async addJobCustomTask() {
+    const procId = processId();
+    const data = {
+      job: { id: `customTask`, description: `Custom task` },
+      user: this.user,
+      timeout: this.timeout || 10000,
+      processId: procId,
+      TaskOperation: this.CustomTask,
+    };
   }
 }

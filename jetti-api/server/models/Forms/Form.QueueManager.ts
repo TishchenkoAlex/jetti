@@ -24,6 +24,9 @@ export class FormQueueManager extends FormBase {
   @Props({ type: 'number', order: 5 })
   timeout = '';
 
+  @Props({ type: 'Document.Operation', order: 6 })
+  CustomTask: Ref = null;
+
   @Props({ type: 'table' })
   AnyTable: AnyTable[] = [new AnyTable()];
 
