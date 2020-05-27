@@ -22,7 +22,7 @@ export class FormListFilter {
     public left: string,
     public center: matchOperator = '=',
     public right: any = null,
-    public fixed?: boolean) { }
+    public isFixed?: boolean) { }
 }
 
 export class FormListOrder {

@@ -184,7 +184,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
           const fc = this.formControl.parent.get(row.dependsOn) || this.formControl.root.get(row.dependsOn);
           if (fc && fc.value) rightValue = fc!.value;
         }
-        if (rightValue) result.filter.push({ left: row.filterBy, center: '=', right: rightValue, fixed: row.fixed === true });
+        if (rightValue) result.filter.push({ left: row.filterBy, center: '=', right: rightValue, isFixed: row.isOwnerFixed === true });
       }
     }
     if (!this.useHierarchyList || suggest) {
