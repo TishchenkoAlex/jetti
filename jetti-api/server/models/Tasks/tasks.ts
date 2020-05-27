@@ -7,7 +7,8 @@ import { RedisOptions } from 'ioredis';
 import * as os from 'os';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
-  sync: sync
+  sync: sync,
+  timeout: async (job: Queue.Job) => { await setTimeout(() => console.log('Jobs done!', job), job.data.timeout || 10000); }
 };
 
 const redis: RedisOptions = {
@@ -46,7 +47,7 @@ export const JQueue = new Queue(DB_NAME, options);
 export const processId = () => `${os.hostname()}:${process.pid}`;
 
 JQueue.process(1, job => {
-  if (job.data.processId && job.data.processId === processId() ) return null;
+  if (job.data.processId && job.data.processId === processId()) return null;
   const task = Jobs[job.data.job.id];
   if (task) return task(job);
 });

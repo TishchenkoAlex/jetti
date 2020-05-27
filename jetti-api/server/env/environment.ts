@@ -82,7 +82,7 @@ export const sqlConfigTask: ConnectionConfigAndPool = {
 };
 
 export const sqlConfigExchange: ConnectionConfigAndPool = {
-  server: '35.204.185.201',
+  server: '34.91.140.192',
   authentication: {
     type: 'default',
     options: {

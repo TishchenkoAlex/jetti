@@ -158,6 +158,10 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
   }
 
+  isFilterFixed(columnField: string) {
+    return !!this.settings.filter.find(e => e.left === columnField && e.fixed);
+  }
+
   private caclPageSize() {
     const scrollHeight = () => window.innerHeight * 0.625;
     this.dataSource.pageSize = Math.max(Math.round(scrollHeight() / 28), 1);

@@ -1,14 +1,7 @@
-import { Jobs } from './../Tasks/tasks';
-import { JQueue } from '../Tasks/tasks';
+import { JQueue, processId } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
 import { FormQueueManager } from './Form.QueueManager';
-import { lib } from '../../std.lib';
-import { CatalogCompany } from '../Catalogs/Catalog.Company';
-import { MSSQL } from '../../mssql';
-import { TASKS_POOL } from '../../sql.pool.tasks';
-import { Ref } from '../document';
 import { JobStatus } from 'bull';
-import { delay, duration } from 'tarn/lib/utils';
 import Bull = require('bull');
 
 export default class FormQueueManagerServer extends FormQueueManager implements IServerForm {
@@ -31,20 +24,49 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     await this.getJobsStat();
   }
 
-  async cancelJobs() {
+  async getWorkers() {
+    const work = await JQueue.getWorkers();
+
+  }
+
+  async cancelJobsAll() {
+    await this.removeJobs((this['AnyTable'] as any)
+      .map(e => e.code));
+  }
+
+  async cancelJobsSelected() {
+    await this.removeJobs((this['AnyTable'] as any)
+      .filter(e => e['selected'])
+      .map(e => e.code));
+  }
+
+
+  async cancelJobs(jobsCodes: string[]) {
     await JQueue.whenCurrentJobsFinished();
-    const acitiveJob = await JQueue.getActive();
-    for (const job of acitiveJob) {
-      await job.remove();
+    for (const jobCode of jobsCodes) {
+      const job = await JQueue.getJob('' + jobCode);
+      if (!job) continue;
+      job.moveToFailed({ message: `Canceled by ${this.user}` });
     }
     await this.getJobsStat();
   }
 
-  async cancelSelectedJobs() {
+  async removeJobsAll() {
+    await this.removeJobs((this['AnyTable'] as any)
+      .map(e => e.code));
+  }
+
+  async removeJobsSelected() {
+    await this.removeJobs((this['AnyTable'] as any)
+      .filter(e => e['selected'])
+      .map(e => e.code));
+  }
+
+
+  async removeJobs(jobsCodes: string[]) {
     await JQueue.whenCurrentJobsFinished();
-    const selectedJobs = this.AnyTable.filter(e => e['selected']);
-    for (const selectedJob of selectedJobs) {
-      const job = await JQueue.getJob('' + selectedJob['code']);
+    for (const jobCode of jobsCodes) {
+      const job = await JQueue.getJob('' + jobCode);
       if (!job) continue;
       job.remove();
     }
@@ -56,7 +78,12 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     const jobsStatus: JobStatus[] = ['completed', 'waiting', 'active', 'delayed', 'failed'];
     const result: any[] = [];
     for (const status of jobsStatus) {
-      const jobs = await JQueue.getJobs([status]);
+      let jobs = (await JQueue.getJobs([status])).filter(e => e);
+      if (this.StartDate && this.EndDate) {
+        const dates = { start: this.StartDate?.valueOf(), end: this.EndDate?.valueOf() };
+        jobs = jobs.filter(e => (!e.processedOn || (e.processedOn && e.processedOn > dates.start))
+          && (!e.finishedOn || (e.finishedOn && e.finishedOn < dates.end)));
+      }
       for (const job of jobs) {
         result.push({
           code: +job.id,
@@ -73,7 +100,7 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     }
 
     const setId = 'getJobsStat';
-    if (!this.dynamicProps.find(e => e.SetId === setId)) {
+    if (result.length && !this.dynamicProps.find(e => e.SetId === setId)) {
       // this.DynamicPropsClearSet(setId);
       // this.DynamicPropsPush('add', 'type', 'table', '', 'JobStat', setId);
       this.DynamicPropsPush('add', 'label', 'Jobs stat', '', 'AnyTable', setId);
@@ -93,8 +120,16 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     return res;
   }
 
-  async addJobs() {
-    const jobsStatus: JobStatus[] = ['completed', 'waiting', 'active', 'delayed', 'failed'];
-    const res = await JQueue.getJobs(jobsStatus);
+  async addJobTimeout() {
+    const procId = processId();
+    const data = {
+      job: { id: `timeout`, description: `timeout` },
+      user: this.user,
+      timeout: this.timeout || 10000,
+      processId: procId
+    };
+    const job = await JQueue.add(data, { attempts: 3, priority: 100 });
+
+    job.takeLock();
   }
 }

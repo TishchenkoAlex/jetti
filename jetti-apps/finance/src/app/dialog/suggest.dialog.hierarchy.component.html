@@ -80,7 +80,7 @@
                   (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
               </div>
               <div *ngSwitchDefault>
-                <j-autocomplete-png [checkValue]="false"
+                <j-autocomplete-png [checkValue]="false" [disabled]="isFilterFixed(column.field)"
                   [type]="filters[column.field]?.value?.type || column.type || 'string'"
                   [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
                   (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
@@ -185,7 +185,7 @@
                   (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
               </div>
               <div *ngSwitchDefault>
-                <j-autocomplete-png [checkValue]="false"
+                <j-autocomplete-png [checkValue]="false" [disabled]="isFilterFixed(column.field)"
                   [type]="filters[column.field]?.value?.type || column.type || 'string'"
                   [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
                   (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">

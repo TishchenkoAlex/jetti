@@ -184,7 +184,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
           const fc = this.formControl.parent.get(row.dependsOn) || this.formControl.root.get(row.dependsOn);
           if (fc && fc.value) rightValue = fc!.value;
         }
-        if (rightValue) result.filter.push({ left: row.filterBy, center: '=', right: rightValue });
+        if (rightValue) result.filter.push({ left: row.filterBy, center: '=', right: rightValue, fixed: row.fixed === true });
       }
     }
     if (!this.useHierarchyList || suggest) {
@@ -203,7 +203,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
       }
       if (company) result.filter.push({ left: 'company', center: '=', right: company });
     }
+
     result.filter = this.getFilterFromModule(result.filter);
+    // result.filter = result.filter.map(e => ({ ...e, fixed: ['company', 'department'].includes(e.left.toLocaleLowerCase()) }));
 
     return result;
   }

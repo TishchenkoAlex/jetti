@@ -121,6 +121,10 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
       });
   }
 
+  isFilterFixed(columnField: string) {
+    return !!this.settings.filter.find(e => e.left === columnField && e.fixed);
+  }
+
   private setFilters() {
     this.settings.filter
       .filter(c => !(c.right === null || c.right === undefined))

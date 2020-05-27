@@ -8,17 +8,19 @@
             <div class="ui-toolbar-group-left">
               <button pButton type="button" id="getJobsStat" label="Статистика" class="ui-button-info"
                 (click)="executeServerMethod('getJobsStat')"></button>
-              <button pButton type="button" id="suspendJobs" label="Остановить" class="ui-button-success"
-                (click)="executeServerMethod('suspendJobs')"></button>
-              <button pButton type="button" id="processJobs" label="Запустить" class="ui-button-success"
-                (click)="executeServerMethod('processJobs')"></button>
-              <button pButton type="button" id="cancelJobs" label="Отменить все" class="ui-button-warning"
-                (click)="executeServerMethod('cancelJobs')"></button>
-              <button pButton type="button" id="cancelSelectedJobs" label="Отменить выбранные" class="ui-button-warning"
-                (click)="executeServerMethod('cancelSelectedJobs')"></button>
+              <p-splitButton styleClass="ui-button-success" label="Очередь" [model]="splitCommands.queue">
+              </p-splitButton>
             </div>
 
+
+
             <div class="ui-toolbar-group-right">
+              <p-splitButton styleClass="ui-button-warning" label="Добавить" [model]="splitCommands.add">
+              </p-splitButton>
+              <p-splitButton styleClass="ui-button-warning" label="Отменить" [model]="splitCommands.cancel">
+              </p-splitButton>
+              <p-splitButton styleClass="ui-button-danger" label="УДАЛИТЬ" [model]="splitCommands.remove">
+              </p-splitButton>
               <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
                 styleClass="ui-button-secondary" label="commands">
               </p-splitButton>
@@ -75,6 +77,23 @@
               </p-tabView>
             </div>
             <ng-content></ng-content>
+          </div>
+        </p-panel>
+
+        <p-panel header="Task progress log" toggleable="true" collapsed="true" toggler="header">
+          <div fxFlex style="height: 400px; width: 100%;">
+            <p-table [value]="IOData" [scrollable]="true" scrollHeight="400px">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Task progress log</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-doc>
+                <tr>
+                  <td>{{doc}}</td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
         </p-panel>
 

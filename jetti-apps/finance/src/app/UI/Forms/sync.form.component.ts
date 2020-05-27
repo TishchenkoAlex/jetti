@@ -39,6 +39,13 @@ export class SyncFormComponent extends _baseDocFormComponent implements OnInit, 
         if (this.IOData.length > 1000) this.IOData.length = 1000;
         this.cd.detectChanges();
       });
+
+      socket.on('timeout', (data: any) => {
+        if (data && data.data && data.data.message)
+          this.IOData = [data.data.message, ...this.IOData];
+        if (this.IOData.length > 1000) this.IOData.length = 1000;
+        this.cd.detectChanges();
+      });
     });
   }
 

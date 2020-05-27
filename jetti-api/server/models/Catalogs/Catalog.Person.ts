@@ -11,7 +11,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Loan', type: 'Catalog.Loan', field: 'owner' },
   ],
   dimensions: [
-    { Department: 'Catalog.Department' }
+    { Department: 'Catalog.Department' },
+    { JobTitle: 'Catalog.JobTitle' }
   ]
 })
 export class CatalogPerson extends DocumentBase {
@@ -72,5 +73,11 @@ export class CatalogPerson extends DocumentBase {
 
   @Props({ type: 'string' })
   DocumentAuthority = '';
+
+  @Props({ type: 'string', isAdditional: true })
+  AccountAD = '';
+
+  @Props({ type: 'boolean', hiddenInList: false, isAdditional: true })
+  Fired = false;
 
 }

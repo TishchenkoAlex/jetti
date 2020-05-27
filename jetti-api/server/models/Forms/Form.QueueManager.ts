@@ -21,6 +21,9 @@ export class FormQueueManager extends FormBase {
   @Props({ type: 'string', order: 4 })
   JobId = '';
 
+  @Props({ type: 'number', order: 5 })
+  timeout = '';
+
   @Props({ type: 'table' })
   AnyTable: AnyTable[] = [new AnyTable()];
 

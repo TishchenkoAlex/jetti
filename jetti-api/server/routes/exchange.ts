@@ -60,6 +60,17 @@ router.post('/v1.0/income/invoice', authHTTP, async (req: Request, res: Response
   } catch (err) { next(err); }
 });
 
+router.post('/v1.0/income/order', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+    await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc])
+      VALUES (N'Order', JSON_QUERY(@p1))`, [JSON.stringify(req.body)]);
+    return res.json(200);
+  } catch (err) { next(err); }
+});
+
 router.post('/v1.0/income/expense', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdba = new MSSQL(TASKS_POOL,

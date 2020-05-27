@@ -393,6 +393,9 @@ ORDER BY
     if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
       throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
 
+    if (!this.CashFlow)
+      throw new Error(`${this.description} не может быть проведен:\n не указана статья ДДС`);
+
     if (this.info) {
       const curlength = (this.info as string).split('\n')[0].length;
       if (curlength > 120 && await lib.util.getObjectPropertyById(this.company as any, 'county.code', tx) !== 'UKR')

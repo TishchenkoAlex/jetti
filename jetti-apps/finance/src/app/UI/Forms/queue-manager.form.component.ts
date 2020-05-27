@@ -8,6 +8,7 @@ import { DynamicFormService, getFormGroup } from 'src/app/common/dynamic-form/dy
 import { LoadingService } from 'src/app/common/loading.service';
 import { take, filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +18,12 @@ import { environment } from 'src/environments/environment';
 export class QueueManagerComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
   IOData = [];
+  splitCommands: {
+    remove: MenuItem[],
+    cancel: MenuItem[],
+    queue: MenuItem[],
+    add: MenuItem[]
+  };
 
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
@@ -27,6 +34,7 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
 
   ngOnInit() {
     super.ngOnInit();
+    this.fillCommands();
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 
@@ -42,6 +50,31 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
 
   ngOnDestroy() {
     super.ngOnDestroy();
+  }
+
+  fillCommands() {
+    this.splitCommands = {
+      queue: [{
+        label: 'Остановить выполнение (PAUSE)', icon: 'pi pi-times', command: () => this.executeServerMethod('suspendJobs')
+      }, {
+        label: 'Запустить выполнение (RESUME)', icon: 'pi pi-fast-forward', command: () => this.executeServerMethod('processJobs')
+      }, {
+        label: 'Получить процецессы (get workers)', command: () => this.executeServerMethod('getWorkers')
+      }],
+      add: [{
+        label: 'Таймаут', command: () => this.executeServerMethod('addJobTimeout')
+      }],
+      remove: [{
+        label: 'Выделенные', command: () => this.executeServerMethod('removeJobsSelected')
+      }, {
+        label: 'ВСЕ', command: () => this.executeServerMethod('removeJobsAll')
+      }],
+      cancel: [{
+        label: 'Выделенные', command: () => this.executeServerMethod('cancelJobsSelected')
+      }, {
+        label: 'ВСЕ', command: () => this.executeServerMethod('cancelJobsAll')
+      }],
+    };
   }
 
   async executeServerMethod(methodName: string) {

@@ -21,7 +21,8 @@ export class FormListFilter {
   constructor(
     public left: string,
     public center: matchOperator = '=',
-    public right: any = null) { }
+    public right: any = null,
+    public fixed?: boolean) { }
 }
 
 export class FormListOrder {
