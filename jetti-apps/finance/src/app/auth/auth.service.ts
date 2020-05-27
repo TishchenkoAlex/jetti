@@ -6,7 +6,7 @@ import * as jwt_decode from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, tap } from 'rxjs/operators';
 import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/common-types';
-import { environment, OAuthSettings } /*  */ from '../../environments/environment';
+import { environment } from 'src/environments/environment';
 export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '', photo: undefined };
 
 @Injectable()
@@ -28,12 +28,12 @@ export class AuthService {
   constructor(private router: Router, private http: HttpClient, private msalService: MsalService) { }
 
   public async login() {
-    await this.msalService.loginPopup(OAuthSettings.scopes);
-    const user = this.msalService.getUser().displayableId;
-    const acquireTokenSilentResult = await this.msalService.acquireTokenSilent(OAuthSettings.scopes);
+    await this.msalService.loginPopup({ scopes: ['user.read'] });
+    const user = this.msalService.getAccount().userName;
+    const acquireTokenSilentResult = await this.msalService.acquireTokenSilent({ scopes: ['user.read'] });
 
     return this.http.post<ILoginResponse>(`${environment.auth}login`,
-      { email: user, password: null, token: acquireTokenSilentResult }).pipe(
+      { email: user, password: null, token: acquireTokenSilentResult.accessToken }).pipe(
         shareReplay(),
         tap(loginResponse => this.init(loginResponse))
       );
@@ -41,6 +41,8 @@ export class AuthService {
 
   public logout() {
     localStorage.removeItem('jetti_token');
+    const account = this.msalService.getAccount();
+    if (account) this.msalService.logout();
     this._userProfile$.next({ ...ANONYMOUS_USER });
     return this.router.navigate([''], { queryParams: {} });
   }
