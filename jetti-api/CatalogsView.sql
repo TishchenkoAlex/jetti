@@ -351,6 +351,7 @@
         , d.[BC] [BC]
         , d.[timeZone] [timeZone]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
+        , d.[GLN] [GLN]
       
         , ISNULL(l5.description, d.description) [Company.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Company.Level4]
@@ -465,6 +466,7 @@
         , d.[Code2] [Code2]
         , d.[Code3] [Code3]
         , d.[BC] [BC]
+        , d.[GLN] [GLN]
       
         , ISNULL(l5.description, d.description) [Counterpartie.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Counterpartie.Level4]
@@ -1086,6 +1088,8 @@
         , d.[DocumentNumber] [DocumentNumber]
         , d.[DocumentDate] [DocumentDate]
         , d.[DocumentAuthority] [DocumentAuthority]
+        , d.[AccountAD] [AccountAD]
+        , d.[Fired] [Fired]
       
         , ISNULL(l5.description, d.description) [Person.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Person.Level4]

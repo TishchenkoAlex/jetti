@@ -337,6 +337,7 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BC"')), '') [BC]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."timeZone"')), '') [timeZone]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Company'
     
@@ -445,6 +446,7 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BC"')), '') [BC]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Counterpartie'
     
@@ -1033,6 +1035,8 @@
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DocumentNumber"')), '') [DocumentNumber]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.DocumentDate'),127) [DocumentDate]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DocumentAuthority"')), '') [DocumentAuthority]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AccountAD"')), '') [AccountAD]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."Fired"')), 0) [Fired]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Person'
     

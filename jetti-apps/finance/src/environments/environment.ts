@@ -24,9 +24,7 @@ export const MsalConfiguration: Configuration = {
   auth: {
     clientId: '8497b6af-a0c3-4b55-9e60-11bc8ff237e4',
     authority: 'https://login.microsoftonline.com/b91c98b1-d543-428b-9469-f5f8f25bc37b',
-    redirectUri: 'http://localhost:4200/',
     validateAuthority: true,
-    postLogoutRedirectUri: 'http://localhost:4200/',
     navigateToLoginRequestUrl: true,
   }, cache: {
     cacheLocation: 'localStorage',
