@@ -9,7 +9,6 @@ import customTask from './customTask';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   sync: sync,
-  timeout: async (job: Queue.Job) => { await setTimeout(() => console.log('Jobs done!', job), job.data.timeout || 10000); },
   customTask: customTask
 };
 

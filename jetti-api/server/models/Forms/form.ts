@@ -69,7 +69,7 @@ export class FormBase {
   timestamp: Date | null = null;
 
   @Props({
-    type: 'table', required: false, label: 'Dynamic props', order: 77
+    type: 'table', required: false, label: 'Dynamic props', order: 77, hidden: true
   })
   dynamicProps: DynamicProps[] = [new DynamicProps];
 

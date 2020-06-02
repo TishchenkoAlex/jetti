@@ -19,6 +19,7 @@ import { RegisterInfoMainSpecification } from './MainSpecification';
 import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
+import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
@@ -40,6 +41,7 @@ export type RegisterInfoTypes =
     'Register.Info.CompanyPrice' |
     'Register.Info.ShareEmission' |
     'Register.Info.LoanOwner' |
+    'Register.Info.EmployeeHistory' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
@@ -58,6 +60,7 @@ export type RegistersInfo =
     RegisterInfoCompanyPrice |
     RegisterInfoShareEmission |
     RegisterInfoLoanOwner |
+    RegisterInfoEmployeeHistory |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -86,6 +89,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.ShareEmission', Class: RegisterInfoShareEmission },
     { type: 'Register.Info.LoanOwner', Class: RegisterInfoLoanOwner },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
+    { type: 'Register.Info.EmployeeHistory', Class: RegisterInfoEmployeeHistory },
 ];
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {

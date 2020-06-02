@@ -9,6 +9,8 @@ import { LoadingService } from 'src/app/common/loading.service';
 import { take, filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MenuItem } from 'primeng/api';
+import * as IO from 'socket.io-client';
+import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,7 +19,6 @@ import { MenuItem } from 'primeng/api';
 })
 export class QueueManagerComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
-  IOData = [];
   splitCommands: {
     remove: MenuItem[],
     cancel: MenuItem[],
@@ -25,6 +26,9 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
     add: MenuItem[]
   };
 
+  get controlsPlacement() { return <IFormControlPlacing[]>this.form['controlsPlacement']; }
+
+  IOData = [];
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
     public ds: DocService, public tabStore: TabsStore, public dss: DynamicFormService,
@@ -34,12 +38,27 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
 
   ngOnInit() {
     super.ngOnInit();
+    this.form.get('Status').setValue('all');
     this.fillCommands();
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 
-      const socket = io(wsUrl, { transports: ['websocket'] });
+      const socket = IO(wsUrl, { transports: ['websocket'] });
       socket.on('sync', (data: any) => {
+        if (data && data.data && data.data.message)
+          this.IOData = [data.data.message, ...this.IOData];
+        if (this.IOData.length > 1000) this.IOData.length = 1000;
+        this.cd.detectChanges();
+      });
+
+      socket.on('customTask', (data: any) => {
+        if (data && data.data && data.data.message)
+          this.IOData = [data.data.message, ...this.IOData];
+        if (this.IOData.length > 1000) this.IOData.length = 1000;
+        this.cd.detectChanges();
+      });
+
+      socket.on('timeout', (data: any) => {
         if (data && data.data && data.data.message)
           this.IOData = [data.data.message, ...this.IOData];
         if (this.IOData.length > 1000) this.IOData.length = 1000;
@@ -58,13 +77,13 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
         label: 'Остановить выполнение (PAUSE)', icon: 'pi pi-times', command: () => this.executeServerMethod('suspendJobs')
       }, {
         label: 'Запустить выполнение (RESUME)', icon: 'pi pi-fast-forward', command: () => this.executeServerMethod('processJobs')
-      }, {
-        label: 'Получить процецессы (get workers)', command: () => this.executeServerMethod('getWorkers')
-      }],
-      add: [{
-        label: 'Таймаут', command: () => this.executeServerMethod('addJobTimeout')
-      }, {
-        label: 'Произвольная', command: () => this.executeServerMethod('addJobCustomTask')
+      }
+        // {
+        //   label: 'Получить процецессы (get workers)', command: () => this.executeServerMethod('getWorkers')
+        // }
+      ],
+      add: [ {
+        label: 'Создать', command: () => this.executeServerMethod('addJobCustomTask')
       }],
       remove: [{
         label: 'Выделенные', command: () => this.executeServerMethod('removeJobsSelected')

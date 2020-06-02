@@ -30,6 +30,7 @@ export class EventsService implements OnDestroy {
 
       const wsAuto = (url: string, onmessage: (data: any) => void) => {
         const socket = IO(url, {transports: ['websocket']});
+        socket.on('customTask', (data: any) => onmessage(data));
         socket.on('sync', (data: any) => onmessage(data));
         socket.on('batch', (data: any) => onmessage(data));
         socket.on('post', (data: any) => onmessage(data));

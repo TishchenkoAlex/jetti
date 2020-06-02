@@ -2,92 +2,77 @@
   <div *ngIf="vk$ | async as vk">
     <div *ngIf="viewModel$ | async as viewModel">
       <form novalidate [formGroup]="form" cdkTrapFocus>
-        <p-panel #mp [toggleable]="true">
-          <p-toolbar>
+        <p-toolbar>
 
-            <div class="ui-toolbar-group-left">
-              <button pButton type="button" id="getJobsStat" label="Статистика" class="ui-button-info"
-                (click)="executeServerMethod('getJobsStat')"></button>
-              <p-splitButton styleClass="ui-button-success" label="Очередь" [model]="splitCommands.queue">
-              </p-splitButton>
-            </div>
-
-
-
-            <div class="ui-toolbar-group-right">
-              <p-splitButton styleClass="ui-button-warning" label="Добавить" [model]="splitCommands.add">
-              </p-splitButton>
-              <p-splitButton styleClass="ui-button-warning" label="Отменить" [model]="splitCommands.cancel">
-              </p-splitButton>
-              <p-splitButton styleClass="ui-button-danger" label="УДАЛИТЬ" [model]="splitCommands.remove">
-              </p-splitButton>
-              <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
-                styleClass="ui-button-secondary" label="commands">
-              </p-splitButton>
-            </div>
-
-          </p-toolbar>
-
-          <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
-
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-              *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+0]" [control]="headFields[i+0]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+1]" [control]="headFields[i+1]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+2]" [control]="headFields[i+2]" [form]="form"></j-control>
-              </div>
-            </div>
-
-            <br *ngIf="fieldsetsFields.length > 0">
-            <p-fieldset *ngIf="fieldsetsFields.length > 0" legend="Ещё..." [toggleable]="true" collapsed=true>
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-                *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+0]" [control]="fieldsetsFields[i+0]" [form]="form"></j-control>
-                </div>
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+1]" [control]="fieldsetsFields[i+1]" [form]="form"></j-control>
-                </div>
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+2]" [control]="fieldsetsFields[i+2]" [form]="form"></j-control>
-                </div>
-              </div>
-            </p-fieldset>
-
-            <!-- <div *ngFor="let control of v">
-              <div *ngIf="control.controlType === 'script' && control.key !== 'module' && control.key !== 'script'"
-                style="height: 400px; width: 100%;">
-                <j-control [control]="control" [form]="form"></j-control>
-              </div>
-            </div> -->
-
-            <div *ngIf="tables$ | async as tables">
-              <br *ngIf="tables.length">
-              <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-                <div *ngFor="let c of tables; let i = index">
-                  <p-tabPanel [header]="c.label">
-                    <j-control [control]="c" [form]="form"></j-control>
-                  </p-tabPanel>
-                </div>
-              </p-tabView>
-            </div>
-            <ng-content></ng-content>
+          <div class="ui-toolbar-group-left">
+            <button pButton type="button" id="getJobsStat" label="Статистика" class="ui-button-info"
+              (click)="executeServerMethod('getJobsStat')"></button>
+            <p-splitButton styleClass="ui-button-success" label="Очередь" [model]="splitCommands.queue">
+            </p-splitButton>
           </div>
+
+
+
+          <div class="ui-toolbar-group-right">
+            <p-splitButton styleClass="ui-button-success" label="Новая задача" [model]="splitCommands.add">
+            </p-splitButton>
+            <!-- <p-splitButton styleClass="ui-button-warning" label="Отменить" [model]="splitCommands.cancel">
+            </p-splitButton> -->
+            <p-splitButton styleClass="ui-button-danger" label="УДАЛИТЬ" [model]="splitCommands.remove">
+            </p-splitButton>
+            <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
+              styleClass="ui-button-secondary" label="commands">
+            </p-splitButton>
+          </div>
+
+        </p-toolbar>
+  
+        <p-panel *ngFor="let panel of controlsPlacement" [toggleable]="true" [header]="panel.panel" [collapsed]="true"
+          toggler="header">
+
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+            *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+            <div fxFlex *ngFor="let d of [0,1,2]">
+              <j-control *ngIf="panel.standalone[i+d]" [control]="panel.standalone[i+d]" [form]="form">
+              </j-control>
+            </div>
+          </div>
+
+          <br *ngIf="panel.fieldsets.length > 0">
+          <p-fieldset *ngFor="let fieldset of panel.fieldsets" [legend]="fieldset.fieldset" [toggleable]="true"
+            collapsed=true>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+              *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+              <div fxFlex *ngFor="let d of [0,1,2]">
+                <j-control *ngIf="fieldset.controls[i+d]" [control]="fieldset.controls[i+d]" [form]="form">
+                </j-control>
+              </div>
+            </div>
+          </p-fieldset>
+
+          <br *ngIf="panel.tables.length > 0">
+          <p-tabView *ngIf="panel.tables.length" class="tabViewClassInForm">
+            <div *ngFor="let table of panel.tables">
+              <p-tabPanel [header]="table.label">
+                <j-control [control]="table" [form]="form"></j-control>
+              </p-tabPanel>
+            </div>
+          </p-tabView>
+
+          <div *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+            <j-control *ngIf="panel.fullwidth[i]" [control]="panel.fullwidth[i]" [form]="form"></j-control>
+          </div>
+
         </p-panel>
 
-        <p-panel header="Task progress log" toggleable="true" collapsed="true" toggler="header">
+        <p-panel header="Журнал выполнения" toggleable="true" collapsed="true" toggler="header">
           <div fxFlex style="height: 400px; width: 100%;">
             <p-table [value]="IOData" [scrollable]="true" scrollHeight="400px">
-              <ng-template pTemplate="header">
+              <!-- <ng-template pTemplate="header">
                 <tr>
                   <th>Task progress log</th>
                 </tr>
-              </ng-template>
+              </ng-template> -->
               <ng-template pTemplate="body" let-doc>
                 <tr>
                   <td>{{doc}}</td>
@@ -96,13 +81,6 @@
             </p-table>
           </div>
         </p-panel>
-
-        <!-- <p-panel header="JobScript" toggleable="true" collapsed="true"
-          toggler="header">
-          <div style="height: 400px; width: 100%;">
-            <j-control [control]="vk.JobScript" [form]="form"></j-control>
-          </div>
-        </p-panel> -->
 
       </form>
     </div>

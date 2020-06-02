@@ -6,7 +6,7 @@ import { createForm } from '../../../../../../jetti-api/server/models/Forms/form
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { ApiService } from '../../services/api.service';
 // tslint:disable-next-line:max-line-length
-import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes, LinkFormControl, URLFormControl } from './dynamic-form-base';
+import { AutocompleteFormControl, BooleanFormControl, DateFormControl, DateTimeFormControl, EnumFormControl, FormControlInfo, IFormControlInfo, NumberFormControl, ScriptFormControl, TableDynamicControl, TextareaFormControl, TextboxFormControl, ControlTypes, LinkFormControl, URLFormControl, IFormControlPlacing as IFormControlPlacement } from './dynamic-form-base';
 import { StorageType } from '../../../../../../jetti-api/server/models/document';
 import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 
@@ -86,11 +86,14 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
       const showLabel = prop['showLabel'] || true;
       const valuesOptions = prop['valuesOptions'] || [];
       const validators = prop['validators'];
+      const panel = prop['panel'];
+      const fieldset = prop['fieldset'];
       let value = prop['value'];
       let newControl: FormControlInfo;
       const controlOptions: IFormControlInfo = {
         key, label, type: controlType, required, readOnly, headerStyle, showLabel, valuesOptions, controlType,
-        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType, isAdditional, validators
+        hidden, disabled, change, order, style, onChange, owner, totals, onChangeServer, value, storageType,
+        isAdditional, validators, panel: panel, fieldset: fieldset
       };
       switch (controlType) {
         case 'table':
@@ -173,8 +176,32 @@ export function getFormGroup(schema: { [x: string]: any }, model: { [x: string]:
   const byKeyControls: { [s: string]: FormControlInfo } = {};
   controls.forEach(c => { byKeyControls[c.key] = c; });
 
+  const controlsSeparator = (panel: string, control: FormControlInfo[]): IFormControlPlacement => {
+    const result: IFormControlPlacement = { panel: panel };
+    const fielsets = [...new Set(control.filter(el => el.fieldset).map(el => el.fieldset))];
+    result.fieldsets = fielsets.map(fieldset => ({
+      fieldset: fieldset,
+      controls: control.filter(el => el.fieldset === fieldset)
+    }));
+    result.tables = control.filter(el => el.controlType === 'table');
+    result.standalone = control.filter(el => !['table', 'textarea', 'script'].includes(el.controlType) && !el.fieldset);
+    result.fullwidth = control.filter(el => ['textarea', 'script'].includes(el.controlType));
+    return result;
+  };
+
+  const panels = [...new Set(controls.filter(el => el.panel).map(el => el.panel))];
+  const controlsPlacement: IFormControlPlacement[] = [
+    controlsSeparator('Main', controls.filter(el => !el.panel && !el.isAdditional && !el.hidden)),
+    controlsSeparator('Additional info', controls.filter(el => ['parent', 'user'].includes(el.key) && !el.hidden)),
+    controlsSeparator('Additional fields', controls.filter(el => !el.panel && el.isAdditional && !el.hidden)),
+    ...panels.map(panel => controlsSeparator(panel, controls.filter(el => el.panel === panel && !el.hidden)))
+  ];
+
   formGroup['orderedControls'] = controls;
   formGroup['byKeyControls'] = byKeyControls;
+  formGroup['controlsPlacement'] = controlsPlacement
+    .filter(e => e.fieldsets.length || e.standalone.length || e.tables.length || e.fullwidth.length);
+
   return formGroup;
 }
 

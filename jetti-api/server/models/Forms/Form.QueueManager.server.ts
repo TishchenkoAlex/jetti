@@ -1,8 +1,12 @@
+import { delay } from 'tarn/lib/utils';
 import { JQueue, processId } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
 import { FormQueueManager } from './Form.QueueManager';
 import { JobStatus } from 'bull';
 import Bull = require('bull');
+import { lib } from '../../std.lib';
+import { TASKS_POOL } from '../../sql.pool.tasks';
+import { MSSQL } from '../../mssql';
 
 export default class FormQueueManagerServer extends FormQueueManager implements IServerForm {
   async Execute() {
@@ -12,6 +16,10 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     // if (jobs.length === 0) await JQueue.add(data, { attempts: 3, priority: 100 });
 
     return this;
+  }
+
+  getTX(): MSSQL {
+    return new MSSQL(TASKS_POOL, this.user);
   }
 
   async suspendJobs() {
@@ -26,40 +34,47 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
 
   async getWorkers() {
     const work = await JQueue.getWorkers();
-
   }
 
-  async cancelJobsAll() {
-    await this.removeJobs((this['AnyTable'] as any)
+  // async cancelJobsAll() {
+  //   await this.removeJobs((this['AnyTable'] as any)
+  //     .map(e => e.code));
+  // }
+
+  // async cancelJobsSelected() {
+  //   await this.removeJobs((this['AnyTable'] as any)
+  //     .filter(e => e['selected'])
+  //     .map(e => e.code));
+  // }
+
+
+  // async cancelJobs(jobsCodes: string[]) {
+  //   await JQueue.whenCurrentJobsFinished();
+  //   for (const jobCode of jobsCodes) {
+  //     const job = await JQueue.getJob('' + jobCode);
+  //     if (!job) continue;
+  //     job.moveToFailed({ message: `Canceled by ${this.user}` });
+  //   }
+  //   await this.getJobsStat();
+  // }
+
+  async removeJobsAll() {
+    await this.removeJobs((this.JobsStat)
       .map(e => e.code));
-  }
-
-  async cancelJobsSelected() {
-    await this.removeJobs((this['AnyTable'] as any)
-      .filter(e => e['selected'])
-      .map(e => e.code));
-  }
-
-
-  async cancelJobs(jobsCodes: string[]) {
-    await JQueue.whenCurrentJobsFinished();
-    for (const jobCode of jobsCodes) {
-      const job = await JQueue.getJob('' + jobCode);
-      if (!job) continue;
-      job.moveToFailed({ message: `Canceled by ${this.user}` });
-    }
     await this.getJobsStat();
   }
 
-  async removeJobsAll() {
-    await this.removeJobs((this['AnyTable'] as any)
-      .map(e => e.code));
-  }
-
   async removeJobsSelected() {
-    await this.removeJobs((this['AnyTable'] as any)
+    await this.removeJobs((this.JobsStat)
       .filter(e => e['selected'])
       .map(e => e.code));
+    await this.removeJobsRepeatable(this.Repeatable.filter(e => e.flag).map(e => e.key));
+    setTimeout(() => { }, 2000);
+    await this.getJobsStat();
+  }
+
+  async removeJobsRepeatable(jobsKeys: string[]) {
+    jobsKeys.forEach(async key => await JQueue.removeRepeatableByKey(key));
   }
 
 
@@ -70,15 +85,30 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
       if (!job) continue;
       job.remove();
     }
-    await this.getJobsStat();
+  }
+
+  async getRepeatableJobs() {
+    this.Repeatable = (await JQueue.getRepeatableJobs())
+      .map(job => ({
+        ...job,
+        id: job.id || '',
+        flag: false,
+        endDate: job.endDate ? new Date(job.endDate) : null,
+        everyMin: job.every ? job.every / 1000 / 60 : 0,
+        everyString: job.every ? msToTime(job.every) : '',
+        next: job.next ? new Date(job.next) : null
+      }));
   }
 
   async getJobsStat() {
 
-    const jobsStatus: JobStatus[] = ['completed', 'waiting', 'active', 'delayed', 'failed'];
+    await this.getRepeatableJobs();
+
+    const jobsStatus = this.Status !== 'all' ? [this.Status] : ['completed', 'waiting', 'active', 'delayed', 'failed'];
     const result: any[] = [];
+
     for (const status of jobsStatus) {
-      let jobs = (await JQueue.getJobs([status])).filter(e => e);
+      let jobs = (await JQueue.getJobs([status as any])).filter(e => e);
       if (this.StartDate && this.EndDate) {
         const dates = { start: this.StartDate?.valueOf(), end: this.EndDate?.valueOf() };
         jobs = jobs.filter(e => (!e.processedOn || (e.processedOn && e.processedOn > dates.start))
@@ -86,60 +116,100 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
       }
       for (const job of jobs) {
         result.push({
-          code: +job.id,
-          // name: job.name,
+          code: job.id,
           status: status,
           progress: job.progress(),
           attemptsMade: job.attemptsMade,
+          failedReason: (job as any).failedReason,
           processedOn: job.processedOn ? new Date(job.processedOn) : null,
           finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
-          durationSeconds: (job.processedOn ? ((job.finishedOn ? job.finishedOn : Date.now()) - job.processedOn) : 0) / 1000,
+          duration: msToTime(job.processedOn ? ((job.finishedOn ? job.finishedOn : Date.now()) - job.processedOn) : 0),
           ...this.getInnerJobProps(job)
         });
       }
     }
 
-    const setId = 'getJobsStat';
-    if (result.length && !this.dynamicProps.find(e => e.SetId === setId)) {
-      // this.DynamicPropsClearSet(setId);
-      // this.DynamicPropsPush('add', 'type', 'table', '', 'JobStat', setId);
-      this.DynamicPropsPush('add', 'label', 'Jobs stat', '', 'AnyTable', setId);
-      this.DynamicPropsPush('add', 'type', 'boolean', 'selected', 'AnyTable', setId);
-      this.DynamicPropsPush('add', 'label', ' ', 'selected', 'AnyTable', setId);
-      this.DynamicPropsAddForObject(result, 'AnyTable', setId);
-    }
+    // const setId = 'getJobsStat';
+    // if (result.length) {
+    //   this.DynamicPropsClearSet(setId);
+    //   // this.DynamicPropsPush('add', 'type', 'table', '', 'JobStat', setId);
+    //   this.DynamicPropsPush('add', 'label', 'Jobs stat', '', 'AnyTable', setId);
+    //   this.DynamicPropsPush('add', 'type', 'boolean', 'selected', 'AnyTable', setId);
+    //   this.DynamicPropsPush('add', 'label', ' ', 'selected', 'AnyTable', setId);
+    //   this.DynamicPropsAddForObject(result, 'AnyTable', setId);
+    // }
     result.sort((a, b) => b.code - a.code);
-    this['AnyTable'] = result;
+    this.JobsStat = result;
 
   }
 
   getInnerJobProps(job: Bull.Job) {
-    const res = { ...job.data ? job.data : {}, ...job.data.job ? job.data.job : {} };
+    const res = {
+      ...job.data ? job.data : {},
+      ...job.data.job ? job.data.job : {},
+      ...job.opts ? job.opts : {},
+      ...job.opts.repeat ? job.opts.repeat : {}
+    };
+    if (res.delay) res.delay = res.delay / 1000 / 3600;
     delete res.job;
-    delete res.StartDate;
+    delete res.timestamp;
+    delete res.prevMillis;
     delete res.EndDate;
     return res;
   }
 
-  async addJobTimeout() {
+  async addJobCustomTask() {
+
     const procId = processId();
+    const tx = this.getTX();
+    const serverDoc = await lib.doc.createDocServerById(this.CustomTask as string, tx);
+    if (!serverDoc) throw Error(`Task operation not defined`);
+
+    const repeatCron = this.CronExpression ? { cron: this.CronExpression, startDate: this.StartDate as Date } : undefined;
+    const repeatEvery = this.Every ? { every: this.Every * 1000 * 60 } : undefined;
+
     const data = {
-      job: { id: `timeout`, description: `timeout` },
-      user: this.user,
-      timeout: this.timeout || 10000,
-      processId: procId
+      job: { id: `customTask`, description: `Custom task: ${serverDoc.description}` },
+      user: this.user.description,
+      processId: procId,
+      TaskOperation: this.CustomTask
     };
-    const job = await JQueue.add(data, { attempts: 3, priority: 100 });
+
+    const opts: Bull.JobOptions = {
+      attempts: this.Attempts || 1,
+      repeat: repeatCron || repeatEvery
+    };
+
+    if (this.Delay) opts.delay = this.Delay * 1000 * 60;
+
+    const beforeTaskAdd: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule']['beforeTaskAdd'];
+    if (typeof beforeTaskAdd === 'function') await beforeTaskAdd({ jobData: data, opts: opts });
+
+    let job: Bull.Job;
+    if (this.JobName) job = await JQueue.add(this.JobName, data, opts);
+    else job = await JQueue.add(data, opts);
+
+    const afterTaskAdd: (args: { [key: string]: any }) => Promise<void> = serverDoc['serverModule']['afterTaskAdd'];
+    if (typeof afterTaskAdd === 'function') await afterTaskAdd({ job: job });
+
   }
 
-  async addJobCustomTask() {
-    const procId = processId();
-    const data = {
-      job: { id: `customTask`, description: `Custom task` },
-      user: this.user,
-      timeout: this.timeout || 10000,
-      processId: procId,
-      TaskOperation: this.CustomTask,
-    };
+}
+
+function msToTime(s: number): string {
+
+  // Pad to 2 or 3 digits, default is 2
+  function pad(n, z = 2) {
+    return ('00' + n).slice(-z);
   }
+
+  const ms = s % 1000;
+  s = (s - ms) / 1000;
+  const secs = s % 60;
+  s = (s - secs) / 60;
+  const mins = s % 60;
+  const hrs = (s - mins) / 60;
+
+  return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+
 }

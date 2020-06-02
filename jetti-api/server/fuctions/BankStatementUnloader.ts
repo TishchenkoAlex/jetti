@@ -533,28 +533,29 @@ export class BankStatementUnloader {
 
     let result = `
     <?xml version="1.0" encoding="UTF-8"?>
-<СчетаПК xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://v8.1c.ru/edi/edi_stnd/109" xsi:type="СчетПК"`;
+    <СчетаПК xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://v8.1c.ru/edi/edi_stnd/109" xsi:type="СчетПК"`;
 
     for (const row of bankStatementData) {
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1) continue;
-        result += ` ${prop}=\"${prop === 'НомерДоговора' ? this.getShortDocNumber(row[prop], true) : row[prop]}\" `;
+        const val = row[prop].replace(/"/g, '');
+        result += ` ${prop}=\"${prop === 'НомерДоговора' ? this.getShortDocNumber(val, true) : val}\"`;
       }
     }
 
     result += '>\n\t<ЗачислениеЗарплаты>';
 
     const common = bankStatementData[0];
-    const EmployeesInJSON = `{"PayRolls":${JSON.stringify(common['ig_PayRolls'])}}`;
+    const EmployeesInJSON = `{ "PayRolls": ${JSON.stringify(common['ig_PayRolls'])} } `;
     const employees = await this.getSalaryProjectEmployeesDataFromJSON(EmployeesInJSON);
     let rowIndex = 1;
     let amount = 0;
     for (const row of employees) {
-      result += `\n\t\t<Сотрудник Нпп="${rowIndex}">`;
+      result += `\n\t\t < Сотрудник Нпп = "${rowIndex}" > `;
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1 || !row[prop] || (prop.search('rp_') !== -1 && !common[row[prop]])) continue;
         if (prop.search('rp_') !== -1) {
-          result += `\n\t\t\t<${prop.replace('rp_', '')}>${common[row[prop]]}</${prop.replace('rp_', '')}>`;
+          result += `\n\t\t\t < ${prop.replace('rp_', '')}> ${common[row[prop]]} </${prop.replace('rp_', '')}>`;
         } else {
           result += `\n\t\t\t<${prop}>${row[prop]}</${prop}>`;
         }

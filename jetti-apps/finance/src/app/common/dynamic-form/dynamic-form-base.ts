@@ -7,6 +7,14 @@ export type ControlTypes =
   'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'table' |
   'enum' | 'link' | 'textarea' | 'autocomplete' | 'script' | 'URL';
 
+export interface IFormControlPlacing {
+  panel: string;
+  standalone?: FormControlInfo[];
+  fullwidth?: FormControlInfo[];
+  tables?: FormControlInfo[];
+  fieldsets?: { fieldset: string, controls: FormControlInfo[] }[];
+}
+
 export interface IFormControlInfo {
   type: AllTypes;
   key: string;
@@ -28,6 +36,8 @@ export interface IFormControlInfo {
   controlType: ControlTypes;
   headerStyle: { [key: string]: any };
   showLabel: boolean;
+  panel?: string;
+  fieldset?: string;
   valuesOptions: { label: string, value: string | null }[];
   validators?: { key: string, value?: any }[];
 }
@@ -53,6 +63,8 @@ export class FormControlInfo {
   controlType: ControlTypes;
   headerStyle: { [key: string]: any };
   showLabel: boolean;
+  panel: string;
+  fieldset: string;
   valuesOptions: { label: string, value: string | null }[];
   validators?: { key: string, value?: any }[];
 
@@ -76,6 +88,8 @@ export class FormControlInfo {
     this.onChange = options.onChange;
     this.onChangeServer = options.onChangeServer;
     this.change = options.change;
+    this.panel = options.panel;
+    this.fieldset = options.fieldset;
     this.validators = options.validators;
     if (this.change && !this.onChange) {
       this.onChange = new Function('doc', 'value', 'api', this.change) as any;

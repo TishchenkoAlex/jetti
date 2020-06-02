@@ -43,6 +43,7 @@ export type CatalogTypes =
   'Catalog.Role' |
   'Catalog.SubSystem' |
   'Catalog.SalaryProject' |
+  'Catalog.StaffingTable' |
   'Catalog.Unit' |
   'Catalog.TaxRate' |
   'Catalog.ProductCategory' |
@@ -73,7 +74,8 @@ export type CatalogTypes =
   'Catalog.Contract.Intercompany' |
   'Catalog.ResourceSpecification' |
   'Catalog.InvestorGroup' |
-  'Catalog.ReasonTypes'
+  'Catalog.ReasonTypes' |
+  'Catalog.Employee'
   ;
 
 export type DocumentTypes =

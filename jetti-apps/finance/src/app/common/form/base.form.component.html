@@ -37,9 +37,6 @@
               <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
                 styleClass="ui-button-secondary" label="commands">
               </p-splitButton>
-              <!--         <button *ngIf="!viewModel.workflow['id']" pButton type="button" icon="pi pi-sitemap" class="ui-button-secondary" (click)="startWorkFlow()"
-        [disabled]="(lds.busy$ | async)"></button> -->
-
               <button *ngIf="(isPosted$ | async)" pButton type="button" icon="pi pi-print" class="ui-button-secondary"
                 pTooltip="Print" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"
                 (click)="print()"></button>
@@ -51,30 +48,20 @@
           <div fxLayout="column" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial *ngIf="v$ | async as v">
 
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-              *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+0]" [control]="headFields[i+0]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+1]" [control]="headFields[i+1]" [form]="form"></j-control>
-              </div>
-              <div fxFlex>
-                <j-control *ngIf="headFields[i+2]" [control]="headFields[i+2]" [form]="form"></j-control>
+              *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+              <div fxFlex *ngFor="let d of [0,1,2]">
+                <j-control *ngIf="headFields[i+d]" [control]="headFields[i+d]" [form]="form">
+                </j-control>
               </div>
             </div>
 
             <br *ngIf="fieldsetsFields.length > 0">
             <p-fieldset *ngIf="fieldsetsFields.length > 0" legend="Ещё..." [toggleable]="true" collapsed=true>
               <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-                *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+0]" [control]="fieldsetsFields[i+0]" [form]="form"></j-control>
-                </div>
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+1]" [control]="fieldsetsFields[i+1]" [form]="form"></j-control>
-                </div>
-                <div fxFlex>
-                  <j-control *ngIf="fieldsetsFields[i+2]" [control]="fieldsetsFields[i+2]" [form]="form"></j-control>
+                *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+                <div fxFlex *ngFor="let d of [0,1,2]">
+                  <j-control *ngIf="fieldsetsFields[i+d]" [control]="fieldsetsFields[i+d]" [form]="form">
+                  </j-control>
                 </div>
               </div>
             </p-fieldset>
@@ -104,39 +91,52 @@
 
         </p-panel>
 
-        <p-panel *ngIf="additionalFields.length > 0" [toggleable]="true" header="Additional fields" [collapsed]="true"
+        <p-panel *ngFor="let panel of controlsPlacement" [toggleable]="true" [header]="panel.panel" [collapsed]="true"
           toggler="header">
-          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
-            *ngFor="let i of [0,3,6,9,12,15,18,21,24]">
-            <div fxFlex>
-              <j-control *ngIf="additionalFields[i+0]" [control]="additionalFields[i+0]" [form]="form"></j-control>
-            </div>
-            <div fxFlex>
-              <j-control *ngIf="additionalFields[i+1]" [control]="additionalFields[i+1]" [form]="form"></j-control>
-            </div>
-            <div fxFlex>
-              <j-control *ngIf="additionalFields[i+2]" [control]="additionalFields[i+2]" [form]="form"></j-control>
-            </div>
-          </div>
-        </p-panel>
 
-        <p-panel #pad [toggleable]="true" header="Additional info" [collapsed]="isDoc ? true : false" toggler="header">
-          <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
-            <j-control *ngIf="vk.parent" [control]="vk.parent" [form]="form"></j-control>
-            <j-control *ngIf="vk.user" [control]="vk.user" [form]="form"></j-control>
-            <j-control *ngIf="vk.workflow" [control]="vk.workflow" [form]="form"></j-control>
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+            *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+            <div fxFlex *ngFor="let d of [0,1,2]">
+              <j-control *ngIf="panel.standalone[i+d]" [control]="panel.standalone[i+d]" [form]="form">
+              </j-control>
+            </div>
           </div>
+
+          <br *ngIf="panel.fieldsets.length > 0">
+          <p-fieldset *ngFor="let fieldset of panel.fieldsets" [legend]="fieldset.fieldset" [toggleable]="true"
+            collapsed=true>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"
+              *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+              <div fxFlex *ngFor="let d of [0,1,2]">
+                <j-control *ngIf="fieldset.controls[i+d]" [control]="fieldset.controls[i+d]" [form]="form">
+                </j-control>
+              </div>
+            </div>
+          </p-fieldset>
+
+          <br *ngIf="panel.tables.length > 0">
+          <p-tabView *ngIf="panel.tables.length" class="tabViewClassInForm">
+            <div *ngFor="let table of panel.tables">
+              <p-tabPanel [header]="table.label">
+                <j-control [control]="table" [form]="form"></j-control>
+              </p-tabPanel>
+            </div>
+          </p-tabView>
+
+          <div *ngFor="let i of [0,3,6,9,12,15,18,21,24,27,30]">
+            <j-control *ngIf="panel.fullwidth[i]" [control]="panel.fullwidth[i]" [form]="form"></j-control>
+          </div>
+
         </p-panel>
 
         <div *ngIf="!isHistory">
           <p-panel *ngIf="type === 'Catalog.Operation' && (isFolder$ | async) === false" [toggleable]="true"
-            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)"
-            toggler="header">
+            header="Post script" [collapsed]="true" (collapsedChange)="mp.collapse($event);" toggler="header">
             <j-control *ngIf="vk.script" [control]="vk.script" [form]="form"></j-control>
           </p-panel>
 
           <p-panel *ngIf="(type === 'Catalog.Operation')" [toggleable]="true" header="Document module"
-            [collapsed]="true" (collapsedChange)="mp.collapse($event); pad.collapse($event)" toggler="header">
+            [collapsed]="true" (collapsedChange)="mp.collapse($event);" toggler="header">
             <j-control *ngIf="vk.module" [control]="vk.module" [form]="form"></j-control>
           </p-panel>
 

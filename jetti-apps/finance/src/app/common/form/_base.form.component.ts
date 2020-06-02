@@ -1,3 +1,4 @@
+import { IFormControlPlacing } from './../dynamic-form/dynamic-form-base';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -83,13 +84,15 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get docDescription() { return <string>this.metadata.description; }
   get relations() { return (this.metadata.relations || []) as Relation[]; }
   get v() { return <FormControlInfo[]>this.form['orderedControls']; }
+  get controlsPlacement() { return <IFormControlPlacing[]>this.form['controlsPlacement'].filter(e => e.panel !== 'Main'); }
   get vk() { return <{ [key: string]: FormControlInfo }>this.form['byKeyControls']; }
-  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table'); }
+  get tables() { return (<FormControlInfo[]>this.form['orderedControls']).filter(t => t.controlType === 'table' && !t.panel); }
   get hasTables() { return this.tables.length > 0; }
   get headFields() {
     return <FormControlInfo[]>this.v.filter(el =>
       el.order !== 777
       && !el.isAdditional
+      && !el.panel
       && el.controlType !== 'table'
       && el.controlType !== 'script'
       && el.order !== 1000

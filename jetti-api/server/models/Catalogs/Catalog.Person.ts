@@ -8,7 +8,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   prefix: 'PERS-',
   relations: [
     { name: 'BankAccount', type: 'Catalog.Person.BankAccount', field: 'owner' },
-    { name: 'Loan', type: 'Catalog.Loan', field: 'owner' },
+    { name: 'Employee', type: 'Catalog.Employee', field: 'Person' },
+    { name: 'Loan', type: 'Catalog.Loan', field: 'owner' }
   ],
   dimensions: [
     { Department: 'Catalog.Department' },

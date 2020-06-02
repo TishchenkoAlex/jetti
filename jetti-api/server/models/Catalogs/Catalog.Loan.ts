@@ -18,16 +18,17 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'date', hiddenInForm: false, hiddenInList: false, hidden: false, order: 1 })
   date = new Date();
 
-  @Props({ type: 'date', order: 2, label: 'Open date' })
+  @Props({ type: 'date', order: 5, label: 'Open date' })
   PayDay: Date | null = null;
 
-  @Props({ type: 'date', label: 'Close date' })
+  @Props({ type: 'date', label: 'Close date', order: 6 })
   CloseDay: Date | null = null;
 
-  @Props({ type: 'Types.CompanyOrCounterpartieOrPerson', required: true, isProtected: true })
+  @Props({ type: 'Types.CompanyOrCounterpartieOrPerson', required: true, isProtected: true, order: 4 })
   owner: Ref = null;
 
   @Props({
+    order: 8,
     type: 'Catalog.Counterpartie.BankAccount',
     owner: [
       { dependsOn: 'owner', filterBy: 'owner' },
@@ -36,6 +37,7 @@ export class CatalogLoan extends DocumentBase {
   OwnerBankAccount: Ref = null;
 
   @Props({
+    order: 7,
     type: 'enum', style: { width: '140px' },
     value: [
       'BANK',
@@ -46,7 +48,7 @@ export class CatalogLoan extends DocumentBase {
   CashKind = 'ANY';
 
   @Props({
-    type: 'enum', required: true, value: [
+    type: 'enum', required: true, order: 3, value: [
       'IN',
       'IN BANK',
       'OUT',
@@ -73,7 +75,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'date', label: 'Interest deadline', order: 777 })
   InterestDeadline: Date | null = null;
 
-  @Props({ type: 'Catalog.LoanTypes', order: 777 })
+  @Props({ type: 'Catalog.LoanTypes' })
   loanType: Ref = null;
 
   @Props({ type: 'Catalog.Department' })
@@ -85,7 +87,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' }, isProtected: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Country' })
+  @Props({ type: 'Catalog.Country', order: 777 })
   Country: Ref = null;
 
   @Props({ type: 'Catalog.LoanRepaymentProcedure', order: 777 })

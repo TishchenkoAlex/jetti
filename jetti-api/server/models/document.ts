@@ -33,6 +33,8 @@ export interface PropOptions {
   isIndexed?: boolean;
   isProtected?: boolean;
   isUnique?: boolean;
+  panel?: string;
+  fieldset?: string;
   validators?: { key: string, value?: any }[];
 }
 
@@ -112,7 +114,7 @@ export class DocumentBase {
   @Props({ type: 'datetime', hiddenInList: true, order: -1, hidden: true })
   timestamp: Date | null = null;
 
-  @Props({ type: 'Document.WorkFlow', hiddenInList: true, order: -1 })
+  @Props({ type: 'Document.WorkFlow', hiddenInList: true, order: -1, hidden: true })
   workflow: Ref = null;
 
   private targetProp(target: Object, propertyKey: string): PropOptions {

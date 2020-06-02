@@ -1,3 +1,4 @@
+import { CatalogEmployee } from './Catalogs/Catalog.Employee';
 import { CatalogAttachmentType } from './Catalogs/Catalog.Attachment.Type';
 import { CatalogReasonTypes } from './Catalogs/Catalog.ReasonTypes';
 import { CatalogJobTitleCategory } from './Catalogs/Catalog.JobTitle.Category';
@@ -84,6 +85,7 @@ import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecifi
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
+import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -187,7 +189,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Forms', Class: CatalogForms },
   { type: 'Catalog.Objects', Class: CatalogObjects },
   { type: 'Catalog.Subcount', Class: CatalogSubcount },
-
+  { type: 'Catalog.StaffingTable', Class: CatalogStaffingTable },
   { type: 'Catalog.Brand', Class: CatalogBrand },
   { type: 'Catalog.GroupObjectsExploitation', Class: CatalogGroupObjectsExploitation },
   { type: 'Catalog.ObjectsExploitation', Class: CatalogObjectsExploitation },
@@ -209,6 +211,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
   { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
   { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },
+  { type: 'Catalog.Employee', Class: CatalogEmployee },
 
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRates },
   { type: 'Document.Invoice', Class: DocumentInvoice },
