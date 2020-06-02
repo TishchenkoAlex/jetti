@@ -1,3 +1,4 @@
+import { portal1CApiConfig } from './../../env/environment';
 import { CatalogCounterpartieBankAccount } from './../Catalogs/Catalog.Counterpartie.BankAccount';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
@@ -21,6 +22,8 @@ import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
 import { getUser } from '../../routes/auth';
 import { x100 } from '../../x100.lib';
+import axios from 'axios';
+import { IQueueRow } from '../Tasks/common';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -132,6 +135,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         await this.FillTaxInfo(tx);
         return this;
       default:
+        await this[command](tx);
         return this;
     }
   }
@@ -173,8 +177,44 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
     this.posted = false;
     this.deleted = false;
+    this.DocSource = 'Портал 1С';
     if (body.RelatedURL) this['RelatedURL'] = body.RelatedURL;
+
+    const isNew = !this.timestamp;
     this.map(await lib.doc.saveDoc(this, tx));
+    await this.insertOrUpdateInExhahngeQueue(isNew);
+  }
+
+  async sendPaymentsToPortal1C(tx: MSSQL): Promise<void> {
+    const instance = axios.create(portal1CApiConfig as any);
+    await instance.post('/portal/paymentdocopereksp', this.getPayments(tx));
+    await lib.queue.updateQueue(this.exchangeQueueRow(11));
+  }
+
+  async getPayments(tx: MSSQL) {
+    const query = `
+      SELECT JSON_VALUE(doc.doc,N'$.BankConfirmDate') date,
+      pays.amount,
+      doc.code
+      FROM (
+        SELECT document, SUM([Amount.Out]) amount
+        FROM [dbo].[Register.Accumulation.CashToPay]
+        WHERE CashRequest = @p1 and kind = 0
+        GROUP by document) as pays
+      INNER JOIN [dbo].[Documents] doc
+      ON doc.id = pays.document and JSON_VALUE(doc.doc,N'$.BankConfirm') = 'true'
+      ORDER BY JSON_VALUE(doc.doc,N'$.BankConfirmDate')`;
+    return { id: this.id, payments: await tx.manyOrNone(query, [this.id]) };
+  }
+
+  async insertOrUpdateInExhahngeQueue(insert: boolean) {
+    const queryRow = this.exchangeQueueRow(10);
+    if (insert) await lib.queue.insertQueue(queryRow);
+    else await lib.queue.updateQueue(queryRow);
+  }
+
+  exchangeQueueRow(status: number): IQueueRow {
+    return { id: this.id, type: this.type, status: status, exchangeBase: 'Portal1C' };
   }
 
   async FillTaxInfo(tx: MSSQL) {
@@ -550,23 +590,6 @@ ORDER BY
       const rest = await this.getAmountBalance(tx);
       if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description} `);
     }
-  }
-
-  async getPayments(tx: MSSQL) {
-    const query = `
-      SELECT JSON_VALUE(doc.doc,N'$.BankConfirmDate') date,
-      pays.amount,
-      doc.code,
-      doc.id
-      FROM (
-        SELECT document, SUM([Amount.Out]) amount
-        FROM [dbo].[Register.Accumulation.CashToPay]
-        WHERE CashRequest = @p1 and kind = 0
-        GROUP by document) as pays
-      INNER JOIN [dbo].[Documents] doc
-      ON doc.id = pays.document and JSON_VALUE(doc.doc,N'$.BankConfirm') = 'true'
-      ORDER BY JSON_VALUE(doc.doc,N'$.BankConfirmDate')`;
-    return await tx.manyOrNone(query, [this.id]);
   }
 
   async FillDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
