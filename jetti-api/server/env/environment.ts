@@ -12,6 +12,14 @@ export const bpApiHost = 'https://bp.x100-group.com/JettiProcesses/hs';
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
 
+export const portal1CApiConfig = {
+  baseURL: process.env.PORTAL1C_API_HOST,
+  auth: {
+    username: process.env.PORTAL1C_API_USER,
+    password: process.env.PORTAL1C_API_PASSWORD
+  }
+};
+
 export const sqlConfig: ConnectionConfigAndPool = {
   server: process.env.DB_HOST!,
   authentication: {
