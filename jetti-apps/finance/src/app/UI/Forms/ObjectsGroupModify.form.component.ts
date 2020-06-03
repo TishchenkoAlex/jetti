@@ -9,6 +9,7 @@ import { LoadingService } from 'src/app/common/loading.service';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { take } from 'rxjs/operators';
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
+import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +26,7 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   get isModeLoad() { return this.Mode === 'LOAD'; }
   get isModeModify() { return this.Mode === 'MODIFY'; }
   get isModeTesting() { return this.Mode === 'TESTING'; }
+  get controlsPlacement() { return <IFormControlPlacing[]>this.form['controlsPlacement']; }
 
   constructor(
     public router: Router, public route: ActivatedRoute, public auth: AuthService,
