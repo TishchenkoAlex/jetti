@@ -355,6 +355,12 @@ export class Item {
   @Props({ type: 'Catalog.Product', label: 'Товар/Услуга', style: { width: '350px' } })
   Item: Ref = null;
 
+  @Props({ type: 'Catalog.Storehouse', label: 'Склад' })
+  Storehouse: Ref = null;
+
+  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
+  Department: Ref = null;
+
   @Props({ type: 'number', label: 'Сумма', totals: 1 })
   Amount = 0;
 
