@@ -211,11 +211,6 @@ export class ApiService {
     return (this.http.get<any[]>(query));
   }
 
-  getPaymentsCashReqest(id: string) {
-    const query = `${environment.api}/CashReqest/getPayments/${id}`;
-    return (this.http.get<any[]>(query)).toPromise();
-  }
-
   valueChanges(doc: DocumentBase, property: string, value: string) {
     const apiDoc = viewModelToFlatDocument(doc);
     const query = `${environment.api}valueChanges/${doc.type}/${property}`;

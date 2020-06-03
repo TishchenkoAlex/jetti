@@ -546,16 +546,16 @@ export class BankStatementUnloader {
     result += '>\n\t<ЗачислениеЗарплаты>';
 
     const common = bankStatementData[0];
-    const EmployeesInJSON = `{ "PayRolls": ${JSON.stringify(common['ig_PayRolls'])} } `;
+    const EmployeesInJSON = `{"PayRolls": ${JSON.stringify(common['ig_PayRolls'])}}`;
     const employees = await this.getSalaryProjectEmployeesDataFromJSON(EmployeesInJSON);
     let rowIndex = 1;
     let amount = 0;
     for (const row of employees) {
-      result += `\n\t\t < Сотрудник Нпп = "${rowIndex}" > `;
+      result += `\n\t\t <Сотрудник Нпп=${rowIndex}">`;
       for (const prop of Object.keys(row)) {
         if (prop.search('ig_') !== -1 || !row[prop] || (prop.search('rp_') !== -1 && !common[row[prop]])) continue;
         if (prop.search('rp_') !== -1) {
-          result += `\n\t\t\t < ${prop.replace('rp_', '')}> ${common[row[prop]]} </${prop.replace('rp_', '')}>`;
+          result += `\n\t\t\t <${prop.replace('rp_', '')}>${common[row[prop]]}</${prop.replace('rp_', '')}>`;
         } else {
           result += `\n\t\t\t<${prop}>${row[prop]}</${prop}>`;
         }

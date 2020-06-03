@@ -31,13 +31,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     {
       method: 'FillSalaryBalanceByPersonsWithCurrentMonth'
       , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)', order: 5
-    },
-    { method: 'sendPaymentsToPortal1C', icon: 'pi pi-plus', label: 'Отправить данные по оплате в портал 1С', order: 6 },
-    // {
-    //   method: 'OpenRelatedURL', icon: 'pi pi-plus', label: 'Перейти по связанной ссылке', order: 6,
-    //   clientModule: `if (this.form.get('RelatedURL').value)
-    //  window.open(this.form.get('RelatedURL').value, '_blank');
-    //   else this.throwError('', 'Ссылка отсутствует')` },
+    }
   ],
   module: `
       {
@@ -316,9 +310,6 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'string', hiddenInList: true })
   tempSalaryKind = 'PAID';
-
-  @Props({ type: 'enum', value: [' ', 'Портал 1С'], isAdditional: true, readOnly: true, label: 'Источник' })
-  DocSource = '';
 
   @Props({
     type: 'table', required: false, order: 1,

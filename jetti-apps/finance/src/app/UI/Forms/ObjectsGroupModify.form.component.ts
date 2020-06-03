@@ -102,11 +102,6 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   async selectFilter() {
     await this.ExecuteServerMethod('selectFilter');
   }
-  async getPayments() {
-    const res = await this.ds.api.getPaymentsCashReqest(this.form.get('Text').value);
-    console.log(res);
-  }
-
 
   saveTableToCSV(tableName: string, colSplitter = ';') {
     const tableControl = this.form.get(tableName);

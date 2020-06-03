@@ -605,18 +605,6 @@ router.post('/createDocument/:type', async (req: Request, res: Response, next: N
   } catch (err) { next(err); }
 });
 
-
-router.get('/CashReqest/getPayments/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      const doc = await lib.doc.createDocServerById<DocumentCashRequestServer>(req.params.id, tx);
-      if (!doc) { res.statusCode = 422; res.json(`Document don't exist. Id: ${req.params.id}`); } else res.json(await doc.getPayments(tx));
-    });
-  } catch (err) { next(err); }
-});
-
-
 router.post('/attachments/del', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
