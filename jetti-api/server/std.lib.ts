@@ -567,46 +567,46 @@ async function delAttachments(attachmentsId: Ref[], tx: MSSQL): Promise<boolean>
 async function getAttachmentsByOwner(ownerId: Ref, withDeleted: boolean, tx: MSSQL): Promise<CatalogAttachment[]> {
   const query = `
   SELECT
-  attach.*,
+    attach.*,
     stor.Storage
-  FROM
+FROM
     (
-      SELECT
+        SELECT
             a.id,
-      a.description,
-      a.timestamp,
-      a.owner,
-      a.date,
-      a.AttachmentType,
-      a.Tags,
-      a.MIMEType,
-      a.FileSize,
-      a.FileName,
-      us.description userDescription,
-      at.description AttachmentTypeDescription,
-      at.IconURL,
-      at.StorageType,
-      at.LoadDataOnInit
+            a.description,
+            a.timestamp,
+            a.owner,
+            a.date,
+            a.AttachmentType,
+            a.Tags,
+            a.MIMEType,
+            a.FileSize,
+            a.FileName,
+            us.description userDescription,
+            at.description AttachmentTypeDescription,
+            at.IconURL,
+            at.StorageType,
+            at.LoadDataOnInit
         FROM
-      [Catalog.Attachment.v] a
-            LEFT JOIN[Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
-            LEFT JOIN[Catalog.User.v] us ON a.[user] = us.id
+            [Catalog.Attachment.v] a
+            LEFT JOIN [Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
+            LEFT JOIN [Catalog.User.v] us ON a.[user] = us.id
         WHERE
             a.owner = @p1
-  ${ withDeleted ? '' : 'and a.deleted = 0'}
+            ${withDeleted ? '' : 'and a.deleted = 0'}
     ) attach
-  LEFT JOIN dbo.[Documents] doc
-  CROSS APPLY OPENJSON(doc.doc, N'$') WITH(Storage NVARCHAR(MAX) N'$.Storage') stor ON attach.id = doc.id
-  and attach.LoadDataOnInit = 1
-  ORDER BY
-  attach.timestamp DESC`;
+    LEFT JOIN dbo.[Documents] doc
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor ON attach.id = doc.id
+    and attach.LoadDataOnInit = 1
+ORDER BY
+    attach.timestamp DESC`;
   return await tx.manyOrNone(query, [ownerId]);
 }
 
 async function getAttachmentStorageById(attachmentId: Ref, tx: MSSQL): Promise<string> {
   const query = `
   SELECT stor.Storage FROM dbo.[Documents] doc
-  CROSS APPLY OPENJSON(doc.doc, N'$') WITH(Storage NVARCHAR(MAX) N'$.Storage') stor WHERE doc.id = @p1`;
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor WHERE doc.id = @p1`;
   const res = await tx.oneOrNone<{ Storage: string }>(query, [attachmentId]);
   return res ? res.Storage : '';
 }
@@ -615,33 +615,33 @@ async function getAttachmentsSettingsByOwner(ownerId: Ref, tx: MSSQL): Promise<I
   const owner = await byId(ownerId as string, tx);
   if (!owner) return [];
   let query = `SELECT d.id AttachmentType,
-    d.description AttachmentTypeDescription,
+      d.description AttachmentTypeDescription,
       JSON_VALUE(d.doc, N'$.StorageType')  StorageType,
-        JSON_VALUE(d.doc, N'$.FileFilter')  FileFilter,
-          JSON_VALUE(d.doc, N'$.MaxFileSize')  MaxFileSize,
-            JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
-              JSON_VALUE(d.doc, N'$.Tags')  Tags
-  FROM[dbo].[Documents] d
+      JSON_VALUE(d.doc, N'$.FileFilter')  FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize')  MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
 
   where d.type = 'Catalog.Attachment.Type'
-  and d.deleted = 0
-  and JSON_VALUE(d.doc, N'$.AllDocuments') = 'true'
+      and d.deleted = 0
+      and JSON_VALUE(d.doc, N'$.AllDocuments') = 'true'
   UNION
   SELECT d.id AttachmentType,
-    d.description AttachmentTypeDescription,
+      d.description AttachmentTypeDescription,
       JSON_VALUE(d.doc, N'$.StorageType') StorageType,
-        JSON_VALUE(d.doc, N'$.FileFilter') FileFilter,
-          JSON_VALUE(d.doc, N'$.MaxFileSize') MaxFileSize,
-            JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
-              JSON_VALUE(d.doc, N'$.Tags')  Tags
-  FROM[dbo].[Documents] d
-  CROSS APPLY OPENJSON(d.doc, N'$.Owners')
-  WITH(
-    [OwnerType] VARCHAR(MAX)
+      JSON_VALUE(d.doc, N'$.FileFilter') FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize') MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
+  CROSS APPLY OPENJSON (d.doc, N'$.Owners')
+  WITH (
+      [OwnerType] VARCHAR(MAX)
   ) AS owners
   where d.type = 'Catalog.Attachment.Type'
-  and d.deleted = 0
-  and owners.[OwnerType] = @p1
+      and d.deleted = 0
+      and owners.[OwnerType] = @p1
   ORDER by AttachmentTypeDescription`;
   if (Type.isCatalog(owner.type)) query = query.replace('.AllDocuments', '.AllCatalogs');
   const qRes = await tx.manyOrNone(query, [owner.type]) as any[];
@@ -655,7 +655,7 @@ async function getAttachmentsSettingsByOwner(ownerId: Ref, tx: MSSQL): Promise<I
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
-  SELECT * FROM[Accumulation] WHERE type = @p1 AND document = @p2`;
+  SELECT * FROM [Accumulation] WHERE type = @p1 AND document = @p2`;
   return await tx.manyOrNone<T>(queryText, [type, doc]);
 }
 
@@ -674,18 +674,18 @@ async function isRoleAvailable(role: string, user: CatalogUser): Promise<boolean
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
   // const sdb = new MSSQL(TASKS_POOL, { email: '', isAdmin: true, env: {}, description: '', roles: []} );
   await tx.none(`
-  EXEC[Invetory.Close.Month - MEM] @company = '${company}', @date = '${date.toJSON()}'`);
+    EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
 }
 
 async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
   const result = await tx.manyOrNone<{ Storehouse: Ref, SKU: Ref, Cost: number }>(`
-  SELECT q.*, Storehouse.Department Department FROM(
-    SELECT Storehouse, SKU, SUM([Cost])[Cost]
-      FROM[dbo].[Register.Accumulation.Inventory] r
+    SELECT q.*, Storehouse.Department Department FROM (
+      SELECT Storehouse, SKU, SUM([Cost]) [Cost]
+      FROM [dbo].[Register.Accumulation.Inventory] r
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
-  GROUP BY Storehouse, SKU
-  HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-  LEFT JOIN[Catalog.Storehouse.v] Storehouse WITH(NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+      GROUP BY Storehouse, SKU
+      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 
