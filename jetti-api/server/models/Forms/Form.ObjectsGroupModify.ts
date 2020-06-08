@@ -30,29 +30,35 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Types.Object', panel: 'Общее', label: 'Тип: справочник' })
   CatalogType = '';
 
-  @Props({ type: 'boolean', panel: 'Параметры', fieldset: 'Загрузка', label: 'Проверять соответствие типов' })
+  @Props({ type: 'boolean', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Проверять соответствие типов' })
   CheckTypes = true;
 
-  @Props({ type: 'boolean', panel: 'Параметры', fieldset: 'Загрузка', label: 'Очищать табличые части' })
+  @Props({ type: 'boolean', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Очищать табличые части' })
   ClearTableParts = false;
 
-  @Props({ type: 'boolean', panel: 'Параметры', fieldset: 'Загрузка', label: 'Запись с полными правами' })
+  @Props({ type: 'boolean', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Запись с полными правами' })
   SaveInAdminMode = false;
 
-  @Props({ type: 'string', panel: 'Параметры', fieldset: 'Загрузка', label: 'Разделитель колонк' })
+  @Props({ type: 'string', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Разделитель колонк' })
   ColumnsSeparator = '\t';
 
-  @Props({ type: 'string', panel: 'Параметры', fieldset: 'Загрузка', label: 'Разделитель строк' })
+  @Props({ type: 'string', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Разделитель строк' })
   RowsSeparator = '\n';
 
-  @Props({ type: 'Document.Operation', label: 'Обработка изменения', panel: 'Параметры', fieldset: 'Изменение' })
+  @Props({ type: 'Document.Operation', label: 'Обработка изменения', panel: 'Параметры загрузки', fieldset: 'Изменение' })
   ChangeProcessing = null;
+
+  @Props({ type: 'table', panel: 'Настройки ', label: 'Реквизиты' })
+  PropSettings: PropSettings[] = [new PropSettings()];
 
   @Props({ type: 'table', panel: 'Загрузка из CSV', label: 'Соответствие колонок' })
   ColumnsMatching: ColumnMatching[] = [new ColumnMatching()];
 
   @Props({ type: 'table', panel: 'Загрузка из CSV', hidden: true })
   SelectedObjects: SelectedObject[] = [new SelectedObject()];
+
+  @Props({ type: 'table', panel: 'Список объектов', label: 'Список объектов' })
+  ObjectsList: ObjectsList[] = [new ObjectsList()];
 
   @Props({ type: 'table', panel: 'Ошибки', label: 'Ошибки' })
   Errors: ErrorRow[] = [new ErrorRow()];
@@ -110,6 +116,35 @@ export class SelectedObject {
 
   @Props({ type: 'datetime' })
   Date = null;
+
+}
+
+export class ObjectsList {
+
+  @Props({ type: 'boolean', hidden: true })
+  Choise: Ref = null;
+
+}
+
+export class PropSettings {
+
+  @Props({ type: 'string', readOnly: true, label: 'Реквизит id', hidden: true })
+  PropName = '';
+
+  @Props({ type: 'string', readOnly: true, label: 'Реквизит' })
+  PropLabel = '';
+
+  @Props({ type: 'string', readOnly: true, label: 'Тип значения' })
+  PropType = '';
+
+  @Props({ type: 'boolean', label: 'Фильтровать' })
+  isFilter = false;
+
+  @Props({ type: 'boolean', label: 'Изменять' })
+  isModify = false;
+
+  @Props({ type: 'boolean', label: 'Видеть' })
+  isVisibly = false;
 
 }
 

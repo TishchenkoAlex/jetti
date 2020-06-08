@@ -4,7 +4,6 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp [header]='header' [toggleable]="true">
           <p-toolbar *ngIf="!onlyViewMode">
-
             <div *ngIf="isModeLoad" class="ui-toolbar-group-left">
               <button pButton type="button" id="ReadReciever" label="2. Загрузить структуру приемника"
                 class="ui-button-info" (click)="ReadRecieverStructure()"></button>
@@ -22,24 +21,21 @@
                 (click)="prepareToLoading()"></button>
             </div>
             <div *ngIf="isModeModify" class="ui-toolbar-group-left">
-              <button pButton type="button" id="buildFilter" label="1. Задать поля" class="ui-button-info"
-                (click)="buildModifyControls()"></button>
-              <button pButton type="button" id="createFilterElements" label="2. Создать элементы фильтрации"
-                class="ui-button-info" (click)="createFilterElements()"></button>
+              <button pButton type="button" id="fillPropSettings" label="1. Настроить поля" class="ui-button-info"
+                (click)="fillPropSettings()"></button>
+              <button pButton type="button" id="createFilterAndModifyElements" label="2. Создать элементы"
+                class="ui-button-info" (click)="createFilterAndModifyElements()"></button>
               <button pButton type="button" id="selectFilter" label="3. Отобрать" class="ui-button-info"
                 (click)="selectFilter()"></button>
-              <button pButton type="button" id="createModifyElements" label="4. Создать элементы изменяемых полей"
-                class="ui-button-info" (click)="createModifyElements()"></button>
-              <button pButton type="button" id="selectFilter" label="5. Записать в CSV" class="ui-button-info"
+              <button pButton type="button" id="selectFilter" label="4. Записать в CSV" class="ui-button-info"
                 (click)="saveToFile()"></button>
               <button pButton type="button" id="selectFilter" label="5. ЗАПИСАТЬ" class="ui-button-danger"
                 (click)="modify()"></button>
             </div>
-
           </p-toolbar>
         </p-panel>
 
-        <p-panel *ngFor="let panel of controlsPlacement" [toggleable]="true" [header]="panel.panel" [collapsed]="true"
+        <p-panel *ngFor="let panel of currentControls" [toggleable]="true" [header]="panel.panel" [collapsed]="!panel.isActive"
           toggler="header">
 
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px"

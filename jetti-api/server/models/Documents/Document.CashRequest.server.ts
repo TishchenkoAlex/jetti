@@ -365,7 +365,7 @@ ORDER BY
     this.Amount = 0;
     this.PayDay = new Date;
     salaryBalance.forEach(el => {
-      this.PayRolls.push({ Employee: el.Employee, Salary: el.Salary, Tax: 0, BankAccount: null });
+      this.PayRolls.push({ Employee: el.Employee, Salary: el.Salary, Tax: 0, BankAccount: null, SalaryPenalty: 0 });
       this.Amount += el.Salary;
     });
 
@@ -397,6 +397,9 @@ ORDER BY
 
     if (!this.CashFlow)
       throw new Error(`${this.description} не может быть проведен:\n не указана статья ДДС`);
+
+    if (!this.EnforcementProceedings && await this.useSalaryPenalty(tx))
+      throw new Error(`${this.description} не может быть проведен:\n не указан вид дохода`);
 
     if (this.info) {
       const curlength = (this.info as string).split('\n')[0].length;
@@ -446,7 +449,7 @@ ORDER BY
           kind: true,
           CashRecipient: el.Employee,
           BankAccountPerson: el.BankAccount,
-          Amount: el.Salary,
+          Amount: el.Salary - el.SalaryPenalty,
           date: this.PayDay,
           PayDay: this.PayDay,
           CashRequest: this.id,
@@ -460,7 +463,7 @@ ORDER BY
       Registers.Accumulation.push(new RegisterAccumulationCashToPay({
         kind: true,
         CashRecipient: this.CashRecipient,
-        Amount: this.Amount,
+        Amount: this.Amount - this.AmountPenalty,
         date: this.PayDay,
         PayDay: this.PayDay,
         CashRequest: this.id,
@@ -523,6 +526,13 @@ ORDER BY
     return await tx.manyOrNone<{ id: string, description: string }>(query, [this.id]);
   }
 
+  async useSalaryPenalty(tx: MSSQL): Promise<boolean> {
+    const res = !!(this.date >= new Date(2020, 5, 1) && this.company && this.Operation.includes('Выплата заработной платы'));
+    if (!res) return res;
+    const country = await lib.util.getObjectPropertyById(this.company as string, 'country', tx);
+    return country === 'BA065230-4D6A-11EA-9419-5B6F020710B8';
+  }
+
   async beforePostDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL) {
     if (await this.isSuperuser(tx)) return;
     if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
@@ -530,11 +540,12 @@ ORDER BY
       const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx, false);
       const Errors: { Employee, BankAccount, Amount: number }[] = [];
       rest.forEach(el => {
-        (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number }>)
+        (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number, AmountPenalty: number }>)
           .filter(pr => (pr.Employee === el.CashRecipient &&
-            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount) && el.Amount < pr.Amount))
+            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount)
+            && el.Amount < pr.Amount - pr.AmountPenalty))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount });
+            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount - er.AmountPenalty });
           });
       });
       if (Errors.length) {
@@ -550,7 +561,9 @@ ORDER BY
       }
     } else {
       const rest = await this.getAmountBalance(tx);
-      if (rest < docOperation.Amount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docOperation.Amount} превышает остаток ${rest} на ${docOperation.Amount - rest} по ${this.description} `);
+      let docAmount = docOperation.Amount;
+      if (this.Operation === 'Выплата заработной платы без ведомости') docAmount += docOperation['AmountPenalty'];
+      if (rest < docAmount) throw new Error(`${docOperation.description} не может быть проведен: сумма ${docAmount} превышает остаток ${rest} на ${docAmount - rest} по ${this.description} `);
     }
   }
 
@@ -688,6 +701,8 @@ ORDER BY
       docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
       docOperation.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
       docOperation['BankAccount'] = CashOrBank.id;
+      docOperation['AmountPenalty'] = this.AmountPenalty;
+      docOperation['EnforcementProceedings'] = this.EnforcementProceedings;
       docOperation['BankAccountPerson'] = this.CashRecipientBankAccount;
       docOperation.f1 = docOperation['BankAccount'];
 
@@ -910,6 +925,7 @@ ORDER BY
       docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
       docOperation.Operation = 'E617A320-41BB-11EA-A3C3-75A64D409CDC'; // С р/с - выплата зарплаты (ВЕДОМОСТЬ В БАНК)
       docOperation['BankAccount'] = CashOrBank.id;
+      docOperation['EnforcementProceedings'] = this.EnforcementProceedings;
       docOperation.f1 = docOperation['BankAccount'];
       const knowEmployee2: { CashRecipient: CatalogPerson, BankAccountPerson: CatalogPersonBankAccount }[] = [];
       if (params) {
@@ -925,6 +941,7 @@ ORDER BY
                 Employee: emp.CashRecipient,
                 Amount: emp.Amount,
                 Tax: row.Tax,
+                AmountPenalty: row.SalaryPenalty,
                 BankAccount: row.BankAccount
               });
             }
@@ -946,6 +963,7 @@ ORDER BY
               Employee: emp.CashRecipient,
               Amount: emp.Amount,
               Tax: row.Tax,
+              AmountPenalty: row.SalaryPenalty,
               BankAccount: row.BankAccount
             });
           }

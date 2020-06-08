@@ -38,6 +38,7 @@ export class BankStatementUnloader {
     return `
     select
       doc.id N'ИдПервичногоДокумента',
+      doc.date ig_DocDate,
       FORMAT (doc.date, 'dd.MM.yyyy') N'ДатаРеестра',
       bank.code N'БИК',
       ISNULL(JSON_VALUE(comp.doc,'$.Code1'),'') N'ИНН',
@@ -49,6 +50,7 @@ export class BankStatementUnloader {
       doc.id ig_Id,
       JSON_VALUE(doc.doc,'$.SalaryProject') ig_SalaryProject,
       currency.code ig_КодВалюты,
+      ISNULL(JSON_VALUE(doc.doc,'$.EnforcementProceedings'),'') ig_ВидДохода,
       ISNULL(JSON_QUERY(doc.doc,'$.PayRolls'),'') ig_PayRolls,
       ISNULL(JSON_VALUE(sp.doc,'$.BankBranch'),'') ig_ОтделениеБанка,
       ISNULL(JSON_VALUE(sp.doc,'$.BankBranchOffice'),'') ig_BankBranchOffice
@@ -70,6 +72,7 @@ export class BankStatementUnloader {
     WITH (
         Employee VARCHAR(200) N'$.Employee',
         BankAccount VARCHAR(200) N'$.BankAccount',
+        AmountPenalty VARCHAR(200) N'$.AmountPenalty',
         Amount MONEY N'$.Amount');
     SELECT
       ISNULL(JSON_VALUE(person.doc,'$.LastName'),'') N'Фамилия',
@@ -78,6 +81,7 @@ export class BankStatementUnloader {
       N'ig_ОтделениеБанка' N'rp_ОтделениеБанка',
       ba.code N'ЛицевойСчет',
       pr.Amount N'Сумма',
+      pr.AmountPenalty N'ОбщаяСуммаУдержаний',
       N'ig_КодВалюты' N'rp_КодВалюты'
     FROM #PayRolls pr
       left join [dbo].[Documents] person on person.id = pr.Employee
@@ -566,6 +570,8 @@ export class BankStatementUnloader {
     }
     result += `\n\t</ЗачислениеЗарплаты>`;
     result += `\n\t<ВидЗачисления>01</ВидЗачисления>`;
+    if (common['ig_DocDate'] >= new Date(2020, 5, 1) && !!((common['ig_ВидДохода'] as string).substr(1, 1).trim()))
+      result += `\n\t<КодВидаДохода>${(common['ig_ВидДохода'] as string).substr(1, 1)}</КодВидаДохода>`;
     result += `\n\t<КонтрольныеСуммы>`;
     result += `\n\t\t<КоличествоЗаписей>${rowIndex - 1}</КоличествоЗаписей>`;
     result += `\n\t\t<СуммаИтого>${amount.toFixed(2)}</СуммаИтого>`;

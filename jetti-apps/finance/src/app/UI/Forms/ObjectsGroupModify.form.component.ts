@@ -11,6 +11,14 @@ import { take } from 'rxjs/operators';
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
 
+type panelModify = 'Общее' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
+type panelLoad = 'Общее' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
+
+type stepModify = 'start' | 'setProps' | 'setValues' | 'final';
+type stepLoad = 'start' | 'dsad';
+
+type mode = 'LOAD' | 'MODIFY' | 'TESTING';
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'j-objects-group-modify',
@@ -21,8 +29,11 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   onlyViewMode = false;
   header = 'Objects group modify';
   clientDataStorage = '';
+  step: stepLoad | stepModify | '' = 'start';
+  panelsBySteps: { step: stepLoad | stepModify | '', panels: panelModify[] | panelLoad[], activePanel: panelModify | panelLoad }[];
+  currentControls;
 
-  get Mode() { return this.form.get('Mode').value; }
+  get Mode() { return this.form.get('Mode').value as mode; }
   get isModeLoad() { return this.Mode === 'LOAD'; }
   get isModeModify() { return this.Mode === 'MODIFY'; }
   get isModeTesting() { return this.Mode === 'TESTING'; }
@@ -38,16 +49,45 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   ngOnInit() {
     super.ngOnInit();
     const id = this.route.snapshot.params.id;
+    this.fillStepsByPanels();
+    this.currentControlsRefresh();
   }
 
   ngOnDestroy() {
     super.ngOnDestroy();
   }
 
-
   close() {
     this.form.markAsPristine();
     super.close();
+  }
+
+  isPanelActive(panel: panelLoad | panelModify) {
+    return !!this.panelsBySteps.find(e => e.step === this.step && e.activePanel === panel);
+  }
+
+  currentControlsRefresh() {
+    this.fillStepsByPanels();
+    const currentPanels = this.panelsBySteps.find(e => e.step === this.step);
+    this.currentControls = this.controlsPlacement
+      .filter(e => !!currentPanels.panels.find(cp => cp === e.panel))
+      .map(e => ({ ...e, isActive: currentPanels.activePanel === e.panel }));
+  }
+
+  fillStepsByPanels() {
+    switch (this.Mode) {
+      case 'MODIFY':
+        this.panelsBySteps = [
+          { step: 'start', panels: ['Общее'], activePanel: 'Общее' },
+          { step: 'setProps', panels: ['Параметры'], activePanel: 'Параметры' },
+          { step: 'setValues', panels: ['Фильтр', 'Новые значения реквизитов', 'Общее'], activePanel: 'Фильтр' },
+          { step: 'final', panels: ['Список объектов'], activePanel: 'Список объектов' },
+        ];
+        break;
+      default:
+        this.panelsBySteps = [{ step: 'start', panels: ['Общее'], activePanel: 'Общее' }];
+        break;
+    }
   }
 
   PasteTable() {
@@ -58,6 +98,11 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     if (!rows.length) this.throwError('!', 'Не найден разделитель строк');
     const cols = rows[0].split(sep.columns);
     if (!cols.length) this.throwError('!', 'Не найден разделитель колонок');
+  }
+
+  controlsByPanel(panel?: panelModify | panelLoad): IFormControlPlacing[] {
+    const filt = panel ? e => e.panel === panel : e => !e.panel;
+    return this.controlsPlacement.filter(filt);
   }
 
   getSeparators(): { rows: string, columns: string } {
@@ -83,16 +128,14 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     await this.ExecuteServerMethod('saveDataIntoDB');
   }
 
-  async buildModifyControls() {
-    await this.ExecuteServerMethod('buildModifyControls');
+  async fillPropSettings() {
+    await this.ExecuteServerMethod('fillPropSettings');
+    this.step = 'setProps';
+    this.currentControlsRefresh();
   }
 
-  async createFilterElements() {
-    await this.ExecuteServerMethod('createFilterElements');
-  }
-
-  async createModifyElements() {
-    await this.ExecuteServerMethod('createModifyElements');
+  async createFilterAndModifyElements() {
+    await this.ExecuteServerMethod('createFilterAndModifyElements');
   }
 
   async modify() {
@@ -129,7 +172,7 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   }
 
   async saveToFile() {
-    this.saveTableToCSV('FilterResult');
+    this.saveTableToCSV('ObjectsList');
   }
 
   async ReadRecieverStructure() {
