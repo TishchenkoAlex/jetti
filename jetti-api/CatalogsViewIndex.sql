@@ -1710,6 +1710,43 @@
       GO
       --------------------------------------------------------------------------------------
       
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.StaffingTable.v];
+      GO
+
+      CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."JobTitle"')) [JobTitle]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ActivationDate'),127) [ActivationDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CloseDate'),127) [CloseDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Qty"')), 0) [Qty]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Cost"')), 0) [Cost]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.StaffingTable'
+    
+      GO
+
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.StaffingTable.v] ON [Catalog.StaffingTable.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.code.f] ON [Catalog.StaffingTable.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.description.f] ON [Catalog.StaffingTable.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.description] ON [Catalog.StaffingTable.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.code] ON [Catalog.StaffingTable.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.user] ON [Catalog.StaffingTable.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.company] ON [Catalog.StaffingTable.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.StaffingTable.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.StaffingTable.v];
+      GO
+
+      RAISERROR('Catalog.StaffingTable complete', 0 ,1) WITH NOWAIT;
+      GO
+      --------------------------------------------------------------------------------------
+      
       ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Brand.v];
       GO
 
@@ -2410,6 +2447,38 @@
       GO
 
       RAISERROR('Catalog.InvestorGroup complete', 0 ,1) WITH NOWAIT;
+      GO
+      --------------------------------------------------------------------------------------
+      
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Employee.v];
+      GO
+
+      CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.Employee'
+    
+      GO
+
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.Employee.v] ON [Catalog.Employee.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code.f] ON [Catalog.Employee.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.description.f] ON [Catalog.Employee.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.description] ON [Catalog.Employee.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code] ON [Catalog.Employee.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.user] ON [Catalog.Employee.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.company] ON [Catalog.Employee.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.Employee.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Employee.v];
+      GO
+
+      RAISERROR('Catalog.Employee complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
