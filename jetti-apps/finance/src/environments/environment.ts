@@ -1,7 +1,6 @@
 import { Configuration } from 'msal';
 import { MsalAngularConfiguration } from '@azure/msal-angular';
 
-// const domain = 'https://jetti-api.azurewebsites.net';
 const domain = 'http://localhost:3000';
 const BPAPI = 'https://bp.x100-group.com/JettiProcesses/hs';
 
@@ -26,7 +25,8 @@ export const MsalConfiguration: Configuration = {
     authority: 'https://login.microsoftonline.com/b91c98b1-d543-428b-9469-f5f8f25bc37b',
     validateAuthority: true,
     navigateToLoginRequestUrl: true,
-  }, cache: {
+  },
+  cache: {
     cacheLocation: 'localStorage',
     storeAuthStateInCookie: isIE, // set to true for IE 11
   },

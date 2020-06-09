@@ -329,8 +329,7 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'table', required: false, order: 1,
     onChange: function (doc: PayRoll, value: PayRoll[]) {
       let Amount = 0; value.forEach(el => { Amount += el.Salary; });
-      let AmountPenalty = 0; value.forEach(el => { AmountPenalty += el.SalaryPenalty; });
-      return { Amount: Math.round(Amount * 100) / 100, AmountPenalty:  Math.round(AmountPenalty * 100) / 100  };
+      return { Amount: Math.round(Amount * 100) / 100 };
     }
   })
   PayRolls: PayRoll[] = [new PayRoll()];
@@ -353,9 +352,6 @@ export class PayRoll {
 
   @Props({ type: 'number', label: 'К выплате', totals: 1 })
   Salary = 0;
-
-  @Props({ type: 'number', label: 'Взыскано', style: { width: '100px', textAlign: 'right' }, totals: 1 })
-  SalaryPenalty = 0;
 
   @Props({ type: 'number', label: 'Налог', totals: 1 })
   Tax = 0;
