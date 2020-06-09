@@ -706,7 +706,7 @@ export class BankStatementUnloader {
       result += await this.getBankStatementAsStringForOperationType(operationType);
       result += '\n';
     }
-    if (result.length) result += 'КонецФайла';
+    if (result.length && !this.isUKRAINE()) result += 'КонецФайла';
     return result;
   }
 
@@ -719,6 +719,7 @@ export class BankStatementUnloader {
   }
 
   private static async getHeaderText(): Promise<string> {
+    if (this.isUKRAINE()) return '';
     let result = '1CClientBankExchange';
     const headerFields = await this.getHeaderFields();
     for (const prop of Object.keys(headerFields)) {
