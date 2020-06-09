@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Тип кредита/займа',
   icon: 'fa fa-list',
   menu: 'Типы кредита/займа',
-  prefix: 'LT-'
+  prefix: 'LT-',
+  hierarchy: 'folders'
 })
 export class CatalogLoanTypes extends DocumentBase {
 

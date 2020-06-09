@@ -449,7 +449,7 @@ ORDER BY
           kind: true,
           CashRecipient: el.Employee,
           BankAccountPerson: el.BankAccount,
-          Amount: el.Salary - el.SalaryPenalty,
+          Amount: el.Salary - (el.SalaryPenalty || 0),
           date: this.PayDay,
           PayDay: this.PayDay,
           CashRequest: this.id,
@@ -463,7 +463,7 @@ ORDER BY
       Registers.Accumulation.push(new RegisterAccumulationCashToPay({
         kind: true,
         CashRecipient: this.CashRecipient,
-        Amount: this.Amount - this.AmountPenalty,
+        Amount: this.Amount - (this.AmountPenalty || 0),
         date: this.PayDay,
         PayDay: this.PayDay,
         CashRequest: this.id,
@@ -543,9 +543,9 @@ ORDER BY
         (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number, AmountPenalty: number }>)
           .filter(pr => (pr.Employee === el.CashRecipient &&
             (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount)
-            && el.Amount < pr.Amount - pr.AmountPenalty))
+            && el.Amount < pr.Amount - (pr.AmountPenalty || 0)))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount - er.AmountPenalty });
+            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
           });
       });
       if (Errors.length) {

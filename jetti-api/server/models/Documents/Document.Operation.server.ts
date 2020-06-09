@@ -25,6 +25,11 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     }
   }
 
+  async onCopy(tx: MSSQL) {
+    this.parent = null;
+    return this;
+  }
+
   async beforePost(tx: MSSQL) {
     // запрет проведения с 0 суммой для группы 1.0 - Приобретение товаров и услуг
     if ((!this.Amount || this.Amount < 0.01) && this.Group === 'E74FF926-C149-11E7-BD8F-43B2F3011722') throw new Error(`${this.description} не может быть проведен: не заполнена сумма документа`);
