@@ -10,6 +10,15 @@ import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { take } from 'rxjs/operators';
 import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.types';
 import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
+import { Subject, Subscription, BehaviorSubject } from 'rxjs';
+
+type panelModify = 'Тип объектов' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
+type panelLoad = 'Тип объектов' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
+
+type stepModify = 'start' | 'setProps' | 'setValues' | 'final';
+type stepLoad = 'start' | 'dsad';
+
+type mode = 'LOAD' | 'MODIFY' | 'TESTING';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,10 +28,17 @@ import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-ba
 export class ObjectsGroupModifyComponent extends _baseDocFormComponent implements OnInit, OnDestroy {
 
   onlyViewMode = false;
-  header = 'Objects group modify';
+  header = 'Групповое изменение объектов';
   clientDataStorage = '';
+  step: stepLoad | stepModify | '' = 'start';
+  panelsBySteps: { step: stepLoad | stepModify | '', panels: panelModify[] | panelLoad[], activePanel: panelModify | panelLoad }[];
+  currentControls;
+  step$ = new BehaviorSubject<stepLoad | stepModify | ''>('start');
+  currentControls$ = new BehaviorSubject<any[]>([]);
 
-  get Mode() { return this.form.get('Mode').value; }
+  sub: Subscription;
+
+  get Mode() { return this.form.get('Mode').value as mode; }
   get isModeLoad() { return this.Mode === 'LOAD'; }
   get isModeModify() { return this.Mode === 'MODIFY'; }
   get isModeTesting() { return this.Mode === 'TESTING'; }
@@ -38,16 +54,52 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   ngOnInit() {
     super.ngOnInit();
     const id = this.route.snapshot.params.id;
+    this.step$.subscribe(step => { this.step = step; this.currentControlsRefresh(); });
+    this.currentControls$.subscribe(controls =>
+      this.currentControls = controls
+    );
+    this.currentControlsRefresh();
+    this.form.get('Mode').setValue('MODIFY');
   }
 
   ngOnDestroy() {
     super.ngOnDestroy();
+    this.step$.complete();
+    this.currentControls$.complete();
   }
-
 
   close() {
     this.form.markAsPristine();
     super.close();
+  }
+
+  isPanelActive(panel: panelLoad | panelModify) {
+    return !!this.panelsBySteps.find(e => e.step === this.step && e.activePanel === panel);
+  }
+
+  currentControlsRefresh() {
+    this.fillStepsByPanels();
+    const currentPanels = this.panelsBySteps.find(e => e.step === this.step);
+    this.currentControls = this.controlsPlacement
+      .filter(e => !!currentPanels.panels.find(cp => cp === e.panel))
+      .map(e => ({ ...e, isActive: currentPanels.activePanel === e.panel }));
+    this.currentControls$.next(this.currentControls);
+  }
+
+  fillStepsByPanels() {
+    switch (this.Mode) {
+      case 'MODIFY':
+        this.panelsBySteps = [
+          { step: 'start', panels: ['Тип объектов'], activePanel: 'Тип объектов' },
+          { step: 'setProps', panels: ['Параметры'], activePanel: 'Параметры' },
+          { step: 'setValues', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Тип объектов'], activePanel: 'Фильтр' },
+          { step: 'final', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Список объектов'], activePanel: 'Список объектов' },
+        ];
+        break;
+      default:
+        this.panelsBySteps = [{ step: 'start', panels: ['Тип объектов'], activePanel: 'Тип объектов' }];
+        break;
+    }
   }
 
   PasteTable() {
@@ -58,6 +110,11 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     if (!rows.length) this.throwError('!', 'Не найден разделитель строк');
     const cols = rows[0].split(sep.columns);
     if (!cols.length) this.throwError('!', 'Не найден разделитель колонок');
+  }
+
+  controlsByPanel(panel?: panelModify | panelLoad): IFormControlPlacing[] {
+    const filt = panel ? e => e.panel === panel : e => !e.panel;
+    return this.controlsPlacement.filter(filt);
   }
 
   getSeparators(): { rows: string, columns: string } {
@@ -83,24 +140,20 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
     await this.ExecuteServerMethod('saveDataIntoDB');
   }
 
-  async buildModifyControls() {
-    await this.ExecuteServerMethod('buildModifyControls');
+  async fillPropSettings() {
+    await this.ExecuteServerMethod('fillPropSettings', 'setProps');
   }
 
-  async createFilterElements() {
-    await this.ExecuteServerMethod('createFilterElements');
-  }
-
-  async createModifyElements() {
-    await this.ExecuteServerMethod('createModifyElements');
+  async createFilterAndModifyElements() {
+    await this.ExecuteServerMethod('createFilterAndModifyElements', 'setValues');
   }
 
   async modify() {
-    await this.ExecuteServerMethod('Modify');
+    await this.ExecuteServerMethod('Modify', 'final');
   }
 
   async selectFilter() {
-    await this.ExecuteServerMethod('selectFilter');
+    await this.ExecuteServerMethod('selectFilter', 'final');
   }
 
   saveTableToCSV(tableName: string, colSplitter = ';') {
@@ -129,14 +182,14 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   }
 
   async saveToFile() {
-    this.saveTableToCSV('FilterResult');
+    this.saveTableToCSV('ObjectsList');
   }
 
   async ReadRecieverStructure() {
     await this.ExecuteServerMethod('ReadRecieverStructure');
   }
 
-  async ExecuteServerMethod(methodName: string) {
+  async ExecuteServerMethod(methodName: string, nextStep?: stepLoad | stepModify | '') {
 
     this.clientDataStorage = this.form.get('Text').value;
     this.ds.api.execute(this.type as FormTypes, methodName, this.form.getRawValue() as FormBase).pipe(take(1))
@@ -144,6 +197,7 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
         const form = getFormGroup(value.schema, value.model, true);
         form['metadata'] = value.metadata;
         super.Next(form);
+        if (nextStep) this.step$.next(nextStep);
         this.form.get('Text').setValue(this.clientDataStorage);
         this.form.markAsDirty();
       });

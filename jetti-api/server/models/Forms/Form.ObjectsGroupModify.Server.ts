@@ -31,12 +31,12 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
   async Modify() {
     this.createTransaction();
-    for (const row of this['FilterResult']) {
+    for (const row of this['ObjectsList'] as any) {
       const servDoc = await lib.doc.createDocServerById(row.id, this.tx);
       if (!servDoc) throw new Error('Doc not exist ' + row.id);
       let saveDoc = false;
 
-      const modFields = this['ModifyFields'].map(e => e.Field);
+      const modFields = this.PropSettings.filter(e => e.isModify).map(e => e.PropName);
       for (const propName of modFields) {
         if (servDoc[propName] === this[propName + '_value']) continue;
         servDoc[propName] = this[propName + '_value'];
@@ -50,49 +50,42 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     }
   }
 
-  async buildModifyControls() {
+  async fillPropSettings() {
+    const props = await this.getRecieverProps();
+    this.PropSettings = Object.keys(props)
+      .filter(key => props[key].type !== 'table')
+      .map(e => ({ PropName: e, PropLabel: props[e].label || e, PropType: props[e].type as string, isFilter: false, isModify: false, isVisibly: false }));
+  }
 
-    const setId = 'buildModifyControls';
-    const filterProps = await this.getRecieverProps();
-    // const enumValues: string[] = [];
-    this.RecieverProps = [];
-    const enumValues = Object.keys(filterProps).filter(key => filterProps[key].type !== 'table').map(e => e);
-    // Object.keys(filterProps).filter(key => filterProps[key].type !== 'table').forEach(key => {
-    //   const prop = filterProps[key];
-    //   const label = prop['label'] ? prop['label'] : key;
-    //   this.RecieverProps.push({ Key: key, Type: prop.type.toString(), Label: label });
-    //   enumValues.push(label);
-    // });
-    this.DynamicPropsClearSet(setId);
-    this.DynamicPropsPush('add', 'type', 'table', '', 'FilterFields', setId);
-    this.DynamicPropsPush('add', 'type', 'enum', 'Field', 'FilterFields', setId);
-    this.DynamicPropsPush('add', 'value', enumValues, 'Field', 'FilterFields', setId);
-
-    this.DynamicPropsPush('add', 'type', 'table', '', 'ModifyFields', setId);
-    this.DynamicPropsPush('add', 'type', 'enum', 'Field', 'ModifyFields', setId);
-    this.DynamicPropsPush('add', 'value', enumValues, 'Field', 'ModifyFields', setId);
-
+  async createFilterAndModifyElements() {
+    await this.createFilterElements();
+    await this.createModifyElements();
   }
 
   async createFilterElements() {
 
     const setId = 'createFilterElements';
-    const filterFields = [...new Set(this['FilterFields'].map(e => e.Field))] as string[];
+    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const matchOperator = ['=', '>=', '<=', '<', '>', 'like', 'in', 'beetwen', 'is null'];
     const storageType = !!filterFields.includes('parent') &&
       Type.isCatalog(await this.getRecieverType()) &&
       (await this.getRecieverProp()).hierarchy || null;
 
     const props = await this.getRecieverProps();
-
+    const panel = 'Фильтр';
     this.DynamicPropsClearSet(setId);
     for (const filterField of filterFields) {
       const prop = { ...props[filterField] as PropOptions, key: filterField };
-      this.DynamicPropsPush('add', 'type', 'enum', `${prop.key}_center`, '', setId);
-      this.DynamicPropsPush('add', 'value', matchOperator, `${prop.key}_center`, '', setId);
 
       this.DynamicPropsPush('add', 'type', prop.type, `${prop.key}_right`, '', setId);
-      this.DynamicPropsPush('add', 'label', prop.label || prop.key, `${prop.key}_right`, '', setId);
+      this.DynamicPropsPush('add', 'label', `Значение: ${prop.label || prop.key}`, `${prop.key}_right`, '', setId);
+      this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_right`, '', setId);
+
+      this.DynamicPropsPush('add', 'type', 'enum', `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'value', matchOperator, `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'label', `Вид сравнения: ${prop.label || prop.key}`, `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_center`, '', setId);
+
       if (storageType || prop.storageType) {
         this.DynamicPropsPush('add', 'storageType', storageType || prop.storageType, `${prop.key}_right`, '', setId);
       }
@@ -104,12 +97,13 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
   async createModifyElements() {
 
     const setId = 'createModifyElements';
-    const modFields = [...new Set(this['ModifyFields'].map(e => e.Field))] as string[];
+    const modFields = this.PropSettings.filter(e => e.isModify).map(e => e.PropName);
     const storageType = !!modFields.includes('parent') &&
       Type.isCatalog(await this.getRecieverType()) &&
       (await this.getRecieverProp()).hierarchy || null;
 
     const props = await this.getRecieverProps();
+    const panel = 'Новые значения реквизитов';
 
     this.DynamicPropsClearSet(setId);
 
@@ -118,6 +112,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
       this.DynamicPropsPush('add', 'type', prop.type, `${prop.key}_value`, '', setId);
       this.DynamicPropsPush('add', 'label', prop.label || prop.key, `${prop.key}_value`, '', setId);
+      this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_value`, '', setId);
       if (storageType || prop.storageType) {
         this.DynamicPropsPush('add', 'storageType', storageType || prop.storageType, `${prop.key}_value`, '', setId);
       }
@@ -128,11 +123,10 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
   async selectFilter() {
 
     const setId = 'selectFilter';
-    const filterFields = [...new Set(this['FilterFields'].map(e => e.Field))] as string[];
+    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const listFilter: FormListFilter[] = [];
     const props = await this.getRecieverProps();
     this.DynamicPropsClearSet(setId);
-    this.DynamicPropsPush('add', 'type', 'table', '', 'FilterResult', setId);
     for (const filterField of filterFields) {
       const prop = props[filterField] as PropOptions;
       if (!prop) continue;
@@ -146,17 +140,20 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     });
 
     const complexProps: string[] = ['Object'];
-    this.DynamicPropsPush('add', 'type', await this.getRecieverType(), 'Object', 'FilterResult', setId);
-    this.DynamicPropsPush('add', 'label', 'Object', 'Object', 'FilterResult', setId);
+    this.DynamicPropsPush('add', 'panel', 'Список объектов', '', 'ObjectsList', setId);
+    this.DynamicPropsPush('add', 'type', await this.getRecieverType(), 'Object', 'ObjectsList', setId);
+    this.DynamicPropsPush('add', 'label', 'Object', 'Object', 'ObjectsList', setId);
+    let visibleFields = this.PropSettings.filter(e => e.isVisibly).map(e => e.PropName);
+    if (!visibleFields.length) visibleFields = this.PropSettings.map(e => e.PropName);
     Object.keys(props)
-      .filter(propKey => props[propKey].type !== 'table')
+      .filter(propKey => props[propKey].type !== 'table' && visibleFields.find(e => e === propKey))
       .forEach(propName => {
         const prop = props[propName] as PropOptions;
         if (Type.isRefType(prop.type.toString())) complexProps.push(propName);
-        this.DynamicPropsPush('add', 'type', prop.type, propName, 'FilterResult', setId);
-        this.DynamicPropsPush('add', 'label', prop.label || propName, propName, 'FilterResult', setId);
+        this.DynamicPropsPush('add', 'type', prop.type, propName, 'ObjectsList', setId);
+        this.DynamicPropsPush('add', 'label', prop.label || propName, propName, 'ObjectsList', setId);
         if (prop.type === 'enum') {
-          this.DynamicPropsPush('add', 'value', prop.value || [], propName, 'FilterResult', setId);
+          this.DynamicPropsPush('add', 'value', prop.value || [], propName, 'ObjectsList', setId);
         }
       });
 
@@ -167,7 +164,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
         id: '',
         type: await this.getRecieverType() as DocTypes,
         command: 'first',
-        count: 100,
+        count: 1000,
         offset: 0,
         filter: listFilter,
         order: [new FormListOrder('description')]
@@ -186,7 +183,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       const query = this.getSelectQueryText(props, listFilter);
       resData = await this.getTX().manyOrNone(query);
     }
-    this['FilterResult'] = resData;
+    this['ObjectsList'] = resData;
   }
 
   getSelectQueryText(schema: { [x: string]: PropOptions }, listFilter: FormListFilter[]) {
