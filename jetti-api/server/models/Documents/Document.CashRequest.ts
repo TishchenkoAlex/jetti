@@ -77,7 +77,6 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'enum', required: true, order: 8, style: { width: '250px' }, label: 'Вид операции', value: [
-      'Оплата поставщику11',
       'Оплата поставщику',
       'Перечисление налогов и взносов',
       'Оплата ДС в другую организацию',
@@ -105,6 +104,7 @@ export class DocumentCashRequest extends DocumentBase {
   })
   PaymentKind = 'BODY';
 
+  // для 'Выплата заработной платы','Выплата заработной платы без ведомости' для РФ обязательное поле с 1.06.2020
   @Props({
     type: 'enum', label: 'Вид дохода', value: [
       '(1) Заработная плата и иные доходы с ограничением взыскания',
@@ -235,6 +235,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'number', label: 'Сумма', required: true, order: 4, style: { width: '100px', textAlign: 'right' } })
   Amount = 0;
 
+  // для 'Выплата заработной платы','Выплата заработной платы без ведомости' для РФ
   @Props({ type: 'number', label: 'Сумма взысканий', style: { width: '100px', textAlign: 'right' } })
   AmountPenalty = 0;
 
@@ -329,7 +330,8 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'table', required: false, order: 1,
     onChange: function (doc: PayRoll, value: PayRoll[]) {
       let Amount = 0; value.forEach(el => { Amount += el.Salary; });
-      return { Amount: Math.round(Amount * 100) / 100 };
+      let AmountPenalty = 0; value.forEach(el => { AmountPenalty += el.SalaryPenalty; });
+      return { Amount: Math.round(Amount * 100) / 100, AmountPenalty:  Math.round(AmountPenalty * 100) / 100  };
     }
   })
   PayRolls: PayRoll[] = [new PayRoll()];
@@ -353,6 +355,9 @@ export class PayRoll {
   @Props({ type: 'number', label: 'К выплате', totals: 1 })
   Salary = 0;
 
+  @Props({ type: 'number', label: 'Взыскано', style: { width: '100px', textAlign: 'right' }, totals: 1 })
+  SalaryPenalty = 0;
+
   @Props({ type: 'number', label: 'Налог', totals: 1 })
   Tax = 0;
 
@@ -368,12 +373,6 @@ export class Item {
 
   @Props({ type: 'Catalog.Product', label: 'Товар/Услуга', style: { width: '350px' } })
   Item: Ref = null;
-
-  @Props({ type: 'Catalog.Storehouse', label: 'Склад' })
-  Storehouse: Ref = null;
-
-  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
-  Department: Ref = null;
 
   @Props({ type: 'number', label: 'Сумма', totals: 1 })
   Amount = 0;
