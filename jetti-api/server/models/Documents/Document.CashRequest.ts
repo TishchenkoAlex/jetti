@@ -77,6 +77,7 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'enum', required: true, order: 8, style: { width: '250px' }, label: 'Вид операции', value: [
+      'Оплата поставщику11',
       'Оплата поставщику',
       'Перечисление налогов и взносов',
       'Оплата ДС в другую организацию',
@@ -104,7 +105,6 @@ export class DocumentCashRequest extends DocumentBase {
   })
   PaymentKind = 'BODY';
 
-  // для 'Выплата заработной платы','Выплата заработной платы без ведомости' для РФ обязательное поле с 1.06.2020
   @Props({
     type: 'enum', label: 'Вид дохода', value: [
       '(1) Заработная плата и иные доходы с ограничением взыскания',
@@ -235,7 +235,6 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'number', label: 'Сумма', required: true, order: 4, style: { width: '100px', textAlign: 'right' } })
   Amount = 0;
 
-  // для 'Выплата заработной платы','Выплата заработной платы без ведомости' для РФ
   @Props({ type: 'number', label: 'Сумма взысканий', style: { width: '100px', textAlign: 'right' } })
   AmountPenalty = 0;
 
@@ -373,6 +372,12 @@ export class Item {
 
   @Props({ type: 'Catalog.Product', label: 'Товар/Услуга', style: { width: '350px' } })
   Item: Ref = null;
+
+  @Props({ type: 'Catalog.Storehouse', label: 'Склад' })
+  Storehouse: Ref = null;
+
+  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
+  Department: Ref = null;
 
   @Props({ type: 'number', label: 'Сумма', totals: 1 })
   Amount = 0;

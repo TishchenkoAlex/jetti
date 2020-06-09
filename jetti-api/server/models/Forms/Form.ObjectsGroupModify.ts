@@ -18,16 +18,16 @@ export type errorKind = keyof typeof errorKinds;
 
 export class FormObjectsGroupModify extends FormBase {
 
-  @Props({ type: 'enum', value: ['LOAD', 'MODIFY', 'TESTING'], label: 'Режим', panel: 'Общее' })
+  @Props({ type: 'enum', value: ['LOAD', 'MODIFY', 'TESTING'], label: 'Режим', panel: 'Тип объектов', hidden: true })
   Mode = 'LOAD';
 
   @Props({ type: 'string', controlType: 'textarea', panel: 'Загрузка из CSV', label: 'CSV' })
   Text = '';
 
-  @Props({ type: 'Catalog.Operation', panel: 'Общее', label: 'Тип: операция' })
+  @Props({ type: 'Catalog.Operation', panel: 'Тип объектов', label: 'Тип: операция' })
   OperationType = null;
 
-  @Props({ type: 'Types.Object', panel: 'Общее', label: 'Тип: справочник' })
+  @Props({ type: 'Types.Object', panel: 'Тип объектов', label: 'Тип: справочник' })
   CatalogType = '';
 
   @Props({ type: 'boolean', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Проверять соответствие типов' })
@@ -48,7 +48,7 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Document.Operation', label: 'Обработка изменения', panel: 'Параметры загрузки', fieldset: 'Изменение' })
   ChangeProcessing = null;
 
-  @Props({ type: 'table', panel: 'Настройки ', label: 'Реквизиты' })
+  @Props({ type: 'table', panel: 'Параметры', label: 'Реквизиты' })
   PropSettings: PropSettings[] = [new PropSettings()];
 
   @Props({ type: 'table', panel: 'Загрузка из CSV', label: 'Соответствие колонок' })

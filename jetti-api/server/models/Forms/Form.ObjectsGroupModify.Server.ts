@@ -76,14 +76,15 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     this.DynamicPropsClearSet(setId);
     for (const filterField of filterFields) {
       const prop = { ...props[filterField] as PropOptions, key: filterField };
-      this.DynamicPropsPush('add', 'type', 'enum', `${prop.key}_center`, '', setId);
-      this.DynamicPropsPush('add', 'value', matchOperator, `${prop.key}_center`, '', setId);
-      this.DynamicPropsPush('add', 'label', `Вид сравнения: ${prop.label || prop.key}`, `${prop.key}_center`, '', setId);
-      this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_center`, '', setId);
 
       this.DynamicPropsPush('add', 'type', prop.type, `${prop.key}_right`, '', setId);
       this.DynamicPropsPush('add', 'label', `Значение: ${prop.label || prop.key}`, `${prop.key}_right`, '', setId);
       this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_right`, '', setId);
+
+      this.DynamicPropsPush('add', 'type', 'enum', `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'value', matchOperator, `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'label', `Вид сравнения: ${prop.label || prop.key}`, `${prop.key}_center`, '', setId);
+      this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_center`, '', setId);
 
       if (storageType || prop.storageType) {
         this.DynamicPropsPush('add', 'storageType', storageType || prop.storageType, `${prop.key}_right`, '', setId);
@@ -139,6 +140,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     });
 
     const complexProps: string[] = ['Object'];
+    this.DynamicPropsPush('add', 'panel', 'Список объектов', '', 'ObjectsList', setId);
     this.DynamicPropsPush('add', 'type', await this.getRecieverType(), 'Object', 'ObjectsList', setId);
     this.DynamicPropsPush('add', 'label', 'Object', 'Object', 'ObjectsList', setId);
     let visibleFields = this.PropSettings.filter(e => e.isVisibly).map(e => e.PropName);
