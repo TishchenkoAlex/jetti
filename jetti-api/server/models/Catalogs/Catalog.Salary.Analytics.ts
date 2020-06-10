@@ -12,7 +12,9 @@ export class CatalogSalaryAnalytics extends DocumentBase {
   @Props({ type: 'Catalog.Salary.Analytics', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', resource: true, value: ['INCOME','EXPENSE','PAID'] })
+  @Props({ type: 'enum', resource: true, value: ['INCOME', 'EXPENSE', 'PAID'] })
   SalaryKind = 'INCOME';
 
+  @Props({ type: 'Catalog.Unit' })
+  Unit: Ref = null;
 }

@@ -6,7 +6,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   icon: 'fa fa-list',
   menu: 'Должности',
   prefix: 'JT-',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  relations: [{ name: 'Staffing table', type: 'Catalog.StaffingTable', field: 'JobTitle' }]
 })
 export class CatalogJobTitle extends DocumentBase {
 

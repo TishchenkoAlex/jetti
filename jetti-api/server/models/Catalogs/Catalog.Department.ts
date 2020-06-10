@@ -11,6 +11,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { name: 'Cash registers', type: 'Catalog.CashRegister', field: 'Department' },
     { name: 'Acquiring terminals', type: 'Catalog.AcquiringTerminal', field: 'Department' },
     { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'Department' },
+    { name: 'Staffing table', type: 'Catalog.StaffingTable', field: 'Department' },
     { name: 'Company & Investors groups history', type: 'Register.Info.DepartmentCompanyHistory', field: 'Department.id' },
     { name: 'Department status', type: 'Register.Info.DepartmentStatus', field: 'Department.id' },
     { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: 'Department.id' },

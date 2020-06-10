@@ -9,7 +9,13 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 })
 export class CatalogUnit extends DocumentBase {
 
-  @Props({ type: 'Catalog.Unit', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Unit' })
   parent: Ref = null;
+
+  @Props({ type: 'Catalog.Unit', useIn: 'elements' })
+  BaseUnit: Ref = null;
+
+  @Props({ type: 'number', useIn: 'elements' })
+  Rate = 0;
 
 }

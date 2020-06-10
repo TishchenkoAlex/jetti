@@ -1,3 +1,4 @@
+import { RegisterAccumulationStaffingTable } from './StaffingTable';
 import { RegisterAccumulationAcquiring } from './Acquiring';
 import { RegisterAccumulationIntercompany } from './Intercompany';
 import { RegisterAccumulationSalary } from './Salary';
@@ -38,6 +39,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Salary' |
   'Register.Accumulation.Depreciation' |
   'Register.Accumulation.CashToPay' |
+  'Register.Accumulation.StaffingTable' |
   'Register.Accumulation.BudgetItemTurnover';
 
 interface IRegisteredRegisterAccumulation { type: RegisterAccumulationTypes; Class: typeof RegisterAccumulation; }
@@ -61,6 +63,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover },
   { type: 'Register.Accumulation.Intercompany', Class: RegisterAccumulationIntercompany },
   { type: 'Register.Accumulation.Acquiring', Class: RegisterAccumulationAcquiring },
+  { type: 'Register.Accumulation.StaffingTable', Class: RegisterAccumulationStaffingTable },
 ];
 
 export function createRegisterAccumulation(init: Partial<RegisterAccumulation>) {

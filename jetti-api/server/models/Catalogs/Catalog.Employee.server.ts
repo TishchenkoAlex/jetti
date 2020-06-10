@@ -1,10 +1,10 @@
 import { IServerDocument } from './../documents.factory.server';
 import { MSSQL } from '../../mssql';
-import { CatalogStaffingTable } from './Catalog.StaffingTable';
+import { CatalogEmployee } from './Catalog.Employee';
 import { lib } from '../../std.lib';
 import { Ref } from '../document';
 
-export class CatalogStaffingTableServer extends CatalogStaffingTable implements IServerDocument {
+export class CatalogEmployeeServer extends CatalogEmployee implements IServerDocument {
 
   beforeSave = async (tx: MSSQL): Promise<this> => {
 
@@ -15,7 +15,7 @@ export class CatalogStaffingTableServer extends CatalogStaffingTable implements 
       return ob && ob.description ? ob.description : defVal;
     };
 
-    this.description = `${this.CloseDate ? '(closed) ' : ''}${await getDescription(this.JobTitle)} / ${await getDescription(this.Department)} (${await getDescription(this.Currency)})`;
+    this.description = `${await getDescription(this.Person)} (${await getDescription(this.company)})`;
     return this;
   }
 
