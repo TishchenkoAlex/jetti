@@ -1,3 +1,4 @@
+import { CatalogEmployeeServer } from './Catalogs/Catalog.Employee.server';
 import { CatalogStaffingTableServer } from './Catalogs/Catalog.StaffingTable.server';
 import { lib } from '../std.lib';
 import { createDocument, IFlatDocument, RegisteredDocumentType } from './../models/documents.factory';
@@ -45,6 +46,7 @@ export type DocumentBaseServer = DocumentBase & IServerDocument;
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
+  { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
