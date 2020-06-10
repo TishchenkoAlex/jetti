@@ -331,7 +331,7 @@ export class DocumentCashRequest extends DocumentBase {
     onChange: function (doc: PayRoll, value: PayRoll[]) {
       let Amount = 0; value.forEach(el => { Amount += el.Salary; });
       let AmountPenalty = 0; value.forEach(el => { AmountPenalty += el.SalaryPenalty; });
-      return { Amount: Math.round(Amount * 100) / 100, AmountPenalty:  Math.round(AmountPenalty * 100) / 100  };
+      return { Amount: Math.round(Amount * 100) / 100, AmountPenalty: Math.round(AmountPenalty * 100) / 100 };
     }
   })
   PayRolls: PayRoll[] = [new PayRoll()];
@@ -373,6 +373,12 @@ export class Item {
 
   @Props({ type: 'Catalog.Product', label: 'Товар/Услуга', style: { width: '350px' } })
   Item: Ref = null;
+
+  @Props({ type: 'Catalog.Storehouse', label: 'Склад' })
+  Storehouse: Ref = null;
+
+  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
+  Department: Ref = null;
 
   @Props({ type: 'number', label: 'Сумма', totals: 1 })
   Amount = 0;
