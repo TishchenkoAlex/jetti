@@ -944,7 +944,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Salary];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]
+      d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -963,6 +963,7 @@
         , [PL] CHAR(36) N'$.PL'
         , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
         , [Status] NVARCHAR(250) N'$.Status'
+        , [IsPortal] BIT N'$.IsPortal'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -978,7 +979,7 @@
       INSERT INTO [Register.Accumulation.Salary]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]
+        d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -996,6 +997,7 @@
         , [PL] CHAR(36) N'$.PL'
         , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
         , [Status] NVARCHAR(250) N'$.Status'
+        , [IsPortal] BIT N'$.IsPortal'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1008,7 +1010,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [Amount], [AmountInBalance], [AmountInAccounting]
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [AmountInBalance], [AmountInAccounting]
     ) WITH (MAXDOP=4);
     CREATE UNIQUE INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary](id) WITH (MAXDOP=4);
 
@@ -1380,6 +1382,71 @@
     CREATE UNIQUE INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring](id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+    RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.StaffingTable];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person]
+      , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+    INTO [Register.Accumulation.StaffingTable]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Department] CHAR(36) N'$.Department'
+        , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
+        , [Employee] CHAR(36) N'$.Employee'
+        , [Person] CHAR(36) N'$.Person'
+        , [SalaryRate] MONEY N'$.SalaryRate'
+        , [SalaryAnalytic] CHAR(36) N'$.SalaryAnalytic'
+        , [currency] CHAR(36) N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.StaffingTable';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.StaffingTable.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.StaffingTable]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person]
+      , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Department] CHAR(36) N'$.Department'
+        , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
+        , [Employee] CHAR(36) N'$.Employee'
+        , [Person] CHAR(36) N'$.Person'
+        , [SalaryRate] MONEY N'$.SalaryRate'
+        , [SalaryAnalytic] CHAR(36) N'$.SalaryAnalytic'
+        , [currency] CHAR(36) N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.StaffingTable';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.StaffingTable] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]
+    ) WITH (MAXDOP=4);
+    CREATE UNIQUE INDEX [Register.Accumulation.StaffingTable.id] ON [Register.Accumulation.StaffingTable](id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO
     
     

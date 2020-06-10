@@ -49,7 +49,7 @@ spec:
         - name: EXCHANGE_ACCESS_KEY
           value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
         - name: REFRESH_ID
-          value: "0003"
+          value: "1110"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
