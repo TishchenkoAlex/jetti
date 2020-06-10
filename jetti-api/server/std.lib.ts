@@ -51,7 +51,7 @@ export interface JTL {
         excludeDeleted?: boolean
       }
     ) => Promise<T[]>;
-    isDocumentUsedInAccumulationWithPropValueById: (docId: string, propValue: any, tx: MSSQL) => Promise<boolean>
+    isDocumentUsedInAccumulationWithPropValueById: (docId: string, tx: MSSQL) => Promise<boolean>
     Ancestors: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
     Descendants: (id: Ref, tx: MSSQL) => Promise<{ id: Ref, parent: Ref }[] | null>;
     haveDescendants: (id: Ref, tx: MSSQL) => Promise<boolean>;
@@ -280,12 +280,18 @@ async function findDocumentByProps<T>(
 
 }
 
-async function isDocumentUsedInAccumulationWithPropValueById(docId: string, propValue: any, tx: MSSQL): Promise<boolean> {
+async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
+  return (await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, 'Accumulation', tx) ||
+    await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, '[Register.Info]', tx));
+}
+
+// tslint:disable-next-line: max-line-length
+async function isDocumentUsedInAccumulationWithPropValueByIdInTable(docId: string, tableName: string, tx: MSSQL): Promise<boolean> {
   const query = `
   select TOP 1 id
-  from Accumulation
-  where contains(data, @p1) and contains(data, @p2)`;
-  return !!(await tx.oneOrNone(query, [docId, propValue]));
+  from ${tableName}
+  where contains(data, @p1)`;
+  return !!(await tx.oneOrNone(query, [docId]));
 }
 
 async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {

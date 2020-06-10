@@ -197,8 +197,8 @@ async function checkProtectedPropsModify(serverDoc: DocumentBaseServer, tx: MSSQ
     .map(key => key);
 
   for (const modProp of modProps) {
-    if (await lib.doc.isDocumentUsedInAccumulationWithPropValueById(serverDoc.id, savedDoc[modProp], tx))
-      throw new Error(`"${serverDoc.description}" can't be changed by protected field "${protectedProps[modProp].label || modProp}":\n used in accumulation movements"`);
+    if (savedDoc[modProp] && await lib.doc.isDocumentUsedInAccumulationWithPropValueById(serverDoc.id, tx))
+      throw new Error(`"${serverDoc.description}" can't be changed by protected field "${protectedProps[modProp].label || modProp}":\n used in accumulation/info movements"`);
   }
 
 }
