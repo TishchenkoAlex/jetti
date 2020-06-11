@@ -12,7 +12,7 @@ import { SortEvent } from 'primeng/api';
 
 const TablePartValidator: ValidatorFn = (c: AbstractControl) => {
   let res = null;
-  if (c.value && (!(Object.keys(c.value).indexOf('value') !== -1) ? c.value.value : c.value)) res = { 'required': true };
+  if (c.value && ((Object.keys(c.value).indexOf('value') !== -1) ? !c.value.value : !c.value)) res = { 'required': true };
   return res;
 };
 
