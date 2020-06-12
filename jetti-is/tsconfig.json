@@ -1,20 +1,20 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "module": "ESNext",
-      "moduleResolution": "node",
-      "target": "ESNext",
-      "strictNullChecks": true,
-      "outDir": "./dist",
-      "lib": [
-          "ESNext"
-      ],
-      "sourceMap": true,
-      "rootDir": "."
-  },
-  "exclude": [
-      "node_modules"
-  ]
+    "compileOnSave": true,
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es2017",
+        "strictNullChecks": true,
+        "outDir": "./dist",
+        "lib": [
+            "es2017"
+        ],
+        "sourceMap": true,
+        "rootDir": "."
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }
