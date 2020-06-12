@@ -10,6 +10,9 @@
 		},
 		{
 			"path": "jetti-apps/finance"
+		},
+		{
+			"path": "jetti-is"
 		}
 	],
 	"settings": {

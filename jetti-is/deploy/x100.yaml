@@ -1,0 +1,61 @@
+#kubectl apply -f deploy/jetti-is.yaml
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: jetti-is
+  labels:
+    app: jetti-is
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jetti-is
+        tier: web
+    spec:
+      containers:
+        - name: jetti-is
+          image: eu.gcr.io/jetti-is/jetti-is-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PORT
+              value: "1433"
+            - name: DB_HOST
+              value: JETTI-DB-01
+            - name: DB_NAME
+              value: jetti-is
+            - name: DB_USER
+              value: jetti
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-db-credentials
+                  key: password
+            - name: JTW_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-key
+                  key: JTW_KEY
+            - name: EXCHANGE_ACCESS_KEY
+              value: "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY="
+            - name: REFRESH_ID
+              value: "071"
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jetti-is
+  labels:
+    app: jetti-is
+spec:
+  type: NodePort
+  sessionAffinity: ClientIP
+  selector:
+    app: jetti-is
+  ports:
+  - port: 8080
+    targetPort: 8080
