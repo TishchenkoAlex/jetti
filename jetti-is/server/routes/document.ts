@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { SQLClient } from '../sql/sql-client';
-import { SessionRequest } from './middleware/set-darabase-session';
+import { SessionRequest } from './middleware/set-database-session';
 
 export const router = express.Router();
 

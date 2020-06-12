@@ -4,14 +4,13 @@ import * as cors from 'cors';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import * as httpServer from 'http';
-import * as path from 'path';
-import { checkAuth } from './routes/middleware/check-auth';
+import * as socketIO from 'socket.io';
+import * as ioredis from 'socket.io-redis';
+import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
+import { checkAuth, authIO } from './routes/middleware/check-auth';
 import { router as auth } from './routes/auth';
 import { router as document } from './routes/document';
-import { setDatabaseSession } from './routes/middleware/set-darabase-session';
-import { SqlToMongoDocuments } from './exchange/sql-to-mongo-documents';
-import { CatalogBank } from './exchange/Catalog.Bank';
-import { SqlToMongoAccumulation } from './exchange/sql-to-mongo-Accumulation';
+import { setDatabaseSession } from './routes/middleware/set-database-session';
 
 const root = './';
 const app = express();
@@ -37,7 +36,10 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 }
 
 export const HTTP = httpServer.createServer(app);
-const port = (process.env.PORT) || '3000';
-HTTP.listen(port, () => console.log(`API running on port:${port}`));
+export const IO = socketIO(HTTP);
+IO.use(authIO);
+IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+IO.of('/').adapter.on('error', (error) => { });
 
-// const data = await CatalogBank();
+const port = (process.env.PORT) || '3000';
+HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}`));

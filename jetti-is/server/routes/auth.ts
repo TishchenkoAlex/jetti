@@ -12,7 +12,7 @@ router.post('/login', async (req, res, next) => {
     instance.defaults.headers.common['Authorization'] = `Bearer ${req.body.token}`;
     const me = (await instance.get('/v1.0/me/')).data;
 
-    let photo;
+    let photo: string | undefined;
     try {
       const photoArraybuffer = (await instance.get('/v1.0/me/photos/48x48/$value', { responseType: 'arraybuffer' })).data;
       photo = Buffer.from(photoArraybuffer, 'binary').toString('base64');

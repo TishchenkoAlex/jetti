@@ -23,7 +23,7 @@ export async function SqlToMongoDocuments() {
       batch.push(flatDoc);
       if (batch.length === 100000) {
         req.pause();
-        console.log('inserting to MongoDB', i, 'docs')
+        console.log('inserting to MongoDB', i, 'docs');
         await collectionDocuments.insertMany(batch);
         batch = [];
         req.resume();
@@ -32,7 +32,7 @@ export async function SqlToMongoDocuments() {
 
     async (rowCount: number, more: boolean) => {
       if (rowCount && !more && batch.length > 0) {
-        console.log('inserting tail', batch.length, 'docs')
+        console.log('inserting tail', batch.length, 'docs');
         await collectionDocuments.insertMany(batch);
       }
     });
