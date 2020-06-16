@@ -3,6 +3,7 @@
   "compilerOptions": {
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
+      "resolveJsonModule": true,
       "module": "commonjs",
       "moduleResolution": "node",
       "target": "es2017",

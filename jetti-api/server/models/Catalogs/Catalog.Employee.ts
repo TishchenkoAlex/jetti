@@ -17,7 +17,7 @@ export class CatalogEmployee extends DocumentBase {
   @Props({ type: 'Catalog.Person', isProtected: true })
   Person: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true })
+  @Props({ type: 'Catalog.Company', required: true, isProtected: true })
   company: Ref = null;
 
   @Props({ type: 'string', required: true, order: 2, style: { width: '135px' }, isUnique: true })

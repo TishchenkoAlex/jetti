@@ -24,11 +24,15 @@ import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import { initGlobal } from './fuctions/initGlobals';
+import * as swaggerDocument from '../swagger.json';
+//import * as swaggerUi from 'swagger-ui-express';
+import swaggerUi = require('swagger-ui-express');
 
 initGlobal();
 
 const root = './';
 const app = express();
+
 
 app.use(compression());
 app.use(cors());
@@ -46,6 +50,7 @@ app.use(api, authHTTP, tasksDB, form);
 app.use(api, authHTTP, jettiDB, bp);
 app.use('/auth', jettiDB, auth);
 app.use('/exchange', jettiDB, exchange);
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); 
 
 app.get('*', (req: Request, res: Response) => {
   res.status(200);

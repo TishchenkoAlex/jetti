@@ -62,6 +62,7 @@ export interface JTL {
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
     saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
+    updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
@@ -117,6 +118,7 @@ export const lib: JTL = {
     createDocServer,
     createDocServerById,
     saveDoc,
+    updateDoc,
     historyById,
     Ancestors,
     Descendants,
@@ -231,6 +233,10 @@ async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseSer
   else servDoc = await updateDocument(servDoc, tx);
   if (isPostedAfter) await postDocument(servDoc, tx);
   return servDoc;
+}
+
+async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
+  return await updateDocument(servDoc, tx);
 }
 
 async function findDocumentByProps<T>(
