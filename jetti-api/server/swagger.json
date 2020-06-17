@@ -233,6 +233,46 @@
                     }
                 ]
             }
+        },
+        "/executeOperation": {
+            "post": {
+                "tags": [
+                    "common"
+                ],
+                "summary": "Execute an operation method ",
+                "description": "",
+                "operationId": "executeOperation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "args",
+                        "description": "Execution parameters as key-value array",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/ExecuteOperationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                },
+                "security": [
+                    {
+                        "documentDB_auth": [
+                            "write:documents",
+                            "read:documents"
+                        ]
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -310,7 +350,7 @@
                 "doc": {
                     "type": "object",
                     "additionalProperties": true,
-                    "example": "some description"
+                    "example": "{'key': value}"
                 }
             }
         },
@@ -327,6 +367,25 @@
                 "options": {
                     "$ref": "#/definitions/UpdateOptions",
                     "example": "Update options"
+                }
+            }
+        },
+        "ExecuteOperationRequest": {
+            "type": "object",
+            "properties": {
+                "operationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "54748760-9604-11EA-BB8A-AF1C6CC66467"
+                },
+                "method": {
+                    "type": "string",
+                    "example": "Method name (default: 'RESTMethod')"
+                },
+                "args": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "example": "key-value array"
                 }
             }
         },

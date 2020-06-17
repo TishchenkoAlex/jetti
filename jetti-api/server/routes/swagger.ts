@@ -2,7 +2,7 @@ import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { IFlatDocument } from '../models/documents.factory';
-import { createDocumentServer } from '../models/documents.factory.server';
+import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
 import { lib } from './../std.lib';
 import { postDocument, insertDocument, updateDocument, unpostDocument } from './utils/post';
@@ -100,6 +100,32 @@ router.delete('/document/:id', async (req: Request, res: Response, next: NextFun
         }
         res.json({ Status: 'OK' })
       } catch (ex) { res.status(500).json({ ...ex, Error: ex.message }) }
+      finally { await lib.util.adminMode(false, tx); }
+    });
+  } catch (err) { next(err); }
+});
+
+router.post('/executeOperation', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      await lib.util.adminMode(true, tx);
+      try {
+        let err = '';
+        let { operationId, method, args } = JSON.parse(req.body);
+        let oper: DocumentBaseServer | null = null;
+        if (!operationId) err = 'Empty arg "operationId"';
+        else oper = await lib.doc.createDocServerById(operationId as any, tx);
+        if (!oper) err = `Operation with id ${operationId} does not exist`;
+        else {
+
+          const method = args.method || 'RESTMethod';
+          let result = {};
+          const docModule: (args: { [key: string]: any }) => Promise<any> = oper['serverModule'][args.method || 'RESTMethod'];
+          if (typeof docModule === 'function') result = await docModule(args);
+          res.json(result);
+        }
+      } catch (ex) { throw new Error(ex); }
       finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }

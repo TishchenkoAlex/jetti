@@ -17,6 +17,7 @@ import { router as documents } from './routes/documents';
 import { authHTTP, authIO } from './routes/middleware/check-auth';
 import { router as registers } from './routes/registers';
 import { router as suggests } from './routes/suggest';
+import { router as swagger } from './routes/swagger';
 import { router as tasks } from './routes/tasks';
 import { router as userSettings } from './routes/user.settings';
 import { router as form } from './routes/form';
@@ -24,9 +25,9 @@ import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import { initGlobal } from './fuctions/initGlobals';
-import * as swaggerDocument from '../swagger.json';
-//import * as swaggerUi from 'swagger-ui-express';
-import swaggerUi = require('swagger-ui-express');
+import * as swaggerDocument from './swagger.json';
+import * as swaggerUi from 'swagger-ui-express';
+// import swaggerUi = require('swagger-ui-express');
 
 initGlobal();
 
@@ -48,6 +49,7 @@ app.use(api, authHTTP, jettiDB, registers);
 app.use(api, authHTTP, tasksDB, tasks);
 app.use(api, authHTTP, tasksDB, form);
 app.use(api, authHTTP, jettiDB, bp);
+app.use(api, authHTTP, jettiDB, swagger);
 app.use('/auth', jettiDB, auth);
 app.use('/exchange', jettiDB, exchange);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); 
