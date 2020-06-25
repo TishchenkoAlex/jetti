@@ -55,4 +55,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'string', required: false })
   Address = '';
 
+  @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
+  IntegrationType = '';
+
 }

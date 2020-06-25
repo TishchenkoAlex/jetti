@@ -32,21 +32,24 @@ export class SQLClient {
     `;
   }
 
-  manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
+  async manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
     return (new Promise<T[]>(async (resolve, reject) => {
       try {
+        const result: any[] = [];
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve([]);
-          const result = rows.map(row => {
-            const data = {} as T;
-            row.forEach(col => data[col.metadata.colName] = col.value);
-            return this.complexObject(data);
-          });
-          return resolve(result);
         });
+        request.on('row', (row) => {
+          const data = {} as T;
+          row.forEach(col => data[col.metadata.colName] = col.value);
+          result.push(this.complexObject(data));
+        });
+        request.on('done', (rowCount: number, more: boolean, rows: any[]) => resolve(result));
+        request.on('requestCompleted', () => resolve(result));
+        request.on('error', (err) => reject(err));
         this.setParams(params, request);
         connection.execSql(request);
       } catch (error) { return reject(error); }
@@ -56,29 +59,35 @@ export class SQLClient {
   async manyOrNoneStream(sql: string, params: any[] = [], onRow: Function, onDone: Function) {
     try {
       const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
-      const request: Request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+      const request: Request = new Request(sql, (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
         if (error) throw new Error(error.message);
       });
-      request.on('row', (row: ColumnValue[]) => onRow(row, request));
+      request.on('row', (row) => onRow(row, request));
       request.on('done', (rowCount: number, more: boolean) => onDone(rowCount, more));
       this.setParams(params, request);
       connection.execSqlBatch(request);
     } catch (error) { throw new Error(error); }
   }
 
-  oneOrNone<T>(sql: string, params: any[] = []): Promise<T | null> {
+  async oneOrNone<T>(sql: string, params: any[] = []): Promise<T | null> {
     return new Promise(async (resolve, reject) => {
       try {
+        let result: any = null;
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve(null);
-          const data = {} as T;
-          rows[0].forEach(col => data[col.metadata.colName] = col.value);
-          const result = this.complexObject(data);
-          return resolve(result);
         });
+        request.on('row', (row) => {
+          const data = {} as T;
+          row.forEach(col => data[col.metadata.colName] = col.value);
+          // return resolve(result);
+          result = this.complexObject(data);
+        });
+        request.on('done', (rowCount: number, more: boolean, rows: any[]) => resolve(result));
+        request.on('requestCompleted', () => resolve(result));
+        request.on('error', (err) => reject(err));
         this.setParams(params, request);
         connection.execSql(request);
       } catch (error) { return reject(error); }
