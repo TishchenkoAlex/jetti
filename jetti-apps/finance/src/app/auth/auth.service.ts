@@ -61,6 +61,16 @@ export class AuthService {
     return token.roles.indexOf(roleName) !== -1;
   }
 
+  public getUserEnviromentValueByKey(envKey: string): string {
+    if (!this.token || !envKey) return '';
+    const token = this.tokenPayload as { env: { [x: string]: string } };
+    return token.env[envKey];
+  }
+
+  public LOGIC_USECASHREQUESTAPPROVING(): boolean {
+    return this.getUserEnviromentValueByKey('LOGIC_USECASHREQUESTAPPROVING') === '1';
+  }
+
   public isRoleAvailableReadonly(): boolean {
     return this.isRoleAvailable('Readonly');
   }

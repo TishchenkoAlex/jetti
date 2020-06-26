@@ -12,13 +12,23 @@ import { FormTypes } from '../../../../../../jetti-api/server/models/Forms/form.
 import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
 import { Subscription, BehaviorSubject } from 'rxjs';
 
-type panelModify = 'Тип объектов' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
+type panelModify = 'Тип объектов' | 'Параметры' | 'Дополнительно' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
 type panelLoad = 'Тип объектов' | 'Параметры' | 'Фильтр' | 'Список объектов' | 'Новые значения реквизитов';
 
 type stepModify = 'start' | 'setProps' | 'setValues' | 'final';
 type stepLoad = 'start' | 'dsad';
 
-type mode = 'LOAD' | 'MODIFY' | 'TESTING';
+type mode = 'LOAD' | 'MODIFY';
+
+const readFileAsText = (file) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = (error) => reject(error);
+  });
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +41,11 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   header = 'Групповое изменение объектов';
   clientDataStorage = '';
   step: stepLoad | stepModify | '' = 'start';
-  panelsBySteps: { step: stepLoad | stepModify | '', panels: panelModify[] | panelLoad[], activePanel: panelModify | panelLoad }[];
+  panelsBySteps: {
+    step: stepLoad | stepModify | '',
+    panels: panelModify[] | panelLoad[],
+    activePanel: panelModify | panelLoad
+  }[];
   currentControls;
   step$ = new BehaviorSubject<stepLoad | stepModify | ''>('start');
   currentControls$ = new BehaviorSubject<any[]>([]);
@@ -41,7 +55,6 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
   get Mode() { return this.form.get('Mode').value as mode; }
   get isModeLoad() { return this.Mode === 'LOAD'; }
   get isModeModify() { return this.Mode === 'MODIFY'; }
-  get isModeTesting() { return this.Mode === 'TESTING'; }
   get controlsPlacement() { return <IFormControlPlacing[]>this.form['controlsPlacement']; }
 
   constructor(
@@ -92,9 +105,9 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
         this.panelsBySteps = [
           { step: 'start', panels: ['Тип объектов'], activePanel: 'Тип объектов' },
           { step: 'setProps', panels: ['Параметры'], activePanel: 'Параметры' },
-          { step: 'setValues', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Тип объектов'], activePanel: 'Фильтр' },
+          { step: 'setValues', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Тип объектов', 'Дополнительно'], activePanel: 'Фильтр' },
           // tslint:disable-next-line: max-line-length
-          { step: 'final', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Список объектов'], activePanel: 'Список объектов' },
+          { step: 'final', panels: ['Параметры', 'Фильтр', 'Новые значения реквизитов', 'Список объектов', 'Дополнительно'], activePanel: 'Список объектов' },
         ];
         break;
       default:
@@ -139,6 +152,21 @@ export class ObjectsGroupModifyComponent extends _baseDocFormComponent implement
 
   async saveDataIntoDB() {
     await this.ExecuteServerMethod('saveDataIntoDB');
+  }
+
+  async saveToJSON() {
+    const docs = this.form.get('ObjectsList').value;
+    if (!docs || !docs.length) return;
+    const json = await this.ds.api.documentsDataAsJSON((docs as [{ id: string }]).map(e => e.id));
+    if (json) this.ds.download(json, 'docInJSON.json');
+    // await this.ExecuteServerMethod('exportToFile', 'final');
+  }
+
+
+  async loadFromJSON(event) {
+    const file = event.files[0];
+    this.form.get('Text').setValue(await readFileAsText(file));
+    await this.ExecuteServerMethod('loadFromJSON', 'final');
   }
 
   async fillPropSettings() {

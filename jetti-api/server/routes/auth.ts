@@ -1,3 +1,4 @@
+import { LOGIC_USECASHREQUESTAPPROVING } from './../env/environment';
 import { getUserRoles } from './../fuctions/UsersPermissions';
 import * as express from 'express';
 import axios from 'axios';
@@ -17,6 +18,13 @@ import { createForm } from '../models/Forms/form.factory';
 import { CatalogOperationGroup } from '../models/Catalogs/Catalog.Operation.Group';
 
 export const router = express.Router();
+
+function getUserEnviroment(user: CatalogUser) {
+  return {
+    id: user.id, code: user.code, type: user.type, value: user.description
+    , LOGIC_USECASHREQUESTAPPROVING: LOGIC_USECASHREQUESTAPPROVING
+  };
+}
 
 const sdba = new MSSQL(JETTI_POOL,
   { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
@@ -47,7 +55,7 @@ router.post('/login', async (req, res, next) => {
       description: me.displayName,
       isAdmin: user.isAdmin === true ? true : false,
       roles: await getUserRoles(user),
-      env: { id: user.id, code: user.code, type: user.type, value: user.description },
+      env: getUserEnviroment(user),
     };
 
     const token = jwt.sign(payload, JTW_KEY, { expiresIn: '72h' });
@@ -65,7 +73,7 @@ router.get('/account', authHTTP, async (req, res, next) => {
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
       roles: await getUserRoles(user),
-      env: { id: user.id, code: user.code, type: user.type, value: user.description },
+      env: getUserEnviroment(user),
     };
     res.json(payload);
   } catch (err) { next(err); }

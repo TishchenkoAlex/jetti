@@ -8,14 +8,73 @@ import { IServerForm } from './form.factory.server';
 import { FormObjectsGroupModify, ColumnMatching, errorKind } from './Form.ObjectsGroupModify';
 import { MSSQL } from '../../mssql';
 import { TASKS_POOL } from '../../sql.pool.tasks';
-import { createDocument } from '../documents.factory';
+import { createDocument, INoSqlDocument } from '../documents.factory';
 import { createDocumentServer } from '../documents.factory.server';
 import { PropOptions } from '../document';
 import { lib } from '../../std.lib';
 import { List } from '../../routes/utils/list';
 import { FormListFilter } from '../user.settings';
+import { insertDocument } from '../../routes/utils/post';
 // tslint:disable: max-line-length
 // tslint:disable: no-shadowed-variable
+
+export async function insertDocumentsFromJSON(jsonDoc: string, tx: MSSQL) {
+
+  await tx.none(`
+    INSERT INTO Documents(
+      [id], [type], [date], [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc])
+    SELECT
+      [id], [type], [date], [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc]
+    FROM OPENJSON(@p1) WITH (
+      [id] UNIQUEIDENTIFIER,
+      [date] DATETIME,
+      [type] NVARCHAR(100),
+      [code] NVARCHAR(36),
+      [description] NVARCHAR(150),
+      [posted] BIT,
+      [deleted] BIT,
+      [parent] UNIQUEIDENTIFIER,
+      [isfolder] BIT,
+      [company] UNIQUEIDENTIFIER,
+      [user] UNIQUEIDENTIFIER,
+      [info] NVARCHAR(max),
+      [doc] NVARCHAR(max) N'$.doc' AS JSON
+    )
+   `, [jsonDoc]);
+}
+
+export async function updateDocumentFromJSON(jsonDoc: string, tx: MSSQL) {
+  await tx.none(`
+    UPDATE Documents
+      SET
+        type = i.type, parent = i.parent,
+        date = i.date, code = i.code, description = i.description,
+        posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
+        "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
+        doc = i.doc
+      FROM (
+        SELECT *
+        FROM OPENJSON(@p1) WITH (
+          [id] UNIQUEIDENTIFIER,
+          [date] DATETIME,
+          [type] NVARCHAR(100),
+          [code] NVARCHAR(36),
+          [description] NVARCHAR(150),
+          [posted] BIT,
+          [deleted] BIT,
+          [isfolder] BIT,
+          [company] UNIQUEIDENTIFIER,
+          [user] UNIQUEIDENTIFIER,
+          [info] NVARCHAR(max),
+          [parent] UNIQUEIDENTIFIER,
+          [doc] NVARCHAR(max) N'$.doc' AS JSON
+        )
+      ) i
+    WHERE Documents.id = i.id`, [jsonDoc]);
+}
+
 export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify implements IServerForm {
 
   tx: MSSQL;
@@ -28,6 +87,38 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
   async Execute() {
     return this;
   }
+
+  async saveToJSON() {
+    this.createTransaction();
+    const docIDs = this['ObjectsList'].map(el => '\'' + el['id'] + '\'').join(',');
+    const query = `SELECT * FROM Documents WHERE id IN(${docIDs})`;
+    this['exportString'] = JSON.stringify(await this.tx.manyOrNone(query));
+    const setId = 'exportToFile';
+    if (!this.dynamicProps.find(e => e.SetId === setId)) {
+      this.DynamicPropsPush('add', 'type', 'string', 'exportString', '', setId);
+      this.DynamicPropsPush('add', 'controlType', 'textarea', 'exportString', '', setId);
+      this.DynamicPropsPush('add', 'panel', 'Список объектов', 'exportString', '', setId);
+    }
+  }
+
+  async loadFromJSON() {
+    this.createTransaction();
+    if (!this.Text) return;
+    if (!this.UsePreview) {
+      const docsAll = JSON.parse(this.Text) as any[];
+      const docsIDs = (docsAll as [{ id: string }]).map(el => '\'' + el['id'] + '\'').join(',');
+      const query = `SELECT id FROM Documents WHERE id IN(${docsIDs})`;
+      const existId = await this.tx.manyOrNone<{ id: string }>(query);
+      const docs = {
+        update: docsAll.filter(e => existId.find(el => el.id === e.id)),
+        insert: docsAll.filter(e => !existId.find(el => el.id === e.id))
+      };
+      if (docs.insert.length) await insertDocumentsFromJSON(JSON.stringify(docs.insert), this.tx);
+      if (docs.update.length) await updateDocumentFromJSON(JSON.stringify(docs.update), this.tx);
+    }
+  }
+
+
 
   async Modify() {
     this.createTransaction();
