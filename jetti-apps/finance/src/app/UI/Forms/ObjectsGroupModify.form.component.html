@@ -29,8 +29,13 @@
                 <button pButton type="button" id="selectFilter" label="Отобрать" class="ui-button-info"
                   (click)="selectFilter()"></button>
               </div>
+
               <div class="ui-toolbar-group-right">
-  
+                <button pButton type="button" id="saveToJSON" label="Сохранить в JSON" class="ui-button-info"
+                  (click)="saveToJSON()"></button>
+                <p-fileUpload customUpload="true" accept=".json" mode="basic" chooseLabel="Загрузить из JSON"
+                  (onSelect)="loadFromJSON($event)">
+                </p-fileUpload>
                 <button pButton type="button" id="selectFilter" label="Сохранить в CSV" class="ui-button-success"
                   (click)="saveToFile()"></button>
                 <button pButton type="button" id="selectFilter" label="ЗАПИСАТЬ" class="ui-button-danger"

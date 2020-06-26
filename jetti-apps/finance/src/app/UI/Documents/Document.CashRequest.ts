@@ -29,6 +29,7 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
 
   isSuperUser = false;
   canModifyProcess = false;
+  logic_USECASHREQUESTAPPROVING = false;
 
   ngOnInit() {
     super.ngOnInit();
@@ -153,6 +154,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
         if (ItemsAmount !== Amount) this.throwError(`Ошибка`, `Сумма товаров/услуг отличается от суммы документа`)
       }
     }
+    const CashFlow = this.getValue('CashFlow');
+    if ((!CashFlow || !CashFlow.value)) this.throwError('Ошибка', 'Не указана статья ДДС');
     const oper = this.getValue('Operation');
     const CashRecipient = this.getValue('CashRecipient');
     if ((!CashRecipient || !CashRecipient.value) && `Оплата поставщику
@@ -170,13 +173,14 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   async onOpen() {
 
     this.isSuperUser = this.auth.isRoleAvailableCashRequestAdmin();
-    this.canModifyProcess = this.isSuperUser;
-    if (!this.canModifyProcess && this.getValue('Status') === 'MODIFY') {
+    this.logic_USECASHREQUESTAPPROVING = this.auth.LOGIC_USECASHREQUESTAPPROVING();
+    this.canModifyProcess = this.isSuperUser && this.logic_USECASHREQUESTAPPROVING;
+    if (this.logic_USECASHREQUESTAPPROVING && !this.canModifyProcess && this.getValue('Status') === 'MODIFY') {
       const res = await this.bpApi.isUserCurrentExecutant(this.getValue('workflowID'));
       if (typeof res === 'string') this.ds.openSnackBar('error', 'Бизнес-процессы', res);
       else this.canModifyProcess = res as boolean;
     }
-    if (this.isSuperUser) {
+    if (this.isSuperUser || !this.logic_USECASHREQUESTAPPROVING) {
       this.form.enable({ emitEvent: false });
       this.vk.Status.readOnly = false;
     }

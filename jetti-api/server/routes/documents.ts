@@ -649,3 +649,14 @@ router.get('/attachments/getAttachmentsSettingsByOwner/:id', async (req: Request
     });
   } catch (err) { next(err); }
 });
+
+router.post('/documentsDataAsJSON', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    await sdb.tx(async tx => {
+      const docIDs = req.body.map(el => '\'' + el + '\'').join(',');
+      const query = `SELECT * FROM Documents WHERE id IN(${docIDs})`;
+      res.json(JSON.stringify(await tx.manyOrNone(query)));
+    });
+  } catch (err) { next(err); }
+});

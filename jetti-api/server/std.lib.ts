@@ -19,6 +19,7 @@ import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catal
 import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
+import * as iconv from 'iconv-lite';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -88,7 +89,8 @@ export interface JTL {
     GUID: () => Promise<string>,
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
     exchangeDB: () => MSSQL,
-    taskPoolTx: () => MSSQL
+    taskPoolTx: () => MSSQL,
+    decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -151,7 +153,8 @@ export const lib: JTL = {
     closeMonthErrors,
     getObjectPropertyById,
     exchangeDB,
-    taskPoolTx
+    taskPoolTx,
+    decodeBase64StringAsUTF8
   },
   queue: {
     insertQueue,
@@ -467,6 +470,11 @@ export async function unPostById(id: Ref, tx: MSSQL) {
     return serverDoc;
   } catch (ex) { throw new Error(ex); }
   finally { await lib.util.adminMode(false, tx); }
+}
+
+function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
+  const buff = new Buffer(string, 'base64');
+  return iconv.decode(Buffer.from(buff), encodingIn).toString();
 }
 
 function taskPoolTx(): MSSQL {
