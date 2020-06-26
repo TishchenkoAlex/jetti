@@ -21,7 +21,33 @@ export class SQLClient {
     }
   }
 
-  private prepareSession(sql: string) {
+  private DateToString(dt: Date): string {
+    let res: string = dt.getFullYear().toString();
+    if (dt.getMonth()<9) res += `0${dt.getMonth()+1}`;
+      else `${dt.getMonth()+1}`;
+    if (dt.getDate()<10) res += `0${dt.getDate()}`;
+      else res += `${dt.getDate()}`;
+    return res;
+  }
+
+  private parsingParamsSQL(sql: string, params: any[]) {
+    let result: string = sql;
+    for (let i = 0; i < params.length; i++) { 
+      let ps: string = '';
+      if (params[i] instanceof Date) {
+        ps = `'${this.DateToString(params[i])}'`;
+      } else if (typeof params[i] === 'number') {
+        ps = `${params[i].toString()}`;
+      } else if (typeof params[i] === 'boolean') {
+          if (params[i]) ps = 'cast(1 as bit)'; else ps = 'cast(0 as bit)'; //???
+      } else
+      ps = `'${params[i].toString()}'`;
+      result = result.replace(new RegExp(`@p${i+1}`,'g'), ps);
+    }
+    return  result;
+  }
+
+/*  private prepareSession(sql: string) {
     return `
       SET NOCOUNT ON;
       EXEC sys.sp_set_session_context N'user_id', N'${this.user!.email}';
@@ -30,14 +56,14 @@ export class SQLClient {
       SET NOCOUNT OFF;
       ${sql}
     `;
-  }
+  }*/
 
   async manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
     return (new Promise<T[]>(async (resolve, reject) => {
       try {
         const result: any[] = [];
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
-        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+        const request = new Request(sql, (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve([]);
@@ -59,12 +85,11 @@ export class SQLClient {
   async manyOrNoneStream(sql: string, params: any[] = [], onRow: Function, onDone: Function) {
     try {
       const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
-      const request: Request = new Request(sql, (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+      const request: Request = new Request(this.parsingParamsSQL(sql,params), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
         if (error) throw new Error(error.message);
       });
       request.on('row', (row) => onRow(row, request));
       request.on('done', (rowCount: number, more: boolean) => onDone(rowCount, more));
-      this.setParams(params, request);
       connection.execSqlBatch(request);
     } catch (error) { throw new Error(error); }
   }
@@ -74,7 +99,7 @@ export class SQLClient {
       try {
         let result: any = null;
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
-        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+        const request = new Request(sql, (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           if (!rowCount) return resolve(null);
@@ -98,7 +123,7 @@ export class SQLClient {
     return new Promise(async (resolve, reject) => {
       try {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
-        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+        const request = new Request(sql, (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) return reject(error);
           return resolve();

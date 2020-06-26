@@ -5,7 +5,9 @@
   "scripts": {
     "start": "tsc && node --max-old-space-size=8192 dist/server/index.js",
     "tsc": "tsc",
-    "build": "tsc && docker build -t eu.gcr.io/x100/x100-is-api:latest . && docker push eu.gcr.io/x100/x100-is-api:latest"
+    "build": "tsc && docker build -t eu.gcr.io/x100/x100-is-api:latest . && docker push eu.gcr.io/x100/x100-is-api:latest",
+    "test": "tsc && node --max-old-space-size=8192 dist/server/test.js"
+
   },
   "private": true,
   "dependencies": {

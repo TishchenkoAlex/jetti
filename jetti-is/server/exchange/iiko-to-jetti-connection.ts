@@ -10,17 +10,20 @@ dotenv();
 
 export interface ISyncParams {
   // параметры синхронизации
+  syncid: string,              // id синхронизации
   project: IJettiProject,   // проект
   source: IExchangeSource,  // база источник
   baseType: string,         // тип базы источника: sql - mssql, pg - postgree
   destination: string,      // ид база приемник
   periodBegin: Date,        // дата с которой синхронизируются данные
   periodEnd: Date,          // дата по которую синхронизируются данные
-  startDate: Date,          // начальная дата, с которой для базы источника ведется синхронизация
+  firstDate: Date,          // начальная дата, с которой для базы источника ведется синхронизация
   lastSyncDate: Date,       // дата последней автосинхронизации
+  exchangeID: Ref,          // загрузка по ID (склад, подразделение)
   autosync: boolean,        // автосинхронизация данных
   forcedUpdate: boolean,    // принудитеольное обновление данных (если false - обновляются только новые и у которых не совпадает версия данных)
   logLevel: number,         // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация,
+  execFlag: number,         // флаг обработки автосинхронизации
   startTime: Date,          // время старта
   finishTime: Date | null   // время завершение
 }
@@ -36,6 +39,17 @@ export interface ISyncCatalog {
   addAnalytics: Ref,     // дополнительная аналитика
   addType: Ref,          // дополнительный тип
   notActive: number         // признак неактивности 
+}
+///////////////////////////////////////////////////////////
+export interface ISyncDocument {
+  // элемент таблицы dbo.doc
+  project: string,          // проект
+  exchangeCode: string,     // код в базе обмена
+  exchangeBase: string,     // база обмена
+  exchangeType: string,     // тип документа
+  id: Ref,                  // ссылка на документ в базе приемнике
+  parent: Ref,              // ссылка на родительский документ в базе приемнике
+  exchangeStatus: number    // статус обмена документа
 }
 ///////////////////////////////////////////////////////////
 // Параматры коннекта с базой обмена
@@ -72,6 +86,7 @@ const exchangeSQLAdmin = new SQLPool(ExchangeSqlConfig);
 export async function GetSqlConfig(baseid: string): Promise<SQLConnectionConfig> {
   // чтение параметров подключения к базе SQL по ID
   const esql = new SQLClient(exchangeSQLAdmin);
+  
   const bp: any = await esql.oneOrNone(`
     select c.baseType as baseType, c.exchangeType as exchangeType, 
       json_value(c.data, '$.db_host') as db_host,
@@ -129,6 +144,20 @@ export async function GetExchangeCatalog(project: string, exchangeCode: string, 
   return ct;
 }
 ///////////////////////////////////////////////////////////
+// получить элемент сопоставления документа
+export async function GetExchangeDocument(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string): Promise<ISyncDocument> {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  const doc = <ISyncDocument> await esql.oneOrNone<ISyncDocument>(`SELECT * FROM dbo.doc where project = @p1 and exchangeCode =@p2 and exchangeBase =@p3 and exchangeType = @p4 `, 
+    [project, exchangeCode, exchangeBase, exchangeType]); 
+  return doc;
+}
+///////////////////////////////////////////////////////////
+export async function exchangeManyOrNone(sql: string, params: any[]) {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  return await esql.manyOrNone(sql, params);
+}
+///////////////////////////////////////////////////////////
+
 const newSyncCatalog = (source: any, id: string): ISyncCatalog => {
   return {
     project: source.project,
@@ -141,6 +170,18 @@ const newSyncCatalog = (source: any, id: string): ISyncCatalog => {
     addAnalytics: null,
     addType: null,
     notActive: 0
+  }
+}
+///////////////////////////////////////////////////////////
+const newSyncDocument = (source: any, id: string): ISyncDocument => {
+  return {
+    project: source.project,
+    exchangeCode: source.id,
+    exchangeBase: source.baseid,
+    exchangeType: source.type,
+    id: id,
+    parent: null,
+    exchangeStatus: 0
   }
 }
 ///////////////////////////////////////////////////////////
@@ -235,6 +276,145 @@ export async function SetExchangeCatalogID(source: any, id: string): Promise<ISy
   return response;
 }
 ///////////////////////////////////////////////////////////
+// сохранить ссылку на документ из базы источника
+export async function SetExchangeDocumentID(source: any, id: string): Promise<ISyncDocument> {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  let doc: ISyncDocument = await GetExchangeDocument(source.project, source.id, source.baseid, source.type);
+  let response: ISyncDocument = doc;
+  if (!doc) {
+    console.log('insert document link');
+    doc = newSyncDocument(source, id);
+    const jsonDoc = JSON.stringify(doc);
+    response = <ISyncDocument> await esql.oneOrNone<ISyncDocument>(`
+      INSERT INTO dbo.doc (
+        [project], [exchangeCode], [exchangeBase], [exchangeType],
+        [id], [parent], [exchangeStatus]) 
+      SELECT 
+        [project], [exchangeCode], [exchangeBase], [exchangeType],
+        [id], [parent], [exchangeStatus]
+      FROM OPENJSON(@p1) WITH (
+        [project] NVARCHAR(50),
+        [exchangeCode] NVARCHAR(50),
+        [exchangeBase] NVARCHAR(50),
+        [exchangeType] NVARCHAR(50),
+        [id] UNIQUEIDENTIFIER,
+        [parent] UNIQUEIDENTIFIER,
+        [exchangeStatus] INT
+      );
+      SELECT * FROM dbo.doc where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
+    [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+  }
+  /*
+  else {
+    if (ct.id === id) {
+      const jsonDoc = JSON.stringify(ct);
+      response = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`
+        UPDATE dbo.catalog  
+        SET 
+          exchangeName = i.exchangeName
+        FROM (
+          SELECT *
+          FROM OPENJSON(@p1) WITH (
+            [project] NVARCHAR(50),
+            [exchangeCode] NVARCHAR(50),
+            [exchangeBase] NVARCHAR(50),
+            [exchangeType] NVARCHAR(50),
+            [exchangeName] NVARCHAR(150),
+            [id] UNIQUEIDENTIFIER,
+            [idAnalytics] UNIQUEIDENTIFIER,
+            [addAnalytics] NVARCHAR(50),
+            [addType] NVARCHAR(50),
+            [notActive] INT
+          )
+        ) i
+        WHERE dbo.catalog.project = i.project and dbo.catalog.exchangeCode = i.exchangeCode 
+          and dbo.catalog.exchangeBase = i.exchangeBase and dbo.catalog.exchangeType = i.exchangeType;
+        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
+      [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+    }
+    else {
+      // console.log('update catalog link old id=',ct.id,' new id=', id);
+      ct.id = id;
+      const jsonDoc = JSON.stringify(ct);
+      response = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`
+        UPDATE dbo.catalog  
+        SET 
+          exchangeName = i.exchangeName,
+          id = i.id
+        FROM (
+          SELECT *
+          FROM OPENJSON(@p1) WITH (
+            [project] NVARCHAR(50),
+            [exchangeCode] NVARCHAR(50),
+            [exchangeBase] NVARCHAR(50),
+            [exchangeType] NVARCHAR(50),
+            [exchangeName] NVARCHAR(150),
+            [id] UNIQUEIDENTIFIER,
+            [idAnalytics] UNIQUEIDENTIFIER,
+            [addAnalytics] NVARCHAR(50),
+            [addType] NVARCHAR(50),
+            [notActive] INT
+          )
+        ) i
+        WHERE dbo.catalog.project = i.project and dbo.catalog.exchangeCode = i.exchangeCode 
+          and dbo.catalog.exchangeBase = i.exchangeBase and dbo.catalog.exchangeType = i.exchangeType;
+        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
+      [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+    }
+  }*/
+  return response;
+}
 ///////////////////////////////////////////////////////////
+export async function saveSyncParams(SyncParams: ISyncParams) {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  const params = {
+    id: SyncParams.syncid,
+    syncType: 'Autosync',
+    project: SyncParams.project.id,
+    syncSource: SyncParams.source.id,
+    syncStart: SyncParams.startTime,
+    syncEnd: null,
+    periodBegin: SyncParams.periodBegin,
+    periodEnd: SyncParams.periodEnd,
+    execFlag: SyncParams.execFlag,
+    params: {
+      autosync: SyncParams.autosync,
+      forcedUpdate: SyncParams.forcedUpdate,
+      logLevel: SyncParams.logLevel
+    }
+  }
+  await esql.oneOrNone(`INSERT INTO dbo.syncList (id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params) 
+    select id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params
+    from OPENJSON(@p1) WITH (
+      [id] UNIQUEIDENTIFIER,
+      [syncType] nvarchar(50),
+      [project] nvarchar(50),
+      [syncSource] nvarchar(50),
+      [syncStart] datetime,
+      [syncEnd] datetime,
+      [periodBegin] datetime,
+      [periodEnd] datetime,
+      [execFlag] int,
+      [params] NVARCHAR(max) N'$.params' AS JSON)
+  `, [JSON.stringify(params)]);
+}
 
-  
+export async function saveLogProtocol(syncid: string, execCode: number, errorCount: number, syncStage: string,  protocol: string) {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  await esql.oneOrNone(`INSERT INTO dbo.syncProtocol (syncid, execCode, errorCount, syncStage, protocol)
+    select syncid, execCode, errorCount, syncStage, protocol
+    from OPENJSON(@p1) WITH (
+      [syncid] UNIQUEIDENTIFIER,
+      [execCode] int,
+      [errorCount] int,
+      [syncStage] nvarchar(50),
+      [protocol] nvarchar(max)
+    )
+  `,[JSON.stringify({syncid: syncid,
+    execCode: execCode,
+    errorCount: errorCount,
+    syncStage: syncStage,
+    protocol: protocol
+  })]);
+  console.log(`log: ${protocol}`);
+}
