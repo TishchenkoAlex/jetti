@@ -439,9 +439,8 @@ export class SQLGenegatorMetadata {
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns}
-    ) WITH (MAXDOP=4);
-    CREATE UNIQUE INDEX [${type}.id] ON [${type}](id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate${columns}) WITH (MAXDOP=4);
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
