@@ -18,8 +18,8 @@ export type errorKind = keyof typeof errorKinds;
 
 export class FormObjectsGroupModify extends FormBase {
 
-  @Props({ type: 'enum', value: ['LOAD', 'MODIFY', 'TESTING'], label: 'Режим', panel: 'Тип объектов', hidden: true })
-  Mode = 'LOAD';
+  @Props({ type: 'enum', value: ['LOAD', 'MODIFY'], label: 'Режим', panel: 'Тип объектов' })
+  Mode = 'MODIFY';
 
   @Props({ type: 'string', controlType: 'textarea', panel: 'Загрузка из CSV', label: 'CSV' })
   Text = '';
@@ -44,6 +44,12 @@ export class FormObjectsGroupModify extends FormBase {
 
   @Props({ type: 'string', panel: 'Параметры загрузки', fieldset: 'Загрузка', label: 'Разделитель строк' })
   RowsSeparator = '\n';
+
+  @Props({ type: 'boolean', panel: 'Дополнительно', fieldset: 'Загрузка из JSON', label: 'Предпросмотр' })
+  UsePreview = true;
+
+  @Props({ type: 'boolean', panel: 'Дополнительно', fieldset: 'Загрузка из JSON', label: 'Запись без проведения' })
+  SaveWithoutPost = true;
 
   @Props({ type: 'Document.Operation', label: 'Обработка изменения', panel: 'Параметры загрузки', fieldset: 'Изменение' })
   ChangeProcessing = null;

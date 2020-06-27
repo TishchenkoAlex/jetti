@@ -9,6 +9,7 @@ export const REDIS_DB_HOST = process.env.REDIS_DB_HOST!;
 export const REDIS_DB_AUTH = process.env.REDIS_DB_AUTH;
 export const JTW_KEY = process.env.JTW_KEY!;
 export const bpApiHost = 'https://bp.x100-group.com/JettiProcesses/hs';
+export const LOGIC_USECASHREQUESTAPPROVING = process.env.LOGIC_USECASHREQUESTAPPROVING || '0';
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
 
