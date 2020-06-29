@@ -10,39 +10,47 @@ import { ImportPersonToJetti } from "./iiko-to-jetti-person";
 import { ImportSalesToJetti } from "./iiko-to-jetti-sales";
 
 export async function AutosincIkoToJetty(project: IJettiProject, syncSource: string) {
-    const dt = new Date();
-    //! временно, эти патаметры будем определять из excange базы по проекту и базе источнику...
-    let syncParams: ISyncParams  = {
-        syncid: uuidv1().toUpperCase(),
-        project: project,
-        source: RussiaSource,
-        baseType: 'sql',
-        destination: project.destination,
-        periodBegin: new Date(2020,5,1),
-        periodEnd: new Date(2020,5,2),
-        firstDate: RussiaSource.firstDate,
-        lastSyncDate: new Date(2020,5,23,8,0,0),  // ! временно для примера
-        exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // тестово по одному складу
-        autosync: true,
-        forcedUpdate: true, // ! пока обновление только новых данных
-        logLevel: 2,
-        execFlag: 1,
-        startTime: dt,
-        finishTime: null
-    };
-    await saveSyncParams(syncParams);
-    saveLogProtocol(syncParams.syncid, 0, 0, "Autosinc", `Autosync data IIKO - Jetti: ${syncSource} ==> ${project.id}.`);
-    saveLogProtocol(syncParams.syncid, 0, 0, "Autosinc", `Starting Batch ${dt.toString()}`);
-
-    //console.log("Start sync Products");
-    //ImportProductToJetti(syncParams).catch(() => { });
-
-    //console.log("Start sync Counterpartie");
-    //ImportCounterpartieToJetti(syncParams).catch(() => { });
-
-    ImportPersonToJetti(syncParams).catch(() => { });
-
-//    console.log("Start sync Sales docs");
-//    ImportSalesToJetti(syncParams, ['C9CAC9B4-1E97-42E1-AC58-23C419888B46']).catch(() => { });
-
+    return new Promise(async (resolve, reject) => {
+      try {
+        const dt = new Date();
+        //! временно, эти патаметры будем определять из excange базы по проекту и базе источнику...
+        let syncParams: ISyncParams  = {
+            syncid: uuidv1().toUpperCase(),
+            project: project,
+            source: RussiaSource,
+            baseType: 'sql',
+            destination: project.destination,
+            periodBegin: new Date(2020,5,1),
+            periodEnd: new Date(2020,5,2),
+            firstDate: RussiaSource.firstDate,
+            lastSyncDate: new Date(2020,5,23,8,0,0),  // ! временно для примера
+            exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // тестово по одному складу
+            autosync: true,
+            forcedUpdate: true, // ! пока обновление только новых данных
+            logLevel: 2,
+            execFlag: 1,
+            startTime: dt,
+            finishTime: null
+        };
+        await saveSyncParams(syncParams);
+        await saveLogProtocol(syncParams.syncid, 0, 0, "Autosinc", `Autosync data IIKO - Jetti: ${syncSource} ==> ${project.id}.`);
+        await saveLogProtocol(syncParams.syncid, 0, 0, "Autosinc", `Starting Batch ${dt.toString()}`);
+  
+        //throw new Error('err');
+        
+        //console.log("Start sync Products");
+        //ImportProductToJetti(syncParams).catch(() => { });
+        
+        //console.log("Start sync Counterpartie");
+        //ImportCounterpartieToJetti(syncParams).catch(() => { });
+  
+        await ImportPersonToJetti(syncParams); //  .catch(() => { });
+        resolve('done.');
+  
+        //    console.log("Start sync Sales docs");
+        //   ImportSalesToJetti(syncParams, ['C9CAC9B4-1E97-42E1-AC58-23C419888B46']).catch(() => { });
+      } catch (error) {
+        reject(error);
+      }
+    });
 }

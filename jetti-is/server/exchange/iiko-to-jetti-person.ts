@@ -133,7 +133,7 @@ async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, de
 export async function ImportPersonToJetti(syncParams: ISyncParams) {
   await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Persons and Managers`);
   if (syncParams.baseType=='sql') {
-    await ImportPersonSQLToJetti(syncParams).catch(() => { });
+    await ImportPersonSQLToJetti(syncParams); // .catch(() => { });
   }
 }
 ///////////////////////////////////////////////////////////
@@ -149,6 +149,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
 
     let i = 0;
     let batch: any[] = [];
+    await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `run sql`);
     await ssql.manyOrNoneStream(`
         SELECT top 5
           cast(spr.id as nvarchar(50)) as id,
@@ -193,4 +194,5 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
         }
         await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Persons and Managers`);
     });    
+    await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `sql finish`);
 }
