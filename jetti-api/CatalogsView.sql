@@ -711,6 +711,7 @@
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
         , ISNULL([kind.v].description, '') [kind.value], d.[kind] [kind.id], [kind.v].type [kind.type]
         , d.[Address] [Address]
+        , d.[IntegrationType] [IntegrationType]
       
         , ISNULL(l5.description, d.description) [Department.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Department.Level4]
