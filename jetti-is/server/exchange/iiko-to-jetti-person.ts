@@ -132,9 +132,7 @@ async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, de
 ///////////////////////////////////////////////////////////
 export async function ImportPersonToJetti(syncParams: ISyncParams) {
   await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Persons and Managers`);
-  if (syncParams.baseType=='sql') {
-    await ImportPersonSQLToJetti(syncParams); // .catch(() => { });
-  }
+  if (syncParams.baseType=='sql') await ImportPersonSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
 //const dSQLAdmin = new SQLPool(DestSqlConfig);
@@ -142,16 +140,14 @@ export async function ImportPersonToJetti(syncParams: ISyncParams) {
 ///////////////////////////////////////////////////////////
 
 export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
-
     const ssqlcfg = await GetSqlConfig(syncParams.source.id);
     const ssql = new SQLClient(new SQLPool(ssqlcfg));
     const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
     let i = 0;
     let batch: any[] = [];
-    await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `run sql`);
     await ssql.manyOrNoneStream(`
-        SELECT top 5
+        SELECT  top 4
           cast(spr.id as nvarchar(50)) as id,
           coalesce(spr.deleted,0) as deleted,
           coalesce(cast(spr.[xml] as xml).value('(/r/name/customValue)[1]' ,'nvarchar(255)'),
@@ -173,7 +169,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
 
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        if (syncParams.logLevel>0) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} person`);
+        if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} person`);
         for (const doc of batch) {
           await syncPerson(syncParams, doc, dsql);
           doc.type = 'Manager';
@@ -185,7 +181,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
     },
     async (rowCount: number, more: boolean) => {
         if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel>0) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
+          if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
           for (const doc of batch) {
             await syncPerson(syncParams, doc, dsql);
             doc.type = 'Manager';
@@ -193,6 +189,5 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
           } 
         }
         await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Persons and Managers`);
-    });    
-    await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `sql finish`);
+    });
 }

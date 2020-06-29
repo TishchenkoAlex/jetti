@@ -399,6 +399,23 @@ export async function saveSyncParams(SyncParams: ISyncParams) {
   `, [JSON.stringify(params)]);
 }
 
+export async function finishSync(SyncParams: ISyncParams) {
+  const esql = new SQLClient(exchangeSQLAdmin);
+  const params = {
+    id: SyncParams.syncid,
+    syncEnd: SyncParams.finishTime
+  }
+  await esql.oneOrNone(`
+    UPDATE dbo.syncList SET syncEnd = i.syncEnd
+    FROM (
+      SELECT *
+      FROM OPENJSON(@p1) WITH (
+        [id] UNIQUEIDENTIFIER,
+        [syncEnd] DATETIME)
+    ) i
+  WHERE dbo.syncList.id = i.id `, [JSON.stringify(params)]);
+}
+
 export async function saveLogProtocol(syncid: string, execCode: number, errorCount: number, syncStage: string,  protocol: string) {
   const esql = new SQLClient(exchangeSQLAdmin);
   await esql.oneOrNone(`INSERT INTO dbo.syncProtocol (syncid, execCode, errorCount, syncStage, protocol)

@@ -1,20 +1,18 @@
 import { SQLClient } from '../sql/sql-client';
 import { v1 as uuidv1 } from 'uuid';
 import { ColumnValue, Request } from 'tedious';
-import { config as dotenv } from 'dotenv';
-
 import { SQLPool } from '../sql/sql-pool';
+
 import { ExchangeSqlConfig } from './iiko-to-jetti-connection';
 import { ISyncParams } from './iiko-to-jetti-connection';
-import { GetSqlConfig } from './iiko-to-jetti-connection';
+import { GetSqlConfig, saveLogProtocol } from './iiko-to-jetti-connection';
 import { isNull } from 'util';
 import { GetCatalog, InsertCatalog, UpdateCatalog } from './iiko-to-jetti-utils';
 import { GetDocument } from './iiko-to-jetti-utils';
 import { InsertDocument } from './iiko-to-jetti-utils';
 import { UpdateDocument } from './iiko-to-jetti-utils';
 
-dotenv();
-
+const syncStage = 'Catalog.Counterpartie';
 ///////////////////////////////////////////////////////////
 interface IiikoCounterpartie {
   project: string,
@@ -83,14 +81,14 @@ const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCount
 async function syncCounterpartie (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient ): Promise<any> {
   let response: any = await GetCatalog(iikoCounterpartie.project, iikoCounterpartie.id, iikoCounterpartie.baseid, 'Counterpartie', destSQL);
   if (response === null) {
-    if (syncParams.logLevel>1) console.log('insert Counterpartie', iikoCounterpartie.name);
+    if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Counterpartie ${iikoCounterpartie.name}`);
     const NoSqlDocument: any = newCounterpartie(syncParams, iikoCounterpartie);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoCounterpartie, destSQL);
   }
   else {
     if (syncParams.forcedUpdate) {
-      if (syncParams.logLevel>1) console.log('update Counterpartie', iikoCounterpartie.name);
+      if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Counterpartie ${iikoCounterpartie.name}`);
       response.type = 'Catalog.Counterpartie';
       response.code = syncParams.source.code + '-' + iikoCounterpartie.code;
       response.description = iikoCounterpartie.name;
@@ -118,9 +116,8 @@ async function syncCounterpartie (syncParams: ISyncParams, iikoCounterpartie: Ii
 
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieToJetti(syncParams: ISyncParams) {
-  if (syncParams.baseType=='sql') {
-    ImportCounterpartieSQLToJetti(syncParams).catch(() => { });
-  }
+  await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Counterparties`);
+  if (syncParams.baseType=='sql') await ImportCounterpartieSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
@@ -132,7 +129,7 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
     let i = 0;
     let batch: any[] = [];
     await ssql.manyOrNoneStream(`
-        SELECT
+        SELECT top 3
             cast(spr.id as nvarchar(50)) as id,
             coalesce(spr.deleted,0) as deleted,
             coalesce(cast(spr.[xml] as xml).value('(/r/name/customValue)[1]' ,'nvarchar(255)'),
@@ -156,7 +153,7 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
 
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        if (syncParams.logLevel>0) console.log('inserting to batch', i, 'Counterparties');
+        if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Counterparties`);
         for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
         batch = [];
         req.resume();
@@ -164,10 +161,10 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
     },
     async (rowCount: number, more: boolean) => {
         if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel>0) console.log('inserting tail', batch.length, 'Counterparties');
+          if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Counterparties`);
           for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
         }
-        console.log('Finish sync Counterparties.')
+        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Counterparties`);
     });    
 
 }

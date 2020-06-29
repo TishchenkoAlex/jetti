@@ -14,11 +14,14 @@ AutosincIkoToJetty(proj, source).then(
 );
 */
 
-// AutosincIkoToJetty(proj, source).catch(() => { });
-
+/*
 Promise.all([
     AutosincIkoToJetty(proj, source)
   ]).then(
     () => console.log('All Task Complete.'),
-    () => console.log('Task Errored!')
+    (error) => console.log('Task Errored: ', error.message)
 );
+*/
+
+
+AutosincIkoToJetty(proj, source).catch((error) => { console.log(error) });
