@@ -3,10 +3,12 @@ import { v1 as uuidv1 } from 'uuid';
 import { ColumnValue, Request } from 'tedious';
 
 import { SQLPool } from '../sql/sql-pool';
-import { ISyncParams, exchangeManyOrNone, GetSqlConfig, GetExchangeCatalogID } from './iiko-to-jetti-connection';
-import { DateToString, GetCatalog, InsertCatalog, UpdateCatalog, nullOrID, Ref, InsertDocument } from './iiko-to-jetti-utils';
+import { ISyncParams, saveLogProtocol, exchangeManyOrNone, GetSqlConfig, GetExchangeCatalogID } from './iiko-to-jetti-connection';
+import { DateToString, GetCatalog, InsertCatalog, UpdateCatalog, nullOrID, Ref, InsertDocument, GetDocument, UpdateDocument } from './iiko-to-jetti-utils';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 
+///////////////////////////////////////////////////////////
+const syncStage: string = 'Document.Order';
 ///////////////////////////////////////////////////////////
 interface IiikoOrder {
   project: string,
@@ -28,9 +30,51 @@ const transformOrder = (syncParams: ISyncParams, source: any): IiikoOrder => {
   }
 }  
 ///////////////////////////////////////////////////////////
+const newOrder = (): any => {
+  return {
+    id: uuidv1().toUpperCase(),
+    type: 'Document.Operation',
+    code: '',
+    description: '',
+    posted: 0,
+    deleted: 0,
+    doc: {
+      Group: '',
+      Operation: '',
+      Amount: 0.0,
+      currency: '',
+      f1: '',
+      f2: '',
+      f3: '',
+      Customer: '',
+      Manager: '',
+      NumCashShift: '',
+      Department: '',
+      Storehouse: '',
+      PayCash: 0,
+      PayCard: 0,
+      PayAggregator: 0,
+      PayKupon: 0,
+      DeliveryType: '',
+      OrderSource: '',
+      RetailClient: '',
+      BillTime: '',
+      CloseTime: '',
+      ItemsInventory: [],
+      ItemsPay: []
+    },
+    parent: null,
+    isfolder: false,
+    company: '',
+    user: null,
+    info: null
+  }
+}
+///////////////////////////////////////////////////////////
 async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQLClient, destSQL: SQLClient): Promise<any> {
   // орбработка документов продаж по кассовой смене
-  if (syncParams.logLevel>1) console.log('Кассовая смена:', iikoDoc.id, iikoDoc.dateIncoming, '#', iikoDoc.documentNumber);
+  const startd: number = Date.now();
+  if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Session ${iikoDoc.id} ${iikoDoc.dateIncoming.toString()} #${iikoDoc.documentNumber}`);
   let Group: string = '5B7E85A4-BA99-11E7-BB80-DF3C32C3B9C9';
   let Operation = '58FA3C90-DEA7-11E9-8D32-67D574707955';
 
@@ -40,6 +84,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
   if (typeFranchise.tf === 'Classic franchise') Operation = '42C3BE10-1831-11EA-822C-15390275940A'; // другая операция по франшизе
   const customer: any = await destSQL.oneOrNone(`SELECT id FROM [dbo].[Catalog.Counterpartie.v] WITH (NOEXPAND) where [Department] = @p1 and [Client]='true' `, [store.doc.Department]); // розничный покупатель
   const company2: any = await destSQL.oneOrNone(`select cast(dbo.Company2OnDate(@p1, @p2) as nvarchar(50)) as id;`, [iikoDoc.dateIncoming, store.doc.Department]); //организация-2
+  
   let docAcquiringTerminal2: Ref = null;
   let docBankAccount2: Ref = null;
   let docAcquier2: Ref = null;
@@ -73,7 +118,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       from dbo.ItemSaleEvent ise
       where ise.session_id = @p1 and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i  
     left join dbo.OrderPaymentEvent p on p.[order] = i.orderId
-    where i.orderId = '117C419C-34D3-40A4-A65A-02BC88F63E2B'
+     where i.orderId = '117C419C-34D3-40A4-A65A-02BC88F63E2B'
     `, [iikoDoc.id]);
   // позиции
   const pos: any = await sourceSQL.manyOrNone(`
@@ -157,11 +202,12 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     docAcquier = AcquiringTerminal.Acquier;
   }
   if (docAcquier===null) docAcquier=nullOrID(customer);
+  //
   // обработка заказов
+  //
+  let icnt: number = 0; let ucnt: number = 0; let dcnt: number =0;
   for (const ord of Orders) {
-    if (syncParams.logLevel>1) console.log('Заказ:', ord.orderId, '#',ord.orderNum);
     const iikoOrder: IiikoOrder = transformOrder(syncParams, ord);
-    console.log(iikoOrder);
     let posz = pos.filter(p => p.orderId == ord.orderId);
     // сопоставление по SKU
     posz = await exchangeManyOrNone(`
@@ -360,77 +406,82 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       docRetailClient = deliveryz[0].RetailClient;
       docOrderSource = deliveryz[0].OrderSource;
       isDelivery = deliveryz[0].isDelivery;
-      console.log(deliveryz);
-      console.log(docDeliveryType,docbillTime,docCloseTime,docRetailClient,docOrderSource,isDelivery);
     }
     if (Amount.PayAggregator>0 && isDelivery==0) docDeliveryType = 'EXTERNAL';
     if (docDeliveryType===null) docDeliveryType = 'RESTAURANT';
-    const NoSqlDocument: any = {
-      id: uuidv1().toUpperCase(),
-      type: 'Document.Operation',
-      code: codez,
-      description: descriptionz.dsc,
-      posted: 0,
-      deleted: deletedz,
-      doc: {
-        Group: Group, 
-        Operation: Operation,
-        Amount: Amount.Amount,
-        currency: syncParams.source.currency,
-        f1: customer.id,
-        f2: managerz.id,
-        f3: store.doc.Department,
-        Customer: customer.id,
-        Manager: managerz.id,
-        NumCashShift: iikoDoc.documentNumber,
-        Department: store.doc.Department,
-        Storehouse: store.id,
-        PayCash: Amount.PayCash,
-        PayCard: Amount.PayCard,
-        PayAggregator: Amount.PayAggregator,
-        PayKupon: Amount.PayKupon,
-        DeliveryType: docDeliveryType,
-        OrderSource: docOrderSource,
-        RetailClient: docRetailClient,
-        BillTime: docbillTime,
-        CloseTime: docCloseTime,
-        ItemsInventory: posz,
-        ItemsPay: cashz
-      },
-      parent: null,
-      isfolder: false,
-      company: company.id,
-      user: null,
-      info: null
+    // заполняем документ
+    let isNewDoc: Boolean = false;
+    let NoSqlDocument: any = await GetDocument(iikoOrder.project, iikoOrder.id, iikoOrder.baseid, iikoOrder.type, destSQL);
+    if (!NoSqlDocument) {
+      isNewDoc = true;
+      if (syncParams.logLevel>2) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} insert`);
+      NoSqlDocument = newOrder();
+      icnt++;
     }
+    else {
+      if (syncParams.logLevel>2) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} update`);
+      ucnt++;
+    };
+    NoSqlDocument.type = 'Document.Operation';
+    NoSqlDocument.date = datez;
+    NoSqlDocument.code = codez;
+    NoSqlDocument.description = descriptionz.dsc;
+    NoSqlDocument.posted = 0;
+    NoSqlDocument.deleted = deletedz;
+    NoSqlDocument.doc.Group = Group;
+    NoSqlDocument.doc.Operation = Operation;
+    NoSqlDocument.doc.Amount = Amount.Amount;
+    NoSqlDocument.doc.currency = syncParams.source.currency;
+    NoSqlDocument.doc.f1 = customer.id;
+    NoSqlDocument.doc.f2 = managerz.id;
+    NoSqlDocument.doc.f3 = store.doc.Department
+    NoSqlDocument.doc.Customer = customer.id;
+    NoSqlDocument.doc.Manager = managerz.id;
+    NoSqlDocument.doc.NumCashShift = iikoDoc.documentNumber;
+    NoSqlDocument.doc.Department = store.doc.Department;
+    NoSqlDocument.doc.Storehouse = store.id;
+    NoSqlDocument.doc.PayCash = Amount.PayCash;
+    NoSqlDocument.doc.PayCard = Amount.PayCard;
+    NoSqlDocument.doc.PayAggregator = Amount.PayAggregator;
+    NoSqlDocument.doc.PayKupon = Amount.PayKupon;
+    NoSqlDocument.doc.DeliveryType = docDeliveryType;
+    NoSqlDocument.doc.OrderSource = docOrderSource;
+    NoSqlDocument.doc.RetailClient = docRetailClient;
+    NoSqlDocument.doc.BillTime = docbillTime;
+    NoSqlDocument.doc.CloseTime = docCloseTime;
+    NoSqlDocument.doc.ItemsInventory = posz;
+    NoSqlDocument.doc.ItemsPay = cashz;
+    NoSqlDocument.parent = null;
+    NoSqlDocument.isfolder = false;
+    NoSqlDocument.company = company.id;
+    NoSqlDocument.user = null;
+    NoSqlDocument.info = null;
     // JSON.stringify(posz) JSON.stringify(cashz)
     // console.log(NoSqlDocument);
     const jsonDoc = JSON.stringify(NoSqlDocument);
-    await InsertDocument(jsonDoc, NoSqlDocument.id, iikoOrder, destSQL);
-    // console.log(JSON.stringify(deliveryz));
-/*
-  select top 1 @docDeliveryType = coalesce(cm.addAnalytics,''), @docbillTime = i.DT1, @docCloseTime = i.DT2, @RetailClient = i.ID2, @docOrderSource = i.ID3, @isDelivery= i.st
-      from @Items i
-      left join [sm].dbo.CatalogMatching cm on cm.ExchangeCode=i.SKU2 and cm.ExchangeBase=@baseid and cm.ExchangeType='OrderType'
-      where i.TypeItem='DELIVERY' and i.ID1=@ordID; 
-    if (@PayAggregator>0 and @isDelivery=0) set @docDeliveryType = 'EXTERNAL';
-    if (@docDeliveryType is NULL) set @docDeliveryType='RESTAURANT';
-
-  */
-    
-
-    //console.log(nullOrID(CashRegister2));
-    /*for (const p of posz) {
-      console.log(p.SKU, p.Qty);
-    } */
+    if (isNewDoc) await InsertDocument(jsonDoc, NoSqlDocument.id, iikoOrder, destSQL);
+    else await UpdateDocument(jsonDoc, NoSqlDocument.id, destSQL);
+    //!!! if (@setQueue=1) insert into [sm].exc.QueuePost (id, company, flow) select @docid, @Company, @defFlow; -- очерерь проведения документов
   }
+  // обработка удаленных заказов
+  for (const delord of delOrder) {
+    let NoSqlDocument: any = await GetDocument(syncParams.project.id, '117C419C-34D3-40A4-A65A-02BC88F63E2B' /*delord.orderId */, syncParams.source.id, 'OrderDoc', destSQL);
+    if (NoSqlDocument) {
+      if (!NoSqlDocument.deleted) console.log('нужно удалить',NoSqlDocument.deleted);
+      else console.log('уже удален');
+    }
+    else console.log(`нет такого ${delord.orderId}`);
+    //orderId
+  }
+  // протокол
+  const endd: number = Date.now();
+  if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Session #${iikoDoc.documentNumber} orders: insert ${icnt}, update ${ucnt}, delete ${dcnt}. Processing time ${(endd-startd)/1000} s.`);
 
 }
 
 export async function ImportSalesToJetti(syncParams: ISyncParams, docList: any[] = []) {
-  if (syncParams.baseType == 'sql') {
-    ImportSalesSQLToJetti(syncParams, docList).catch(() => { });
-  }
+  await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Sales Documents`);
+  if (syncParams.baseType == 'sql') await ImportSalesSQLToJetti(syncParams, docList);
 }
 
 export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: any[] = []) {
@@ -476,6 +527,7 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
     }
     sw += ') ';
   }
+  console.log(sw);
   const sql: string = `
     SELECT DISTINCT
       cast(pr.sessionid as varchar(38)) as id,
