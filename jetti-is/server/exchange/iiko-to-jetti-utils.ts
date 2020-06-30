@@ -30,15 +30,15 @@ export interface INoSqlDocument {
 */
 
 export function nullOrID(d: any): Ref {
-  if (d===null) return null;
+  if (!d) return null;
   return d.id;
 }
 
 export function DateToString(dt: Date): string {
   let res: string = dt.getFullYear().toString();
-  if (dt.getMonth()<9) res += `0${dt.getMonth()+1}`;
-    else `${dt.getMonth()+1}`;
-  if (dt.getDate()<10) res += `0${dt.getDate()}`;
+  if (dt.getMonth() < 9) res += `0${dt.getMonth() + 1}`;
+    else res += `${dt.getMonth() + 1}`;
+  if (dt.getDate() < 10) res += `0${dt.getDate()}`;
     else res += `${dt.getDate()}`;
   return res;
 }
@@ -47,13 +47,13 @@ export async function GetCatalog(project: string, exchangeCode: string, exchange
   // получить из базы элемент справочника
   const id: Ref = await GetExchangeCatalogID(project, exchangeCode, exchangeBase, exchangeType);
   if (!id) return null;
-  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);  
+  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);
   return response;
 }
 
 export async function InsertCatalog(jsonDoc: string, id: string, source: any, tx: SQLClient) {
   // вставка элемента справочника в базу Jetti
-  //! добавить обработку ошибки и откат
+  // ! добавить обработку ошибки и откат
   const response = await tx.oneOrNone(`
       INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
@@ -120,13 +120,13 @@ export async function GetDocument(project: string, exchangeCode: string, exchang
   // получить из базы документ
   const id: Ref = await GetExchangeDocumentID(project, exchangeCode, exchangeBase, exchangeType);
   if (!id) return null;
-  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);  
+  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);
   return response;
 }
 
 export async function InsertDocument(jsonDoc: string, id: string, source: any, tx: SQLClient) {
   // вставка документа в базу Jetti
-  //! добавить обработку ошибки и откат
+  // ! добавить обработку ошибки и откат
   const response = await tx.oneOrNone(`
       INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],

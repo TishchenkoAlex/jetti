@@ -1,11 +1,13 @@
 // Test exchange modules...
 
-import { AutosincIkoToJetty } from "./exchange/iiko-to-jetti-autosync";
-import { IJettiProject, SMVProject } from "./exchange/jetti-projects";
+import { AutosincIkoToJetty } from './exchange/iiko-to-jetti-autosync';
+import { IJettiProject, SMVProject } from './exchange/jetti-projects';
 
-//! временно. будeт задаваться в параметрах задания
-const proj: IJettiProject = SMVProject; 
-const source: string = 'Russia';
+// ! временно. будeт задаваться в параметрах задания
+const params: any = {
+  project: SMVProject,
+  syncSource: 'Russia'
+};
 
 /*
 AutosincIkoToJetty(proj, source).then(
@@ -23,5 +25,4 @@ Promise.all([
 );
 */
 
-
-AutosincIkoToJetty(proj, source).catch((error) => { console.log(error) });
+AutosincIkoToJetty(params).catch((error) => { console.log(error); });

@@ -8,15 +8,15 @@ import { DateToString, GetCatalog, InsertCatalog, UpdateCatalog, nullOrID, Ref, 
 import { dateReviverUTC } from '../fuctions/dateReviver';
 
 ///////////////////////////////////////////////////////////
-const syncStage: string = 'Document.Order';
+const syncStage = 'Document.Order';
 ///////////////////////////////////////////////////////////
 interface IiikoOrder {
-  project: string,
-  id: string,
-  baseid: string,
-  type: string,
-  orderNum: string,
-  date: Date
+  project: string;
+  id: string;
+  baseid: string;
+  type: string;
+  orderNum: string;
+  date: Date;
 }
 ///////////////////////////////////////////////////////////
 const transformOrder = (syncParams: ISyncParams, source: any): IiikoOrder => {
@@ -27,8 +27,8 @@ const transformOrder = (syncParams: ISyncParams, source: any): IiikoOrder => {
     type: 'OrderDoc',
     orderNum: source.orderNum,
     date: source.date
-  }
-}  
+  };
+};
 ///////////////////////////////////////////////////////////
 const newOrder = (): any => {
   return {
@@ -68,23 +68,26 @@ const newOrder = (): any => {
     company: '',
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQLClient, destSQL: SQLClient): Promise<any> {
   // орбработка документов продаж по кассовой смене
   const startd: number = Date.now();
-  if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Session ${iikoDoc.id} ${iikoDoc.dateIncoming.toString()} #${iikoDoc.documentNumber}`);
-  let Group: string = '5B7E85A4-BA99-11E7-BB80-DF3C32C3B9C9';
+  if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Session ${iikoDoc.id} ${iikoDoc.dateIncoming.toString()} #${iikoDoc.documentNumber}`);
+  const Group = '5B7E85A4-BA99-11E7-BB80-DF3C32C3B9C9';
   let Operation = '58FA3C90-DEA7-11E9-8D32-67D574707955';
 
   const store: any = await GetCatalog(syncParams.project.id, iikoDoc.store, syncParams.source.id, 'Storehouse', destSQL); // склад
-  const company: any = await destSQL.oneOrNone(`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`, [iikoDoc.dateIncoming, store.doc.Department]); //организация 
-  const typeFranchise: any = await destSQL.oneOrNone(`select dbo.FranchiseOnDate(@p1, @p2) as tf `, [iikoDoc.dateIncoming, store.doc.Department]); // тип франшизы
+  const company: any = await destSQL.oneOrNone(`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
+    [iikoDoc.dateIncoming, store.doc.Department]); // организация
+  const typeFranchise: any = await destSQL.oneOrNone(`select dbo.FranchiseOnDate(@p1, @p2) as tf `,
+   [iikoDoc.dateIncoming, store.doc.Department]); // тип франшизы
   if (typeFranchise.tf === 'Classic franchise') Operation = '42C3BE10-1831-11EA-822C-15390275940A'; // другая операция по франшизе
   const customer: any = await destSQL.oneOrNone(`SELECT id FROM [dbo].[Catalog.Counterpartie.v] WITH (NOEXPAND) where [Department] = @p1 and [Client]='true' `, [store.doc.Department]); // розничный покупатель
-  const company2: any = await destSQL.oneOrNone(`select cast(dbo.Company2OnDate(@p1, @p2) as nvarchar(50)) as id;`, [iikoDoc.dateIncoming, store.doc.Department]); //организация-2
-  
+  const company2: any = await destSQL.oneOrNone(`select cast(dbo.Company2OnDate(@p1, @p2) as nvarchar(50)) as id;`,
+    [iikoDoc.dateIncoming, store.doc.Department]); // организация-2
+
   let docAcquiringTerminal2: Ref = null;
   let docBankAccount2: Ref = null;
   let docAcquier2: Ref = null;
@@ -92,7 +95,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     const params2: any = await destSQL.oneOrNone(`
       SELECT top 1 [id] as AcquiringTerminal2, [BankAccount] as BankAccount2, [Counterpartie] as Acquier2
       FROM [dbo].[Catalog.AcquiringTerminal.v] WITH (NOEXPAND)
-      WHERE [Department] = @p1 and [company] = @p2 
+      WHERE [Department] = @p1 and [company] = @p2
       order by [isDefault] desc, [code]`, [store.doc.Department, company2.id]); // параметры по организация2
     if (!params2 === null) {
       docAcquiringTerminal2 = params2.AcquiringTerminal2;
@@ -116,13 +119,13 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     from
     ( SELECT DISTINCT ise.orderId
       from dbo.ItemSaleEvent ise
-      where ise.session_id = @p1 and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i  
+      where ise.session_id = @p1 and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i
     left join dbo.OrderPaymentEvent p on p.[order] = i.orderId
      where i.orderId = '117C419C-34D3-40A4-A65A-02BC88F63E2B'
     `, [iikoDoc.id]);
   // позиции
   const pos: any = await sourceSQL.manyOrNone(`
-    SELECT 
+    SELECT
       cast(ise.orderId as nvarchar(50)) as orderId,
       cast(ise.dishInfo as nvarchar(50)) as SKU,
       ise.openTime as openTime,
@@ -138,13 +141,13 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null `, [iikoDoc.id]);
   // оплаты
   const cash: any = await sourceSQL.manyOrNone(`
-    select 
+    select
       z.ID1 as orderId,
       z.SKU as paymentType,
       z.SKU2 as isPrepay,
       cast(sum(z.sum) as numeric(19,9)) as Amount
     from (
-      select 
+      select
         cast(a.orderId as nvarchar(50)) as ID1,
         cast(a.paymentType as nvarchar(50)) as SKU,
         case when ((select COUNT(*) from dbo.AccountingTransaction a1 where a1.orderId=a.orderId and a1.session_id<>a.session_id and cast(a1.date as date)<>cast(a.date as date))=0) then '0' else '1' end as SKU2,
@@ -159,7 +162,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     select DISTINCT
       cast(ise.orderId as nvarchar(50)) as orderId,
       ise.date as [date]
-    from dbo.ItemSaleEvent ise 
+    from dbo.ItemSaleEvent ise
     where ise.session_id = @p1
       and not ise.orderId in (select DISTINCT i.orderId from dbo.ItemSaleEvent i where i.session_id = ise.session_id
         and i.deletedWithWriteoff=2 and i.writeoffpaymenttype is null) `, [iikoDoc.id]);
@@ -178,19 +181,19 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       (SELECT DISTINCT ise.orderId
       from dbo.ItemSaleEvent ise
       where ise.session_id = @p1
-      and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i  
+      and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i
     left join dbo.OrderPaymentEvent p on p.[order] = i.orderId
     left join dbo.Delivery d on d.orderId = i.orderId `, [iikoDoc.id]);
   // кассы
-  let CashRegister: any = await destSQL.oneOrNone(`SELECT top 1 d.id FROM [dbo].[Catalog.CashRegister.v] d WITH (NOEXPAND) 
+  const CashRegister: any = await destSQL.oneOrNone(`SELECT top 1 d.id FROM [dbo].[Catalog.CashRegister.v] d WITH (NOEXPAND)
     where d.[Department] = @p1 and d.[currency] = @p2 and cast(d.[isAccounting] as bit) = 1 and d.[company] = @p3 ORDER by d.deleted`,
     [store.doc.Department, syncParams.source.currency, company.id]);
-  let CashRegister2: any = await destSQL.oneOrNone(`SELECT top 1 d.id FROM [dbo].[Catalog.CashRegister.v] d WITH (NOEXPAND) 
+  let CashRegister2: any = await destSQL.oneOrNone(`SELECT top 1 d.id FROM [dbo].[Catalog.CashRegister.v] d WITH (NOEXPAND)
     where d.[Department] = @p1 and d.[currency] = @p2 and cast(d.[isAccounting] as bit) = 0 and d.[company] = @p3 ORDER by d.deleted`,
     [store.doc.Department, syncParams.source.currency, company.id]);
-  if (syncParams.source.id=='Poland') CashRegister2 = CashRegister;
+  if (syncParams.source.id === 'Poland') CashRegister2 = CashRegister;
   // экв. терминал
-  let AcquiringTerminal: any = await destSQL.oneOrNone(`SELECT top 1 d.[id], d.[BankAccount], d.[Counterpartie] as Acquier 
+  const AcquiringTerminal: any = await destSQL.oneOrNone(`SELECT top 1 d.[id], d.[BankAccount], d.[Counterpartie] as Acquier
     FROM [dbo].[Catalog.AcquiringTerminal.v] d WITH (NOEXPAND)
     where d.[Department] = @p1 and d.[company] = @p2  order by d.[isDefault] desc, d.[code]`, [store.doc.Department, company.id]);
   let docAcquier: Ref = null;
@@ -201,14 +204,14 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     docBankAccount = AcquiringTerminal.BankAccount;
     docAcquier = AcquiringTerminal.Acquier;
   }
-  if (docAcquier===null) docAcquier=nullOrID(customer);
+  if (docAcquier === null) docAcquier = nullOrID(customer);
   //
   // обработка заказов
   //
-  let icnt: number = 0; let ucnt: number = 0; let dcnt: number =0;
+  let icnt = 0; let ucnt = 0; let dcnt = 0;
   for (const ord of Orders) {
     const iikoOrder: IiikoOrder = transformOrder(syncParams, ord);
-    let posz = pos.filter(p => p.orderId == ord.orderId);
+    let posz = pos.filter(p => p.orderId === ord.orderId);
     // сопоставление по SKU
     posz = await exchangeManyOrNone(`
       SELECT
@@ -259,8 +262,8 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       where not c.[id] is null
       and (k.[code]<>N'MODIFIER' or (k.[code]=N'MODIFIER' and abs(p.[AmountFull])>=0.005))
     `, [JSON.stringify(posz)]);
-    let nposz = posz.filter(p => p.Qty<0);
-    if (nposz.length>0) {
+    const nposz = posz.filter(p => p.Qty < 0);
+    if (nposz.length > 0) {
       // есть позиции с отрицательным количеством - сворачиваем
       posz = await destSQL.manyOrNone(`
         SELECT
@@ -287,21 +290,21 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       `, [JSON.stringify(posz)]);
       console.log(posz);
     }
-    let deletedz: number = 0;
-    if (posz.length==0) deletedz = 1;
+    let deletedz = 0;
+    if (posz.length === 0) deletedz = 1;
     // оплаты
-    let cashz = cash.filter(p => p.orderId == ord.orderId);
+    let cashz = cash.filter(p => p.orderId === ord.orderId);
     // пишем документ по времени в 13:00
     const datez: Date =  ord.date;
     datez.setUTCHours(13); datez.setMinutes(0); datez.setSeconds(0);
-    const codez = syncParams.source.code+'-'+ord.orderNum;
+    const codez = syncParams.source.code + '-' + ord.orderNum;
     const descriptionz: any = await destSQL.oneOrNone(`
-      SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3
-      `,[codez, datez.toJSON(), Operation]);
+      SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
+      [codez, datez.toJSON(), Operation]);
     const managerz: any = await GetCatalog(syncParams.project.id, ord.cashier, syncParams.source.id, 'Manager', destSQL); // кассир
     // обработка дополнительных параметров PaymentTypeAdd
-    let tabPayAdd: any = [];
-    //!!! пока убрал !!!
+    const tabPayAdd: any = []; // !!! let
+    // !!! пока убрал !!!
     /*
     if (syncParams.source.id=='Poland' && ord.orderType != '') {
       tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
@@ -312,9 +315,9 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
         where cm.ExchangeBase = @p1 and cm.ExchangeType='PaymentTypeAdd' and coalesce(cm.addType,'')=@p2
         `,[syncParams.source.id, ord.orderType]);
-    } 
+    }
     console.log(JSON.stringify(tabPayAdd)); */
-    // оплаты по заказу  
+    // оплаты по заказу
     cashz = await exchangeManyOrNone(`
       SELECT
         case when(COALESCE(p.[isPrepay],'0')='1') then N'PREPAY' WHEN(a.[addAnalytics] is NULL) then c.addAnalytics else a.[addAnalytics] end as TypePay,
@@ -353,17 +356,18 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       left join OPENJSON(@p11) WITH (
         [ExchangeCode] UNIQUEIDENTIFIER,
         [addAnalytics] NVARCHAR(50),
-        [id] UNIQUEIDENTIFIER) as a on a.[ExchangeCode]=p.paymentType    
-    `,[customer.id, docAcquier, docAcquier2, docBankAccount, docBankAccount2, nullOrID(CashRegister), nullOrID(CashRegister2), docAcquiringTerminal, docAcquiringTerminal2, JSON.stringify(cashz), JSON.stringify(tabPayAdd)]);
+        [id] UNIQUEIDENTIFIER) as a on a.[ExchangeCode]=p.paymentType
+    `, [customer.id, docAcquier, docAcquier2, docBankAccount, docBankAccount2, nullOrID(CashRegister), nullOrID(CashRegister2),
+    docAcquiringTerminal, docAcquiringTerminal2, JSON.stringify(cashz), JSON.stringify(tabPayAdd)]);
     // итоговые суммы оплат
     const Amount: any = await destSQL.oneOrNone(`
-      select 
+      select
         sum(COALESCE(i.PayCash,0)) as PayCash,
         sum(COALESCE(i.PayCard,0)) as PayCard,
         sum(COALESCE(i.PayAggregator,0)) as PayAggregator,
         sum(COALESCE(i.PayKupon,0)) as PayKupon,
         sum(COALESCE(i.Amount,0)) as Amount
-      from 
+      from
       (SELECT
         CASE when (p.[TypePay] like 'CASH%') then p.[AmountPay] else 0 end as PayCash,
         CASE when (p.[TypePay] like 'BANK%' or p.[TypePay]='ONLINE') then p.[AmountPay] else 0 end as PayCard,
@@ -383,10 +387,10 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     let docCloseTime: Ref = null;
     let docRetailClient: Ref = null;
     let docOrderSource: Ref = null;
-    let isDelivery: number = 0;
-    let deliveryz: any = delivery.filter(p => p.orderId == ord.orderId);
-    if (deliveryz.length>0) {
-      deliveryz =  await exchangeManyOrNone(`      
+    let isDelivery = 0;
+    let deliveryz: any = delivery.filter(p => p.orderId === ord.orderId);
+    if (deliveryz.length > 0) {
+      deliveryz =  await exchangeManyOrNone(`
         select top 1 coalesce(cm.addAnalytics,'') as DeliveryType, d.[billTime] as billTime, d.[closeTime] as CloseTime,
           d.[customerId] as RetailClient, d.[sourceKey] as OrderSource, d.[isDelivery] as isDelivery
         FROM OPENJSON(@p1) WITH (
@@ -407,21 +411,23 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       docOrderSource = deliveryz[0].OrderSource;
       isDelivery = deliveryz[0].isDelivery;
     }
-    if (Amount.PayAggregator>0 && isDelivery==0) docDeliveryType = 'EXTERNAL';
-    if (docDeliveryType===null) docDeliveryType = 'RESTAURANT';
+    if (Amount.PayAggregator > 0 && isDelivery === 0) docDeliveryType = 'EXTERNAL';
+    if (docDeliveryType === null) docDeliveryType = 'RESTAURANT';
     // заполняем документ
     let isNewDoc: Boolean = false;
     let NoSqlDocument: any = await GetDocument(iikoOrder.project, iikoOrder.id, iikoOrder.baseid, iikoOrder.type, destSQL);
     if (!NoSqlDocument) {
       isNewDoc = true;
-      if (syncParams.logLevel>2) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} insert`);
+      if (syncParams.logLevel > 2) {
+        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} insert`);
+      }
       NoSqlDocument = newOrder();
       icnt++;
-    }
-    else {
-      if (syncParams.logLevel>2) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} update`);
+    } else {
+      if (syncParams.logLevel > 2) {
+        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} update`); }
       ucnt++;
-    };
+    }
     NoSqlDocument.type = 'Document.Operation';
     NoSqlDocument.date = datez;
     NoSqlDocument.code = codez;
@@ -434,7 +440,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     NoSqlDocument.doc.currency = syncParams.source.currency;
     NoSqlDocument.doc.f1 = customer.id;
     NoSqlDocument.doc.f2 = managerz.id;
-    NoSqlDocument.doc.f3 = store.doc.Department
+    NoSqlDocument.doc.f3 = store.doc.Department;
     NoSqlDocument.doc.Customer = customer.id;
     NoSqlDocument.doc.Manager = managerz.id;
     NoSqlDocument.doc.NumCashShift = iikoDoc.documentNumber;
@@ -461,27 +467,28 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     const jsonDoc = JSON.stringify(NoSqlDocument);
     if (isNewDoc) await InsertDocument(jsonDoc, NoSqlDocument.id, iikoOrder, destSQL);
     else await UpdateDocument(jsonDoc, NoSqlDocument.id, destSQL);
-    //!!! if (@setQueue=1) insert into [sm].exc.QueuePost (id, company, flow) select @docid, @Company, @defFlow; -- очерерь проведения документов
+    // !!! if (@setQueue=1) insert into [sm].exc.QueuePost (id, company, flow)
+    // !!! select @docid, @Company, @defFlow; -- очерерь проведения документов
   }
   // обработка удаленных заказов
   for (const delord of delOrder) {
-    let NoSqlDocument: any = await GetDocument(syncParams.project.id, '117C419C-34D3-40A4-A65A-02BC88F63E2B' /*delord.orderId */, syncParams.source.id, 'OrderDoc', destSQL);
+    const NoSqlDocument: any = await GetDocument(syncParams.project.id, delord.orderId, syncParams.source.id, 'OrderDoc', destSQL);
     if (NoSqlDocument) {
-      if (!NoSqlDocument.deleted) console.log('нужно удалить',NoSqlDocument.deleted);
-      else console.log('уже удален');
+      if (!NoSqlDocument.deleted) {
+        console.log('нужно удалить', NoSqlDocument.deleted);
+        dcnt++;
+      }
     }
-    else console.log(`нет такого ${delord.orderId}`);
-    //orderId
   }
   // протокол
   const endd: number = Date.now();
-  if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Session #${iikoDoc.documentNumber} orders: insert ${icnt}, update ${ucnt}, delete ${dcnt}. Processing time ${(endd-startd)/1000} s.`);
-
+  if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage,
+     `Session #${iikoDoc.documentNumber} orders: insert ${icnt}, update ${ucnt}, delete ${dcnt}. Processing time ${(endd - startd) / 1000} s.`);
 }
 
 export async function ImportSalesToJetti(syncParams: ISyncParams, docList: any[] = []) {
   await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Sales Documents`);
-  if (syncParams.baseType == 'sql') await ImportSalesSQLToJetti(syncParams, docList);
+  if (syncParams.baseType === 'sql') await ImportSalesSQLToJetti(syncParams, docList);
 }
 
 export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: any[] = []) {
@@ -492,18 +499,17 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
 
   let i = 0;
   // условия к выборке
-  let sw: string = '';
+  let sw = '';
   if (docList.length === 0) {
     // выборка по интервалу дат
     sw = ` where ( cast(pr.dateIncoming as DATE) between '${DateToString(syncParams.periodBegin)}' and '${DateToString(syncParams.periodEnd)}' `;
     if (syncParams.execFlag === 126 && syncParams.autosync) {
       sw += ` or (cast(pr.dateIncoming as DATE) >= '${DateToString(syncParams.firstDate)}' and cast(pr.dateIncoming as DATE) < '${DateToString(syncParams.periodBegin)}' and pr.dateModified >= '${DateToString(syncParams.lastSyncDate)}' )) `;
-    }
-    else sw += ') ';
+    } else sw += ') ';
     if (syncParams.exchangeID === null) {
       if (syncParams.source.exchangeStores.length > 0) {
         // ограничение по списку складов
-        sw += ` and pr.defaultStore in (`
+        sw += ` and pr.defaultStore in (`;
         i = 0;
         for (const store of syncParams.source.exchangeStores) {
           i++;
@@ -512,12 +518,10 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
         }
         sw += ') ';
       }
-    }
-    else {
+    } else {
       sw += ` and pr.defaultStore = '${syncParams.exchangeID}' `;
     }
-  }
-  else {
+  } else {
     // выборка по списку документов
     i = 0;
     for (const d of docList) {
@@ -528,20 +532,20 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
     sw += ') ';
   }
   console.log(sw);
-  const sql: string = `
+  const sql = `
     SELECT DISTINCT
       cast(pr.sessionid as varchar(38)) as id,
       cast(pr.comment as nvarchar(255)) as comment,
       cast(pr.conception as nvarchar(50)) as conception,
       pr.dateIncoming,
-      cast((select top 1 u.session_number from UserActionEvent u where u.dtype='CSE' and u.session_id=pr.sessionId) as nvarchar(19)) as documentNumber,  
+      cast((select top 1 u.session_number from UserActionEvent u where u.dtype='CSE' and u.session_id=pr.sessionId) as nvarchar(19)) as documentNumber,
       pr.status,
       cast(pr.defaultStore as nvarchar(50)) as store,
       cast(pr.accountTo as nvarchar(50)) as account,
       cast(pr.revision as nvarchar(50)) as revision,
       pr.dateModified,
       cast(pr.userModified as nvarchar(50)) as userModified
-    FROM dbo.salesdocument pr 
+    FROM dbo.salesdocument pr
     ${sw}
       and pr.status=1
       and not pr.sessionid is null
