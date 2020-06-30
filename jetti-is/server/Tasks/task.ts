@@ -40,7 +40,6 @@ const options: Queue.QueueOptions = {
 
 export const JQueue = new Queue(DB_NAME, options);
 
-JQueue.process(1, async job => {
-  const task = Jobs[job.data.job.id];
-  if (task) return await task(job);
+JQueue.process(async job => {
+  await taskExecution(job);
 });

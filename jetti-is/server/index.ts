@@ -12,6 +12,7 @@ import { router as auth } from './routes/auth';
 import { router as document } from './routes/document';
 import { router as task } from './routes/tasks';
 import { setDatabaseSession } from './routes/middleware/set-database-session';
+import { JQueue } from './Tasks/task';
 
 const root = './';
 const app = express();
@@ -22,7 +23,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 
 const api = `/api/v1.0`;
 app.use(`${api}/document`, checkAuth, setDatabaseSession, document);
-// app.use(`${api}/task`, checkAuth, setDatabaseSession, task);
+app.use(`${api}/task`, checkAuth, setDatabaseSession, task);
 app.use('/auth', setDatabaseSession, auth);
 
 app.get('*', (req: Request, res: Response) => {
@@ -43,5 +44,6 @@ IO.use(authIO);
 IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
 IO.of('/').adapter.on('error', (error) => { });
 
-const port = (process.env.PORT) || '3000';
+const port = (process.env.PORT) || '3500';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}`));
+JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));

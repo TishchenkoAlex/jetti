@@ -36,7 +36,7 @@ router.post('/token', async (req, res, next) => {
   try {
     const { password } = req.body;
     if (password !== process.env.EXCHANGE_ACCESS_KEY)
-      return res.status(401).json({ message: 'Auth failed: wrong API key' });
+      return res.status(401).json({ message: 'Auth failed: wrong API key', body: req.body });
 
     const payload: IJWTPayload = {
       email: 'apiService@x100-group.com',

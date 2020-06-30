@@ -3,16 +3,24 @@ import * as Queue from 'bull';
 import { ISyncParams } from '../exchange/iiko-to-jetti-connection';
 // import { TASKS_POOL } from '../../sql.pool.tasks';
 
+const onError = async (job, text) => {
+  job.data.message = text;
+  await job.update(job.data);
+  await job.progress(0);
+};
+
 export default async function (job: Queue.Job) {
   const params = job.data.params as ISyncParams;
-  const syncFunction = RegisteredSyncFunctions().get(job.data.params.syncFunctionName);
 
-  if (!syncFunction) {
-    job.data.message = `Unknow sync function ${job.data.params.syncFunctionName}`;
-    await job.progress(100);
+  if (!params.syncFunctionName) {
+    onError(job, `Sync function is nod defined`);
     return;
   }
-
+  const syncFunction = RegisteredSyncFunctions().get(params.syncFunctionName);
+  if (!syncFunction) {
+    onError(job, `Unknow sync function ${params.syncFunctionName}`);
+    return;
+  }
 
   try {
     await syncFunction(params);

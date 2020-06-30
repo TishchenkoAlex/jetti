@@ -99,7 +99,7 @@ export interface JTL {
     updateQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
     deleteQueue: (id: string, taskPoolTx?: MSSQL) => Promise<void>
     getQueueById: (id: string, taskPoolTx?: MSSQL) => Promise<IQueueRow | null>
-    addTask: (taskData, taskOpts) => Promise<void>
+    addTask: (taskParams, taskOpts) => Promise<void>
   };
 }
 
@@ -540,10 +540,18 @@ async function getQueueById(id: string, taskPoolTX?: MSSQL): Promise<IQueueRow |
   return await taskPoolTX!.oneOrNone(query, [id]);
 }
 
-async function addTask(taskData, taskOpts): Promise<void> {
+async function addTask(taskParams, taskOpts, token?: string): Promise<void> {
   const instance = axios.create({ baseURL: JETTIIS_HOST });
   const query = `api/v1.0/task/add`;
-  await instance.post(query, { data: taskData, opts: taskOpts });
+  if (!token) token = `Bearer ${await getToken()}`;
+  await instance.post(query, { params: taskParams, opts: taskOpts }, { headers: { Authorization: token } });
+}
+
+async function getToken(): Promise<string> {
+  const instance = axios.create({ baseURL: JETTIIS_HOST });
+  const query = `auth/token`;
+  const res = await instance.post(query, { password: process.env.EXCHANGE_ACCESS_KEY });
+  return res.data.token;
 }
 
 async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {
