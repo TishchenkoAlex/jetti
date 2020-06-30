@@ -8,13 +8,13 @@ import { GetCatalog, InsertCatalog, UpdateCatalog } from './iiko-to-jetti-utils'
 
 ///////////////////////////////////////////////////////////
 interface IiikoPerson {
-  project: string,
-  id: string,
-  baseid: string,
-  type: string,
-  code: string,
-  name: string,
-  deleted: boolean
+  project: string;
+  id: string;
+  baseid: string;
+  type: string;
+  code: string;
+  name: string;
+  deleted: boolean;
 }
 ///////////////////////////////////////////////////////////
 const transformPerson = (syncParams: ISyncParams, source: any): IiikoPerson => {
@@ -26,8 +26,8 @@ const transformPerson = (syncParams: ISyncParams, source: any): IiikoPerson => {
     code: source.code,
     name: source.name,
     deleted: source.deleted
-  }
-}  
+  };
+};
 ///////////////////////////////////////////////////////////
 const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
   return {
@@ -46,8 +46,8 @@ const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
     company: syncParams.source.company,
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
   return {
@@ -65,22 +65,21 @@ const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
     company: syncParams.source.company,
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
-async function syncPerson (syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient ): Promise<any> {
+async function syncPerson(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Person', destSQL);
   if (response === null) {
-    //console.log('insert Pperson', iikoPerson.name);
+    // console.log('insert Pperson', iikoPerson.name);
     const NoSqlDocument: any = newPerson(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
-  }
-  else {
+  } else {
     if (syncParams.forcedUpdate) {
-      //console.log('update Person', iikoPerson.name);
+      // console.log('update Person', iikoPerson.name);
       response.type = 'Catalog.Person';
-      //response.code = syncParams.source.code + '-'+iikoPerson.code;
+      // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
       response.posted = !iikoPerson.deleted;
       response.deleted = !!iikoPerson.deleted;
@@ -97,19 +96,18 @@ async function syncPerson (syncParams: ISyncParams, iikoPerson: IiikoPerson, des
   return response;
 }
 ///////////////////////////////////////////////////////////
-async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient ): Promise<any> {
+async function syncManager(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Manager', destSQL);
   if (response === null) {
-    //console.log('insert Manager', iikoPerson.name);
+    // console.log('insert Manager', iikoPerson.name);
     const NoSqlDocument: any = newManager(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
-  }
-  else {
+  } else {
     if (syncParams.forcedUpdate) {
-      //console.log('update Manager', iikoPerson.name);
+      // console.log('update Manager', iikoPerson.name);
       response.type = 'Catalog.Manager';
-      //response.code = syncParams.source.code + '-'+iikoPerson.code;
+      // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
       response.posted = !iikoPerson.deleted;
       response.deleted = !!iikoPerson.deleted;
@@ -118,7 +116,7 @@ async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, de
       response.parent = null;
       response.user = null;
       response.info = null;
-      //response.doc.FullName = iikoPerson.name;
+      // response.doc.FullName = iikoPerson.name;
 
       const jsonDoc = JSON.stringify(response);
       response = await UpdateCatalog(jsonDoc, response.id, iikoPerson, destSQL);
@@ -130,24 +128,24 @@ async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, de
 
 ///////////////////////////////////////////////////////////
 export async function ImportPersonToJetti(syncParams: ISyncParams) {
-  if (syncParams.baseType=='sql') {
+  if (syncParams.baseType === 'sql') {
     ImportPersonSQLToJetti(syncParams).catch(() => { });
   }
 }
 ///////////////////////////////////////////////////////////
-//const dSQLAdmin = new SQLPool(DestSqlConfig);
-//const eSQLAdmin = new SQLPool(SourceSqlConfig);
+// const dSQLAdmin = new SQLPool(DestSqlConfig);
+// const eSQLAdmin = new SQLPool(SourceSqlConfig);
 ///////////////////////////////////////////////////////////
 
 export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
 
-    const ssqlcfg = await GetSqlConfig(syncParams.source.id);
-    const ssql = new SQLClient(new SQLPool(ssqlcfg));
-    const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
+  const ssqlcfg = await GetSqlConfig(syncParams.source.id);
+  const ssql = new SQLClient(new SQLPool(ssqlcfg));
+  const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
-    let i = 0;
-    let batch: any[] = [];
-    await ssql.manyOrNoneStream(`
+  let i = 0;
+  let batch: any[] = [];
+  await ssql.manyOrNoneStream(`
         SELECT  top 18
           cast(spr.id as nvarchar(50)) as id,
           coalesce(spr.deleted,0) as deleted,
@@ -158,7 +156,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
         where spr.type = 'User'
           and cast(spr.[xml] as xml).value('(/r/employee)[1]' ,'bit') = 1
           and cast(spr.[xml] as xml).value('(/r/code)[1]' ,'nvarchar(255)')<>''
-          -- and cast(CONVERT(datetime2(0), cast(spr.[xml] as xml).value('(/r/modified)[1]' ,'nvarchar(255)'), 126) as date)>=?            
+          -- and cast(CONVERT(datetime2(0), cast(spr.[xml] as xml).value('(/r/modified)[1]' ,'nvarchar(255)'), 126) as date)>=?
     `, [],
     async (row: ColumnValue[], req: Request) => {
       // читаем содержимое справочника порциями по ssqlcfg.batch.max
@@ -181,15 +179,15 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
       }
     },
     async (rowCount: number, more: boolean) => {
-        if (rowCount && !more && batch.length > 0) {
-          console.log('inserting tail', batch.length, 'person');
-          for (const doc of batch) {
-            await syncPerson(syncParams, doc, dsql);
-            doc.type = 'Manager';
-            await syncManager(syncParams, doc, dsql);
-          } 
+      if (rowCount && !more && batch.length > 0) {
+        console.log('inserting tail', batch.length, 'person');
+        for (const doc of batch) {
+          await syncPerson(syncParams, doc, dsql);
+          doc.type = 'Manager';
+          await syncManager(syncParams, doc, dsql);
         }
-        console.log('Finish sync Person.');
-    });    
+      }
+      console.log('Finish sync Person.');
+    });
 
 }

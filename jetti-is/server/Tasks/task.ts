@@ -2,7 +2,6 @@ import * as Queue from 'bull';
 import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../env/environment';
 import taskExecution from './taskExecution';
 import { RedisOptions } from 'ioredis';
-import * as Bull from 'bull';
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   taskExecution: taskExecution
@@ -45,22 +44,3 @@ JQueue.process(1, async job => {
   const task = Jobs[job.data.job.id];
   if (task) return await task(job);
 });
-
-export const addCustomTask = async (taskData: any, repeatIntervalInMinutes = 0) => {
-
-  const repeatEvery = repeatIntervalInMinutes ? { every: repeatIntervalInMinutes * 1000 * 60 } : undefined;
-
-  const data = {
-    job: { id: `customTask`, description: `Custom task`, data: taskData },
-    TaskOperation: this.CustomTask
-  };
-
-  const opts: Bull.JobOptions = {
-    attempts: 1,
-    repeat: repeatEvery
-  };
-
-  await JQueue.add(data, opts);
-
-};
-

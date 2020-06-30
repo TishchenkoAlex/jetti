@@ -46,7 +46,7 @@ const transformCounterpartie = (syncParams: ISyncParams, source: any): IiikoCoun
     isClient: false,
     isSuplier: true
   }
-}  
+}
 ///////////////////////////////////////////////////////////
 const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie): any => {
   return {
@@ -80,7 +80,7 @@ const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCount
   }
 }
 ///////////////////////////////////////////////////////////
-async function syncCounterpartie (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient ): Promise<any> {
+async function syncCounterpartie(syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoCounterpartie.project, iikoCounterpartie.id, iikoCounterpartie.baseid, 'Counterpartie', destSQL);
   if (response === null) {
     //console.log('insert Counterpartie', iikoCounterpartie.name);
@@ -119,7 +119,7 @@ async function syncCounterpartie (syncParams: ISyncParams, iikoCounterpartie: Ii
 
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieToJetti(syncParams: ISyncParams) {
-  if (syncParams.baseType=='sql') {
+  if (syncParams.baseType === 'sql') {
     ImportCounterpartieSQLToJetti(syncParams).catch(() => { });
   }
 }
@@ -130,13 +130,13 @@ export async function ImportCounterpartieToJetti(syncParams: ISyncParams) {
 
 export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
 
-    const ssqlcfg = await GetSqlConfig(syncParams.source.id);
-    const ssql = new SQLClient(new SQLPool(ssqlcfg));
-    const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
+  const ssqlcfg = await GetSqlConfig(syncParams.source.id);
+  const ssql = new SQLClient(new SQLPool(ssqlcfg));
+  const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
-    let i = 0;
-    let batch: any[] = [];
-    await ssql.manyOrNoneStream(`
+  let i = 0;
+  let batch: any[] = [];
+  await ssql.manyOrNoneStream(`
         SELECT top 14
             cast(spr.id as nvarchar(50)) as id,
             coalesce(spr.deleted,0) as deleted,
@@ -168,15 +168,15 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
       }
     },
     async (rowCount: number, more: boolean) => {
-        if (rowCount && !more && batch.length > 0) {
-          console.log('inserting tail', batch.length, 'Counterparties');
-          for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
-        }
-        console.log('Finish sync Counterparties.')
-        // выход из скрипта...
-        //const dt = new Date();
-        //console.log('Скрипт переливки завершен. ', dt.toString());
-        //process.exit(0);
-    });    
+      if (rowCount && !more && batch.length > 0) {
+        console.log('inserting tail', batch.length, 'Counterparties');
+        for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
+      }
+      console.log('Finish sync Counterparties.')
+      // выход из скрипта...
+      //const dt = new Date();
+      //console.log('Скрипт переливки завершен. ', dt.toString());
+      //process.exit(0);
+    });
 
 }
