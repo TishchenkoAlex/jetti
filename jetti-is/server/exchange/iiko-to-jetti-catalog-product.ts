@@ -4,9 +4,10 @@ import { ColumnValue, Request } from 'tedious';
 import { config as dotenv } from 'dotenv';
 
 import { SQLPool } from '../sql/sql-pool';
-import { ISyncParams, GetSqlConfig, GetExchangeCatalogID } from './iiko-to-jetti-connection';
+import { ISyncParams, GetSqlConfig, GetExchangeCatalogID, saveLogProtocol } from './iiko-to-jetti-connection';
 import { GetCatalog, InsertCatalog, UpdateCatalog } from './iiko-to-jetti-utils';
 
+const syncStage = 'Catalog.Product';
 ///////////////////////////////////////////////////////////
 interface IiikoProduct {
   project: string,
@@ -63,9 +64,8 @@ const newProduct = (syncParams: ISyncParams, iikoProduct: IiikoProduct): any => 
 async function syncProduct (syncParams: ISyncParams, iikoProduct: IiikoProduct, destSQL: SQLClient ): Promise<any> {
   let response: any = await GetCatalog(iikoProduct.project, iikoProduct.id, iikoProduct.baseid, 'Product', destSQL);
   const ProductKind: any = await destSQL.oneOrNone(`SELECT id FROM [dbo].[Catalog.ProductKind.v] WITH (NOEXPAND) where [code]=@p1 `, [iikoProduct.prodtype]);
-  //const Unit: any = await destSQL.oneOrNone(`SELECT id FROM [dbo].[Catalog.ProductKind.v] WITH (NOEXPAND) where [code]=@p1 `, [iikoProduct.prodtype]);
   if (response === null) {
-    //console.log('insert Product', iikoProduct.name);
+    if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Product ${iikoProduct.name} products`);
     const NoSqlDocument: any = newProduct(syncParams, iikoProduct);
     if (!(ProductKind === null)) NoSqlDocument.doc.ProductKind = ProductKind.id;
     NoSqlDocument.doc.Unit = await GetExchangeCatalogID(iikoProduct.project, iikoProduct.unit, iikoProduct.baseid, 'Unit');
@@ -74,7 +74,7 @@ async function syncProduct (syncParams: ISyncParams, iikoProduct: IiikoProduct, 
   }
   else {
     if (syncParams.forcedUpdate) {
-      //console.log('update Product', iikoProduct.name);
+      if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Product ${iikoProduct.name} products`);
       response.type = 'Catalog.Product';
       response.code = syncParams.source.code + '-'+iikoProduct.code;
       response.description = iikoProduct.name;
@@ -95,19 +95,13 @@ async function syncProduct (syncParams: ISyncParams, iikoProduct: IiikoProduct, 
   return response;
 }
 ///////////////////////////////////////////////////////////
-
-
+//// 
 ///////////////////////////////////////////////////////////
 export async function ImportProductToJetti(syncParams: ISyncParams) {
-  if (syncParams.baseType=='sql') {
-    ImportProductSQLToJetti(syncParams).catch(() => { });
-  }
+  await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Products`);
+  if (syncParams.baseType=='sql') await ImportProductSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
-//const dSQLAdmin = new SQLPool(DestSqlConfig);
-//const eSQLAdmin = new SQLPool(SourceSqlConfig);
-///////////////////////////////////////////////////////////
-
 export async function ImportProductSQLToJetti(syncParams: ISyncParams) {
 
     const ssqlcfg = await GetSqlConfig(syncParams.source.id);
@@ -117,7 +111,7 @@ export async function ImportProductSQLToJetti(syncParams: ISyncParams) {
     let i = 0;
     let batch: any[] = [];
     await ssql.manyOrNoneStream(`
-        SELECT  top 12
+        SELECT top 6
             cast(spr.id as nvarchar(50)) as id,
             coalesce(spr.deleted,0) as deleted,
             coalesce(cast(spr.[xml] as xml).value('(/r/name/customValue)[1]' ,'nvarchar(255)'),
@@ -131,10 +125,10 @@ export async function ImportProductSQLToJetti(syncParams: ISyncParams) {
         FROM dbo.entity spr
           left join dbo.entity izm on izm.id = cast(spr.[xml] as xml).value('(/r/mainUnit)[1]' , 'nvarchar(255)')
         where spr.type = 'Product'
-          --and cast(CONVERT(datetime2(0), cast(spr.[xml] as xml).value('(/r/modified)[1]' ,'nvarchar(255)'), 126) as date)>=?
+           and cast(CONVERT(datetime2(0), cast(spr.[xml] as xml).value('(/r/modified)[1]' ,'nvarchar(255)'), 126) as date)>=@p1
           -- and cast(spr.[xml] as xml).value('(/r/parent)[1]' ,'nvarchar(255)') = 'A22A2352-5768-4831-83A4-32F8928CE866'
           -- and cast(spr.[xml] as xml).value('(/r/parent)[1]' ,'nvarchar(255)')='E5DE4E02-1981-42AF-B32D-D94282D699DF'
-    `, [],
+    `, [syncParams.lastSyncDate], 
     async (row: ColumnValue[], req: Request) => {
       // читаем содержимое справочника порциями по ssqlcfg.batch.max
       i++;
@@ -145,7 +139,7 @@ export async function ImportProductSQLToJetti(syncParams: ISyncParams) {
 
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        console.log('inserting to batch', i, 'products');
+        if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} products`);
         for (const doc of batch) await syncProduct(syncParams, doc, dsql);
         batch = [];
         req.resume();
@@ -153,10 +147,11 @@ export async function ImportProductSQLToJetti(syncParams: ISyncParams) {
     },
     async (rowCount: number, more: boolean) => {
         if (rowCount && !more && batch.length > 0) {
-          console.log('inserting tail', batch.length, 'products');
+          if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${batch.length} products`);
           for (const doc of batch) await syncProduct(syncParams, doc, dsql);
         }
-        console.log('Finish sync Product.');
+        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Product.`);
     });    
 
 }
+///////////////////////////////////////////////////////////
