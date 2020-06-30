@@ -318,7 +318,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, PL, Analytics
+        d.exchangeRate, Department, PL, Analytics, Analytics2
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], Info
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
@@ -327,6 +327,7 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d

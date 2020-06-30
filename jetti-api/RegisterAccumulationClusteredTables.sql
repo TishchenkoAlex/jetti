@@ -769,7 +769,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [Department], [PL], [Analytics]
+      d.exchangeRate, [Department], [PL], [Analytics], [Analytics2]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.PL]
     FROM [Accumulation] r
@@ -779,6 +779,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [PL] CHAR(36) N'$.PL'
         , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
@@ -793,7 +794,7 @@
       INSERT INTO [Register.Accumulation.PL]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [Department], [PL], [Analytics]
+        d.exchangeRate, [Department], [PL], [Analytics], [Analytics2]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -802,6 +803,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [PL] CHAR(36) N'$.PL'
         , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -813,7 +815,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount], [Info]) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]) WITH (MAXDOP=4);
     ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
