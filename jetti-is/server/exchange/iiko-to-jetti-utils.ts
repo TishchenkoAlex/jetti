@@ -3,7 +3,7 @@ import { SQLPool } from '../sql/sql-pool';
 import { ColumnValue, Request } from 'tedious';
 import { config as dotenv } from 'dotenv';
 import { SQLConnectionConfig } from '../sql/interfaces';
-import { GetExchangeCatalogID } from './iiko-to-jetti-connection';
+import { GetExchangeCatalogID, GetExchangeDocumentID } from './iiko-to-jetti-connection';
 import { SetExchangeCatalogID, SetExchangeDocumentID } from './iiko-to-jetti-connection';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -44,8 +44,9 @@ export function DateToString(dt: Date): string {
 }
 
 export async function GetCatalog(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string, tx: SQLClient) {
-  // 
+  // получить из базы элемент справочника
   const id: Ref = await GetExchangeCatalogID(project, exchangeCode, exchangeBase, exchangeType);
+  if (!id) return null;
   const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);  
   return response;
 }
@@ -116,7 +117,11 @@ export async function UpdateCatalog(jsonDoc: string, id: string, source: any, tx
 
 
 export async function GetDocument(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string, tx: SQLClient) {
-  
+  // получить из базы документ
+  const id: Ref = await GetExchangeDocumentID(project, exchangeCode, exchangeBase, exchangeType);
+  if (!id) return null;
+  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);  
+  return response;
 }
 
 export async function InsertDocument(jsonDoc: string, id: string, source: any, tx: SQLClient) {
@@ -127,7 +132,7 @@ export async function InsertDocument(jsonDoc: string, id: string, source: any, t
       [id], [type], [date], [code], [description], [posted], [deleted],
       [parent], [isfolder], [company], [user], [info], [doc])
       SELECT
-      [id], [type], getdate(), [code], [description], [posted], [deleted],
+      [id], [type], [date], [code], [description], [posted], [deleted],
       [parent], [isfolder], [company], [user], [info], [doc]
       FROM OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,

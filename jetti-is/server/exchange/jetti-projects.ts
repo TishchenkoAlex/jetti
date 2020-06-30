@@ -36,7 +36,7 @@ export interface IExchangeBase  extends IExchangeSource{
 }
 */
 
-// тестовые параметры для базы источника Russia
+// тестовые параметры для базы источника Russia проекта SMV
 export const RussiaSource: IExchangeSource = {
     id: 'Russia',
     code: 'RU',

@@ -769,7 +769,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [Department], [PL], [Analytics]
+      d.exchangeRate, [Department], [PL], [Analytics], [Analytics2]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.PL]
     FROM [Accumulation] r
@@ -779,6 +779,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [PL] CHAR(36) N'$.PL'
         , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
@@ -793,7 +794,7 @@
       INSERT INTO [Register.Accumulation.PL]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [Department], [PL], [Analytics]
+        d.exchangeRate, [Department], [PL], [Analytics], [Analytics2]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -802,6 +803,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [PL] CHAR(36) N'$.PL'
         , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -813,7 +815,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Amount], [Info]) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]) WITH (MAXDOP=4);
     ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
@@ -1303,7 +1305,9 @@
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
       d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
-      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountOperation] * IIF(r.kind = 1, 1, -1) [AmountOperation], d.[AmountOperation] * IIF(r.kind = 1, 1, null) [AmountOperation.In], d.[AmountOperation] * IIF(r.kind = 1, null, 1) [AmountOperation.Out]
+      , d.[AmountPaid] * IIF(r.kind = 1, 1, -1) [AmountPaid], d.[AmountPaid] * IIF(r.kind = 1, 1, null) [AmountPaid.In], d.[AmountPaid] * IIF(r.kind = 1, null, 1) [AmountPaid.Out], [DateOperation], [DatePaid], [AuthorizationCode]
     INTO [Register.Accumulation.Acquiring]
     FROM [Accumulation] r
     CROSS APPLY OPENJSON (data, N'$')
@@ -1319,6 +1323,10 @@
         , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountOperation] MONEY N'$.AmountOperation'
+        , [AmountPaid] MONEY N'$.AmountPaid'
+        , [DateOperation] DATE N'$.DateOperation'
+        , [DatePaid] DATE N'$.DatePaid'
         , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
     ) AS d
     WHERE r.type = N'Register.Accumulation.Acquiring';
@@ -1334,7 +1342,9 @@
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
-      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [AuthorizationCode]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountOperation] * IIF(r.kind = 1, 1, -1) [AmountOperation], d.[AmountOperation] * IIF(r.kind = 1, 1, null) [AmountOperation.In], d.[AmountOperation] * IIF(r.kind = 1, null, 1) [AmountOperation.Out]
+      , d.[AmountPaid] * IIF(r.kind = 1, 1, -1) [AmountPaid], d.[AmountPaid] * IIF(r.kind = 1, 1, null) [AmountPaid.In], d.[AmountPaid] * IIF(r.kind = 1, null, 1) [AmountPaid.Out], [DateOperation], [DatePaid], [AuthorizationCode]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -1349,6 +1359,10 @@
         , [currency] CHAR(36) N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountOperation] MONEY N'$.AmountOperation'
+        , [AmountPaid] MONEY N'$.AmountPaid'
+        , [DateOperation] DATE N'$.DateOperation'
+        , [DatePaid] DATE N'$.DatePaid'
         , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Acquiring';
@@ -1359,7 +1373,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AuthorizationCode]) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AmountOperation], [AmountPaid], [DateOperation], [DatePaid], [AuthorizationCode]) WITH (MAXDOP=4);
     ALTER TABLE [Register.Accumulation.Acquiring] ADD CONSTRAINT [PK_Register.Accumulation.Acquiring] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;

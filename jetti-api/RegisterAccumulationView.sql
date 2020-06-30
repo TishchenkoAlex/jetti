@@ -318,7 +318,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, PL, Analytics
+        d.exchangeRate, Department, PL, Analytics, Analytics2
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], Info
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
@@ -327,6 +327,7 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -544,7 +545,9 @@
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
         d.exchangeRate, AcquiringTerminal, AcquiringTerminalCode1, OperationType, Department, CashFlow, PaymantCard, PayDay, currency
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
-      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], AuthorizationCode
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountOperation] * IIF(r.kind = 1, 1, -1) [AmountOperation], d.[AmountOperation] * IIF(r.kind = 1, 1, null) [AmountOperation.In], d.[AmountOperation] * IIF(r.kind = 1, null, 1) [AmountOperation.Out]
+      , d.[AmountPaid] * IIF(r.kind = 1, 1, -1) [AmountPaid], d.[AmountPaid] * IIF(r.kind = 1, 1, null) [AmountPaid.In], d.[AmountPaid] * IIF(r.kind = 1, null, 1) [AmountPaid.Out], DateOperation, DatePaid, AuthorizationCode
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -559,6 +562,10 @@
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountOperation] MONEY N'$.AmountOperation'
+        , [AmountPaid] MONEY N'$.AmountPaid'
+        , [DateOperation] DATE N'$.DateOperation'
+        , [DatePaid] DATE N'$.DatePaid'
         , [AuthorizationCode] NVARCHAR(250) N'$.AuthorizationCode'
         ) AS d
         WHERE r.type = N'Register.Accumulation.Acquiring';
