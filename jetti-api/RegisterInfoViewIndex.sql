@@ -367,3 +367,24 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.EmployeeHistory]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) "Employee"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) "Person"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."JobTitle"')) "JobTitle"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) "StaffingPosition"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.SalaryRate')) "SalaryRate"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.EmployeeHistory';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.EmployeeHistory] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.EmployeeHistory] ON [dbo].[Register.Info.EmployeeHistory](
+      company,date,id
+    )
+    GO
+    

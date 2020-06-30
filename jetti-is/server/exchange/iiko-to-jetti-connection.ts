@@ -30,16 +30,16 @@ export interface ISyncParams {
 }
 export interface ISyncCatalog {
   // элемент таблицы dbo.catalog
-  project: string,          // проект
-  exchangeCode: string,     // код в базе обмена
-  exchangeBase: string,     // база обмена
-  exchangeType: string,     // тип справочника
-  exchangeName: string,     // наименование элемента справочника в базе обмена
-  id: Ref,                  // ссылка на элемент справочника в базе приемнике
-  idAnalytics: Ref,         // ссылка на аналитику справочника
-  addAnalytics: Ref,     // дополнительная аналитика
-  addType: Ref,          // дополнительный тип
-  notActive: number         // признак неактивности 
+  project: string;          // проект
+  exchangeCode: string;     // код в базе обмена
+  exchangeBase: string;     // база обмена
+  exchangeType: string;     // тип справочника
+  exchangeName: string;     // наименование элемента справочника в базе обмена
+  id: Ref;                  // ссылка на элемент справочника в базе приемнике
+  idAnalytics: Ref;         // ссылка на аналитику справочника
+  addAnalytics: Ref;     // дополнительная аналитика
+  addType: Ref;          // дополнительный тип
+  notActive: number;         // признак неактивности 
 }
 ///////////////////////////////////////////////////////////
 export interface ISyncDocument {
@@ -99,7 +99,7 @@ export async function GetSqlConfig(baseid: string): Promise<SQLConnectionConfig>
       json_value(c.data, '$.db_user') as db_user,
       json_value(c.data, '$.db_password') as db_password
       from dbo.connections c
-      where c.id = @p1 `, [baseid]); 
+      where c.id = @p1 `, [baseid]);
   const SqlConfig: SQLConnectionConfig = {
     server: bp.db_host,
     authentication: {
@@ -126,11 +126,12 @@ export async function GetSqlConfig(baseid: string): Promise<SQLConnectionConfig>
       min: 0,
       max: 100,
     }
-  }
+  };
   return SqlConfig;
-};
+}
 ///////////////////////////////////////////////////////////
 // получить ID элемента справочника в базе приемнике
+// tslint:disable-next-line: max-line-length
 export async function GetExchangeCatalogID(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string): Promise<Ref> {
   // const esql = new SQLClient(exchangeSQLAdmin);
   const ct: any = await esql.oneOrNone(`SELECT id FROM dbo.catalog where project = @p1 and exchangeCode =@p2 and exchangeBase =@p3 and exchangeType = @p4 `, 
@@ -140,6 +141,7 @@ export async function GetExchangeCatalogID(project: string, exchangeCode: string
 }
 ///////////////////////////////////////////////////////////
 // получить элемент сопоставления справочника
+// tslint:disable-next-line: max-line-length
 export async function GetExchangeCatalog(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string): Promise<ISyncCatalog> {
   //const esql = new SQLClient(exchangeSQLAdmin);
   const ct = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`SELECT * FROM dbo.catalog where project = @p1 and exchangeCode =@p2 and exchangeBase =@p3 and exchangeType = @p4 `, 
@@ -182,8 +184,8 @@ const newSyncCatalog = (source: any, id: string): ISyncCatalog => {
     addAnalytics: null,
     addType: null,
     notActive: 0
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 const newSyncDocument = (source: any, id: string): ISyncDocument => {
   return {
@@ -206,7 +208,7 @@ export async function SetExchangeCatalogID(source: any, id: string): Promise<ISy
     // console.log('insert catalog link');
     ct = newSyncCatalog(source, id);
     const jsonDoc = JSON.stringify(ct);
-    response = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`
+    response = <ISyncCatalog>await esql.oneOrNone<ISyncCatalog>(`
       INSERT INTO dbo.catalog (
         [project], [exchangeCode], [exchangeBase], [exchangeType], [exchangeName],
         [id], [idAnalytics], [addAnalytics], [addType], [notActive]) 
@@ -225,13 +227,13 @@ export async function SetExchangeCatalogID(source: any, id: string): Promise<ISy
         [addType] NVARCHAR(50),
         [notActive] INT
       );
-      SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
-    [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+      SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `,
+      [jsonDoc, source.project, source.id, source.baseid, source.type]);
   }
   else {
     if (ct.id === id) {
       const jsonDoc = JSON.stringify(ct);
-      response = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`
+      response = <ISyncCatalog>await esql.oneOrNone<ISyncCatalog>(`
         UPDATE dbo.catalog  
         SET 
           exchangeName = i.exchangeName
@@ -252,16 +254,16 @@ export async function SetExchangeCatalogID(source: any, id: string): Promise<ISy
         ) i
         WHERE dbo.catalog.project = i.project and dbo.catalog.exchangeCode = i.exchangeCode 
           and dbo.catalog.exchangeBase = i.exchangeBase and dbo.catalog.exchangeType = i.exchangeType;
-        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
-      [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `,
+        [jsonDoc, source.project, source.id, source.baseid, source.type]);
     }
     else {
       // console.log('update catalog link old id=',ct.id,' new id=', id);
       ct.id = id;
       const jsonDoc = JSON.stringify(ct);
-      response = <ISyncCatalog> await esql.oneOrNone<ISyncCatalog>(`
-        UPDATE dbo.catalog  
-        SET 
+      response = <ISyncCatalog>await esql.oneOrNone<ISyncCatalog>(`
+        UPDATE dbo.catalog
+        SET
           exchangeName = i.exchangeName,
           id = i.id
         FROM (
@@ -281,8 +283,8 @@ export async function SetExchangeCatalogID(source: any, id: string): Promise<ISy
         ) i
         WHERE dbo.catalog.project = i.project and dbo.catalog.exchangeCode = i.exchangeCode 
           and dbo.catalog.exchangeBase = i.exchangeBase and dbo.catalog.exchangeType = i.exchangeType;
-        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `, 
-      [jsonDoc, source.project, source.id, source.baseid, source.type]); 
+        SELECT * FROM dbo.catalog where project = @p2 and exchangeCode =@p3 and exchangeBase =@p4 and exchangeType = @p5 `,
+        [jsonDoc, source.project, source.id, source.baseid, source.type]);
     }
   }
   return response;

@@ -44,7 +44,7 @@ const transformCounterpartie = (syncParams: ISyncParams, source: any): IiikoCoun
     isClient: false,
     isSuplier: true
   }
-}  
+}
 ///////////////////////////////////////////////////////////
 const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie): any => {
   return {
@@ -78,7 +78,7 @@ const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCount
   }
 }
 ///////////////////////////////////////////////////////////
-async function syncCounterpartie (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient ): Promise<any> {
+async function syncCounterpartie(syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoCounterpartie.project, iikoCounterpartie.id, iikoCounterpartie.baseid, 'Counterpartie', destSQL);
   if (response === null) {
     if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Counterpartie ${iikoCounterpartie.name}`);
@@ -122,9 +122,9 @@ export async function ImportCounterpartieToJetti(syncParams: ISyncParams) {
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
 
-    const ssqlcfg = await GetSqlConfig(syncParams.source.id);
-    const ssql = new SQLClient(new SQLPool(ssqlcfg));
-    const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
+  const ssqlcfg = await GetSqlConfig(syncParams.source.id);
+  const ssql = new SQLClient(new SQLPool(ssqlcfg));
+  const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
     let i = 0;
     let batch: any[] = [];

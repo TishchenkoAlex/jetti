@@ -10,6 +10,7 @@ import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
 import { checkAuth, authIO } from './routes/middleware/check-auth';
 import { router as auth } from './routes/auth';
 import { router as document } from './routes/document';
+import { router as task } from './routes/tasks';
 import { setDatabaseSession } from './routes/middleware/set-database-session';
 
 const root = './';
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 
 const api = `/api/v1.0`;
 app.use(`${api}/document`, checkAuth, setDatabaseSession, document);
+// app.use(`${api}/task`, checkAuth, setDatabaseSession, task);
 app.use('/auth', setDatabaseSession, auth);
 
 app.get('*', (req: Request, res: Response) => {

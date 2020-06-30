@@ -351,6 +351,7 @@
         , d.[BC] [BC]
         , d.[timeZone] [timeZone]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
+        , d.[GLN] [GLN]
       
         , ISNULL(l5.description, d.description) [Company.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Company.Level4]
@@ -465,6 +466,7 @@
         , d.[Code2] [Code2]
         , d.[Code3] [Code3]
         , d.[BC] [BC]
+        , d.[GLN] [GLN]
       
         , ISNULL(l5.description, d.description) [Counterpartie.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Counterpartie.Level4]
@@ -671,6 +673,7 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[SalaryKind] [SalaryKind]
+        , ISNULL([Unit.v].description, '') [Unit.value], d.[Unit] [Unit.id], [Unit.v].type [Unit.type]
       
         , ISNULL(l5.description, d.description) [SalaryAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [SalaryAnalytics.Level4]
@@ -688,6 +691,7 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Unit.v] [Unit.v] WITH (NOEXPAND) ON [Unit.v].id = d.[Unit]
     
       GO
       GRANT SELECT ON dbo.[Catalog.Salary.Analytics] TO jetti;
@@ -1087,6 +1091,8 @@
         , d.[DocumentNumber] [DocumentNumber]
         , d.[DocumentDate] [DocumentDate]
         , d.[DocumentAuthority] [DocumentAuthority]
+        , d.[AccountAD] [AccountAD]
+        , d.[Fired] [Fired]
       
         , ISNULL(l5.description, d.description) [Person.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Person.Level4]
@@ -1494,6 +1500,8 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([BaseUnit.v].description, '') [BaseUnit.value], d.[BaseUnit] [BaseUnit.id], [BaseUnit.v].type [BaseUnit.type]
+        , d.[Rate] [Rate]
       
         , ISNULL(l5.description, d.description) [Unit.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Unit.Level4]
@@ -1511,6 +1519,7 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Unit.v] [BaseUnit.v] WITH (NOEXPAND) ON [BaseUnit.v].id = d.[BaseUnit]
     
       GO
       GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
@@ -1773,6 +1782,47 @@
     
       GO
       GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
+      GO
+      
+
+      CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "StaffingTable", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([JobTitle.v].description, '') [JobTitle.value], d.[JobTitle] [JobTitle.id], [JobTitle.v].type [JobTitle.type]
+        , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
+        , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
+        , d.[ActivationDate] [ActivationDate]
+        , d.[CloseDate] [CloseDate]
+        , d.[Qty] [Qty]
+        , d.[Cost] [Cost]
+      
+        , ISNULL(l5.description, d.description) [StaffingTable.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [StaffingTable.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [StaffingTable.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [StaffingTable.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [StaffingTable.Level1]
+      FROM [Catalog.StaffingTable.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.StaffingTable.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.StaffingTable.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.StaffingTable.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.StaffingTable.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.StaffingTable.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.JobTitle.v] [JobTitle.v] WITH (NOEXPAND) ON [JobTitle.v].id = d.[JobTitle]
+        LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
+        LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.StaffingTable] TO jetti;
       GO
       
 
@@ -2492,6 +2542,39 @@
       GO
       
 
+      CREATE OR ALTER VIEW dbo.[Catalog.Employee] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Employee", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Person.v].description, '') [Person.value], d.[Person] [Person.id], [Person.v].type [Person.type]
+      
+        , ISNULL(l5.description, d.description) [Employee.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Employee.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Employee.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Employee.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Employee.Level1]
+      FROM [Catalog.Employee.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Employee.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Employee.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Employee.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Employee.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Employee.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Person.v] [Person.v] WITH (NOEXPAND) ON [Person.v].id = d.[Person]
+    
+      GO
+      GRANT SELECT ON dbo.[Catalog.Employee] TO jetti;
+      GO
+      
+
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] AS
         
       SELECT
@@ -2765,6 +2848,7 @@
         , d.[Status] [Status]
         , d.[Operation] [Operation]
         , d.[PaymentKind] [PaymentKind]
+        , d.[EnforcementProceedings] [EnforcementProceedings]
         , d.[CashKind] [CashKind]
         , d.[PayRollKind] [PayRollKind]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
@@ -2779,6 +2863,7 @@
         , ISNULL([CashOrBankIn.v].description, '') [CashOrBankIn.value], d.[CashOrBankIn] [CashOrBankIn.id], [CashOrBankIn.v].type [CashOrBankIn.type]
         , d.[PayDay] [PayDay]
         , d.[Amount] [Amount]
+        , d.[AmountPenalty] [AmountPenalty]
         , ISNULL([сurrency.v].description, '') [сurrency.value], d.[сurrency] [сurrency.id], [сurrency.v].type [сurrency.type]
         , ISNULL([ExpenseOrBalance.v].description, '') [ExpenseOrBalance.value], d.[ExpenseOrBalance] [ExpenseOrBalance.id], [ExpenseOrBalance.v].type [ExpenseOrBalance.type]
         , ISNULL([ExpenseAnalytics.v].description, '') [ExpenseAnalytics.value], d.[ExpenseAnalytics] [ExpenseAnalytics.id], [ExpenseAnalytics.v].type [ExpenseAnalytics.type]

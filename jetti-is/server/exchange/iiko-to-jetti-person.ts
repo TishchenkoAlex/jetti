@@ -9,13 +9,13 @@ import { GetCatalog, InsertCatalog, UpdateCatalog } from './iiko-to-jetti-utils'
 const syncStage = 'Catalog.Person';
 ///////////////////////////////////////////////////////////
 interface IiikoPerson {
-  project: string,
-  id: string,
-  baseid: string,
-  type: string,
-  code: string,
-  name: string,
-  deleted: boolean
+  project: string;
+  id: string;
+  baseid: string;
+  type: string;
+  code: string;
+  name: string;
+  deleted: boolean;
 }
 ///////////////////////////////////////////////////////////
 const transformPerson = (syncParams: ISyncParams, source: any): IiikoPerson => {
@@ -27,8 +27,8 @@ const transformPerson = (syncParams: ISyncParams, source: any): IiikoPerson => {
     code: source.code,
     name: source.name,
     deleted: source.deleted
-  }
-}  
+  };
+};
 ///////////////////////////////////////////////////////////
 const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
   return {
@@ -47,8 +47,8 @@ const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
     company: syncParams.source.company,
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
   return {
@@ -66,22 +66,21 @@ const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
     company: syncParams.source.company,
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
-async function syncPerson (syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient ): Promise<any> {
+async function syncPerson(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Person', destSQL);
   if (!response) {
     if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Pperson ${iikoPerson.name}`);
     const NoSqlDocument: any = newPerson(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
-  }
-  else {
+  } else {
     if (syncParams.forcedUpdate) {
       if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Pperson ${iikoPerson.name}`);
       response.type = 'Catalog.Person';
-      //response.code = syncParams.source.code + '-'+iikoPerson.code;
+      // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
       response.posted = !iikoPerson.deleted;
       response.deleted = !!iikoPerson.deleted;
@@ -98,19 +97,18 @@ async function syncPerson (syncParams: ISyncParams, iikoPerson: IiikoPerson, des
   return response;
 }
 ///////////////////////////////////////////////////////////
-async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient ): Promise<any> {
+async function syncManager(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Manager', destSQL);
   if (response === null) {
     if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Manager ${iikoPerson.name}`);
     const NoSqlDocument: any = newManager(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
-  }
-  else {
+  } else {
     if (syncParams.forcedUpdate) {
       if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Manager ${iikoPerson.name}`);
       response.type = 'Catalog.Manager';
-      //response.code = syncParams.source.code + '-'+iikoPerson.code;
+      // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
       response.posted = !iikoPerson.deleted;
       response.deleted = !!iikoPerson.deleted;
@@ -119,7 +117,7 @@ async function syncManager (syncParams: ISyncParams, iikoPerson: IiikoPerson, de
       response.parent = null;
       response.user = null;
       response.info = null;
-      //response.doc.FullName = iikoPerson.name;
+      // response.doc.FullName = iikoPerson.name;
 
       const jsonDoc = JSON.stringify(response);
       response = await UpdateCatalog(jsonDoc, response.id, iikoPerson, destSQL);
@@ -135,8 +133,8 @@ export async function ImportPersonToJetti(syncParams: ISyncParams) {
   if (syncParams.baseType=='sql') await ImportPersonSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
-//const dSQLAdmin = new SQLPool(DestSqlConfig);
-//const eSQLAdmin = new SQLPool(SourceSqlConfig);
+// const dSQLAdmin = new SQLPool(DestSqlConfig);
+// const eSQLAdmin = new SQLPool(SourceSqlConfig);
 ///////////////////////////////////////////////////////////
 
 export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {

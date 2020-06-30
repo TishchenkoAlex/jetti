@@ -15,6 +15,9 @@ export class RegisterAccumulationPL extends RegisterAccumulation {
   @Props({ type: 'Types.Catalog', required: true, dimension: true })
   Analytics: Ref = null;
 
+  @Props({ type: 'Types.Catalog', required: true, dimension: true })
+  Analytics2: Ref = null;
+
   @Props({ type: 'number', resource: true })
   Amount = 0;
 

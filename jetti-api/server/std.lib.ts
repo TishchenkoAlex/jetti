@@ -20,6 +20,8 @@ import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
 import * as iconv from 'iconv-lite';
+import axios from 'axios';
+import { JETTIIS_HOST } from './env/environment';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -97,6 +99,7 @@ export interface JTL {
     updateQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
     deleteQueue: (id: string, taskPoolTx?: MSSQL) => Promise<void>
     getQueueById: (id: string, taskPoolTx?: MSSQL) => Promise<IQueueRow | null>
+    addTask: (taskData, taskOpts) => Promise<void>
   };
 }
 
@@ -160,7 +163,8 @@ export const lib: JTL = {
     insertQueue,
     updateQueue,
     deleteQueue,
-    getQueueById
+    getQueueById,
+    addTask
   }
 };
 
@@ -534,6 +538,12 @@ async function getQueueById(id: string, taskPoolTX?: MSSQL): Promise<IQueueRow |
   if (taskPoolTX) taskPoolTX = taskPoolTx();
   const query = `SELECT * FROM  [exc].[Queue] WHERE id = @p1`;
   return await taskPoolTX!.oneOrNone(query, [id]);
+}
+
+async function addTask(taskData, taskOpts): Promise<void> {
+  const instance = axios.create({ baseURL: JETTIIS_HOST });
+  const query = `api/v1.0/task/add`;
+  await instance.post(query, { data: taskData, opts: taskOpts });
 }
 
 async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {
