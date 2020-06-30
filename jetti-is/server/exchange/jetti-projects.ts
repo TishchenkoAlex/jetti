@@ -1,26 +1,26 @@
 // описание параметров проектов
 
-import { Ref } from "./iiko-to-jetti-utils"
+import { Ref } from "./iiko-to-jetti-utils";
 
 // интерфейс базы источника данных
 export interface IExchangeSource {
-    id: string,                     // id базы
-    code: string,                   // префикс для кодов документов/справочников
-    firstDate: Date,                // дата с которой ведется учет
-    company: string,                // корневая(родительская) компания
-    currency: string,               // валюта
-    TransitStorehouse: string,      // транзитный склад
-    CounterpartieFolder: Ref,       // папка для контрагентов в базе приемнике
-    ProductFolder: Ref,             // папка для номенклатуры в базе приемнике
-    exchangeStores: string[],       // список складов для синхронизации (если пустой массив - все имеющиеся)
-    exchangeDeparments: string[]    // список подразделений для синхронизации (если пустой массив - все имеющиеся)
+    id: string;                     // id базы
+    code: string;                   // префикс для кодов документов/справочников
+    firstDate: Date;                // дата с которой ведется учет
+    company: string;                // корневая(родительская) компания
+    currency: string;               // валюта
+    TransitStorehouse: string;      // транзитный склад
+    CounterpartieFolder: Ref;       // папка для контрагентов в базе приемнике
+    ProductFolder: Ref;             // папка для номенклатуры в базе приемнике
+    exchangeStores: string[];       // список складов для синхронизации (если пустой массив - все имеющиеся)
+    exchangeDeparments: string[];    // список подразделений для синхронизации (если пустой массив - все имеющиеся)
 }
 
 // интерфейс проекта
 export interface IJettiProject {
-    id: string,                     // id проекта
-    destination: string,            // база приемник проекта
-    sources: IExchangeSource[]      // список баз источников для проекта
+    id: string;                     // id проекта
+    destination: string;            // база приемник проекта
+    sources: IExchangeSource[];      // список баз источников для проекта
 }
 
 /*
@@ -40,7 +40,7 @@ export interface IExchangeBase  extends IExchangeSource{
 export const RussiaSource: IExchangeSource = {
     id: 'Russia',
     code: 'RU',
-    firstDate: new Date(2020,6,1),
+    firstDate: new Date(2020,5,1),
     company: 'E5850830-02D2-11EA-A524-E592E08C23A5',
     currency: 'A4867005-66B8-4A8A-9105-3F25BB081936',
     TransitStorehouse: '',
@@ -51,6 +51,7 @@ export const RussiaSource: IExchangeSource = {
                      'A7CB5B72-D6D8-4221-80BF-2BED6FEF1799', '99BDDECA-2E52-4650-90A6-637CC6647A5F', 'F572B5FB-8CD0-46B9-8277-384C9E88EF15', 'C02BE998-06AE-4650-93B4-52D40276A09B', 
                      'E30FF6BB-F174-4257-9F8F-B6C30B59B6EC', '05593A7D-3E3B-45C9-8DA1-C9D73E08F167', '55563A7A-3CBB-4575-82A9-BE3DC99365CD', 'B284BDF9-5401-4810-AEB1-641D77575DA0', 
                      '68733584-928C-441B-A53A-0FCEEE36B5F9', 'BF386572-843F-48A5-8A65-DF9C416C5B39', '81568FE3-4EFF-4098-BE87-343F72AED5D1', '07D68A3C-A776-41EB-B474-BE7258E86505', 
+                     // tslint:disable-next-line: max-line-length
                      '764535CD-7DB7-4981-B497-B0BFC9F41607', '75021289-73C5-46B5-BA50-BC8DEDEBEA70', 'C6DFE472-1C9D-4C02-B2BD-1788D8BB8C6D'],
     exchangeDeparments: ['483C6FF6-3937-47DD-A0EA-A18790850719', '6D9CE7C4-33E7-4663-B71E-119B98A6B85E', 'AA3FC867-05A9-4053-9B9A-F26E854673D1', 'E392AC91-20C4-4C2E-A3ED-E924A90BD74D', 
                          'A195102C-D618-4A0F-B1DD-42ABAD2F5AB3', 'CD7BF285-F5A9-4249-94BA-3571CE5B37BA', '32B54A32-E3BC-4A92-86A4-FE6CE5B8DF8B', 'A1C7CF6E-73DF-4E83-B7DB-0BB052B20F62',
@@ -58,11 +59,11 @@ export const RussiaSource: IExchangeSource = {
                          '4679B857-E3BD-4955-ACCB-57513B8496E3', '826AEF22-7448-4E65-8E41-131D6405729E', '9737403D-DFAF-428E-AC23-59698CB87AC0', '0138FF8B-7653-4B5C-9C7F-32B4AEE31D91', 
                          '311534EB-48F4-4B9B-87FC-F47CEF801362', '10E8681B-466C-4283-883C-C673B01CBE86', 'C523B1C7-53CE-4155-B306-036B120B9BC2', '71E6D250-B2C3-4106-9056-CBC9181D4E59', 
                          '5D9006EB-CB07-4E32-98AD-8440A8BE650D', '6096BAF5-CDC0-4170-91C1-5128F057DA9A', 'BBB0A9C4-8348-447F-8346-0332FCE1EA0A']
-}
+};
 
 // тестовые прараметры для проекта SMV
 export const SMVProject: IJettiProject = {
     id: 'SMV',
     destination: 'SMV',
     sources: [RussiaSource]
-}
+};

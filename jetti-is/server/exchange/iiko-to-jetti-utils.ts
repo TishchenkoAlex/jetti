@@ -4,7 +4,7 @@ import { ColumnValue, Request } from 'tedious';
 import { config as dotenv } from 'dotenv';
 import { SQLConnectionConfig } from '../sql/interfaces';
 import { GetExchangeCatalogID } from './iiko-to-jetti-connection';
-import { SetExchangeCatalogID } from './iiko-to-jetti-connection';
+import { SetExchangeCatalogID, SetExchangeDocumentID } from './iiko-to-jetti-connection';
 import { v1 as uuidv1 } from 'uuid';
 
 dotenv();
@@ -28,6 +28,20 @@ export interface INoSqlDocument {
     doc: { [x: string]: any };
 }
 */
+
+export function nullOrID(d: any): Ref {
+  if (d===null) return null;
+  return d.id;
+}
+
+export function DateToString(dt: Date): string {
+  let res: string = dt.getFullYear().toString();
+  if (dt.getMonth()<9) res += `0${dt.getMonth()+1}`;
+    else `${dt.getMonth()+1}`;
+  if (dt.getDate()<10) res += `0${dt.getDate()}`;
+    else res += `${dt.getDate()}`;
+  return res;
+}
 
 export async function GetCatalog(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string, tx: SQLClient) {
   // 
@@ -105,6 +119,37 @@ export async function GetDocument(project: string, exchangeCode: string, exchang
   
 }
 
+export async function InsertDocument(jsonDoc: string, id: string, source: any, tx: SQLClient) {
+  // вставка документа в базу Jetti
+  //! добавить обработку ошибки и откат
+  const response = await tx.oneOrNone(`
+      INSERT INTO Documents(
+      [id], [type], [date], [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc])
+      SELECT
+      [id], [type], getdate(), [code], [description], [posted], [deleted],
+      [parent], [isfolder], [company], [user], [info], [doc]
+      FROM OPENJSON(@p1) WITH (
+      [id] UNIQUEIDENTIFIER,
+      [date] DATETIME,
+      [type] NVARCHAR(100),
+      [code] NVARCHAR(36),
+      [description] NVARCHAR(150),
+      [posted] BIT,
+      [deleted] BIT,
+      [parent] UNIQUEIDENTIFIER,
+      [isfolder] BIT,
+      [company] UNIQUEIDENTIFIER,
+      [user] UNIQUEIDENTIFIER,
+      [info] NVARCHAR(max),
+      [doc] NVARCHAR(max) N'$.doc' AS JSON
+      );
+      SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
+  await SetExchangeDocumentID(source, id);
+  return response;
+}
+
+/*
 export async function InsertDocument(jsonDoc: string, exchangeCode: string, exchangeBase: string, tx: SQLClient) {
   const id = uuidv1().toUpperCase();
   const response = await tx.oneOrNone(`
@@ -134,6 +179,7 @@ export async function InsertDocument(jsonDoc: string, exchangeCode: string, exch
       SELECT * FROM Documents WHERE ExchangeCode = @p2 and ExchangeBase = @p3`, [jsonDoc, exchangeCode, exchangeBase]);
   return response;
 }
+*/
 
 export async function UpdateDocument(jsonDoc: string, id: string, tx: SQLClient) {
     const response = await tx.oneOrNone(`

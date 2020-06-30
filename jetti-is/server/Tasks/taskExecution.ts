@@ -1,11 +1,22 @@
+import { RegisteredSyncFunctions } from './../fuctions/syncFunctionsMeta';
 import * as Queue from 'bull';
+import { ISyncParams } from '../exchange/iiko-to-jetti-connection';
 // import { TASKS_POOL } from '../../sql.pool.tasks';
 
 export default async function (job: Queue.Job) {
-  // const params = job.data;
-  // const sdbq = new MSSQL(TASKS_POOL, params.user);
+  const params = job.data.params as ISyncParams;
+  const syncFunction = RegisteredSyncFunctions().get(job.data.params.syncFunctionName);
+
+  if (!syncFunction) {
+    job.data.message = `Unknow sync function ${job.data.params.syncFunctionName}`;
+    await job.progress(100);
+    return;
+  }
+
 
   try {
+    await syncFunction(params);
+    await job.progress(100);
     // await lib.util.adminMode(true, sdbq);
     // const query = `
     //   SELECT d.id, d.date, d.description
