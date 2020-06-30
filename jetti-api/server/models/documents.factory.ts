@@ -86,6 +86,7 @@ import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
+import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -136,6 +137,7 @@ export interface RegisteredDocumentType { type: DocTypes; Class: typeof Document
 export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
+  { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
   { type: 'Catalog.Balance.Analytics', Class: CatalogBalanceAnalytics },

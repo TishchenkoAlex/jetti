@@ -1,6 +1,7 @@
 export type CatalogTypes =
   'Catalog.Attachment' |
   'Catalog.Attachment.Type' |
+  'Catalog.AllUnic.Lot' |
   'Catalog.Catalog' |
   'Catalog.Account' |
   'Catalog.Balance' |
