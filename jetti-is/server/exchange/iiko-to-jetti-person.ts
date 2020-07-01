@@ -72,13 +72,13 @@ const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
 async function syncPerson(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Person', destSQL);
   if (!response) {
-    if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Pperson ${iikoPerson.name}`);
+    if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Pperson ${iikoPerson.name}`);
     const NoSqlDocument: any = newPerson(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
   } else {
     if (syncParams.forcedUpdate) {
-      if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Pperson ${iikoPerson.name}`);
+      if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Pperson ${iikoPerson.name}`);
       response.type = 'Catalog.Person';
       // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
@@ -100,13 +100,13 @@ async function syncPerson(syncParams: ISyncParams, iikoPerson: IiikoPerson, dest
 async function syncManager(syncParams: ISyncParams, iikoPerson: IiikoPerson, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoPerson.project, iikoPerson.id, iikoPerson.baseid, 'Manager', destSQL);
   if (response === null) {
-    if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Manager ${iikoPerson.name}`);
+    if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Manager ${iikoPerson.name}`);
     const NoSqlDocument: any = newManager(syncParams, iikoPerson);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoPerson, destSQL);
   } else {
     if (syncParams.forcedUpdate) {
-      if (syncParams.logLevel>1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Manager ${iikoPerson.name}`);
+      if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Manager ${iikoPerson.name}`);
       response.type = 'Catalog.Manager';
       // response.code = syncParams.source.code + '-'+iikoPerson.code;
       response.description = iikoPerson.name;
@@ -130,7 +130,7 @@ async function syncManager(syncParams: ISyncParams, iikoPerson: IiikoPerson, des
 ///////////////////////////////////////////////////////////
 export async function ImportPersonToJetti(syncParams: ISyncParams) {
   await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Persons and Managers`);
-  if (syncParams.baseType=='sql') await ImportPersonSQLToJetti(syncParams);
+  if (syncParams.baseType === 'sql') await ImportPersonSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
 // const dSQLAdmin = new SQLPool(DestSqlConfig);
@@ -167,7 +167,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
 
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} person`);
+        if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} person`);
         for (const doc of batch) {
           await syncPerson(syncParams, doc, dsql);
           doc.type = 'Manager';
@@ -179,12 +179,12 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
     },
     async (rowCount: number, more: boolean) => {
         if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
+          if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
           for (const doc of batch) {
             await syncPerson(syncParams, doc, dsql);
             doc.type = 'Manager';
             await syncManager(syncParams, doc, dsql);
-          } 
+          }
         }
         await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Persons and Managers`);
     });

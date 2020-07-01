@@ -10,11 +10,6 @@ export const router = express.Router();
 router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
   try {
 
-    // const exchangeSQLAdmin = new SQLPool(ExchangeSqlConfig);
-    // const esql = new SQLClient(exchangeSQLAdmin);
-    // await esql.oneOrNone(`INSERT INTO dbo.projects (id,  description) VALUES ('test', 'test')`);
-    // return;
-
     let { params, opts } = req.body;
 
     const repeatCron = opts.Cron ? { cron: opts.Cron, startDate: opts.StartDate as Date } : undefined;

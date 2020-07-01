@@ -15,18 +15,18 @@ import { UpdateDocument } from './iiko-to-jetti-utils';
 const syncStage = 'Catalog.Counterpartie';
 ///////////////////////////////////////////////////////////
 interface IiikoCounterpartie {
-  project: string,
-  id: string,
-  baseid: string,
-  type: string,
-  parent: string,
-  mainparent: string,
-  code: string,
-  name: string,
-  deleted: boolean,
-  isfolder: boolean,
-  isClient: boolean,
-  isSuplier: boolean
+  project: string;
+  id: string;
+  baseid: string;
+  type: string;
+  parent: string;
+  mainparent: string;
+  code: string;
+  name: string;
+  deleted: boolean;
+  isfolder: boolean;
+  isClient: boolean;
+  isSuplier: boolean;
 }
 ///////////////////////////////////////////////////////////
 const transformCounterpartie = (syncParams: ISyncParams, source: any): IiikoCounterpartie => {
@@ -43,8 +43,8 @@ const transformCounterpartie = (syncParams: ISyncParams, source: any): IiikoCoun
     isfolder: false,
     isClient: false,
     isSuplier: true
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie): any => {
   return {
@@ -75,20 +75,19 @@ const newCounterpartie = (syncParams: ISyncParams, iikoCounterpartie: IiikoCount
     company: syncParams.source.company,
     user: null,
     info: null
-  }
-}
+  };
+};
 ///////////////////////////////////////////////////////////
 async function syncCounterpartie(syncParams: ISyncParams, iikoCounterpartie: IiikoCounterpartie, destSQL: SQLClient): Promise<any> {
   let response: any = await GetCatalog(iikoCounterpartie.project, iikoCounterpartie.id, iikoCounterpartie.baseid, 'Counterpartie', destSQL);
   if (response === null) {
-    if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Counterpartie ${iikoCounterpartie.name}`);
+    if (syncParams.logLevel > 1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `insert Counterpartie ${iikoCounterpartie.name}`);
     const NoSqlDocument: any = newCounterpartie(syncParams, iikoCounterpartie);
     const jsonDoc = JSON.stringify(NoSqlDocument);
     response = await InsertCatalog(jsonDoc, NoSqlDocument.id, iikoCounterpartie, destSQL);
-  }
-  else {
+  } else {
     if (syncParams.forcedUpdate) {
-      if (syncParams.logLevel>1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Counterpartie ${iikoCounterpartie.name}`);
+      if (syncParams.logLevel > 1) saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `update Counterpartie ${iikoCounterpartie.name}`);
       response.type = 'Catalog.Counterpartie';
       response.code = syncParams.source.code + '-' + iikoCounterpartie.code;
       response.description = iikoCounterpartie.name;
@@ -117,7 +116,7 @@ async function syncCounterpartie(syncParams: ISyncParams, iikoCounterpartie: Iii
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieToJetti(syncParams: ISyncParams) {
   await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Counterparties`);
-  if (syncParams.baseType=='sql') await ImportCounterpartieSQLToJetti(syncParams);
+  if (syncParams.baseType === 'sql') await ImportCounterpartieSQLToJetti(syncParams);
 }
 ///////////////////////////////////////////////////////////
 export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
@@ -140,7 +139,7 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
         FROM dbo.entity spr
         where spr.type = 'User' and cast(spr.[xml] as xml).value('(/r/supplier)[1]' ,'bit') = 1
           and cast(CONVERT(datetime2(0), cast(spr.[xml] as xml).value('(/r/modified)[1]' ,'nvarchar(255)'), 126) as date)>=@p1
-        -- and spr.id = 'A9527964-4184-4191-8D42-37FFBBD6D2BC' -- Ввод остатков 
+        -- and spr.id = 'A9527964-4184-4191-8D42-37FFBBD6D2BC' -- Ввод остатков
         --  and spr.id = '0339CD20-594B-4CCC-AF7A-00268C2A8C11'
     `, [syncParams.lastSyncDate],
     async (row: ColumnValue[], req: Request) => {
@@ -153,7 +152,7 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
 
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Counterparties`);
+        if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Counterparties`);
         for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
         batch = [];
         req.resume();
@@ -161,10 +160,10 @@ export async function ImportCounterpartieSQLToJetti(syncParams: ISyncParams) {
     },
     async (rowCount: number, more: boolean) => {
         if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel>0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Counterparties`);
+          if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Counterparties`);
           for (const doc of batch) await syncCounterpartie(syncParams, doc, dsql);
         }
         await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Counterparties`);
-    });    
+    });
 
 }
