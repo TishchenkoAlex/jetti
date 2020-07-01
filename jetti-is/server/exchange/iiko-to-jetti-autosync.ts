@@ -32,7 +32,7 @@ export async function AutosincIkoToJetty(params: any) {
     // документы
     try {
         await Promise.all([
-            ImportSalesToJetti(syncParams, ['C9CAC9B4-1E97-42E1-AC58-23C419888B46'])
+            ImportSalesToJetti(syncParams) //  ['C9CAC9B4-1E97-42E1-AC58-23C419888B46']
         ]);
         await saveLogProtocol(syncParams.syncid, 0, 0, 'Autosinc', `All Tasks Documents Complete.`);
     } catch (error) {

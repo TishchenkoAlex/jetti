@@ -121,7 +121,7 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
       from dbo.ItemSaleEvent ise
       where ise.session_id = @p1 and ise.deletedWithWriteoff=2 and ise.writeoffpaymenttype is null) as i
     left join dbo.OrderPaymentEvent p on p.[order] = i.orderId
-     where i.orderId = '117C419C-34D3-40A4-A65A-02BC88F63E2B'
+    -- where i.orderId = '117C419C-34D3-40A4-A65A-02BC88F63E2B'
     `, [iikoDoc.id]);
   // позиции
   const pos: any = await sourceSQL.manyOrNone(`
