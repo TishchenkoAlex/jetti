@@ -26,7 +26,7 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 
     if (opts.Delay) opts.delay = opts.Delay * 1000 * 60;
 
-    // await execJob(job);
+    // await execJob(await JQueue.add(data, opts));
     // return;
     const job = await JQueue.add(data, opts);
 

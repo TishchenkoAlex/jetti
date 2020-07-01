@@ -35,6 +35,7 @@ export function nullOrID(d: any): Ref {
 }
 
 export function DateToString(dt: Date): string {
+  if (typeof dt === 'string') dt = new Date(dt);
   let res: string = dt.getFullYear().toString();
   if (dt.getMonth() < 9) res += `0${dt.getMonth() + 1}`;
     else res += `${dt.getMonth() + 1}`;
