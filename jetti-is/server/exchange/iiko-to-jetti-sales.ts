@@ -487,58 +487,53 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
     `Session #${iikoDoc.documentNumber} orders: insert ${icnt}, update ${ucnt}, delete ${dcnt}. Processing time ${(endd - startd) / 1000} s.`);
 }
 
-export async function ImportSalesToJetti(syncParams: ISyncParams, docList: any[] = []): Promise<string> {
-  return new Promise(async (resolve) => {
-    await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Sales Documents`);
-    if (syncParams.baseType === 'sql') await ImportSalesSQLToJetti(syncParams, docList);
-    resolve('DONE');
-  });
+export async function ImportSalesToJetti(syncParams: ISyncParams, docList: any[] = []) {
+  await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Start sync Sales Documents`);
+  if (syncParams.baseType === 'sql') await ImportSalesSQLToJetti(syncParams, docList);
 }
 
-export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: any[] = []): Promise<string> {
+export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: any[] = []) {
 
-  return new Promise(async (resolve) => {
+  const ssqlcfg = await GetSqlConfig(syncParams.source.id);
+  const ssql = new SQLClient(new SQLPool(ssqlcfg));
+  const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
-    const ssqlcfg = await GetSqlConfig(syncParams.source.id);
-    const ssql = new SQLClient(new SQLPool(ssqlcfg));
-    const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
-
-    let i = 0;
-    // условия к выборке
-    let sw = '';
-    if (docList.length === 0) {
-      // выборка по интервалу дат
-      sw = ` where ( cast(pr.dateIncoming as DATE) between '${DateToString(syncParams.periodBegin)}' and '${DateToString(syncParams.periodEnd)}' `;
-      if (syncParams.execFlag === 126 && syncParams.autosync) {
-        sw += ` or (cast(pr.dateIncoming as DATE) >= '${DateToString(syncParams.firstDate)}' and cast(pr.dateIncoming as DATE) < '${DateToString(syncParams.periodBegin)}' and pr.dateModified >= '${DateToString(syncParams.lastSyncDate)}' )) `;
-      } else sw += ') ';
-      if (syncParams.exchangeID === null) {
-        if (syncParams.source.exchangeStores.length > 0) {
-          // ограничение по списку складов
-          sw += ` and pr.defaultStore in (`;
-          i = 0;
-          for (const store of syncParams.source.exchangeStores) {
-            i++;
-            if (i === 1) sw += `'${store}'`;
-            else sw += `, '${store}'`;
-          }
-          sw += ') ';
+  let i = 0;
+  // условия к выборке
+  let sw = '';
+  if (docList.length === 0) {
+    // выборка по интервалу дат
+    sw = ` where ( cast(pr.dateIncoming as DATE) between '${DateToString(syncParams.periodBegin)}' and '${DateToString(syncParams.periodEnd)}' `;
+    if (syncParams.execFlag === 126 && syncParams.autosync) {
+      sw += ` or (cast(pr.dateIncoming as DATE) >= '${DateToString(syncParams.firstDate)}' and cast(pr.dateIncoming as DATE) < '${DateToString(syncParams.periodBegin)}' and pr.dateModified >= '${DateToString(syncParams.lastSyncDate)}' )) `;
+    } else sw += ') ';
+    if (syncParams.exchangeID === null) {
+      if (syncParams.source.exchangeStores.length > 0) {
+        // ограничение по списку складов
+        sw += ` and pr.defaultStore in (`;
+        i = 0;
+        for (const store of syncParams.source.exchangeStores) {
+          i++;
+          if (i === 1) sw += `'${store}'`;
+          else sw += `, '${store}'`;
         }
-      } else {
-        sw += ` and pr.defaultStore = '${syncParams.exchangeID}' `;
+        sw += ') ';
       }
     } else {
-      // выборка по списку документов
-      i = 0;
-      for (const d of docList) {
-        i++;
-        if (i === 1) sw = ` where pr.sessionid in ('${d}'`;
-        else sw += `, '${d}'`;
-      }
-      sw += ') ';
+      sw += ` and pr.defaultStore = '${syncParams.exchangeID}' `;
     }
+  } else {
+    // выборка по списку документов
+    i = 0;
+    for (const d of docList) {
+      i++;
+      if (i === 1) sw = ` where pr.sessionid in ('${d}'`;
+      else sw += `, '${d}'`;
+    }
+    sw += ') ';
+  }
 
-    const sql = `
+  const sql = `
     SELECT DISTINCT
       cast(pr.sessionid as varchar(38)) as id,
       cast(pr.comment as nvarchar(255)) as comment,
@@ -556,33 +551,33 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
       and pr.status=1
       and not pr.sessionid is null
       order by pr.dateIncoming `;
-    // console.log(sql);
-    i = 0;
-    let batch: any[] = [];
-    const response = await ssql.manyOrNoneStream(sql, [],
-      async (row: ColumnValue[], req: Request) => {
-        i++;
-        const rawDoc: any = {};
-        row.forEach(col => rawDoc[col.metadata.colName] = col.value);
-        batch.push(rawDoc);
-        if (batch.length === ssqlcfg.batch.max) {
-          req.pause();
-          if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Sales docs`);
-          for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
-          batch = [];
-          req.resume();
-        }
-      },
-      async (rowCount: number, more: boolean) => {
-        if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Sales docs`);
-          for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
-        }
-        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Sales Docs`);
-        resolve('DONE');
+  // console.log(sql);
+  i = 0;
+  let batch: any[] = [];
+  const response = await ssql.manyOrNoneStream(sql, [],
+    async (row: ColumnValue[], req: Request) => {
+      i++;
+      const rawDoc: any = {};
+      row.forEach(col => rawDoc[col.metadata.colName] = col.value);
+      batch.push(rawDoc);
+      if (batch.length === ssqlcfg.batch.max) {
+        req.pause();
+        if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Sales docs`);
+        for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
+        batch = [];
+        req.resume();
       }
-    );
-  });
+    },
+    async (rowCount: number, more: boolean) => {
+      if (rowCount && !more && batch.length > 0) {
+        if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Sales docs`);
+        for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
+      }
+      await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Sales Docs`);
+
+    }
+  );
+
 
 }
 

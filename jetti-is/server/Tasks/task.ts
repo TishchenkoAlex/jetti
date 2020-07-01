@@ -3,10 +3,6 @@ import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../env/environment';
 import taskExecution from './taskExecution';
 import { RedisOptions } from 'ioredis';
 
-export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
-  taskExecution: taskExecution
-};
-
 const redis: RedisOptions = {
   host: REDIS_DB_HOST,
   password: REDIS_DB_AUTH,
@@ -40,5 +36,4 @@ const options: Queue.QueueOptions = {
 
 export const JQueue = new Queue(DB_NAME, options);
 
-JQueue.process(async job => {await taskExecution(job);
-});
+JQueue.process(async job => await taskExecution(job));

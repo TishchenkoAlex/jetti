@@ -1,13 +1,8 @@
 import { RegisteredSyncFunctions } from './../fuctions/syncFunctionsMeta';
 import { ISyncParams } from './../exchange/iiko-to-jetti-connection';
-import { Jobs } from './../Tasks/task';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { JQueue } from '../Tasks/task';
-import { SQLPool } from '../sql/sql-pool';
-import { SQLClient } from '../sql/sql-client';
-import { ExchangeSqlConfig } from '../exchange/iiko-to-jetti-connection';
-import { AutosincIkoToJetty } from '../exchange/iiko-to-jetti-autosync';
 
 export const router = express.Router();
 
@@ -16,7 +11,7 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 
     let { params, opts } = req.body;
 
-    const repeatCron = opts.Cron ? { cron: opts.Cron, startDate: opts.StartDate as Date } : undefined;
+    const repeatCron = opts.Cron ? { cron: opts.Cron } : undefined;
     const repeatEvery = opts.Every ? { every: opts.Every * 1000 * 60 } : undefined;
 
     const data = {
@@ -31,13 +26,16 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 
     if (opts.Delay) opts.delay = opts.Delay * 1000 * 60;
 
-    // const job = await JQueue.add(data, opts);
     // await execJob(job);
     // return;
+    const job = await JQueue.add(data, opts);
 
-    res.json(await JQueue.add(data, opts));
+    res.json(job);
 
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json(err);
+    next(err);
+  }
 });
 
 
