@@ -24,7 +24,7 @@ export default async function (job: Queue.Job) {
 
   try {
     await syncFunction(params);
-    await job.progress(100);
+    job.progress(100);
     // await lib.util.adminMode(true, sdbq);
     // const query = `
     //   SELECT d.id, d.date, d.description
