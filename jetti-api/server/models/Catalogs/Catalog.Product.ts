@@ -31,9 +31,6 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Expense', label: 'Expense' })
   Expense: Ref = null;
 
-  @Props({ type: 'Catalog.AllUnic.Lot', isProtected: true })
-  AllUnicLot: Ref = null;
-
   @Props({
     type: 'Catalog.Expense.Analytics', label: 'Analytics',
     owner: [{ dependsOn: 'Expense', filterBy: 'parent' }]
