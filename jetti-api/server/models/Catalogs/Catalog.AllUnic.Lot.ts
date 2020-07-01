@@ -16,13 +16,16 @@ export class CatalogAllUnicLot extends DocumentBase {
   code = '';
 
   @Props({ type: 'date', label: 'Дата старта продаж' })
-  DateStartSales = null;
+  SalesStartDate = null;
 
   @Props({ type: 'number', label: 'Стоимость' })
   Cost = 0;
 
   @Props({ type: 'Catalog.Currency', label: 'Валюта лота', isProtected: true })
-  Currency = 0;
+  Currency: Ref = null;
+
+  @Props({ type: 'Catalog.Product', label: 'Номенклатура', isProtected: true })
+  Product: Ref = null;
 
   @Props({ type: 'table', label: 'Подразделения' })
   Department: CatalogAllUnicLotDepartment[] = [new CatalogAllUnicLotDepartment()];
