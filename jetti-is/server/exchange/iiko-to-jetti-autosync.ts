@@ -14,7 +14,7 @@ export async function AutosincIkoToJetty(params: any) {
         // const {project, syncSource} = params;
         // console.log(params);
         // console.log(params.project);
-        const syncParams: ISyncParams = await getSyncParams(params.project, params.syncSource);
+        const syncParams: ISyncParams = await getSyncParams(params);
         // if (!syncParams) throw new Error('Error get sync params.');
         await saveSyncParams(syncParams);
         await saveLogProtocol(syncParams.syncid, 0, 0, 'Autosinc', `Autosync data IIKO - Jetti: ${syncParams.source.id} ==> ${syncParams.project.id}.`);

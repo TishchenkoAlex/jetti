@@ -5,30 +5,33 @@ import { ColumnValue, Request } from 'tedious';
 import { config as dotenv } from 'dotenv';
 import { SQLConnectionConfig } from '../sql/interfaces';
 import { Ref } from './iiko-to-jetti-utils';
-import { IJettiProject, IExchangeSource, RussiaSource } from './jetti-projects';
+import { IJettiProject, IExchangeSource, RussiaSource, SMVProject } from './jetti-projects';
 
 dotenv();
-
 export interface ISyncParams {
   // параметры синхронизации
+  docid: string;              // id документа, запустившего синхронизацию
+  projectid: string;          // id проекта cинхронизации
+  sourceid: string;           // id базы источника
+  autosync: boolean;          // автосинхронизация данных/ручная синхронизация
+                              // (только указанные типы документов, только за указанный период)
+  periodBegin: Date;          // дата с которой синхронизируются данные
+  periodEnd: Date;            // дата по которую синхронизируются данные
+  exchangeID: Ref;            // загрузка по ID (склад, подразделение)
+  execFlag: number;           // флаг обработки автосинхронизации (код документа для загрузки)
+  forcedUpdate: boolean;      // принудитеольное обновление данных (если false - обновляются только новые
+                              // и у которых не совпадает версия данных)
+  logLevel: number;           // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация,
+  syncFunctionName?: string;  // имя функции синхронизации
   syncid: string;             // id синхронизации
   project: IJettiProject;     // проект
   source: IExchangeSource;    // база источник
   baseType: string;           // тип базы источника: sql - mssql, pg - postgree
   destination: string;        // ид база приемник
-  periodBegin: Date;          // дата с которой синхронизируются данные
-  periodEnd: Date;            // дата по которую синхронизируются данные
   firstDate: Date;            // начальная дата, с которой для базы источника ведется синхронизация
   lastSyncDate: Date;         // дата последней автосинхронизации
-  exchangeID: Ref;            // загрузка по ID (склад, подразделение)
-  autosync: boolean;          // автосинхронизация данных
-  forcedUpdate: boolean;      // принудитеольное обновление данных (если false - обновляются только новые
-                              // и у которых не совпадает версия данных)
-  logLevel: number;           // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация,
-  execFlag: number;           // флаг обработки автосинхронизации
   startTime: Date;            // время старта
   finishTime: Date | null;    // время завершение
-  syncFunctionName?: string;  // имяфункции синхронизации
 }
 export interface ISyncCatalog {
   // элемент таблицы dbo.catalog
@@ -333,11 +336,11 @@ export async function saveSyncParams(SyncParams: ISyncParams) {
     periodBegin: SyncParams.periodBegin,
     periodEnd: SyncParams.periodEnd,
     execFlag: SyncParams.execFlag,
-    params: {
+    params: SyncParams /* {
       autosync: SyncParams.autosync,
       forcedUpdate: SyncParams.forcedUpdate,
       logLevel: SyncParams.logLevel
-    }
+    } */
   };
   await esql.oneOrNone(`INSERT INTO dbo.syncList (id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params)
     select id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params
@@ -390,26 +393,28 @@ export async function saveLogProtocol(syncid: string, execCode: number, errorCou
   console.log(`log: ${protocol}`);
 }
 
-export async function getSyncParams(project: IJettiProject, syncSource: string) {
-  // ! временно, эти патаметры будем определять из excange базы по проекту и базе источнику...
-  console.log(project);
+export async function getSyncParams(params: any) {
   const result: ISyncParams = {
+    docid: params.docid,
+    projectid: params.projectid,
+    sourceid: params.sourceid,
+    autosync: params.autosync,
+    periodBegin: params.periodBegin,
+    periodEnd: params.periodEnd,
+    exchangeID: params.exchangeID,
+    execFlag: params.execFlag,
+    forcedUpdate: params.forcedUpdate,
+    logLevel: params.logLevel,
+    syncFunctionName: params.syncFunctionName,
     syncid: uuidv1().toUpperCase(),
-    project: project,
-    source: RussiaSource,
-    baseType: 'sql',
-    destination: project.destination,
-    periodBegin: new Date(2020, 5, 1),
-    periodEnd: new Date(2020, 5, 2),
+    project: SMVProject,  // ! временно
+    source: RussiaSource, // ! временно
+    baseType: 'sql',      // ! временно
+    destination: SMVProject.destination, // ! временно
     firstDate: RussiaSource.firstDate,
     lastSyncDate: new Date(2020, 5, 29, 8, 0, 0),  // ! временно для примера
-    exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // тестово по одному складу
-    autosync: true,
-    forcedUpdate: true, // ! пока обновление только новых данных
-    logLevel: 2,
-    execFlag: 1,
     startTime: new Date(),
-    finishTime: null,
+    finishTime: null
   };
   return result;
 }

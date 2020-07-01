@@ -531,7 +531,7 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
     }
     sw += ') ';
   }
-  console.log(sw);
+
   const sql = `
     SELECT DISTINCT
       cast(pr.sessionid as varchar(38)) as id,
@@ -561,7 +561,7 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
       batch.push(rawDoc);
       if (batch.length === ssqlcfg.batch.max) {
         req.pause();
-        if (syncParams.logLevel > 1) console.log('inserting to batch', i, 'Sales docs');
+        if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting to batch ${i} Sales docs`);
         for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
         batch = [];
         req.resume();
@@ -569,14 +569,10 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
     },
     async (rowCount: number, more: boolean) => {
       if (rowCount && !more && batch.length > 0) {
-        if (syncParams.logLevel > 1) console.log('inserting tail', batch.length, 'docs');
+        if (syncParams.logLevel > 1) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} Sales docs`);
         for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
       }
-      console.log('Finish sync Sales docs');
-      // выход из скрипта...
-      const dt = new Date();
-      console.log('Script finished. ', dt.toString());
-      process.exit(0);
+      await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Sales Docs`);
     }
   );
 
