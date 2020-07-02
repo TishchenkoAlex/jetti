@@ -78,6 +78,25 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.ExchangeRates.National]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) "Country"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency1"')) "Currency1"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency2"')) "Currency2"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Rate')) "Rate"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Mutiplicity')) "Mutiplicity"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.ExchangeRates.National';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.ExchangeRates.National] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.ExchangeRates.National] ON [dbo].[Register.Info.ExchangeRates.National](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.MainSpecification]
     WITH SCHEMABINDING
     AS

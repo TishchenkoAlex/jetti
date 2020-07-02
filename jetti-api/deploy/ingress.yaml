@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
 #nginx.ingress.kubernetes.io/ssl-redirect: true
-    nginx.org/websocket-services: "smv, jetti, sm"
+    nginx.org/websocket-services: "smv, jetti, sm, is"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
   labels:
@@ -31,4 +31,11 @@ spec:
         - path: /
           backend:
             serviceName: sm
+            servicePort: 8080
+    - host: is.jetti-app.com
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: is
             servicePort: 8080

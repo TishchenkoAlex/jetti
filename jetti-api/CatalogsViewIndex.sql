@@ -85,6 +85,41 @@
       GO
       --------------------------------------------------------------------------------------
       
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AllUnic.Lot.v];
+      GO
+
+      CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.SalesStartDate'),127) [SalesStartDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Cost"')), 0) [Cost]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Product"')) [Product]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.AllUnic.Lot'
+    
+      GO
+
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.AllUnic.Lot.v] ON [Catalog.AllUnic.Lot.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.code.f] ON [Catalog.AllUnic.Lot.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.description.f] ON [Catalog.AllUnic.Lot.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.description] ON [Catalog.AllUnic.Lot.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.code] ON [Catalog.AllUnic.Lot.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.user] ON [Catalog.AllUnic.Lot.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.company] ON [Catalog.AllUnic.Lot.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.AllUnic.Lot.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AllUnic.Lot.v];
+      GO
+
+      RAISERROR('Catalog.AllUnic.Lot complete', 0 ,1) WITH NOWAIT;
+      GO
+      --------------------------------------------------------------------------------------
+      
       ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Account.v];
       GO
 

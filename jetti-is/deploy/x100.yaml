@@ -25,7 +25,7 @@ spec:
             - name: DB_HOST
               value: JETTI-DB-01
             - name: DB_NAME
-              value: jetti-is
+              value: jettiIS
             - name: DB_USER
               value: jetti
             - name: DB_PASSWORD
