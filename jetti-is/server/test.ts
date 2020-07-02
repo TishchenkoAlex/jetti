@@ -30,15 +30,22 @@ const params = {
       docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
       projectid: 'SMV',
       sourceid: 'Russia',
-      autosync: false,
+      autosync: true,
       periodBegin: new Date(2020, 5, 1),
-      periodEnd: new Date(2020, 5, 2),
+      periodEnd: new Date(2020, 5, 1),
       exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171',
-      execFlag: 32,
+      execFlag: 126,
       forcedUpdate: true,
       logLevel: 2,
       syncFunctionName: 'AutosincIkoToJetty'
 };
 
 AutosyncIIkoToJetty(params).catch((error) => { console.log(error); });
+/*
+const dt = {
+  d1: new Date();
+  d2: new Date(Date.UTC());
+
+const d2 = new Date(Date.UTC());
+*/
 

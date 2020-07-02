@@ -40,7 +40,7 @@ export interface IExchangeBase  extends IExchangeSource{
 export const RussiaSource: IExchangeSource = {
     id: 'Russia',
     code: 'RU',
-    firstDate: new Date(2020, 5, 1),
+    firstDate: new Date(Date.UTC(2020, 6, 1)),
     company: 'E5850830-02D2-11EA-A524-E592E08C23A5',
     currency: 'A4867005-66B8-4A8A-9105-3F25BB081936',
     TransitStorehouse: '',

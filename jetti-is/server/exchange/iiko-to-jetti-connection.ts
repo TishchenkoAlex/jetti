@@ -174,6 +174,9 @@ export async function GetExchangeDocument(project: string, exchangeCode: string,
 export async function exchangeManyOrNone(sql: string, params: any[]) {
   return await esql.manyOrNone(sql, params);
 }
+export async function exchangeOneOrNone(sql: string, params: any[]) {
+  return await esql.oneOrNone(sql, params);
+}
 ///////////////////////////////////////////////////////////
 
 const newSyncCatalog = (source: any, id: Ref): ISyncCatalog => {
@@ -398,7 +401,7 @@ export async function saveLogProtocol(syncid: string, execCode: number, errorCou
   console.log(`log: ${protocol}`);
 }
 
-export async function getSyncParams(params: any) {
+export async function getSyncParams(params: any): Promise<ISyncParams> {
   const result: ISyncParams = {
     docid: params.docid,
     projectid: params.projectid,
@@ -421,5 +424,28 @@ export async function getSyncParams(params: any) {
     startTime: new Date(),
     finishTime: null
   };
+  /*
+  if (result.autosync) {
+    // параметры автосинхронизации
+    const asparams: any = await exchangeOneOrNone(`
+      SELECT
+        CASE
+          when (@p1=32) then cast(getdate() as datetime)
+          else cast(coalesce(max(sl.PeriodEnd), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as date)
+        end as DB,
+        cast(cast(getdate() as DATE) as date) as DE,
+        COALESCE(dateadd(DAY, -2, max(sl.syncStart)), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as LastSyncDate
+      FROM dbo.syncList sl
+      where sl.project = 'SMV' and sl.syncSource = 'Russia' and sl.ExecFlag=126 and not sl.syncEnd is null`,
+      [result.execFlag]);
+    if (asparams) {
+      result.lastSyncDate = new Date(asparams.LastSyncDate);
+      if (result.lastSyncDate < result.firstDate) result.lastSyncDate = result.firstDate;
+      result.periodBegin = new Date(asparams.DB);
+      if (result.periodBegin < result.firstDate) result.periodBegin = result.firstDate;
+      result.periodEnd = new Date(asparams.DE);
+    }
+  }
+  console.log(result); */
   return result;
 }
