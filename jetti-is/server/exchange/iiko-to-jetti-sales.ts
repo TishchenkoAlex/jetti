@@ -30,7 +30,7 @@ const transformOrder = (syncParams: ISyncParams, source: any): IiikoOrder => {
   };
 };
 ///////////////////////////////////////////////////////////
-const newOrder = (): any => {
+const newOrder = () => {
   return {
     id: uuidv1().toUpperCase(),
     type: 'Document.Operation',
@@ -78,9 +78,12 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
   const Group = '5B7E85A4-BA99-11E7-BB80-DF3C32C3B9C9';
   let Operation = '58FA3C90-DEA7-11E9-8D32-67D574707955';
 
-  const store: any = await GetCatalog(syncParams.project.id, iikoDoc.store, syncParams.source.id, 'Storehouse', destSQL); // склад
-  const company: any = await destSQL.oneOrNone(`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
-    [iikoDoc.dateIncoming, store.doc.Department]); // организация
+  const store = await GetCatalog(syncParams.project.id, iikoDoc.store, syncParams.source.id, 'Storehouse', destSQL); // склад
+  if (!store) throw new Error('Storehouse not exists');
+
+  const company = (await destSQL.oneOrNone<{ id: Ref }>(`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
+    [iikoDoc.dateIncoming, store.doc.Department]))!; // организация
+
   const typeFranchise: any = await destSQL.oneOrNone(`select dbo.FranchiseOnDate(@p1, @p2) as tf `,
     [iikoDoc.dateIncoming, store.doc.Department]); // тип франшизы
   if (typeFranchise.tf === 'Classic franchise') Operation = '42C3BE10-1831-11EA-822C-15390275940A'; // другая операция по франшизе
@@ -556,7 +559,7 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
   let batch: any[] = [];
   const response = await ssql.manyOrNoneStream(sql, [],
     async (row: ColumnValue[], req: Request) => {
-      i++;
+      i = i + 1;
       const rawDoc: any = {};
       row.forEach(col => rawDoc[col.metadata.colName] = col.value);
       batch.push(rawDoc);
@@ -574,10 +577,7 @@ export async function ImportSalesSQLToJetti(syncParams: ISyncParams, docList: an
         for (const doc of batch) await syncSalesSQL(syncParams, doc, ssql, dsql);
       }
       await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Sales Docs`);
-
     }
   );
-
-
 }
 

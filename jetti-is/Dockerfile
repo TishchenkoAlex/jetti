@@ -16,5 +16,4 @@ ENV PORT 8080
 EXPOSE 8080
 
 CMD [ "node", "./server/dist/index.js" ]
-#docker build -t eu.gcr.io/jetti-x100/jetti-is-api:latest .
-#docker push eu.gcr.io/jetti-x100/jetti-is-api:latest
+#tsc && docker build -t eu.gcr.io/jetti-x100/x100-is-api:latest . && docker push eu.gcr.io/jetti-x100/x100-is-api:latest

@@ -1,18 +1,18 @@
 // Test exchange modules...
-import { AutosincIkoToJetty } from './exchange/iiko-to-jetti-autosync';
+import { AutosyncIIkoToJetty } from './exchange/iiko-to-jetti-autosync';
 
 // Параметры, передаваемые в процедуры синхронизации
 //   docid: string;             // id документа синхронизации
 //   projectid: string;         // id проекта cинхронизации
 //   sourceid: string;          // id базы источника
 //   autosync: boolean;         // автосинхронизация данных/ ручная синхронизация
-                                // (только указанные типы документов, только за указанный период)
+// (только указанные типы документов, только за указанный период)
 //   periodBegin: Date;         // дата с которой синхронизируются данные
 //   periodEnd: Date;           // дата по которую синхронизируются данные
 //   exchangeID: Ref;           // загрузка по ID (один склад/подразделение) - если нужно все = пустое значение
 //   execFlag: number;          // флаг обработки автосинхронизации (код документа для загрузки)
 //   forcedUpdate: boolean;     // принудитеольное обновление данных
-                                // (если false - обновляются только новые и у которых не совпадает версия данных)
+// (если false - обновляются только новые и у которых не совпадает версия данных)
 //   logLevel: number;          // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация,
 //   syncFunctionName?: string; // имя функции синхронизации
 // Дополнительные параметры. добавляются уже внутри процедуры синхронизации
@@ -40,5 +40,5 @@ const params = {
       syncFunctionName: 'AutosincIkoToJetty'
 };
 
-AutosincIkoToJetty(params).catch((error) => { console.log(error); });
+AutosyncIIkoToJetty(params).catch((error) => { console.log(error); });
 

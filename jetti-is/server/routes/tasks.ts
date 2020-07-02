@@ -9,6 +9,7 @@ export const router = express.Router();
 router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
   try {
 
+    // tslint:disable-next-line: prefer-const
     let { params, opts } = req.body;
 
     const repeatCron = opts.Cron ? { cron: opts.Cron } : undefined;

@@ -30,7 +30,7 @@ const transformPerson = (syncParams: ISyncParams, source: any): IiikoPerson => {
   };
 };
 ///////////////////////////////////////////////////////////
-const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
+const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson) => {
   return {
     id: uuidv1().toUpperCase(),
     type: 'Catalog.Person',
@@ -50,7 +50,7 @@ const newPerson = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
   };
 };
 ///////////////////////////////////////////////////////////
-const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson): any => {
+const newManager = (syncParams: ISyncParams, iikoProduct: IiikoPerson) => {
   return {
     id: uuidv1().toUpperCase(),
     type: 'Catalog.Manager',
@@ -138,14 +138,14 @@ export async function ImportPersonToJetti(syncParams: ISyncParams) {
 ///////////////////////////////////////////////////////////
 
 export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
-    const ssqlcfg = await GetSqlConfig(syncParams.source.id);
-    const ssql = new SQLClient(new SQLPool(ssqlcfg));
-    const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
+  const ssqlcfg = await GetSqlConfig(syncParams.source.id);
+  const ssql = new SQLClient(new SQLPool(ssqlcfg));
+  const dsql = new SQLClient(new SQLPool(await GetSqlConfig(syncParams.destination)));
 
-    let i = 0;
-    let batch: any[] = [];
-    await ssql.manyOrNoneStream(`
-        SELECT  top 4
+  let i = 0;
+  let batch: any[] = [];
+  await ssql.manyOrNoneStream(`
+        SELECT TOP 4
           cast(spr.id as nvarchar(50)) as id,
           coalesce(spr.deleted,0) as deleted,
           coalesce(cast(spr.[xml] as xml).value('(/r/name/customValue)[1]' ,'nvarchar(255)'),
@@ -178,14 +178,14 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
       }
     },
     async (rowCount: number, more: boolean) => {
-        if (rowCount && !more && batch.length > 0) {
-          if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
-          for (const doc of batch) {
-            await syncPerson(syncParams, doc, dsql);
-            doc.type = 'Manager';
-            await syncManager(syncParams, doc, dsql);
-          }
+      if (rowCount && !more && batch.length > 0) {
+        if (syncParams.logLevel > 0) await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `inserting tail ${batch.length} person`);
+        for (const doc of batch) {
+          await syncPerson(syncParams, doc, dsql);
+          doc.type = 'Manager';
+          await syncManager(syncParams, doc, dsql);
         }
-        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Persons and Managers`);
+      }
+      await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Finish sync Persons and Managers`);
     });
 }

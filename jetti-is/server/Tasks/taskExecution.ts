@@ -1,7 +1,6 @@
 import { RegisteredSyncFunctions } from './../fuctions/syncFunctionsMeta';
 import * as Queue from 'bull';
 import { ISyncParams } from '../exchange/iiko-to-jetti-connection';
-// import { TASKS_POOL } from '../../sql.pool.tasks';
 
 const onError = async (job, text) => {
   job.data.message = text;
