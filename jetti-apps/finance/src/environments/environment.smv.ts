@@ -2,7 +2,7 @@
 import { Configuration } from 'msal';
 import { MsalAngularConfiguration } from '@azure/msal-angular';
 
-const domain = 'https://sm.jetti-app.com';
+const domain = 'https://smv.jetti-app.com';
 const BPAPI = 'https://bp.x100-group.com/JettiProcesses/hs';
 
 export const environment = {
@@ -39,7 +39,7 @@ export const MsalAngularConfig: MsalAngularConfiguration = {
     'user.read',
     'openid',
     'profile',
-    'https://sm.jetti-app.com/access_as_user'
+    'https://smv.jetti-app.com/access_as_user'
   ],
   unprotectedResources: ['https://www.microsoft.com/en-us/'],
   protectedResourceMap,

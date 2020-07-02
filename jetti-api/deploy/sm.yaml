@@ -50,6 +50,8 @@ spec:
           value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
         - name: JETTI_IS_HOST
           value: https://is.jetti-app.com
+        - name: LOGIC_USECASHREQUESTAPPROVING
+          value: "1"
         - name: REFRESH_ID
           value: "0022"
         - name: NODE_ENV
