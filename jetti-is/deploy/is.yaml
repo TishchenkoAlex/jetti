@@ -1,20 +1,21 @@
+#kubectl apply -f deploy/is.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: x100-is
-  name: x100-is
+    app: is
+  name: is
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: x100-is
+      app: is
       tier: web
   template:
     metadata:
       labels:
-        app: x100-is
+        app: is
         tier: web
     spec:
       containers:
@@ -42,12 +43,12 @@ spec:
         - name: EXCHANGE_ACCESS_KEY
           value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
         - name: REFRESH_ID
-          value: "0001"
+          value: "0005"
         - name: NODE_ENV
           value: production
-        image: eu.gcr.io/jetti-x100/x100-is-api:latest
+        image: eu.gcr.io/jetti-x100/is-api:latest
         imagePullPolicy: Always
-        name: x100-is
+        name: is
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -59,14 +60,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: x100-is
+  name: is
   labels:
-    app: x100-is
+    app: is
 spec:
   type: NodePort
   sessionAffinity: ClientIP
   selector:
-    app: x100-is
+    app: is
   ports:
   - port: 8080
     targetPort: 8080
