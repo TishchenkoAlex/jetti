@@ -51,7 +51,7 @@ spec:
         - name: JETTI_IS_HOST
           value: https://is.jetti-app.com
         - name: REFRESH_ID
-          value: "0025"
+          value: "0022"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
