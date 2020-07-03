@@ -59,24 +59,38 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
   // }
 
   async removeJobsAll() {
-    await this.removeJobs((this.JobsStat)
-      .map(e => e.code));
+    if (this.QueueId === 'JETTI') {
+      await this.removeJobs((this.JobsStat)
+        .map(e => e.code));
+    } else {
+      await lib.queue.deleteTasks(this.QueueId, { All: true });
+    }
+
     await this.getJobsStat();
   }
 
   async removeJobsSelected() {
-    await this.removeJobs((this.JobsStat)
-      .filter(e => e['selected'])
-      .map(e => e.code));
-    await this.removeJobsRepeatable(this.Repeatable.filter(e => e.flag).map(e => e.key));
-    setTimeout(() => { }, 2000);
+    const repeatableKeys = this.Repeatable.filter(e => e.flag).map(e => e.key);
+    const jobsCodes = this.JobsStat.filter(e => e['selected']).map(e => e.code);
+
+    if (this.QueueId === 'JETTI') {
+      await this.removeJobs(jobsCodes);
+      await this.removeJobsRepeatable(repeatableKeys);
+      setTimeout(() => { }, 2000);
+    } else {
+      await lib.queue.deleteTasks(this.QueueId,
+        {
+          All: false
+          , Repeatable: repeatableKeys
+          , Jobs: jobsCodes
+        });
+    }
     await this.getJobsStat();
   }
 
   async removeJobsRepeatable(jobsKeys: string[]) {
     jobsKeys.forEach(async key => await JQueue.removeRepeatableByKey(key));
   }
-
 
   async removeJobs(jobsCodes: string[]) {
     await JQueue.whenCurrentJobsFinished();
@@ -88,19 +102,18 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
   }
 
   async getRepeatableJobs() {
-    this.Repeatable = (await JQueue.getRepeatableJobs())
+    this.Repeatable = ((await JQueue.getRepeatableJobs()) as any)
       .map(job => ({
         ...job,
         id: job.id || '',
         flag: false,
         endDate: job.endDate ? new Date(job.endDate) : null,
         everyMin: job.every ? job.every / 1000 / 60 : 0,
-        everyString: job.every ? msToTime(job.every) : '',
-        next: job.next ? new Date(job.next) : null
+        everyString: job.every ? msToTime(job.every) : ''
       }));
   }
 
-  async getJobsStat() {
+  async getJobsStatJETTI() {
 
     await this.getRepeatableJobs();
 
@@ -115,47 +128,31 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
           && (!e.finishedOn || (e.finishedOn && e.finishedOn < dates.end)));
       }
       for (const job of jobs) {
-        result.push({
-          code: job.id,
-          status: status,
-          progress: job.progress(),
-          attemptsMade: job.attemptsMade,
-          failedReason: (job as any).failedReason,
-          processedOn: job.processedOn ? new Date(job.processedOn) : null,
-          finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
-          duration: msToTime(job.processedOn ? ((job.finishedOn ? job.finishedOn : Date.now()) - job.processedOn) : 0),
-          ...this.getInnerJobProps(job)
-        });
+        result.push(mapJob(job, status));
+      } for (const job of jobs) {
+        result.push(mapJob(job, status));
       }
     }
 
-    // const setId = 'getJobsStat';
-    // if (result.length) {
-    //   this.DynamicPropsClearSet(setId);
-    //   // this.DynamicPropsPush('add', 'type', 'table', '', 'JobStat', setId);
-    //   this.DynamicPropsPush('add', 'label', 'Jobs stat', '', 'AnyTable', setId);
-    //   this.DynamicPropsPush('add', 'type', 'boolean', 'selected', 'AnyTable', setId);
-    //   this.DynamicPropsPush('add', 'label', ' ', 'selected', 'AnyTable', setId);
-    //   this.DynamicPropsAddForObject(result, 'AnyTable', setId);
-    // }
     result.sort((a, b) => b.code - a.code);
     this.JobsStat = result;
 
   }
 
-  getInnerJobProps(job: Bull.Job) {
-    const res = {
-      ...job.data ? job.data : {},
-      ...job.data.job ? job.data.job : {},
-      ...job.opts ? job.opts : {},
-      ...job.opts.repeat ? job.opts.repeat : {}
-    };
-    if (res.delay) res.delay = res.delay / 1000 / 3600;
-    delete res.job;
-    delete res.timestamp;
-    delete res.prevMillis;
-    delete res.EndDate;
-    return res;
+  async getJobsStat() {
+    if (this.QueueId === 'JETTI') {
+      await this.getJobsStatJETTI();
+      return;
+    }
+    const jobStats = await lib.queue.getTasks(this.QueueId,
+      {
+        EndDate: this.EndDate ? this.EndDate : undefined,
+        StartDate: this.StartDate ? this.StartDate : undefined,
+        Status: this.Status as any
+      }
+    );
+    this.Repeatable = jobStats.repeatable;
+    this.JobsStat = jobStats.jobs;
   }
 
   async addJobCustomTask() {
@@ -195,6 +192,35 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
   }
 
 }
+
+const mapJob = (job: Bull.Job, status: string) => {
+  return {
+    code: job.id,
+    status: status,
+    progress: job.progress(),
+    attemptsMade: job.attemptsMade,
+    failedReason: (job as any).failedReason,
+    processedOn: job.processedOn ? new Date(job.processedOn) : null,
+    finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+    duration: msToTime(job.processedOn ? ((job.finishedOn ? job.finishedOn : Date.now()) - job.processedOn) : 0),
+    ...getInnerJobProps(job)
+  };
+};
+
+const getInnerJobProps = (job: Bull.Job) => {
+  const res = {
+    ...job.data ? job.data : {},
+    ...job.data.job ? job.data.job : {},
+    ...job.opts ? job.opts : {},
+    ...job.opts.repeat ? job.opts.repeat : {}
+  };
+  if (res.delay) res.delay = res.delay / 1000 / 3600;
+  delete res.job;
+  delete res.timestamp;
+  delete res.prevMillis;
+  delete res.EndDate;
+  return res;
+};
 
 function msToTime(s: number): string {
 

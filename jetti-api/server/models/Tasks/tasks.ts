@@ -1,11 +1,45 @@
 import * as Queue from 'bull';
-import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../../env/environment';
+import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH, JETTI_IS_HOST } from '../../env/environment';
 import { userSocketsEmit } from '../../sockets';
 import { IJob } from '../common-types';
 import sync from './sync';
 import { RedisOptions } from 'ioredis';
 import * as os from 'os';
 import customTask from './customTask';
+import axios, { AxiosInstance } from 'axios';
+
+export interface IGetTaskParams {
+  StartDate?: Date;
+  EndDate?: Date;
+  Status?: 'completed' | 'waiting' | 'active' | 'delayed' | 'failed' | 'all';
+}
+export interface IDeleteTaskParams {
+  Repeatable?: string[];  // ключи повторяемых задач
+  Jobs?: string[];        // ид задач
+  All?: boolean;          // все задачи?
+}
+
+export const queueHosts: { [key: string]: string } = {
+  'IS': JETTI_IS_HOST
+};
+
+export const execQueueAPIPostRequest = async (queueId: string, url: string, body: any): Promise<any> => {
+  const queueInstance = await getQueueInstanceAPIByQueueId(queueId);
+  return (await queueInstance.instance.post(url, body, { headers: { Authorization: queueInstance.token } })).data;
+};
+
+export const getQueueInstanceAPIByQueueId = async (queueId: string): Promise<{ instance: AxiosInstance, token: string }> => {
+  const host = queueHosts[queueId];
+  if (!host) throw new Error(`Unknow queue: ${queueId}`);
+  const instance = axios.create({ baseURL: host });
+  const query = `auth/token`;
+  try {
+    const res = await instance.post(query, { password: process.env.EXCHANGE_ACCESS_KEY });
+    return { instance: instance, token: `Bearer ${res.data.token}` };
+  } catch (error) {
+    throw new Error(`Error on getting queue instance: ${error.message}`);
+  }
+};
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   sync: sync,

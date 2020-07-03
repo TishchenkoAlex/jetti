@@ -18,7 +18,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Counterpartie', required: true, order: 1, isProtected: true })
   owner: Ref = null;
 
-  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }, isProtected: true })
+  @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }, isProtected: true, onChangeServer: true })
   company: Ref = null;
 
   @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })

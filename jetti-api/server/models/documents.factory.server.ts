@@ -1,3 +1,4 @@
+import { CatalogContractServer } from './Catalogs/Catalog.Contract.server';
 import { CatalogEmployeeServer } from './Catalogs/Catalog.Employee.server';
 import { CatalogStaffingTableServer } from './Catalogs/Catalog.StaffingTable.server';
 import { lib } from '../std.lib';
@@ -44,6 +45,7 @@ export interface IServerDocument {
 export type DocumentBaseServer = DocumentBase & IServerDocument;
 
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
+  { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
@@ -75,23 +77,23 @@ export async function createDocumentServer<T extends DocumentBaseServer>
 
   const Props = Object.assign({}, result.Props());
   // if (document && document.isfolder) {
-    // упрощенные метаданные формы для Папки
-    // Object.keys(Props).;
-    // Props = {
-    //   id: Props.id,
-    //   type: Props.type,
-    //   date: Props.date,
-    //   code: Props.code,
-    //   description: Props.description,
-    //   company: Props.company,
-    //   user: Props.user,
-    //   posted: Props.posted,
-    //   deleted: Props.deleted,
-    //   parent: Props.parent,
-    //   isfolder: Props.isfolder,
-    //   info: Props.info,
-    //   timestamp: Props.timestamp
-    // };
+  // упрощенные метаданные формы для Папки
+  // Object.keys(Props).;
+  // Props = {
+  //   id: Props.id,
+  //   type: Props.type,
+  //   date: Props.date,
+  //   code: Props.code,
+  //   description: Props.description,
+  //   company: Props.company,
+  //   user: Props.user,
+  //   posted: Props.posted,
+  //   deleted: Props.deleted,
+  //   parent: Props.parent,
+  //   isfolder: Props.isfolder,
+  //   info: Props.info,
+  //   timestamp: Props.timestamp
+  // };
   // }
 
   const Prop = { ...result.Prop() as DocumentOptions };

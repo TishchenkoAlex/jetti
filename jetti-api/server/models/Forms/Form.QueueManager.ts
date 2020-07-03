@@ -21,6 +21,9 @@ export class FormQueueManager extends FormBase {
   @Props({ type: 'enum', order: 4, label: 'Состояние', value: ['all', 'completed', 'waiting', 'active', 'delayed', 'failed'], panel: 'Журнал задач' })
   Status = 'all';
 
+  @Props({ type: 'enum', order: 4, label: 'Очередь', value: ['JETTI', 'IS'], panel: 'Журнал задач' })
+  QueueId = 'JETTI';
+
   @Props({ type: 'table', label: 'Повторяющиеся', panel: 'Повторяющиеся' })
   Repeatable: Repeatable[] = [new Repeatable()];
 
@@ -88,6 +91,9 @@ class JobsStat {
   @Props({ type: 'number', readOnly: true, label: 'Попыток' })
   attempts = '';
 
+  @Props({ type: 'string', readOnly: true, label: 'Описание' })
+  info = '';
+
   @Props({ type: 'Document.Operation', readOnly: true, label: 'Операция' })
   TaskOperation = '';
 
@@ -120,6 +126,12 @@ class Repeatable {
   @Props({ type: 'boolean', label: 'Пометка' })
   flag = false;
 
+  @Props({ type: 'string', label: 'Наименование' })
+  name = '';
+
+  @Props({ type: 'datetime', label: 'Следующее' })
+  next: Date | null = null;
+
   @Props({ type: 'string', label: 'Расписание (Cron expression)' })
   cron = '';
 
@@ -132,17 +144,14 @@ class Repeatable {
   @Props({ type: 'string', label: 'Повторять через' })
   everyString = '';
 
+  @Props({ type: 'string', readOnly: true, label: 'Описание' })
+  info = '';
+
   @Props({ type: 'string' })
   id: string | undefined = '';
 
   @Props({ type: 'string' })
   key = '';
-
-  @Props({ type: 'string', label: 'Наименование' })
-  name = '';
-
-  @Props({ type: 'datetime', label: 'Следующее' })
-  next: Date | null = null;
 
 }
 

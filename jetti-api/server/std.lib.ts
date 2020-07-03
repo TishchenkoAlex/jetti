@@ -1,3 +1,4 @@
+import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
@@ -20,8 +21,6 @@ import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
 import * as iconv from 'iconv-lite';
-import axios from 'axios';
-import { JETTIIS_HOST } from './env/environment';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -99,7 +98,9 @@ export interface JTL {
     updateQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
     deleteQueue: (id: string, taskPoolTx?: MSSQL) => Promise<void>
     getQueueById: (id: string, taskPoolTx?: MSSQL) => Promise<IQueueRow | null>
-    addTask: (taskParams, taskOpts) => Promise<void>
+    addTask: (queueId: string, taskParams, taskOpts) => Promise<any>
+    getTasks: (queueId: string, params: IGetTaskParams) => Promise<{ repeatable: any[], jobs: any[] }>
+    deleteTasks: (queueId: string, params: IDeleteTaskParams) => Promise<void>
   };
 }
 
@@ -164,7 +165,9 @@ export const lib: JTL = {
     updateQueue,
     deleteQueue,
     getQueueById,
-    addTask
+    addTask,
+    getTasks,
+    deleteTasks
   }
 };
 
@@ -540,18 +543,16 @@ async function getQueueById(id: string, taskPoolTX?: MSSQL): Promise<IQueueRow |
   return await taskPoolTX!.oneOrNone(query, [id]);
 }
 
-async function addTask(taskParams, taskOpts, token?: string): Promise<void> {
-  const instance = axios.create({ baseURL: JETTIIS_HOST });
-  const query = `api/v1.0/task/add`;
-  if (!token) token = `Bearer ${await getToken()}`;
-  await instance.post(query, { params: taskParams, opts: taskOpts }, { headers: { Authorization: token } });
+async function addTask(queueId: string, taskParams, taskOpts): Promise<any> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/add`, { params: taskParams, opts: taskOpts });
 }
 
-async function getToken(): Promise<string> {
-  const instance = axios.create({ baseURL: JETTIIS_HOST });
-  const query = `auth/token`;
-  const res = await instance.post(query, { password: process.env.EXCHANGE_ACCESS_KEY });
-  return res.data.token;
+async function getTasks(queueId: string, params: IGetTaskParams): Promise<{ repeatable: any[], jobs: any[] }> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/get`, params);
+}
+
+async function deleteTasks(queueId: string, params: IDeleteTaskParams): Promise<void> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/delete`, params);
 }
 
 async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {
