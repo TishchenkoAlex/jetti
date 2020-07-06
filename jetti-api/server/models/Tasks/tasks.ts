@@ -7,6 +7,7 @@ import { RedisOptions } from 'ioredis';
 import * as os from 'os';
 import customTask from './customTask';
 import axios, { AxiosInstance } from 'axios';
+import { Agent } from 'https';
 
 export interface IGetTaskParams {
   StartDate?: Date;
@@ -25,7 +26,11 @@ export const queueHosts: { [key: string]: string } = {
 
 export const execQueueAPIPostRequest = async (queueId: string, url: string, body: any): Promise<any> => {
   const queueInstance = await getQueueInstanceAPIByQueueId(queueId);
-  return (await queueInstance.instance.post(url, body, { headers: { Authorization: queueInstance.token } })).data;
+  return (await queueInstance.instance.post(url, body, {
+    headers: { Authorization: queueInstance.token }, httpsAgent: new Agent({
+      rejectUnauthorized: false
+    })
+  })).data;
 };
 
 export const getQueueInstanceAPIByQueueId = async (queueId: string): Promise<{ instance: AxiosInstance, token: string }> => {
@@ -34,12 +39,17 @@ export const getQueueInstanceAPIByQueueId = async (queueId: string): Promise<{ i
   const instance = axios.create({ baseURL: host });
   const query = `auth/token`;
   try {
-    const res = await instance.post(query, { password: process.env.EXCHANGE_ACCESS_KEY });
+    const res = await instance.post(query, { password: process.env.EXCHANGE_ACCESS_KEY }, {
+      httpsAgent: new Agent({
+        rejectUnauthorized: false
+      })
+    });
     return { instance: instance, token: `Bearer ${res.data.token}` };
   } catch (error) {
     throw new Error(`Error on getting queue instance: ${error.message}`);
   }
 };
+
 
 export const Jobs: { [key: string]: (job: Queue.Job) => Promise<void> } = {
   sync: sync,
