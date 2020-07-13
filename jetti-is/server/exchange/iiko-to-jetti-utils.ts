@@ -218,3 +218,8 @@ export async function UpdateDocument(jsonDoc: string, id: string, tx: SQLClient)
     SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
   return response;
 }
+///////////////////////////////////////////////////////////
+// поставить документ в очередь на проведение
+export async function setQueuePostDocument(id: string, company: string | null, flow: number, tx: SQLClient) {
+  await tx.none(`insert into exc.QueuePost (id, company, flow) values(@p1, @p2, @p3)`, [id, company, flow]);
+}///////////////////////////////////////////////////////////

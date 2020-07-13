@@ -145,7 +145,7 @@ export async function ImportPersonSQLToJetti(syncParams: ISyncParams) {
   let i = 0;
   let batch: any[] = [];
   await ssql.manyOrNoneStream(`
-        SELECT TOP 4
+        SELECT
           cast(spr.id as nvarchar(50)) as id,
           coalesce(spr.deleted,0) as deleted,
           coalesce(cast(spr.[xml] as xml).value('(/r/name/customValue)[1]' ,'nvarchar(255)'),
