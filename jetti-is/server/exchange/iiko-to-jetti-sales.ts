@@ -4,8 +4,10 @@ import { ColumnValue, Request } from 'tedious';
 
 import { SQLPool } from '../sql/sql-pool';
 import { ISyncParams, saveLogProtocol, exchangeManyOrNone, GetSqlConfig, GetExchangeCatalogID } from './iiko-to-jetti-connection';
-import { DateToString, GetCatalog, InsertCatalog, UpdateCatalog, nullOrID, Ref, InsertDocument, GetDocument, UpdateDocument } from './iiko-to-jetti-utils';
+import { DateToString, GetCatalog, InsertCatalog, UpdateCatalog, nullOrID, Ref, InsertDocument, GetDocument, UpdateDocument,
+  setQueuePostDocument } from './iiko-to-jetti-utils';
 import { dateReviverUTC } from '../fuctions/dateReviver';
+import { text } from 'body-parser';
 
 ///////////////////////////////////////////////////////////
 const syncStage = 'Document.Order';
@@ -213,72 +215,44 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
   //
   let icnt = 0; let ucnt = 0; let dcnt = 0;
   for (const ord of Orders) {
-    const iikoOrder: IiikoOrder = transformOrder(syncParams, ord);
-    let posz = pos.filter(p => p.orderId === ord.orderId);
-    // сопоставление по SKU
-    posz = await exchangeManyOrNone(`
-      SELECT
-        (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
-        p.[Qty],
-        p.[Price],
-        p.[Amount] as [AmountFull],
-        p.[QtyAcc] as [Discount],
-        p.[QtyFact] as [AmountDiscount],
-        p.[openTime] as [TimeStart],
-        p.[deliverTime] as [TimeFeed],
-        p.[printTime] as [TimePrint]
-      FROM OPENJSON(@p3) WITH (
-        [SKU] UNIQUEIDENTIFIER,
-        [openTime] DATETIME,
-        [deliverTime] DATETIME,
-        [printTime] DATETIME,
-        [Qty] money,
-        [Price] money,
-        [Amount] money,
-        [QtyAcc] money,
-        [QtyFact] money) as p
-    `, [syncParams.project.id, syncParams.source.id, JSON.stringify(posz)]);
-    // исключим из продаж модификаторы по нулевой цене
-    posz = await destSQL.manyOrNone(`
-      SELECT
-        p.[SKU],
-        p.[Qty],
-        p.[Price],
-        p.[AmountFull],
-        p.[Discount],
-        p.[AmountDiscount],
-        p.[TimeStart],
-        p.[TimeFeed],
-        p.[TimePrint]
-      FROM OPENJSON(@p1) WITH (
-        [SKU] UNIQUEIDENTIFIER,
-        [TimeStart] DATETIME,
-        [TimeFeed] DATETIME,
-        [TimePrint] DATETIME,
-        [Qty] money,
-        [Price] money,
-        [AmountFull] money,
-        [Discount] money,
-        [AmountDiscount] money) as p
-      LEFT JOIN [dbo].[Catalog.Product.v] c on c.[id]=p.[SKU] --WITH (NOEXPAND)
-      left join [dbo].[Catalog.ProductKind.v] k on k.[id]=c.[ProductKind]
-      where not c.[id] is null
-      and (k.[code]<>N'MODIFIER' or (k.[code]=N'MODIFIER' and abs(p.[AmountFull])>=0.005))
-    `, [JSON.stringify(posz)]);
-    const nposz = posz.filter(p => p.Qty < 0);
-    if (nposz.length > 0) {
-      // есть позиции с отрицательным количеством - сворачиваем
+    try {
+      const iikoOrder: IiikoOrder = transformOrder(syncParams, ord);
+      let posz = pos.filter(p => p.orderId === ord.orderId);
+      // сопоставление по SKU
+      posz = await exchangeManyOrNone(`
+        SELECT
+          (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
+          p.[Qty],
+          p.[Price],
+          p.[Amount] as [AmountFull],
+          p.[QtyAcc] as [Discount],
+          p.[QtyFact] as [AmountDiscount],
+          p.[openTime] as [TimeStart],
+          p.[deliverTime] as [TimeFeed],
+          p.[printTime] as [TimePrint]
+        FROM OPENJSON(@p3) WITH (
+          [SKU] UNIQUEIDENTIFIER,
+          [openTime] DATETIME,
+          [deliverTime] DATETIME,
+          [printTime] DATETIME,
+          [Qty] money,
+          [Price] money,
+          [Amount] money,
+          [QtyAcc] money,
+          [QtyFact] money) as p
+      `, [syncParams.project.id, syncParams.source.id, JSON.stringify(posz)]);
+      // исключим из продаж модификаторы по нулевой цене
       posz = await destSQL.manyOrNone(`
         SELECT
           p.[SKU],
-          sum(p.[Qty]) as [Qty],
-          max(p.[Price]) as [Price],
-          sum(p.[AmountFull]) as [AmountFull],
-          max(p.[Discount]) as [Discount],
-          sum(p.[AmountDiscount]) as [AmountDiscount],
-          min(p.[TimeStart]) as [TimeStart],
-          min(p.[TimeFeed]) as [TimeFeed],
-          min(p.[TimePrint]) as [TimePrint]
+          p.[Qty],
+          p.[Price],
+          p.[AmountFull],
+          p.[Discount],
+          p.[AmountDiscount],
+          p.[TimeStart],
+          p.[TimeFeed],
+          p.[TimePrint]
         FROM OPENJSON(@p1) WITH (
           [SKU] UNIQUEIDENTIFIER,
           [TimeStart] DATETIME,
@@ -289,190 +263,224 @@ async function syncSalesSQL(syncParams: ISyncParams, iikoDoc: any, sourceSQL: SQ
           [AmountFull] money,
           [Discount] money,
           [AmountDiscount] money) as p
-        group by p.[SKU]
+        LEFT JOIN [dbo].[Catalog.Product.v] c on c.[id]=p.[SKU] --WITH (NOEXPAND)
+        left join [dbo].[Catalog.ProductKind.v] k on k.[id]=c.[ProductKind]
+        where not c.[id] is null
+        and (k.[code]<>N'MODIFIER' or (k.[code]=N'MODIFIER' and abs(p.[AmountFull])>=0.005))
       `, [JSON.stringify(posz)]);
-      console.log(posz);
-    }
-    let deletedz = 0;
-    if (posz.length === 0) deletedz = 1;
-    // оплаты
-    let cashz = cash.filter(p => p.orderId === ord.orderId);
-    // пишем документ по времени в 13:00
-    const datez: Date = ord.date;
-    datez.setUTCHours(13); datez.setMinutes(0); datez.setSeconds(0);
-    const codez = syncParams.source.code + '-' + ord.orderNum;
-    const descriptionz: any = await destSQL.oneOrNone(`
-      SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
-      [codez, datez.toJSON(), Operation]);
-    const managerz: any = await GetCatalog(syncParams.project.id, ord.cashier, syncParams.source.id, 'Manager', destSQL); // кассир
-    // обработка дополнительных параметров PaymentTypeAdd
-    const tabPayAdd: any = []; // !!! let
-    // !!! пока убрал !!!
-    /*
-    if (syncParams.source.id=='Poland' && ord.orderType != '') {
-      tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
-        where cm.ExchangeBase = @p1 and cm.ExchangeType='PaymentTypeAdd' and coalesce(cm.addType,'')=@p2
-      `,[syncParams.source.id, ord.orderType]);
-
-    } else if (syncParams.source.id=='Russia' && ord.originName != '') {
-      tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
-        where cm.ExchangeBase = @p1 and cm.ExchangeType='PaymentTypeAdd' and coalesce(cm.addType,'')=@p2
+      const nposz = posz.filter(p => p.Qty < 0);
+      if (nposz.length > 0) {
+        // есть позиции с отрицательным количеством - сворачиваем
+        posz = await destSQL.manyOrNone(`
+          SELECT
+            p.[SKU],
+            sum(p.[Qty]) as [Qty],
+            max(p.[Price]) as [Price],
+            sum(p.[AmountFull]) as [AmountFull],
+            max(p.[Discount]) as [Discount],
+            sum(p.[AmountDiscount]) as [AmountDiscount],
+            min(p.[TimeStart]) as [TimeStart],
+            min(p.[TimeFeed]) as [TimeFeed],
+            min(p.[TimePrint]) as [TimePrint]
+          FROM OPENJSON(@p1) WITH (
+            [SKU] UNIQUEIDENTIFIER,
+            [TimeStart] DATETIME,
+            [TimeFeed] DATETIME,
+            [TimePrint] DATETIME,
+            [Qty] money,
+            [Price] money,
+            [AmountFull] money,
+            [Discount] money,
+            [AmountDiscount] money) as p
+          group by p.[SKU]
+        `, [JSON.stringify(posz)]);
+        // console.log(posz);
+      }
+      let deletedz = 0;
+      if (posz.length === 0) deletedz = 1;
+      // оплаты
+      let cashz = cash.filter(p => p.orderId === ord.orderId);
+      // пишем документ по времени в 13:00
+      const datez: Date = ord.date;
+      datez.setUTCHours(13); datez.setMinutes(0); datez.setSeconds(0);
+      const codez = syncParams.source.code + '-' + ord.orderNum;
+      const descriptionz: any = await destSQL.oneOrNone(`
+        SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
+        [codez, datez.toJSON(), Operation]);
+      const managerz: any = await GetCatalog(syncParams.project.id, ord.cashier, syncParams.source.id, 'Manager', destSQL); // кассир
+      // обработка дополнительных параметров PaymentTypeAdd
+      const tabPayAdd: any = []; // !!! let
+      // !!! пока убрал !!!
+      /*
+      if (syncParams.source.id=='Poland' && ord.orderType != '') {
+        tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
+          where cm.ExchangeBase = @p1 and cm.ExchangeType='PaymentTypeAdd' and coalesce(cm.addType,'')=@p2
         `,[syncParams.source.id, ord.orderType]);
-    }
-    console.log(JSON.stringify(tabPayAdd)); */
-    // оплаты по заказу
-    cashz = await exchangeManyOrNone(`
-      SELECT
-        case when(COALESCE(p.[isPrepay],'0')='1') then N'PREPAY' WHEN(a.[addAnalytics] is NULL) then c.addAnalytics else a.[addAnalytics] end as TypePay,
-        case WHEN(a.[addAnalytics] is NULL and (c.addAnalytics like 'CASH%')) then @p1
-             WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p2
-             WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p3
-             WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] like 'CASH%')) then @p1
-             WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p2
-             WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p3
-             ELSE cast(a.[id] as nvarchar(50))
-        end as Client,
-        p.[Amount] as AmountPay,
-        case WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p4
-             WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p5
-             WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p4
-             WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p5
-             ELSE null
-        end as BankAccount,
-        case  WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'CASH')) then @p6
-            WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'CASH2' or c.addAnalytics = 'AGGR2')) then @p7
-            WHEN(not a.[addAnalytics] is NULL and (a.addAnalytics = 'CASH')) then @p6
-            WHEN(not a.[addAnalytics] is NULL and (a.addAnalytics = 'CASH2' or a.addAnalytics = 'AGGR2')) then @p7
-              ELSE null
-        end as CashRegister,
-        case  WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p8
-            WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p9
-            WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p8
-            WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p9
-              ELSE null
-        end as AcquiringTerminal
-      FROM OPENJSON(@p10) WITH (
-        [paymentType] UNIQUEIDENTIFIER,
-        [isPrepay] nvarchar(1),
-        [Amount] money) as p
-      left join dbo.[catalog] c on c.exchangeCode=p.[paymentType] and c.exchangeBase='Russia' and c.exchangeType='PaymentType'
-      left join OPENJSON(@p11) WITH (
-        [ExchangeCode] UNIQUEIDENTIFIER,
-        [addAnalytics] NVARCHAR(50),
-        [id] UNIQUEIDENTIFIER) as a on a.[ExchangeCode]=p.paymentType
-    `, [customer.id, docAcquier, docAcquier2, docBankAccount, docBankAccount2, nullOrID(CashRegister), nullOrID(CashRegister2),
-      docAcquiringTerminal, docAcquiringTerminal2, JSON.stringify(cashz), JSON.stringify(tabPayAdd)]);
-    // итоговые суммы оплат
-    const Amount: any = await destSQL.oneOrNone(`
-      select
-        sum(COALESCE(i.PayCash,0)) as PayCash,
-        sum(COALESCE(i.PayCard,0)) as PayCard,
-        sum(COALESCE(i.PayAggregator,0)) as PayAggregator,
-        sum(COALESCE(i.PayKupon,0)) as PayKupon,
-        sum(COALESCE(i.Amount,0)) as Amount
-      from
-      (SELECT
-        CASE when (p.[TypePay] like 'CASH%') then p.[AmountPay] else 0 end as PayCash,
-        CASE when (p.[TypePay] like 'BANK%' or p.[TypePay]='ONLINE') then p.[AmountPay] else 0 end as PayCard,
-        CASE when (p.[TypePay] like 'AGGR%') then p.[AmountPay] else 0 end as PayAggregator,
-        CASE when (p.[TypePay] = 'KUP') then p.[AmountPay] else 0 end as PayKupon,
-        p.[AmountPay] as Amount
-      FROM OPENJSON(@p1) WITH (
-        [TypePay] nvarchar(50),
-        [Client] nvarchar(50),
-        [AmountPay] MONEY,
-        [BankAccount] nvarchar(50),
-        [CashRegister] nvarchar(50),
-        [AcquiringTerminal] nvarchar(50)) as p) as i`, [JSON.stringify(cashz)]);
-    // доставка
-    let docDeliveryType: Ref = null;
-    let docbillTime: Ref = null;
-    let docCloseTime: Ref = null;
-    let docRetailClient: Ref = null;
-    let docOrderSource: Ref = null;
-    let isDelivery = 0;
-    let deliveryz: any = delivery.filter(p => p.orderId === ord.orderId);
-    if (deliveryz.length > 0) {
-      deliveryz = await exchangeManyOrNone(`
-        select top 1 coalesce(cm.addAnalytics,'') as DeliveryType, d.[billTime] as billTime, d.[closeTime] as CloseTime,
-          d.[customerId] as RetailClient, d.[sourceKey] as OrderSource, d.[isDelivery] as isDelivery
+
+      } else if (syncParams.source.id=='Russia' && ord.originName != '') {
+        tabPayAdd = await exchangeManyOrNone(`select cm.ExchangeCode, cm.addAnalytics, cast(cm.id as nvarchar(50)) as id from dbo.Catalog cm
+          where cm.ExchangeBase = @p1 and cm.ExchangeType='PaymentTypeAdd' and coalesce(cm.addType,'')=@p2
+          `,[syncParams.source.id, ord.orderType]);
+      }
+      console.log(JSON.stringify(tabPayAdd)); */
+      // оплаты по заказу
+      cashz = await exchangeManyOrNone(`
+        SELECT
+          case when(COALESCE(p.[isPrepay],'0')='1') then N'PREPAY' WHEN(a.[addAnalytics] is NULL) then c.addAnalytics else a.[addAnalytics] end as TypePay,
+          case WHEN(a.[addAnalytics] is NULL and (c.addAnalytics like 'CASH%')) then @p1
+               WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p2
+               WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p3
+               WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] like 'CASH%')) then @p1
+               WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p2
+               WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p3
+               ELSE cast(a.[id] as nvarchar(50))
+          end as Client,
+          p.[Amount] as AmountPay,
+          case WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p4
+               WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p5
+               WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p4
+               WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p5
+               ELSE null
+          end as BankAccount,
+          case  WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'CASH')) then @p6
+              WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'CASH2' or c.addAnalytics = 'AGGR2')) then @p7
+              WHEN(not a.[addAnalytics] is NULL and (a.addAnalytics = 'CASH')) then @p6
+              WHEN(not a.[addAnalytics] is NULL and (a.addAnalytics = 'CASH2' or a.addAnalytics = 'AGGR2')) then @p7
+                ELSE null
+          end as CashRegister,
+          case  WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK' or c.addAnalytics = 'ONLINE')) then @p8
+              WHEN(a.[addAnalytics] is NULL and (c.addAnalytics = 'BANK2')) then @p9
+              WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK' or a.[addAnalytics] = 'ONLINE')) then @p8
+              WHEN(not a.[addAnalytics] is NULL and (a.[addAnalytics] = 'BANK2')) then @p9
+                ELSE null
+          end as AcquiringTerminal
+        FROM OPENJSON(@p10) WITH (
+          [paymentType] UNIQUEIDENTIFIER,
+          [isPrepay] nvarchar(1),
+          [Amount] money) as p
+        left join dbo.[catalog] c on c.exchangeCode=p.[paymentType] and c.exchangeBase='Russia' and c.exchangeType='PaymentType'
+        left join OPENJSON(@p11) WITH (
+          [ExchangeCode] UNIQUEIDENTIFIER,
+          [addAnalytics] NVARCHAR(50),
+          [id] UNIQUEIDENTIFIER) as a on a.[ExchangeCode]=p.paymentType
+      `, [customer.id, docAcquier, docAcquier2, docBankAccount, docBankAccount2, nullOrID(CashRegister), nullOrID(CashRegister2),
+        docAcquiringTerminal, docAcquiringTerminal2, JSON.stringify(cashz), JSON.stringify(tabPayAdd)]);
+      // итоговые суммы оплат
+      const Amount: any = await destSQL.oneOrNone(`
+        select
+          sum(COALESCE(i.PayCash,0)) as PayCash,
+          sum(COALESCE(i.PayCard,0)) as PayCard,
+          sum(COALESCE(i.PayAggregator,0)) as PayAggregator,
+          sum(COALESCE(i.PayKupon,0)) as PayKupon,
+          sum(COALESCE(i.Amount,0)) as Amount
+        from
+        (SELECT
+          CASE when (p.[TypePay] like 'CASH%') then p.[AmountPay] else 0 end as PayCash,
+          CASE when (p.[TypePay] like 'BANK%' or p.[TypePay]='ONLINE') then p.[AmountPay] else 0 end as PayCard,
+          CASE when (p.[TypePay] like 'AGGR%') then p.[AmountPay] else 0 end as PayAggregator,
+          CASE when (p.[TypePay] = 'KUP') then p.[AmountPay] else 0 end as PayKupon,
+          p.[AmountPay] as Amount
         FROM OPENJSON(@p1) WITH (
-          [orderId] uniqueidentifier,
-          [orderNum] nvarchar(50),
-          [orderType] nvarchar(50),
-          [billTime] datetime,
-          [closeTime] datetime,
-          [isDelivery] money,
-          [customerId] nvarchar(50),
-          [sourceKey] nvarchar(50)) as d
-        left join dbo.[Catalog] cm on cm.ExchangeCode=d.orderType and cm.ExchangeBase='Russia' and cm.ExchangeType='OrderType'
-      `, [JSON.stringify(deliveryz)]);
-      docDeliveryType = deliveryz[0].DeliveryType;
-      docbillTime = deliveryz[0].billTime;
-      docCloseTime = deliveryz[0].CloseTime;
-      docRetailClient = deliveryz[0].RetailClient;
-      docOrderSource = deliveryz[0].OrderSource;
-      isDelivery = deliveryz[0].isDelivery;
-    }
-    if (Amount.PayAggregator > 0 && isDelivery === 0) docDeliveryType = 'EXTERNAL';
-    if (docDeliveryType === null) docDeliveryType = 'RESTAURANT';
-    // заполняем документ
-    let isNewDoc: Boolean = false;
-    let NoSqlDocument: any = await GetDocument(iikoOrder.project, iikoOrder.id, iikoOrder.baseid, iikoOrder.type, destSQL);
-    if (!NoSqlDocument) {
-      isNewDoc = true;
-      if (syncParams.logLevel > 2) {
-        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} insert`);
+          [TypePay] nvarchar(50),
+          [Client] nvarchar(50),
+          [AmountPay] MONEY,
+          [BankAccount] nvarchar(50),
+          [CashRegister] nvarchar(50),
+          [AcquiringTerminal] nvarchar(50)) as p) as i`, [JSON.stringify(cashz)]);
+      // доставка
+      let docDeliveryType: Ref = null;
+      let docbillTime: Ref = null;
+      let docCloseTime: Ref = null;
+      let docRetailClient: Ref = null;
+      let docOrderSource: Ref = null;
+      let isDelivery = 0;
+      let deliveryz: any = delivery.filter(p => p.orderId === ord.orderId);
+      if (deliveryz.length > 0) {
+        deliveryz = await exchangeManyOrNone(`
+          select top 1 coalesce(cm.addAnalytics,'') as DeliveryType, d.[billTime] as billTime, d.[closeTime] as CloseTime,
+            d.[customerId] as RetailClient, d.[sourceKey] as OrderSource, d.[isDelivery] as isDelivery
+          FROM OPENJSON(@p1) WITH (
+            [orderId] uniqueidentifier,
+            [orderNum] nvarchar(50),
+            [orderType] nvarchar(50),
+            [billTime] datetime,
+            [closeTime] datetime,
+            [isDelivery] money,
+            [customerId] nvarchar(50),
+            [sourceKey] nvarchar(50)) as d
+          left join dbo.[Catalog] cm on cm.ExchangeCode=d.orderType and cm.ExchangeBase='Russia' and cm.ExchangeType='OrderType'
+        `, [JSON.stringify(deliveryz)]);
+        docDeliveryType = deliveryz[0].DeliveryType;
+        docbillTime = deliveryz[0].billTime;
+        docCloseTime = deliveryz[0].CloseTime;
+        docRetailClient = deliveryz[0].RetailClient;
+        docOrderSource = deliveryz[0].OrderSource;
+        isDelivery = deliveryz[0].isDelivery;
       }
-      NoSqlDocument = newOrder();
-      icnt++;
-    } else {
-      if (syncParams.logLevel > 2) {
-        await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} update`);
+      if (Amount.PayAggregator > 0 && isDelivery === 0) docDeliveryType = 'EXTERNAL';
+      if (docDeliveryType === null) docDeliveryType = 'RESTAURANT';
+      // заполняем документ
+      let isNewDoc: Boolean = false;
+      let NoSqlDocument: any = await GetDocument(iikoOrder.project, iikoOrder.id, iikoOrder.baseid, iikoOrder.type, destSQL);
+      if (!NoSqlDocument) {
+        isNewDoc = true;
+        if (syncParams.logLevel > 2) {
+          await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} insert`);
+        }
+        NoSqlDocument = newOrder();
+        icnt++;
+      } else {
+        if (syncParams.logLevel > 2) {
+          await saveLogProtocol(syncParams.syncid, 0, 0, syncStage, `Order ${ord.orderId} #${ord.orderNum} update`);
+        }
+        ucnt++;
       }
-      ucnt++;
+      NoSqlDocument.type = 'Document.Operation';
+      NoSqlDocument.date = datez;
+      NoSqlDocument.code = codez;
+      NoSqlDocument.description = descriptionz.dsc;
+      NoSqlDocument.posted = 0;
+      NoSqlDocument.deleted = deletedz;
+      NoSqlDocument.doc.Group = Group;
+      NoSqlDocument.doc.Operation = Operation;
+      NoSqlDocument.doc.Amount = Amount.Amount;
+      NoSqlDocument.doc.currency = syncParams.source.currency;
+      NoSqlDocument.doc.f1 = customer.id;
+      NoSqlDocument.doc.f2 = managerz.id;
+      NoSqlDocument.doc.f3 = store.doc.Department;
+      NoSqlDocument.doc.Customer = customer.id;
+      NoSqlDocument.doc.Manager = managerz.id;
+      NoSqlDocument.doc.NumCashShift = iikoDoc.documentNumber;
+      NoSqlDocument.doc.Department = store.doc.Department;
+      NoSqlDocument.doc.Storehouse = store.id;
+      NoSqlDocument.doc.PayCash = Amount.PayCash;
+      NoSqlDocument.doc.PayCard = Amount.PayCard;
+      NoSqlDocument.doc.PayAggregator = Amount.PayAggregator;
+      NoSqlDocument.doc.PayKupon = Amount.PayKupon;
+      NoSqlDocument.doc.DeliveryType = docDeliveryType;
+      NoSqlDocument.doc.OrderSource = docOrderSource;
+      NoSqlDocument.doc.RetailClient = docRetailClient;
+      NoSqlDocument.doc.BillTime = docbillTime;
+      NoSqlDocument.doc.CloseTime = docCloseTime;
+      NoSqlDocument.doc.ItemsInventory = posz;
+      NoSqlDocument.doc.ItemsPay = cashz;
+      NoSqlDocument.parent = null;
+      NoSqlDocument.isfolder = false;
+      NoSqlDocument.company = company.id;
+      NoSqlDocument.user = null;
+      NoSqlDocument.info = null;
+      // JSON.stringify(posz) JSON.stringify(cashz)
+      // console.log(NoSqlDocument);
+      const jsonDoc = JSON.stringify(NoSqlDocument);
+      if (isNewDoc) await InsertDocument(jsonDoc, NoSqlDocument.id, iikoOrder, destSQL);
+      else await UpdateDocument(jsonDoc, NoSqlDocument.id, destSQL);
+      if (syncParams.flow >= 0) {
+        // очередь проведения документов
+        await setQueuePostDocument(NoSqlDocument.id, NoSqlDocument.company, syncParams.flow, destSQL);
+      }
+    } catch (error) {
+      await saveLogProtocol(syncParams.syncid, 0, 1, syncStage, error.message);
     }
-    NoSqlDocument.type = 'Document.Operation';
-    NoSqlDocument.date = datez;
-    NoSqlDocument.code = codez;
-    NoSqlDocument.description = descriptionz.dsc;
-    NoSqlDocument.posted = 0;
-    NoSqlDocument.deleted = deletedz;
-    NoSqlDocument.doc.Group = Group;
-    NoSqlDocument.doc.Operation = Operation;
-    NoSqlDocument.doc.Amount = Amount.Amount;
-    NoSqlDocument.doc.currency = syncParams.source.currency;
-    NoSqlDocument.doc.f1 = customer.id;
-    NoSqlDocument.doc.f2 = managerz.id;
-    NoSqlDocument.doc.f3 = store.doc.Department;
-    NoSqlDocument.doc.Customer = customer.id;
-    NoSqlDocument.doc.Manager = managerz.id;
-    NoSqlDocument.doc.NumCashShift = iikoDoc.documentNumber;
-    NoSqlDocument.doc.Department = store.doc.Department;
-    NoSqlDocument.doc.Storehouse = store.id;
-    NoSqlDocument.doc.PayCash = Amount.PayCash;
-    NoSqlDocument.doc.PayCard = Amount.PayCard;
-    NoSqlDocument.doc.PayAggregator = Amount.PayAggregator;
-    NoSqlDocument.doc.PayKupon = Amount.PayKupon;
-    NoSqlDocument.doc.DeliveryType = docDeliveryType;
-    NoSqlDocument.doc.OrderSource = docOrderSource;
-    NoSqlDocument.doc.RetailClient = docRetailClient;
-    NoSqlDocument.doc.BillTime = docbillTime;
-    NoSqlDocument.doc.CloseTime = docCloseTime;
-    NoSqlDocument.doc.ItemsInventory = posz;
-    NoSqlDocument.doc.ItemsPay = cashz;
-    NoSqlDocument.parent = null;
-    NoSqlDocument.isfolder = false;
-    NoSqlDocument.company = company.id;
-    NoSqlDocument.user = null;
-    NoSqlDocument.info = null;
-    // JSON.stringify(posz) JSON.stringify(cashz)
-    // console.log(NoSqlDocument);
-    const jsonDoc = JSON.stringify(NoSqlDocument);
-    if (isNewDoc) await InsertDocument(jsonDoc, NoSqlDocument.id, iikoOrder, destSQL);
-    else await UpdateDocument(jsonDoc, NoSqlDocument.id, destSQL);
-    // !!! if (@setQueue=1) insert into [sm].exc.QueuePost (id, company, flow)
-    // !!! select @docid, @Company, @defFlow; -- очерерь проведения документов
   }
   // обработка удаленных заказов
   for (const delord of delOrder) {

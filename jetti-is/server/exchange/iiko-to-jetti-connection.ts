@@ -4,7 +4,7 @@ import { SQLPool } from '../sql/sql-pool';
 import { config as dotenv } from 'dotenv';
 import { SQLConnectionConfig } from '../sql/interfaces';
 import { Ref } from './iiko-to-jetti-utils';
-import { IJettiProject, IExchangeSource, RussiaSource, SMVProject } from './jetti-projects';
+import { IJettiProject, IExchangeSource, RussiaSourceSMV, SMVProject } from './jetti-projects';
 
 dotenv();
 export interface ISyncParams {
@@ -18,9 +18,12 @@ export interface ISyncParams {
   periodEnd: Date;            // дата по которую синхронизируются данные
   exchangeID: Ref;            // загрузка по ID (склад, подразделение)
   execFlag: number;           // флаг обработки автосинхронизации (код документа для загрузки)
+  objectList?: string[];      // список объектов для синхронизации
   forcedUpdate: boolean;      // принудитеольное обновление данных (если false - обновляются только новые
   // и у которых не совпадает версия данных)
-  logLevel: number;           // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация,
+  logLevel: number;           // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация и т.д.
+  flow: number;               // поток проведения (-1 - не проводить)
+  info?: string;              // описание задачи
   syncFunctionName?: string;  // имя функции синхронизации
   syncid: string;             // id синхронизации
   project: IJettiProject;     // проект
@@ -336,8 +339,9 @@ export async function saveSyncParams(SyncParams: ISyncParams) {
   const params = {
     id: SyncParams.syncid,
     syncType: 'Autosync',
-    project: SyncParams.project.id,
-    syncSource: SyncParams.source.id,
+    project: SyncParams.projectid,
+    syncSource: SyncParams.sourceid,
+    docid: SyncParams.docid,
     syncStart: SyncParams.startTime,
     syncEnd: null,
     periodBegin: SyncParams.periodBegin,
@@ -349,13 +353,26 @@ export async function saveSyncParams(SyncParams: ISyncParams) {
       logLevel: SyncParams.logLevel
     } */
   };
-  await esql.oneOrNone(`INSERT INTO dbo.syncList (id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params)
-    select id, syncType, project, syncSource, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params
+  // syncType в зависимости от процедуры синхронизации
+  switch (SyncParams.syncFunctionName) {
+    case 'QueuePost':
+      params.syncType = 'QueuePost';
+      break;
+    case 'AutosyncSMSQL':
+      params.syncType = 'AutosyncSM';
+      break;
+    case 'QueueSyncSMSQL':
+      params.syncType = 'QueuePost';
+      break;
+}
+  await esql.oneOrNone(`INSERT INTO dbo.syncList (id, syncType, project, syncSource, docid, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params)
+    select id, syncType, project, syncSource, docid, syncStart, syncEnd, periodBegin, periodEnd, execFlag, params
     from OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,
       [syncType] nvarchar(50),
       [project] nvarchar(50),
       [syncSource] nvarchar(50),
+      [docid] nvarchar(50),
       [syncStart] datetime,
       [syncEnd] datetime,
       [periodBegin] datetime,
@@ -401,7 +418,18 @@ export async function saveLogProtocol(syncid: string, execCode: number, errorCou
   console.log(`log: ${protocol}`);
 }
 
+export async function GetProject(id: string): Promise<IJettiProject> {
+  const proj: any = await exchangeOneOrNone(`select * from dbo.projects where projectid = @p1`, [id]);
+  if (!proj) throw new Error(`Project ${id} not found.`);
+  return proj.data;
+}
+
 export async function getSyncParams(params: any): Promise<ISyncParams> {
+  const prj: any = await GetProject(params.projectid);
+  const source: any[] = prj.sources.filter(p => p.id === params.sourceid);
+  if (source.length !== 1) throw new Error(`Source "${params.sourceid}" not found`);
+  const sbase: any = await exchangeOneOrNone(`select * from dbo.connections where id = @p1`, [params.sourceid]);
+  if (!sbase) throw new Error(`Connection params of Source base "${params.sourceid}" not found`);
   const result: ISyncParams = {
     docid: params.docid,
     projectid: params.projectid,
@@ -411,41 +439,46 @@ export async function getSyncParams(params: any): Promise<ISyncParams> {
     periodEnd: params.periodEnd,
     exchangeID: params.exchangeID,
     execFlag: params.execFlag,
+    objectList: [...params.objectList],
     forcedUpdate: params.forcedUpdate,
     logLevel: params.logLevel,
+    flow: params.flow,
+    info: params.info,
     syncFunctionName: params.syncFunctionName,
     syncid: uuidv1().toUpperCase(),
-    project: SMVProject,  // ! временно
-    source: RussiaSource, // ! временно
-    baseType: 'sql',      // ! временно
-    destination: SMVProject.destination, // ! временно
-    firstDate: RussiaSource.firstDate,
-    lastSyncDate: new Date(2020, 5, 29, 8, 0, 0),  // ! временно для примера
+    project: prj,
+    source: source[0],
+    baseType: sbase.baseType,
+    destination: prj.destination,
+    firstDate: source[0].firstDate,
+    lastSyncDate: new Date(2020, 5, 29, 8, 0, 0),  // ! временно для примера - будет new Date()
     startTime: new Date(),
     finishTime: null
   };
-  /*
   if (result.autosync) {
     // параметры автосинхронизации
-    const asparams: any = await exchangeOneOrNone(`
-      SELECT
-        CASE
-          when (@p1=32) then cast(getdate() as datetime)
-          else cast(coalesce(max(sl.PeriodEnd), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as date)
-        end as DB,
-        cast(cast(getdate() as DATE) as date) as DE,
-        COALESCE(dateadd(DAY, -2, max(sl.syncStart)), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as LastSyncDate
-      FROM dbo.syncList sl
-      where sl.project = 'SMV' and sl.syncSource = 'Russia' and sl.ExecFlag=126 and not sl.syncEnd is null`,
-      [result.execFlag]);
-    if (asparams) {
-      result.lastSyncDate = new Date(asparams.LastSyncDate);
-      if (result.lastSyncDate < result.firstDate) result.lastSyncDate = result.firstDate;
-      result.periodBegin = new Date(asparams.DB);
-      if (result.periodBegin < result.firstDate) result.periodBegin = result.firstDate;
-      result.periodEnd = new Date(asparams.DE);
-    }
+    if (result.exchangeID === '') {
+      const asparams: any = await exchangeOneOrNone(`
+        SELECT
+          CASE
+            when (@p1=32) then cast(cast(getdate() as date) as datetime)
+            else cast(coalesce(max(sl.PeriodEnd), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as datetime)
+          end as DB,
+          cast(cast(getdate() as DATE) as datetime) as DE,
+          COALESCE(dateadd(DAY, -2, max(sl.syncStart)), cast(dateadd(day, -(day(getdate())-1), getdate()) as date)) as LastSyncDate
+        FROM dbo.syncList sl
+        where sl.syncType = 'Autosync' and sl.project = @p2 and sl.syncSource = @p3 and sl.ExecFlag=126 and not sl.syncEnd is null
+          and cast(json_value(sl.params, '$.autosync') as bit) = 1`,
+        [result.execFlag, result.projectid, result.sourceid]);
+      if (asparams) {
+        result.lastSyncDate = new Date(asparams.LastSyncDate);
+        if (result.lastSyncDate < result.firstDate) result.lastSyncDate = result.firstDate;
+        result.periodBegin = new Date(asparams.DB);
+        if (result.periodBegin < result.firstDate) result.periodBegin = result.firstDate;
+        result.periodEnd = new Date(asparams.DE);
+      }
+    } else result.autosync = false; // не может быть автосинхронизации по складу или подразделению
   }
-  console.log(result); */
+  // console.log(result);
   return result;
 }
