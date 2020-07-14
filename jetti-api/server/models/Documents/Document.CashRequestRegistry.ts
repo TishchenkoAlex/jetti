@@ -15,6 +15,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   ],
   commands: [
     { method: 'Fill', icon: 'pi pi-plus', label: 'Заполнить', order: 1 },
+    { method: 'RefreshLinkedDocuments', icon: 'pi pi-plus', label: 'Обновить ссылки на документы', order: 2 },
     { method: 'Create', icon: 'pi pi-plus', label: 'Создать документы', order: 2 },
     {
       method: 'UnloadToText', icon: 'pi pi-plus', label: 'Выгрузить в текст', order: 3, clientModule:

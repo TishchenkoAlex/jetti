@@ -23,6 +23,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       case 'Fill':
         await this.Fill(tx);
         return this;
+      case 'RefreshLinkedDocuments':
+        await this.RefreshLinkedDocuments(tx);
+        return this;
       case 'Create':
         await this.Create(tx);
         return this;
@@ -48,6 +51,19 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     for (const row of this.CashRequests) {
       const operType = operations.find(e => e.CashRequest === row.CashRequest);
       if (operType) row.OperationType = operType.OperationType;
+    }
+  }
+
+  // удаляет из ТЧ помеченные на удаления операции
+  async RefreshLinkedDocuments(tx: MSSQL) {
+    const docsIdString = [...new Set(this.CashRequests.filter(c => c.LinkedDocument).map(x => '\'' + x.LinkedDocument + '\''))].join(',');
+    if (!docsIdString) return;
+    const query = `SELECT id FROM [dbo].[Document.Operation] WHERE id IN (${docsIdString}) and deleted = 1`;
+    const deletedDocs = await tx.manyOrNone<{id}>(query);
+    for (const deletedDoc of deletedDocs) {
+      this.CashRequests
+        .filter(e => e.LinkedDocument === deletedDoc.id)
+        .forEach(e => e.LinkedDocument = null);
     }
   }
 

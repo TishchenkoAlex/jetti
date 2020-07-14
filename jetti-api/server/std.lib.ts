@@ -21,6 +21,8 @@ import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
 import * as iconv from 'iconv-lite';
+import * as xml2js from 'xml2js';
+import axios from 'axios';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -92,6 +94,8 @@ export interface JTL {
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
+    xmlStringToJSON: (xmlString: string) => string,
+    executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -158,7 +162,9 @@ export const lib: JTL = {
     getObjectPropertyById,
     exchangeDB,
     taskPoolTx,
-    decodeBase64StringAsUTF8
+    decodeBase64StringAsUTF8,
+    xmlStringToJSON,
+    executeGETRequest
   },
   queue: {
     insertQueue,
@@ -487,6 +493,21 @@ function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+}
+
+function xmlStringToJSON(xmlString: string): string {
+  const parser = new xml2js.Parser();
+  let result = '';
+  parser.parseString(xmlString, (err, res: string) => {
+    if (err) throw new Error(err);
+    result = res;
+  });
+  return result;
+}
+
+async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.baseURL });
+  return await instance.get(opts.query);
 }
 
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
