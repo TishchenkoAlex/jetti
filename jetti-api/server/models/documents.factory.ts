@@ -81,7 +81,7 @@ import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
 import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
-import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
+import { CatalogSpecification } from './Catalogs/Catalog.Specification';
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
@@ -211,7 +211,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
   { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
-  { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
+  { type: 'Catalog.Specification', Class: CatalogSpecification },
   { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },
   { type: 'Catalog.Employee', Class: CatalogEmployee },
 

@@ -15,7 +15,7 @@ import { RegisterInfoBudgetItemRule } from './BudgetItemRule';
 import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
 import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
-import { RegisterInfoMainSpecification } from './MainSpecification';
+import { RegisterInfoProductSpecificationByDepartment } from './ProductSpecificationByDepartment';
 import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
@@ -29,7 +29,7 @@ export type RegisterInfoTypes =
     'Register.Info.ExchangeRates' |
     'Register.Info.ExchangeRates.National' |
     'Register.Info.Settings' |
-    'Register.Info.MainSpecification' |
+    'Register.Info.ProductSpecificationByDepartment' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
     'Register.Info.RLS.Period' |
@@ -57,7 +57,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
-    RegisterInfoMainSpecification |
+    RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
     RegisterInfoIncomeDocumentRegistry |
     RegisterInfoCompanyPrice |
@@ -77,7 +77,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.ExchangeRates.National', Class: RegisterInfoExchangeRatesNational },
-    { type: 'Register.Info.MainSpecification', Class: RegisterInfoMainSpecification },
+    { type: 'Register.Info.ProductSpecificationByDepartment', Class: RegisterInfoProductSpecificationByDepartment },
     { type: 'Register.Info.Settings', Class: RegisterInfoSettings },
     { type: 'Register.Info.Depreciation', Class: RegisterInfoDepreciation },
     { type: 'Register.Info.RLS.Period', Class: RegisterInfoRLSPeriod },
