@@ -77,17 +77,18 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
     res.json(job);
 
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(err.toString());
     next(err);
   }
 });
 
 router.post('/get', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    throw new Error('simple test err');
     const jobs = await getJobs(req.body);
     res.json(jobs);
   } catch (err) {
-    res.status(500).json(err.message);
+    res.status(500).json(err.toString());
     next(err);
   }
 });
@@ -100,7 +101,7 @@ router.post('/delete', async (req: Request, res: Response, next: NextFunction) =
     if (params.Jobs && params.Jobs.length) await removeJobs(params.Jobs);
     res.json('OK');
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(err.toString());
     next(err);
   }
 });
