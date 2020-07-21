@@ -77,6 +77,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
     getAttachmentsByOwner: (ownerId: Ref, withDeleted: boolean, tx: MSSQL) => Promise<CatalogAttachment[]>
@@ -146,6 +147,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
+    round,
     addAttachments,
     delAttachments,
     getAttachmentsByOwner,
@@ -574,6 +576,11 @@ async function getTasks(queueId: string, params: IGetTaskParams): Promise<{ repe
 
 async function deleteTasks(queueId: string, params: IDeleteTaskParams): Promise<void> {
   return await execQueueAPIPostRequest(queueId, `api/v1.0/task/delete`, params);
+}
+
+function round(num: number, precision = 4): number {
+  const factor = +`1${'0'.repeat(precision)}`;
+  return Math.round(num * factor) / factor;
 }
 
 async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {
