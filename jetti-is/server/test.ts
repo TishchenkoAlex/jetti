@@ -1,5 +1,8 @@
 // Test exchange modules...
-import { AutosyncIIkoToJetty, AutosyncSMSQL } from './exchange/iiko-to-jetti-autosync';
+import {
+	AutosyncIIkoToJetty,
+	AutosyncSMSQL,
+} from './exchange/iiko-to-jetti-autosync';
 import { exchangeOneOrNone } from './exchange/iiko-to-jetti-connection';
 
 import { QueuePost } from './exchange/queue-post';
@@ -30,46 +33,47 @@ import { SaveProjectParams } from './exchange/jetti-projects';
 //   startTime: Date;           // время старта задачи
 //   finishTime: Date | null;   // время завершения задачи
 
-/*
 // ! Тест автосинхронизации SMV
 const params = {
-      docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
-      projectid: 'SMV',
-      sourceid: 'Russia',
-      autosync: true,
-      periodBegin: new Date('2020-07-02'),
-      periodEnd: new Date('2020-07-02'),
-      exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
-      execFlag: 126,
-      objectList: [],
-      forcedUpdate: true,
-      logLevel: 2,
-      flow: 0,
-      syncFunctionName: 'AutosincIkoToJetty',
-      info: 'Test Autosync'
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SMV',
+	sourceid: 'Russia',
+	autosync: true,
+	periodBegin: new Date('2020-07-02'), // ImportPurchaseRetToJetti date period 2019-03-26
+	periodEnd: new Date('2020-07-02'),
+	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
+	execFlag: 126,
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 0,
+	syncFunctionName: 'AutosincIkoToJetty',
+	info: 'Test Autosync'
 };
-AutosyncIIkoToJetty(params).catch((error) => { console.log(error); });
-*/
+AutosyncIIkoToJetty(params).catch((error) => {
+	console.log(error);
+});
+
 /*
 // ! Тест SQL-автосинхронизации SM
 const params = {
-  docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
-  projectid: 'SM',
-  sourceid: 'Russia',
-  autosync: true,
-  periodBegin: new Date('2020-07-01'),
-  periodEnd: new Date('2020-07-01'),
-  exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171',
-  execFlag: 126,
-  objectList: [],
-  forcedUpdate: true,
-  logLevel: 2,
-  flow: 18,
-  syncFunctionName: 'AutosyncSMSQL',
-  info: 'Test SQL-Autosync'
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SM',
+	sourceid: 'Russia',
+	autosync: true,
+	periodBegin: new Date('2020-07-01'),
+	periodEnd: new Date('2020-07-01'),
+	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171',
+	execFlag: 126,
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 18,
+	syncFunctionName: 'AutosyncSMSQL',
+	info: 'Test SQL-Autosync'
 };
 AutosyncSMSQL(params).catch((error) => { console.log(error); });
-*/
+
 /*
 // ! Тест очереди проведения документов
 const params = {
@@ -92,5 +96,6 @@ const params = {
 QueuePost(params).catch((error) => { console.log(error); });
 */
 
+// QueuePost(params).catch((error) => { console.log(error); });
 
 // SaveProjectParams().catch((error) => { console.log(error); }); // ! обровить данные проектов в базе

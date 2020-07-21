@@ -129,8 +129,6 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
       }
       for (const job of jobs) {
         result.push(mapJob(job, status));
-      } for (const job of jobs) {
-        result.push(mapJob(job, status));
       }
     }
 
