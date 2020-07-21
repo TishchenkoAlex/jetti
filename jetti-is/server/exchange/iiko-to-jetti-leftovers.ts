@@ -200,9 +200,7 @@ export async function ImportLeftRoverSQLToJetti(
         ttt.ProductID
     having sum(ttt.Amount) <>0) sz where sz.StoreID = @p1
 	order by sz.StoreID`;
-			console.log(newSQL);
 			const response = await ssql.manyOrNone(newSQL, [sw, dtSQLnormaliz]);
-			console.log(response);
 		}
 	}
 }
