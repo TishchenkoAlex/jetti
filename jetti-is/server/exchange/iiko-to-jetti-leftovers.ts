@@ -162,45 +162,47 @@ export async function ImportLeftRoverSQLToJetti(
 	let sw = '';
 	if (syncParams.exchangeID) {
 		if (syncParams.exchangeID.length > 0) {
-			sw = syncParams.exchangeID;
-			const newSQL = `SELECT
-        sz.StoreID as SKU2,
-        sz.ProductID as SKU,
-        sz.Amount as Qty,
-        sz.Summa as Amount
-    FROM (
-    SELECT
-        cast(ttt.StoreID as nvarchar(50)) as StoreID,
-        cast(ttt.ProductID as nvarchar(50)) as ProductID,
-        sum(ttt.Amount) as Amount,
-        sum(ttt.Summa) as Summa
-    FROM
-    (SELECT
-        tt.[from_account] as StoreID,
-        tt.[from_product] as ProductID,
-        coalesce(-tt.[from_amount],0) as Amount,
-        coalesce(-tt.[sum],0) as Summa
-    FROM [dbo].[AccountingTransaction] as tt
-        left join [dbo].[entity] en on (en.id=tt.[from_account])
-    WHERE tt.[date]< CONVERT(nvarchar(8),'@p2',112)  and en.type='Store'
-    and not tt.[from_product] is null
-    UNION ALL
-    SELECT
-        tt.[to_account],
-        tt.[to_product],
-        coalesce(tt.[to_amount],0),
-        coalesce(tt.[sum],0)
-    FROM [dbo].[AccountingTransaction] as tt
-        left join [dbo].[entity] en on (en.id=tt.[to_account])
-    WHERE tt.[date]< CONVERT(nvarchar(8),'@p2',112)  and en.type='Store'
-    and not tt.[to_product] is null
-    ) ttt
-    group by
-        ttt.StoreID,
-        ttt.ProductID
-    having sum(ttt.Amount) <>0) sz where sz.StoreID = @p1
-	order by sz.StoreID`;
-			const response = await ssql.manyOrNone(newSQL, [sw, dtSQLnormaliz]);
+			sw = ` where ttt.StoreID = '${syncParams.exchangeID}' `;
 		}
 	}
+	const newSQL = `
+		SELECT
+			sz.StoreID as SKU2,
+			sz.ProductID as SKU,
+			sz.Amount as Qty,
+			sz.Summa as Amount
+		FROM (
+		SELECT
+			cast(ttt.StoreID as nvarchar(50)) as StoreID,
+			cast(ttt.ProductID as nvarchar(50)) as ProductID,
+			sum(ttt.Amount) as Amount,
+			sum(ttt.Summa) as Summa
+		FROM
+		(SELECT
+			tt.[from_account] as StoreID,
+			tt.[from_product] as ProductID,
+			coalesce(-tt.[from_amount],0) as Amount,
+			coalesce(-tt.[sum],0) as Summa
+		FROM [dbo].[AccountingTransaction] as tt
+			left join [dbo].[entity] en on (en.id=tt.[from_account])
+		WHERE tt.[date]< CONVERT(nvarchar(8),'@p1',112)  and en.type='Store'
+		and not tt.[from_product] is null
+		UNION ALL
+		SELECT
+			tt.[to_account],
+			tt.[to_product],
+			coalesce(tt.[to_amount],0),
+			coalesce(tt.[sum],0)
+		FROM [dbo].[AccountingTransaction] as tt
+			left join [dbo].[entity] en on (en.id=tt.[to_account])
+		WHERE tt.[date]< CONVERT(nvarchar(8),'@p1',112)  and en.type='Store'
+		and not tt.[to_product] is null
+		) ttt
+		${sw}
+		group by
+			ttt.StoreID,
+			ttt.ProductID
+		having sum(ttt.Amount) <>0)
+		order by sz.StoreID`;
+	const response = await ssql.manyOrNone(newSQL, [dtSQLnormaliz]);
 }

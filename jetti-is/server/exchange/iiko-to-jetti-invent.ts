@@ -83,9 +83,8 @@ const newInventoryzation = () => {
 			Storehouse: '',
 			Income: '53364DB0-D346-11E9-9B59-A568B1244A3E',
 			Analytics_Income: '68BCB5C0-D346-11E9-9B59-A568B1244A3E',
-			Analytics_Expense: '633722C0-D346-11E9-9B59-A568B1244A3E',
-			// todo not analytics
 			Expense: '53364DB0-D346-11E9-9B59-A568B1244A3E',
+			Analytics_Expense: '633722C0-D346-11E9-9B59-A568B1244A3E', // todo not analytics
 			ExchangeUser: '',
 			ExchangeModified: '',
 			ExchangeRevision: '',
@@ -107,7 +106,7 @@ async function syncInventSQL(
 	destSQL: SQLClient,
 ): Promise<any> {
 	try {
-		// орбработка документов продаж по кассовой смене
+		// орбработка документа "инвентаризация"
 		const startd: number = Date.now();
 
 		if (syncParams.logLevel > 1)
@@ -146,43 +145,40 @@ async function syncInventSQL(
 		}
 		let PositionInentoryzation: any = await sourceSQL.manyOrNone(
 			`
-                    SELECT  cast(tr.from_product as nvarchar(38)) as SKU,
-                    cast(0 as numeric(19,9)) as QtyFact,
-                    coalesce(-tr.from_amount,0) as QtyDiff,
-                    coalesce(-tr.sum,0) as DifSumma
-                    FROM dbo.accountingtransaction tr
-                    WHERE tr.type ='INVENT' and tr.documentId =@p1
-                    union all
-                    select cast(di.product as nvarchar(38)) as SKU,
-                    coalesce(di.amount,0) as QtyFact,cast(0 as numeric(19,9)) as QtyDiff,
-                    cast(0 as numeric(19,9)) as DifSumma
-                    from dbo.IncomingInventoryItem di
-                    where di.inventory_id =@p1
-    `,
+				SELECT  cast(tr.from_product as nvarchar(38)) as SKU,
+				cast(0 as numeric(19,9)) as QtyFact,
+				coalesce(-tr.from_amount,0) as QtyDiff,
+				coalesce(-tr.sum,0) as DifSumma
+				FROM dbo.accountingtransaction tr
+				WHERE tr.type ='INVENT' and tr.documentId =@p1
+				union all
+				select cast(di.product as nvarchar(38)) as SKU,
+				coalesce(di.amount,0) as QtyFact,cast(0 as numeric(19,9)) as QtyDiff,
+				cast(0 as numeric(19,9)) as DifSumma
+				from dbo.IncomingInventoryItem di
+				where di.inventory_id =@p1
+   			`,
 			[iikoDoc.id],
 		);
 		PositionInentoryzation = await exchangeManyOrNone(
 			`
-    SELECT
-      (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
-      p.[QtyFact],
-      p.[QtyDiff],
-      p.[DifSumma] as Amount
-    FROM OPENJSON(@p3) WITH (
-      [SKU] UNIQUEIDENTIFIER,
-      [QtyFact] money,
-      [QtyDiff] money,
-      [DifSumma] money) as p
-  `,
+				SELECT
+				(SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
+				p.[QtyFact],
+				p.[QtyDiff],
+				p.[DifSumma] as Amount
+				FROM OPENJSON(@p3) WITH (
+				[SKU] UNIQUEIDENTIFIER,
+				[QtyFact] money,
+				[QtyDiff] money,
+				[DifSumma] money) as p
+  			`,
 			[
 				syncParams.project.id,
 				syncParams.source.id,
 				JSON.stringify(PositionInentoryzation),
 			],
 		);
-		// пишем документ по времени в  10:00
-		const datez: Date = iikoDoc.date;
-
 		const userModifay: any = await GetCatalog(
 			syncParams.project.id,
 			iikoDoc.userModified,
@@ -190,13 +186,16 @@ async function syncInventSQL(
 			'Person',
 			destSQL,
 		);
+		// пишем документ по времени в  10:00
+		const datez: Date = iikoDoc.date;
 		datez.setUTCHours(10);
 		datez.setMinutes(0);
 		datez.setSeconds(0);
 		const codez = syncParams.source.code + '-' + iikoDoc.documentNumber;
 		const descriptionz: any = await destSQL.oneOrNone(
 			`
-        SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
+				SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc 
+				FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
 			[codez, datez.toJSON(), Operation],
 		);
 		// заполняем документ
@@ -338,19 +337,21 @@ export async function ImportInventSQLToJetti(
 		}
 		sw += ') ';
 	}
-	const newSQL = `SELECT d.id as id,
-    COALESCE(cast(d.comment as nvarchar(255)),'') as comment,
-    COALESCE(cast(d.conception as nvarchar(50)),'') as conception,
-    d.dateIncoming,
-    COALESCE(cast(d.documentNumber as nvarchar(33)),'') as documentNumber,
-    d.status as status,
-    COALESCE(cast(d.store as nvarchar(50)),'') as store,
-    cast(d.revision as nvarchar(50)) as revision,
-    d.dateModified,
-    cast(d.userModified as nvarchar(50)) as userModified
-    FROM dbo.IncomingInventory d
-    ${sw}
-    order by d.dateIncoming;`;
+	const newSQL = `
+		SELECT
+			d.id as id,
+			COALESCE(cast(d.comment as nvarchar(255)),'') as comment,
+			COALESCE(cast(d.conception as nvarchar(50)),'') as conception,
+			d.dateIncoming,
+			COALESCE(cast(d.documentNumber as nvarchar(33)),'') as documentNumber,
+			d.status as status,
+			COALESCE(cast(d.store as nvarchar(50)),'') as store,
+			cast(d.revision as nvarchar(50)) as revision,
+			d.dateModified,
+			cast(d.userModified as nvarchar(50)) as userModified
+		FROM dbo.IncomingInventory d
+		${sw}
+		order by d.dateIncoming;`;
 	i = 0;
 	let batch: IiikoInvent[] = [];
 	const response = await ssql.manyOrNoneStream(
@@ -361,21 +362,23 @@ export async function ImportInventSQLToJetti(
 			const rawDoc: any = {};
 			row.forEach((col) => (rawDoc[col.metadata.colName] = col.value));
 			batch.push(rawDoc);
-			req.pause();
-			if (syncParams.logLevel > 1)
-				await saveLogProtocol(
-					syncParams.syncid,
-					0,
-					0,
-					syncStage,
-					`inserting to batch ${i} Sales docs`,
-				);
-			for (const doc of batch) {
-				const docResult = transformInvent(syncParams, doc);
-				await syncInventSQL(syncParams, docResult, ssql, dsql);
+			if (batch.length === ssqlcfg.batch.max) {
+				req.pause();
+				if (syncParams.logLevel > 1)
+					await saveLogProtocol(
+						syncParams.syncid,
+						0,
+						0,
+						syncStage,
+						`inserting to batch ${i} Sales docs`,
+					);
+				for (const doc of batch) {
+					const docResult = transformInvent(syncParams, doc);
+					await syncInventSQL(syncParams, docResult, ssql, dsql);
+				}
+				batch = [];
+				req.resume();
 			}
-			batch = [];
-			req.resume();
 		},
 		async (rowCount: number, more: boolean) => {
 			if (rowCount && !more && batch.length > 0) {

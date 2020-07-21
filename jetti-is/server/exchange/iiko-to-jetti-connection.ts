@@ -14,31 +14,32 @@ import {
 dotenv();
 export interface ISyncParams {
 	// параметры синхронизации
-	docid: string; // id документа, запустившего синхронизацию
-	projectid: string; // id проекта cинхронизации
-	sourceid: string; // id базы источника
-	autosync: boolean; // автосинхронизация данных/ручная синхронизация
-	// (только указанные типы документов, только за указанный период)
-	periodBegin: Date; // дата с которой синхронизируются данные
-	periodEnd: Date; // дата по которую синхронизируются данные
-	exchangeID: Ref; // загрузка по ID (склад, подразделение)
-	execFlag: number; // флаг обработки автосинхронизации (код документа для загрузки)
-	objectList?: string[]; // список объектов для синхронизации
-	forcedUpdate: boolean; // принудитеольное обновление данных (если false - обновляются только новые
-	// и у которых не совпадает версия данных)
-	logLevel: number; // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация и т.д.
-	flow: number; // поток проведения (-1 - не проводить)
-	info?: string; // описание задачи
-	syncFunctionName?: string; // имя функции синхронизации
-	syncid: string; // id синхронизации
-	project: IJettiProject; // проект
-	source: IExchangeSource; // база источник
-	baseType: string; // тип базы источника: sql - mssql, pg - postgree
-	destination: string; // ид база приемник
-	firstDate: Date; // начальная дата, с которой для базы источника ведется синхронизация
-	lastSyncDate: Date; // дата последней автосинхронизации
-	startTime: Date; // время старта
-	finishTime: Date | null; // время завершение
+	docid: string;              // id документа, запустившего синхронизацию
+	projectid: string;          // id проекта cинхронизации
+	sourceid: string;           // id базы источника
+	autosync: boolean;          // автосинхронизация данных/ручная синхронизация
+															// (только указанные типы документов, только за указанный период)
+	periodBegin: Date;          // дата с которой синхронизируются данные
+	periodEnd: Date;            // дата по которую синхронизируются данные
+	exchangeID: Ref;            // загрузка по ID (склад, подразделение)
+	execFlag: number;           // флаг обработки автосинхронизации (код документа для загрузки)
+	objectList?: string[];      // список объектов для синхронизации
+	forcedUpdate: boolean;      // принудитеольное обновление данных (если false - обновляются только новые
+															// и у которых не совпадает версия данных)
+	logLevel: number;           // уровень логирования: 0-ошибки, 1-общая информация, 2-детальная информация и т.д.
+	flow: number;               // поток проведения (-1 - не проводить)
+	info?: string;              // описание задачи
+	syncFunctionName?: string;  // имя функции синхронизации
+	// дополнительные параметры. добавляются уже внутри процедуры синхронизации
+	syncid: string;             // id синхронизации
+	project: IJettiProject;     // проект
+	source: IExchangeSource;    // база источник
+	baseType: string;           // тип базы источника: sql - mssql, pg - postgree
+	destination: string;        // ид база приемник
+	firstDate: Date;            // начальная дата, с которой для базы источника ведется синхронизация
+	lastSyncDate: Date;         // дата последней автосинхронизации
+	startTime: Date;            // время старта
+	finishTime: Date | null;    // время завершение
 }
 export interface ISyncCatalog {
 	// элемент таблицы dbo.catalog

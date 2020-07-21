@@ -38,19 +38,17 @@ const params = {
 	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
 	projectid: 'SMV',
 	sourceid: 'Russia',
-	autosync: false,
-	periodBegin: new Date('2017-01-29'),
-	// ImportPurchaseRetToJetti date period 2019-03-26
-	periodEnd: new Date('2020-06-29'),
+	autosync: true,
+	periodBegin: new Date('2020-07-02'), // ImportPurchaseRetToJetti date period 2019-03-26
+	periodEnd: new Date('2020-07-02'),
 	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
-	execFlag: 256,
-	// todo
+	execFlag: 126,
 	objectList: [],
 	forcedUpdate: true,
 	logLevel: 2,
 	flow: 0,
 	syncFunctionName: 'AutosincIkoToJetty',
-	info: 'Test Autosync',
+	info: 'Test Autosync'
 };
 AutosyncIIkoToJetty(params).catch((error) => {
 	console.log(error);
@@ -59,41 +57,44 @@ AutosyncIIkoToJetty(params).catch((error) => {
 /*
 // ! Тест SQL-автосинхронизации SM
 const params = {
-  docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SM',
+	sourceid: 'Russia',
+	autosync: true,
+	periodBegin: new Date('2020-07-01'),
+	periodEnd: new Date('2020-07-01'),
+	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171',
+	execFlag: 126,
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 18,
+	syncFunctionName: 'AutosyncSMSQL',
+	info: 'Test SQL-Autosync'
+};
+AutosyncSMSQL(params).catch((error) => { console.log(error); });
+
+/*
+// ! Тест очереди проведения документов
+const params = {
+  docid: '60CC3860-BC55-11EA-87BF-B532C3269DCB',
   projectid: 'SM',
   sourceid: 'Russia',
   autosync: true,
-  periodBegin: new Date('2020-07-01'),
-  periodEnd: new Date('2020-07-01'),
-  exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171',
-  execFlag: 126,
+  periodBegin: new Date('2020-07-06'),
+  periodEnd: new Date('2020-07-06'),
+  exchangeID: '',
+  execFlag: 1000,  // кол-во документов в блоке
   objectList: [],
   forcedUpdate: true,
   logLevel: 2,
-  flow: 18,
-  syncFunctionName: 'AutosyncSMSQL',
-  info: 'Test SQL-Autosync'
+  flow: 0,
+  syncFunctionName: 'QueuePost',
+  info: 'Test Queue Post Documents'
 };
-AutosyncSMSQL(params).catch((error) => { console.log(error); });
-*/
 
-// // ! Тест очереди проведения документов
-// const params = {
-//   docid: '60CC3860-BC55-11EA-87BF-B532C3269DCB',
-//   projectid: 'SMV',
-//   sourceid: 'Russia',
-//   autosync: true,
-//   periodBegin: new Date('2020-07-06'),
-//   periodEnd: new Date('2020-07-06'),
-//   exchangeID: '',
-//   execFlag: 1000,  // кол-во документов в блоке
-//   objectList: [],
-//   forcedUpdate: true,
-//   logLevel: 2,
-//   flow: 0,
-//   syncFunctionName: 'QueuePost',
-//   info: 'Test Queue Post Documents'
-// };
+QueuePost(params).catch((error) => { console.log(error); });
+*/
 
 // QueuePost(params).catch((error) => { console.log(error); });
 
