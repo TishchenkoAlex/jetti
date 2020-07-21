@@ -193,7 +193,7 @@ async function syncInventSQL(
 			[iikoDoc.id],
 		);
 		PositionPurchaseRet = await exchangeManyOrNone(
-		`SELECT (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1
+			`SELECT (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1
 		and [exchangeCode]=p.[SKU]  and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
         p.[Qty],
         p.[Price],
