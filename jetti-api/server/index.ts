@@ -6,6 +6,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as httpServer from 'http';
 import * as path from 'path';
+import * as os from 'os';
 import 'reflect-metadata';
 import * as socketIO from 'socket.io';
 import * as ioredis from 'socket.io-redis';
@@ -72,7 +73,7 @@ IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
 IO.of('/').adapter.on('error', (error) => { });
 
 const port = (process.env.PORT) || '3000';
-HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}`));
+HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 let script = '';
