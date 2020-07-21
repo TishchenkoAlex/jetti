@@ -86,64 +86,68 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   private async CreateByOperationType(OperationType: string | null, tx: MSSQL) {
     if (!OperationType) OperationType = this.Operation;
     const rowsWithAmount = this.CashRequests.filter(c => (c.OperationType === OperationType && c.Amount > 0));
-
     let Operation: DocumentOperation | null;
     let BankAccountSupplier, currentCR, addBaseOnParams, LinkedDocument;
     const usedCashRegisters: Ref[] = [];
     const usedLinkedDocuments: string[] = [];
     const cashOper = OperationType === 'Выплата заработной платы (наличные)';
+    const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
 
     if (OperationType === 'Выплата заработной платы') {
-      const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
       if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)');
     }
 
-    for (const row of rowsWithAmount) {
-      if (currentCR !== row.CashRequest) usedCashRegisters.length = 0;
-      if ((currentCR === row.CashRequest && !cashOper) || usedCashRegisters.indexOf(row.CashRegister) !== -1) continue;
-      addBaseOnParams = [];
-      usedCashRegisters.push(row.CashRegister);
-      LinkedDocument = row.LinkedDocument;
-      currentCR = row.CashRequest;
-      if (OperationType === 'Выплата заработной платы') {
-        rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => {
-          addBaseOnParams.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson, Amount: el.Amount });
-          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
-        });
+    for (const CashRequestId of UniqCashRequest) {
+      const rowsByCashReqest = rowsWithAmount.filter(row => row.CashRequest === CashRequestId);
+      usedCashRegisters.length = 0;
+      for (const row of rowsByCashReqest) {
+        if ((currentCR === row.CashRequest && !cashOper) || usedCashRegisters.indexOf(row.CashRegister) !== -1) continue;
+        addBaseOnParams = [];
+        usedCashRegisters.push(row.CashRegister);
+        LinkedDocument = row.LinkedDocument;
+        currentCR = row.CashRequest;
+        if (OperationType === 'Выплата заработной платы') {
+          rowsByCashReqest.filter(el => (el.CashRequest === currentCR)).forEach(el => {
+            addBaseOnParams.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson, Amount: el.Amount });
+            if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
+          });
+        }
+        if (cashOper) {
+          rowsByCashReqest.filter(el => (el.CashRequest === currentCR && el.CashRegister === row.CashRegister)).forEach(el => {
+            addBaseOnParams.push({ CashRecipient: el.CashRecipient, Amount: el.Amount });
+            if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
+          });
+        }
+        if (LinkedDocument && usedLinkedDocuments.indexOf(LinkedDocument) === -1) {
+          usedLinkedDocuments.push(LinkedDocument);
+          Operation = await lib.doc.byIdT<DocumentOperation>(LinkedDocument, tx);
+        } else {
+          Operation = createDocument<DocumentOperation>('Document.Operation');
+        }
+        const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
+        if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
+        if (OperationType !== 'Выплата заработной платы') {
+          // исключение ошибки при проверке заполненности счета в базеон
+          if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+          if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+          BankAccountSupplier =
+            OperationType === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+          if (OperationType === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+          OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+        }
+        await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
+        // переопределение счета
+        if (OperationType !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+        if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
+        if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
+        if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
+        if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+        await lib.doc.postById(OperationServer.id, tx);
+        rowsByCashReqest.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
       }
-      if (cashOper) {
-        rowsWithAmount.filter(el => (el.CashRequest === currentCR && el.CashRegister === row.CashRegister)).forEach(el => {
-          addBaseOnParams.push({ CashRecipient: el.CashRecipient, Amount: el.Amount });
-          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
-        });
-      }
-      if (LinkedDocument && usedLinkedDocuments.indexOf(LinkedDocument) === -1) {
-        usedLinkedDocuments.push(LinkedDocument);
-        Operation = await lib.doc.byIdT<DocumentOperation>(LinkedDocument, tx);
-      } else {
-        Operation = createDocument<DocumentOperation>('Document.Operation');
-      }
-      const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
-      if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
-      if (OperationType !== 'Выплата заработной платы') {
-        // исключение ошибки при проверке заполненности счета в базеон
-        if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
-        if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
-        BankAccountSupplier =
-          OperationType === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
-        if (OperationType === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
-        OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      }
-      await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
-      // переопределение счета
-      if (OperationType !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
-      if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
-      if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
-      if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
-      await lib.doc.postById(OperationServer.id, tx);
-      rowsWithAmount.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
     }
+
+
   }
 
   private async UnloadToText(tx: MSSQL) {
