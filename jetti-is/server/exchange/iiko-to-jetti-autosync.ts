@@ -74,7 +74,8 @@ export async function AutosyncIIkoToJetty(params: any) {
 
   // документы
   const syncFunc: any[] = [];
-  if ((syncParams.execFlag && 32) === 32) syncFunc.push(ImportSalesToJetti(syncParams));
+  // tslint:disable-next-line: no-bitwise
+  if ((syncParams.execFlag & 32) === 32) syncFunc.push(ImportSalesToJetti(syncParams));
   try {
     await Promise.all(syncFunc);
     await saveLogProtocol(syncParams.syncid, 0, 0, 'Autosinc', `All Tasks Documents Complete.`);

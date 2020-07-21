@@ -37,8 +37,8 @@ const params = {
       projectid: 'SMV',
       sourceid: 'Russia',
       autosync: true,
-      periodBegin: new Date('2020-07-01'),
-      periodEnd: new Date('2020-07-01'),
+      periodBegin: new Date('2020-07-02'),
+      periodEnd: new Date('2020-07-02'),
       exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
       execFlag: 126,
       objectList: [],
@@ -70,11 +70,11 @@ const params = {
 };
 AutosyncSMSQL(params).catch((error) => { console.log(error); });
 */
-
+/*
 // ! Тест очереди проведения документов
 const params = {
   docid: '60CC3860-BC55-11EA-87BF-B532C3269DCB',
-  projectid: 'SMV',
+  projectid: 'SM',
   sourceid: 'Russia',
   autosync: true,
   periodBegin: new Date('2020-07-06'),
@@ -90,6 +90,7 @@ const params = {
 };
 
 QueuePost(params).catch((error) => { console.log(error); });
+*/
 
 
 // SaveProjectParams().catch((error) => { console.log(error); }); // ! обровить данные проектов в базе
