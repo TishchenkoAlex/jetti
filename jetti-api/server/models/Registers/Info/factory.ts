@@ -21,6 +21,7 @@ import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
+import { RegisterInfoProductModifier } from './ProductModifier';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
@@ -43,6 +44,7 @@ export type RegisterInfoTypes =
     'Register.Info.CompanyPrice' |
     'Register.Info.ShareEmission' |
     'Register.Info.LoanOwner' |
+    'Register.Info.ProductModifier' |
     'Register.Info.EmployeeHistory' |
     'Register.Info.CounterpartiePriceList';
 
@@ -63,6 +65,7 @@ export type RegistersInfo =
     RegisterInfoCompanyPrice |
     RegisterInfoShareEmission |
     RegisterInfoLoanOwner |
+    RegisterInfoProductModifier |
     RegisterInfoEmployeeHistory |
     RegisterInfoRLS;
 
