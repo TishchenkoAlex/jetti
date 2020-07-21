@@ -1,62 +1,83 @@
 import { SQLClient } from '../sql/sql-client';
 import { config as dotenv } from 'dotenv';
-import { GetExchangeCatalogID, GetExchangeDocumentID } from './iiko-to-jetti-connection';
-import { SetExchangeCatalogID, SetExchangeDocumentID } from './iiko-to-jetti-connection';
+import {
+	GetExchangeCatalogID,
+	GetExchangeDocumentID,
+} from './iiko-to-jetti-connection';
+import {
+	SetExchangeCatalogID,
+	SetExchangeDocumentID,
+} from './iiko-to-jetti-connection';
 
 dotenv();
 
 export type Ref = string | null;
 
 export interface INoSqlDocument {
-  id: Ref;
-  date: Date;
-  type: string;
-  code: string;
-  description: string;
-  company: Ref;
-  user: Ref;
-  posted: boolean;
-  deleted: boolean;
-  isfolder: boolean;
-  parent: Ref;
-  info: string | null;
-  timestamp: Date;
-  doc: { [x: string]: any };
+	id: Ref;
+	date: Date;
+	type: string;
+	code: string;
+	description: string;
+	company: Ref;
+	user: Ref;
+	posted: boolean;
+	deleted: boolean;
+	isfolder: boolean;
+	parent: Ref;
+	info: string | null;
+	timestamp: Date;
+	doc: { [x: string]: any };
 }
 
 export function nullOrID(d: any): Ref {
-  if (!d) return null;
-  return d.id;
+	if (!d) return null;
+	return d.id;
 }
 
 export function DateToString(dt: Date): string {
-  if (typeof dt === 'string') dt = new Date(dt);
-  let res: string = dt.getFullYear().toString();
-  if (dt.getMonth() < 9) res += `0${dt.getMonth() + 1}`;
-  else res += `${dt.getMonth() + 1}`;
-  if (dt.getDate() < 10) res += `0${dt.getDate()}`;
-  else res += `${dt.getDate()}`;
-  return res;
+	if (typeof dt === 'string') dt = new Date(dt);
+	let res: string = dt.getFullYear().toString();
+	if (dt.getMonth() < 9) res += `0${dt.getMonth() + 1}`;
+	else res += `${dt.getMonth() + 1}`;
+	if (dt.getDate() < 10) res += `0${dt.getDate()}`;
+	else res += `${dt.getDate()}`;
+	return res;
 }
 
 export async function GetCatalog(
-  project: string,
-  exchangeCode: string,
-  exchangeBase: string,
-  exchangeType: string,
-  tx: SQLClient): Promise<INoSqlDocument | null> {
-  // получить из базы элемент справочника
-  const id: Ref = await GetExchangeCatalogID(project, exchangeCode, exchangeBase, exchangeType);
-  const a: { [x: string]: any } = {};
-  if (!id) return null;
-  const response = await tx.oneOrNone<INoSqlDocument | null>(`SELECT * FROM Documents WHERE id = @p1`, [id]);
-  return response;
+	project: string,
+	exchangeCode: string,
+	exchangeBase: string,
+	exchangeType: string,
+	tx: SQLClient,
+): Promise<INoSqlDocument | null> {
+	// получить из базы элемент справочника
+	const id: Ref = await GetExchangeCatalogID(
+		project,
+		exchangeCode,
+		exchangeBase,
+		exchangeType,
+	);
+	const a: { [x: string]: any } = {};
+	if (!id) return null;
+	const response = await tx.oneOrNone<INoSqlDocument | null>(
+		`SELECT * FROM Documents WHERE id = @p1`,
+		[id],
+	);
+	return response;
 }
 
-export async function InsertCatalog(jsonDoc: string, id: string, source: any, tx: SQLClient) {
-  // вставка элемента справочника в базу Jetti
-  // ! добавить обработку ошибки и откат
-  const response = await tx.oneOrNone<INoSqlDocument | null>(`
+export async function InsertCatalog(
+	jsonDoc: string,
+	id: string,
+	source: any,
+	tx: SQLClient,
+) {
+	// вставка элемента справочника в базу Jetti
+	// ! добавить обработку ошибки и откат
+	const response = await tx.oneOrNone<INoSqlDocument | null>(
+		`
       INSERT INTO Documents(
         [id], [type], [date], [code], [description], [posted], [deleted],
         [parent], [isfolder], [company], [user], [info], [doc])
@@ -78,14 +99,22 @@ export async function InsertCatalog(jsonDoc: string, id: string, source: any, tx
         [info] NVARCHAR(max),
         [doc] NVARCHAR(max) N'$.doc' AS JSON
       );
-      SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  await SetExchangeCatalogID(source, id);
-  return response;
+      SELECT * FROM Documents WHERE id = @p2`,
+		[jsonDoc, id],
+	);
+	await SetExchangeCatalogID(source, id);
+	return response;
 }
 
-export async function UpdateCatalog(jsonDoc: string, id: Ref, source: any, tx: SQLClient) {
-  // обновление элемента справочника в базу Jetti
-  const response = await tx.oneOrNone<INoSqlDocument | null>(`
+export async function UpdateCatalog(
+	jsonDoc: string,
+	id: Ref,
+	source: any,
+	tx: SQLClient,
+) {
+	// обновление элемента справочника в базу Jetti
+	const response = await tx.oneOrNone<INoSqlDocument | null>(
+		`
     UPDATE Documents
       SET
         type = i.type, parent = i.parent,
@@ -112,23 +141,45 @@ export async function UpdateCatalog(jsonDoc: string, id: Ref, source: any, tx: S
         )
       ) i
       WHERE Documents.id = i.id;
-    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  await SetExchangeCatalogID(source, id);
-  return response;
+    SELECT * FROM Documents WHERE id = @p2`,
+		[jsonDoc, id],
+	);
+	await SetExchangeCatalogID(source, id);
+	return response;
 }
 
-export async function GetDocument(project: string, exchangeCode: string, exchangeBase: string, exchangeType: string, tx: SQLClient) {
-  // получить из базы документ
-  const id: Ref = await GetExchangeDocumentID(project, exchangeCode, exchangeBase, exchangeType);
-  if (!id) return null;
-  const response = await tx.oneOrNone(`SELECT * FROM Documents WHERE id = @p1 `, [id]);
-  return response;
+export async function GetDocument(
+	project: string,
+	exchangeCode: string,
+	exchangeBase: string,
+	exchangeType: string,
+	tx: SQLClient,
+) {
+	// получить из базы документ
+	const id: Ref = await GetExchangeDocumentID(
+		project,
+		exchangeCode,
+		exchangeBase,
+		exchangeType,
+	);
+	if (!id) return null;
+	const response = await tx.oneOrNone(
+		`SELECT * FROM Documents WHERE id = @p1 `,
+		[id],
+	);
+	return response;
 }
 
-export async function InsertDocument(jsonDoc: string, id: string, source: any, tx: SQLClient) {
-  // вставка документа в базу Jetti
-  // ! добавить обработку ошибки и откат
-  const response = await tx.oneOrNone(`
+export async function InsertDocument(
+	jsonDoc: string,
+	id: string,
+	source: any,
+	tx: SQLClient,
+) {
+	// вставка документа в базу Jetti
+	// ! добавить обработку ошибки и откат
+	const response = await tx.oneOrNone(
+		`
     INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
       [parent], [isfolder], [company], [user], [info], [doc])
@@ -150,9 +201,11 @@ export async function InsertDocument(jsonDoc: string, id: string, source: any, t
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
     );
-    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  await SetExchangeDocumentID(source, id);
-  return response;
+    SELECT * FROM Documents WHERE id = @p2`,
+		[jsonDoc, id],
+	);
+	await SetExchangeDocumentID(source, id);
+	return response;
 }
 
 /*
@@ -187,8 +240,13 @@ export async function InsertDocument(jsonDoc: string, exchangeCode: string, exch
 }
 */
 
-export async function UpdateDocument(jsonDoc: string, id: string, tx: SQLClient) {
-  const response = await tx.oneOrNone(`
+export async function UpdateDocument(
+	jsonDoc: string,
+	id: string,
+	tx: SQLClient,
+) {
+	const response = await tx.oneOrNone(
+		`
     UPDATE Documents
       SET
         type = i.type, parent = i.parent,
@@ -215,11 +273,21 @@ export async function UpdateDocument(jsonDoc: string, id: string, tx: SQLClient)
         )
       ) i
     WHERE Documents.id = i.id;
-    SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, id]);
-  return response;
+    SELECT * FROM Documents WHERE id = @p2`,
+		[jsonDoc, id],
+	);
+	return response;
 }
 ///////////////////////////////////////////////////////////
 // поставить документ в очередь на проведение
-export async function setQueuePostDocument(id: string, company: string | null, flow: number, tx: SQLClient) {
-  await tx.none(`insert into exc.QueuePost (id, company, flow) values(@p1, @p2, @p3)`, [id, company, flow]);
-}///////////////////////////////////////////////////////////
+export async function setQueuePostDocument(
+	id: string,
+	company: string | null,
+	flow: number,
+	tx: SQLClient,
+) {
+	await tx.none(
+		`insert into exc.QueuePost (id, company, flow) values(@p1, @p2, @p3)`,
+		[id, company, flow],
+	);
+} ///////////////////////////////////////////////////////////
