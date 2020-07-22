@@ -16,19 +16,28 @@ export class RegisterInfoPriceList extends RegisterInfo {
   @Props({ type: 'Catalog.Product', required: true })
   Product: Ref = null;
 
+  @Props({ type: 'enum', value: ['CONSTANT', 'ADDITIONAL', 'TRIAL'] })
+  Role = 'CONSTANT';
+
   @Props({ type: 'Catalog.Unit', required: true })
   Unit: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.PriceType', required: true })
+  @Props({ type: 'Catalog.PriceType' })
   PriceType: Ref = null;
 
   @Props({ type: 'number', required: true })
   Price = 0;
 
-  @Props({ type: 'boolean', required: true })
+  @Props({ type: 'boolean' })
+  forSales = false;
+
+  @Props({ type: 'boolean' })
+  forPurсhases = false;
+
+  @Props({ type: 'boolean' })
   isActive = false;
 
   constructor(init: Partial<RegisterInfoPriceList>) {
