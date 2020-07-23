@@ -26,6 +26,7 @@ import { dateReviverUTC } from '../fuctions/dateReviver';
 import { text } from 'body-parser';
 import { stdout } from 'process';
 import { countReset } from 'console';
+import { config as dotenv } from 'dotenv';
 
 ///////////////////////////////////////////////////////////
 const syncStage = 'Document.Purshase';
@@ -92,18 +93,7 @@ const newTransferInt = () => {
 			currency: '',
 			f1: '',
 			f2: '',
-			PayDate: '',
-			Department: '',
-			Storehouse: '',
-			Suplier: '',
-			Contract: '',
-			DocNumber: '',
-			DocDate: '',
-			DocReceived: '',
-			OriginalReceived: '',
-			ExchangeUser: '',
-			ExchangeModified: '',
-			ExchangeRevision: '',
+			f3: '',
 			Items: [],
 		},
 		parent: null,
@@ -132,8 +122,7 @@ async function syncTransferSQL(
 					iikoDoc.documentNumber
 				}`,
 			);
-		let store: any;
-		const Group = '1BBC1180-DBE3-11E9-8DB3-33306EFA1D96';
+		const Group = 'A6B7A54C-C7C2-11E7-B896-F7EA6E20FCFD';
 		const Operation = 'E323D028-C7C2-11E7-BA63-8F52A98E9388';
 		const contrAgent: any = await GetCatalog(
 			syncParams.project.id,
@@ -141,29 +130,27 @@ async function syncTransferSQL(
 			syncParams.source.id,
 			'Counterpartie',
 			destSQL,
-		); //контр агент
+		);
 		if (!iikoDoc.dtype) throw new Error('Dtype is not exists');
-		// если dtype = 1 нужно проставить, склад откуда всегда равен пути
-		//  если dtype = 2 нужно проставить склад куда всегда равен пути
-		//  если dtype = 3 в складе откуда, а в контрагенте куда.
-		switch (iikoDoc.dtype) {
-			case 3:
-			case 2:
-			case 1:
-				store = await GetCatalog(
-					syncParams.project.id,
-					iikoDoc.store,
-					syncParams.source.id,
-					'Storehouse',
-					destSQL,
-				); // склад
-				console.log(store);
-		}
 		if (!contrAgent) throw new Error('ContrAgent is not exists');
+		const store: any = await GetCatalog(
+			syncParams.project.id,
+			iikoDoc.store,
+			syncParams.source.id,
+			'Storehouse',
+			destSQL,
+		);
+		const company = (await destSQL.oneOrNone<{ id: Ref }>(
+			`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
+			[iikoDoc.date, store.doc.Department],
+		))!;
+		const contract = (await destSQL.oneOrNone<{ id: Ref }>(
+			`SELECT max([id]), count(id) FROM [sm].[dbo].[Documents] where [type]='Catalog.Contract' and deleted=0 and JSON_VALUE(doc,'$.owner')=@p1 and company=@p2 and  JSON_VALUE(doc,'$.currency')=@p3;`,
+			[contrAgent.id, company.id, syncParams.source.currency],
+		))!;
 
-		let PositionTransfer: any = await sourceSQL.manyOrNone(
-			`SELECT 
-            cast(tr.type as nvarchar(50)) as TypeItem,
+		const PositionTransfer: any = await sourceSQL.manyOrNone(
+			`SELECT cast(tr.type as nvarchar(50)) as TypeItem,
             cast(tr.from_product as nvarchar(38)) as SKU,
             cast(tr.to_product as nvarchar(38)) as SKU2,
             coalesce(tr.from_amount,0) as Qty,
@@ -173,8 +160,7 @@ async function syncTransferSQL(
             WHERE tr.documentid = cast(@p1 as nvarchar(50))
             and ((tr.type='TRNSF' and tr.to_amount=tr.from_amount) or (tr.type='INVOIC' and tr.from_account = '56729828-F09B-D58E-04BE-ED0F2E4E10E1') )
             union all
-            SELECT 
-            cast(tr.type as nvarchar(50)),
+            SELECT cast(tr.type as nvarchar(50)),
             cast(tr.from_product as nvarchar(38)),
             cast(tr.from_product as nvarchar(38)),
             coalesce(tr.from_amount,0),
@@ -201,7 +187,6 @@ async function syncTransferSQL(
         SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
 			[codez, datez.toJSON(), Operation],
 		);
-
 		// заполняем документ
 		let isNewDoc: Boolean = false;
 		let NoSqlDocument: any = await GetDocument(
@@ -222,7 +207,6 @@ async function syncTransferSQL(
 					`TransferInt doc ${iikoDoc.id} #${iikoDoc.documentNumber} insert`,
 				);
 			}
-			NoSqlDocument = newTransferInt();
 		} else {
 			if (syncParams.logLevel > 1) {
 				await saveLogProtocol(
@@ -234,40 +218,49 @@ async function syncTransferSQL(
 				);
 			}
 		}
-		// @forcedUpdate = @forcedUpdate,
-		// @logLevel = 2,
-		// @setQueue = @setQueue,
-		// @defFlow = @defFlow;
+		NoSqlDocument = newTransferInt();
+		const ammountResult = ammountItems(PositionTransfer);
 		NoSqlDocument.type = 'Document.Operation';
 		NoSqlDocument.date = datez;
 		NoSqlDocument.code = codez;
 		NoSqlDocument.description = descriptionz.dsc;
 		NoSqlDocument.posted = 0;
-		NoSqlDocument.parent = null;
+		NoSqlDocument.parent = iikoDoc.userModified;
 		NoSqlDocument.isfolder = false;
-		// NoSqlDocument.company = company;
-		NoSqlDocument.user = null;
+		NoSqlDocument.user = iikoDoc.userModified;
 		NoSqlDocument.info = null;
-		// NoSqlDocument.doc.sync_id = iikoDoc.sync_id,
-		(NoSqlDocument.iikoUser = iikoDoc.userModified),
-			(NoSqlDocument.doc.id = iikoDoc.id),
-			(NoSqlDocument.doc.baseid = iikoDoc.baseid),
-			(NoSqlDocument.doc.dateIncoming = iikoDoc.incomingDate),
-			(NoSqlDocument.doc.status = iikoDoc.status);
-		(NoSqlDocument.doc.conception = iikoDoc.conception),
-			(NoSqlDocument.doc.comment = iikoDoc.comment),
-			(NoSqlDocument.doc.docType = iikoDoc.dtype),
-			(NoSqlDocument.doc.forcedUpdate = 1);
-		NoSqlDocument.doc.DocDate = null;
-		NoSqlDocument.doc.Group = Group;
+		NoSqlDocument.company = company.id;
 		NoSqlDocument.doc.Items = PositionTransfer;
-		NoSqlDocument.doc.ExchangeUser = userModifay.id;
-		NoSqlDocument.doc.iikoModified = iikoDoc.dateModified;
-		NoSqlDocument.doc.revision = iikoDoc.revision;
+		switch (iikoDoc.dtype) {
+			case 1:
+				// если dtype = 1 нужно проставить, склад откуда всегда равен пути
+				NoSqlDocument.doc.StorehouseIn = syncParams.source.TransitStorehouse;
+				NoSqlDocument.doc.StorehouseOut = store.id;
+				break;
+			case 2:
+				//  если dtype = 2 нужно проставить склад куда всегда равен пути
+				NoSqlDocument.doc.StorehouseIn = store.id;
+				NoSqlDocument.doc.StorehouseOut = syncParams.source.TransitStorehouse;
+				break;
+			case 3:
+				//  если dtype = 3 в складе откуда, а в контрагенте куда.
+				NoSqlDocument.doc.StorehouseIn = store;
+				// todo я не уврен что это правильно?
+				NoSqlDocument.doc.StorehouseOut = syncParams.source.TransitStorehouse;
+			// tslint:disable-next-line: no-switch-case-fall-through
+			default:
+				// todo  возможно нужно сделать какое то логирование
+				break;
+		}
+		NoSqlDocument.doc.ExchangeRevision = iikoDoc.revision;
 		NoSqlDocument.doc.currency = syncParams.source.currency;
 		NoSqlDocument.doc.supplier = iikoDoc.supplier;
-		NoSqlDocument.doc.PayDate = iikoDoc.date;
 		NoSqlDocument.doc.docNumber = iikoDoc.documentNumber;
+		NoSqlDocument.doc.Amount = ammountResult;
+		NoSqlDocument.doc.f1 = NoSqlDocument.doc.StorehouseOut; // ! возможно это ошибка
+		NoSqlDocument.doc.f2 = NoSqlDocument.doc.StorehouseIn;
+		NoSqlDocument.doc.f3 = store.doc.Department;
+		NoSqlDocument.doc.DepartmentTransit = store.doc.Department;
 		const jsonDoc = JSON.stringify(NoSqlDocument);
 		if (isNewDoc)
 			await InsertDocument(jsonDoc, NoSqlDocument.id, iikoDoc, destSQL);
@@ -350,36 +343,34 @@ export async function ImportTransferIntSQLToJetti(
 		sw += ') ';
 	}
 	const newSQL = `select
-      z.id,
-      z.dtype,
-      cast(z.Comment as nvarchar(255)) as Comment,
-      cast(z.conception as nvarchar(50)) as conception,
-      z.dateIncoming,
-      cast(z.documentNumber as nvarchar(33)) as documentNumber,
-      z.status,
-      cast(z.Store as nvarchar(50)) as store,
-      cast(z.Supplier as nvarchar(50)) as supplier,
-      cast(z.revision as nvarchar(50)) as revision,
-      z.dateModified,
-      cast(z.userModified as nvarchar(50)) as userModified
+    	z.id,
+    	z.dtype,
+    	cast(z.Comment as nvarchar(255)) as Comment,
+    	cast(z.conception as nvarchar(50)) as conception,
+    	z.dateIncoming,
+    	cast(z.documentNumber as nvarchar(33)) as documentNumber,
+    	z.status,
+    	cast(z.Store as nvarchar(50)) as store,
+    	cast(z.Supplier as nvarchar(50)) as supplier,
+		cast(z.revision as nvarchar(50)) as revision,
+    	z.dateModified,
+    	cast(z.userModified as nvarchar(50)) as userModified
     from (
-    SELECT 
-      d.id,
-      cast(1 as int) as dtype,
-      d.comment as comment,
-      d.conception,
-      d.dateIncoming,
-      d.documentNumber,
-      d.status,
-      d.defaultStore as Store,
-      d.supplier as supplier,
-      d.revision,
-      d.dateModified,
-      d.userModified
+    SELECT d.id,
+    	cast(1 as int) as dtype,
+    	d.comment as comment,
+    	d.conception,
+    	d.dateIncoming,
+    	d.documentNumber,
+    	d.status,
+    	d.defaultStore as Store,
+    	d.supplier as supplier,
+    	d.revision,
+    	d.dateModified,
+    	d.userModified
     FROM dbo.IncomingInvoice d
     union all
-    SELECT 
-        d.id,
+    SELECT d.id,
         cast(2 as int) as dtype,
         d.comment,
         d.conception,
@@ -393,8 +384,7 @@ export async function ImportTransferIntSQLToJetti(
         d.userModified
     FROM dbo.OutgoingInvoice d
     union all
-    SELECT 
-        d.id,
+    SELECT d.id,
         cast(3 as int) dtype,
         d.comment,
         d.conception,
@@ -407,7 +397,7 @@ export async function ImportTransferIntSQLToJetti(
         d.dateModified,
         d.userModified
     FROM dbo.InternalTransfer d
-    ) as z ${sw}
+    ) as z ${sw} and z.id='351ECDAF-8457-4A2C-9B31-46AEB66730BD'
     order by z.dateIncoming`;
 	// ? supplier
 	i = 0;
@@ -429,12 +419,24 @@ export async function ImportTransferIntSQLToJetti(
 					syncStage,
 					`inserting to batch ${i} Purshase docs`,
 				);
+
+			// if (batch.length === ssqlcfg.batch.max) {
+			req.pause();
+			if (syncParams.logLevel > 1)
+				await saveLogProtocol(
+					syncParams.syncid,
+					0,
+					0,
+					syncStage,
+					`inserting to batch ${i} Sales docs`,
+				);
 			for (const doc of batch) {
 				const docResult = transformTransferInt(syncParams, doc);
 				await syncTransferSQL(syncParams, docResult, ssql, dsql);
 			}
 			batch = [];
 			req.resume();
+			// }
 		},
 		async (rowCount: number, more: boolean) => {
 			if (rowCount && !more && batch.length > 0) {
@@ -459,5 +461,19 @@ export async function ImportTransferIntSQLToJetti(
 				`Finish sync TransferInt Docs`,
 			);
 		},
+	);
+}
+
+function ammountItems(Items): Number {
+	let sum: Number = 0;
+	Items.forEach((element) => {
+		sum += element.Amount;
+	});
+	return sum;
+}
+
+function validGUID(str) {
+	return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+		`${str}`,
 	);
 }

@@ -169,7 +169,6 @@ async function syncWriteSQL(
 			],
 		);
 		const datez: Date = iikoDoc.date;
-		// todo userModifay addings
 		const userModifay: any = await GetCatalog(
 			syncParams.project.id,
 			iikoDoc.userModified,

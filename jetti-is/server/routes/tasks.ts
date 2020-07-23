@@ -54,35 +54,38 @@ interface JobOpts {
 
 router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-
 		const { params, opts } = req.body;
 
-		const repeatCron = opts.Cron ? { cron: opts.Cron, startDate: new Date } : undefined;
-		if (repeatCron && opts.StartDate) { repeatCron.startDate = new Date(opts.StartDate); }
+		const repeatCron = opts.Cron
+			? { cron: opts.Cron, startDate: new Date() }
+			: undefined;
+		if (repeatCron && opts.StartDate) {
+			repeatCron.startDate = new Date(opts.StartDate);
+		}
 		const repeatEvery = opts.every ? { every: opts.every } : undefined;
 
 		const data = {
 			job: {
 				id: params.docid,
 				description: params.syncFunctionName,
-				info: params.info
+				info: params.info,
 			},
-			params: params
+			params: params,
 		};
 
 		const jobOpts: JobOpts = {
 			attempts: opts.attempts || 1,
 			repeat: repeatCron || repeatEvery,
 			delay: opts.delay || 0,
-			priority: opts.priority || 1
+			priority: opts.priority || 1,
 		};
 
-		if (opts.endDate && jobOpts.repeat) jobOpts.repeat.endDate = new Date(opts.endDate);
+		if (opts.endDate && jobOpts.repeat)
+			jobOpts.repeat.endDate = new Date(opts.endDate);
 
 		const job = await JQueue.add(data, jobOpts);
 
 		res.json(job);
-
 	} catch (err) {
 		res.status(500).json(err.toString());
 		next(err);
@@ -100,19 +103,22 @@ router.post('/get', async (req: Request, res: Response, next: NextFunction) => {
 	}
 });
 
-router.post('/delete', async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const params = req.body as IDeleteTaskParams;
-		if (params.All) await removeJobsALL();
-		if (params.Repeatable && params.Repeatable.length) await removeJobsRepeatable(params.Repeatable);
-		if (params.Jobs && params.Jobs.length) await removeJobs(params.Jobs);
-		res.json('OK');
-	} catch (err) {
-		res.status(500).json(err.toString());
-		next(err);
-	}
-});
-
+router.post(
+	'/delete',
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const params = req.body as IDeleteTaskParams;
+			if (params.All) await removeJobsALL();
+			if (params.Repeatable && params.Repeatable.length)
+				await removeJobsRepeatable(params.Repeatable);
+			if (params.Jobs && params.Jobs.length) await removeJobs(params.Jobs);
+			res.json('OK');
+		} catch (err) {
+			res.status(500).json(err.toString());
+			next(err);
+		}
+	},
+);
 
 export async function execJob(job) {
 	const params = job.data.params as ISyncParams;

@@ -166,20 +166,40 @@ export async function AutosyncIIkoToJetty(params: any) {
 		syncFunc.push(ImportPurchaseRetToJetti(syncParams));
 	}
 	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 4) === 4) syncFunc.push(ImportTransferIntToJetti(syncParams));
+	if ((syncParams.execFlag & 4) === 4)
+		syncFunc.push(ImportTransferIntToJetti(syncParams));
 	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 8) === 8) syncFunc.push(ImportInventToJetti(syncParams));
+	if ((syncParams.execFlag & 8) === 8)
+		syncFunc.push(ImportInventToJetti(syncParams));
 	// tslint:disable-next-line: no-bitwise
 	// if ((syncParams.execFlag & 16) === 16) syncFunc.push(ImportProductionToJetti(syncParams)); // производство
 	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 32) === 32) syncFunc.push(ImportSalesToJetti(syncParams));
+	if ((syncParams.execFlag & 32) === 32)
+		syncFunc.push(ImportSalesToJetti(syncParams));
 	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 64) === 64) syncFunc.push(ImportWriteOffToJetti(syncParams));
+	if ((syncParams.execFlag & 64) === 64)
+		syncFunc.push(ImportWriteOffToJetti(syncParams));
+	// tslint:disable-next-line: no-bitwise
+	if ((syncParams.execFlag & 128) === 128)
+		syncFunc.push(ImportLeftRoverToJetti(syncParams));
+
 	try {
 		await Promise.all(syncFunc);
-		await saveLogProtocol(syncParams.syncid, 0, 0, 'Autosinc', `All Tasks Documents Complete.`);
+		await saveLogProtocol(
+			syncParams.syncid,
+			0,
+			0,
+			'Autosinc',
+			`All Tasks Documents Complete.`,
+		);
 	} catch (error) {
-		await saveLogProtocol(syncParams.syncid, 0, 1, 'Autosinc', `Task Documents Errored: ${error.message}`);
+		await saveLogProtocol(
+			syncParams.syncid,
+			0,
+			1,
+			'Autosinc',
+			`Task Documents Errored: ${error.message}`,
+		);
 	}
 	// завершение работы автосинхронизации
 	syncParams.finishTime = new Date();

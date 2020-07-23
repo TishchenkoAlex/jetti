@@ -1,5 +1,6 @@
 import { SQLClient } from '../sql/sql-client';
 import { config as dotenv } from 'dotenv';
+import { Response, response } from 'express';
 import {
 	GetExchangeCatalogID,
 	GetExchangeDocumentID,
@@ -8,6 +9,7 @@ import {
 	SetExchangeCatalogID,
 	SetExchangeDocumentID,
 } from './iiko-to-jetti-connection';
+import { AsyncResource } from 'async_hooks';
 
 dotenv();
 
@@ -169,7 +171,6 @@ export async function GetDocument(
 	);
 	return response;
 }
-
 export async function InsertDocument(
 	jsonDoc: string,
 	id: string,
@@ -178,36 +179,44 @@ export async function InsertDocument(
 ) {
 	// вставка документа в базу Jetti
 	// ! добавить обработку ошибки и откат
-	const response = await tx.oneOrNone(
-		`
-    INSERT INTO Documents(
-      [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc])
-    SELECT
-      [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc]
-    FROM OPENJSON(@p1) WITH (
-      [id] UNIQUEIDENTIFIER,
-      [date] DATETIME,
-      [type] NVARCHAR(100),
-      [code] NVARCHAR(36),
-      [description] NVARCHAR(150),
-      [posted] BIT,
-      [deleted] BIT,
-      [parent] UNIQUEIDENTIFIER,
-      [isfolder] BIT,
-      [company] UNIQUEIDENTIFIER,
-      [user] UNIQUEIDENTIFIER,
-      [info] NVARCHAR(max),
-      [doc] NVARCHAR(max) N'$.doc' AS JSON
-    );
-    SELECT * FROM Documents WHERE id = @p2`,
-		[jsonDoc, id],
-	);
+	const responce = await InsertDocumentNoEchange(jsonDoc, id, tx);
 	await SetExchangeDocumentID(source, id);
 	return response;
 }
-
+export const InsertDocumentNoEchange =  async (	
+	jsonDoc: string,
+	id: string,
+	tx: SQLClient
+) => {
+		// tslint:disable-next-line: no-shadowed-variable
+		const response = await tx.oneOrNone(
+			`INSERT INTO Documents(
+				[id], [type], [date], [code], [description], [posted], [deleted],
+				[parent], [isfolder], [company], [user], [info], [doc])
+			SELECT
+				[id], [type], [date], [code], [description], [posted], [deleted],
+				[parent], [isfolder], [company], [user], [info], [doc]
+			FROM OPENJSON(@p1) WITH (
+				[id] UNIQUEIDENTIFIER,
+				[date] DATETIME,
+				[type] NVARCHAR(100),
+				[code] NVARCHAR(36),
+				[description] NVARCHAR(150),
+				[posted] BIT,
+				[deleted] BIT,
+				[parent] UNIQUEIDENTIFIER,
+				[isfolder] BIT,
+				[company] UNIQUEIDENTIFIER,
+				[user] UNIQUEIDENTIFIER,
+				[info] NVARCHAR(max),
+				[doc] NVARCHAR(max) N'$.doc' AS JSON
+			);
+			SELECT * FROM Documents WHERE id = @p2
+			`,
+			[jsonDoc, id]
+			);
+	return response;
+}
 /*
 export async function InsertDocument(jsonDoc: string, exchangeCode: string, exchangeBase: string, tx: SQLClient) {
   const id = uuidv1().toUpperCase();
@@ -275,7 +284,7 @@ export async function UpdateDocument(
     WHERE Documents.id = i.id;
     SELECT * FROM Documents WHERE id = @p2`,
 		[jsonDoc, id],
-	);
+  );
 	return response;
 }
 ///////////////////////////////////////////////////////////

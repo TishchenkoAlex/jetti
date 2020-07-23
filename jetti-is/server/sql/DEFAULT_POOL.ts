@@ -9,7 +9,7 @@ const sqlConfigDefault: SQLConnectionConfig = {
 	authentication: {
 		type: 'default',
 		options: {
-			userName: process.env.DB_USER,
+			userName: undefined,
 			password: process.env.DB_PASSWORD,
 		},
 	},

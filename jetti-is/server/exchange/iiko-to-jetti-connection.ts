@@ -82,12 +82,12 @@ export const ExchangeSqlConfig: SQLConnectionConfig = {
 		database: process.env.DB_NAME,
 		port: parseInt(process.env.DB_PORT as string, undefined),
 		instanceName: process.env.DB_INSTANCE,
-		requestTimeout: 2 * 60 * 1000,
+		requestTimeout: 20 * 60 * 1000 * 4 * 10,
 	},
 	pool: {
 		min: 0,
 		max: 1000,
-		idleTimeoutMillis: 20 * 60 * 1000,
+		idleTimeoutMillis: 20 * 60 * 1000 * 4 * 10,
 	},
 	batch: {
 		min: 0,
@@ -132,12 +132,12 @@ export async function GetSqlConfig(
 			database: bp.db_name,
 			port: parseInt(bp.db_port as string, undefined),
 			instanceName: bp.db_instance,
-			requestTimeout: 2 * 60 * 1000,
+			requestTimeout:20 * 60 * 1000 * 4 * 10,
 		},
 		pool: {
 			min: 0,
 			max: 1000,
-			idleTimeoutMillis: 20 * 60 * 1000,
+			idleTimeoutMillis: 20 * 60 * 1000 * 4 * 10,
 		},
 		batch: {
 			min: 0,

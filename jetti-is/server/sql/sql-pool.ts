@@ -5,6 +5,7 @@ import { SQLConnectionConfig } from './interfaces';
 export class SQLPool {
 	constructor(public config: SQLConnectionConfig) {}
 
+	// todo Nikita say: Я не знаю насколько это нормальный timeout.
 	pool = new Pool<Connection>({
 		create: () => {
 			return new Promise<Connection>((resolve, reject) => {

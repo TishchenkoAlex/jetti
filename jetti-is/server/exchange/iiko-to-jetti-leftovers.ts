@@ -1,32 +1,18 @@
 import { SQLClient } from '../sql/sql-client';
 import { v1 as uuidv1 } from 'uuid';
-import { ColumnValue, Request } from 'tedious';
-
 import { SQLPool } from '../sql/sql-pool';
 import {
 	ISyncParams,
 	saveLogProtocol,
-	exchangeManyOrNone,
 	GetSqlConfig,
-	GetExchangeCatalogID,
 } from './iiko-to-jetti-connection';
 import {
 	DateToString,
 	GetCatalog,
-	InsertCatalog,
-	UpdateCatalog,
-	nullOrID,
 	Ref,
-	InsertDocument,
-	GetDocument,
 	UpdateDocument,
-	setQueuePostDocument,
+	InsertDocumentNoEchange,
 } from './iiko-to-jetti-utils';
-import { dateReviverUTC } from '../fuctions/dateReviver';
-import { text } from 'body-parser';
-import { stdout } from 'process';
-import { countReset } from 'console';
-import responceLEFTROVERS = require('./responce_leftovers.json');
 const syncStage = 'Document.Purshase';
 
 export async function ImportLeftRoverToJetti(
@@ -57,7 +43,7 @@ export async function ImportLeftRoverSQLToJetti(
 	if (syncParams.periodBegin) {
 		dtSQLnormaliz = DateToString(syncParams.periodBegin);
 	} else {
-		// todo
+		// TODO Иван я забыл какая здесь логика должна быть
 	}
 	let sw = '';
 	if (syncParams.exchangeID) {
@@ -105,58 +91,76 @@ export async function ImportLeftRoverSQLToJetti(
 	having sum(ttt.Amount) <>0) sz
 	order by sz.StoreID`;
 
-	// const response = await ssql.manyOrNone(newSQL, [dtSQLnormaliz]);
+	const response:any = await ssql.manyOrNone(newSQL, [dtSQLnormaliz]);
 	const storeUniqueResponce = {};
+	const Suppler: String = '5848BB10-CC21-11EA-9CDA-3D7B55893E63';
 
-
-	for (const { SKU2 } of responceLEFTROVERS) {
-		if (storeUniqueResponce[SKU2] !== undefined) {
+	for (const docResponce of response) {
+		if (storeUniqueResponce[docResponce.SKU2] !== undefined) {
 			return;
 		} else {
-			storeUniqueResponce[SKU2] = '';
+			storeUniqueResponce[docResponce.SKU2] = docResponce;
 		}
 	}
-	for (const [storeGUID] of Object.entries(storeUniqueResponce)) {
-		let NOSQLDOC: any = {
-			Suplier: {},
-			Storehouse: {},
-			Department: {},
-			PayDate: Date,
-			Items: []
-		}
+
+	for (const [key, value] of Object.entries(storeUniqueResponce)) {
+		let isNewDoc = true;
+		const Operation = 'Document.Operation';
+		const dateWrite = new Date();
+		const codez = syncParams.source.code + '-' + Math.random();
+		const NOSQLDOC: any = {
+			type: 'Document.Operation',
+			doc: {
+				Suplier: {},
+				Storehouse: {},
+				Department: {},
+				PayDate: Date,
+				Items: [],
+			},
+		};
 		const storeInternal: any = await GetCatalog(
 			syncParams.project.id,
-			storeGUID,
+			key,
 			syncParams.source.id,
 			'Storehouse',
 			dsql,
 		);
 		const company = (await dsql.oneOrNone<{ id: Ref }>(
-			// ! todo Nikita say:  я не уверен что это правильно?
-			`SELECT * from [Catalog.Company.v] where id=@p1`,
-			[storeInternal.company],
-		))!; // компания
-
-		const department = (await dsql.oneOrNone<{ id: Ref }>(
-			// ! todo Nikita say:  я не уверен что это правильно?
-			`SELECT * from [Catalog.Department.v] where id=@p1`,
-			[storeInternal.doc.Department],
-		))!; // департамент
+			`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
+			[syncParams.periodBegin, storeInternal.doc.Department],
+		))!; // организация
 		const ResultDocOfBaseRecivier = (await dsql.oneOrNone<{ id: Ref }>(
-			// ! todo Nikita say:  я не уверен что это правильно?
 			` SELECT id FROM [Document.Operation.v] d where d.date=@p1 and d.Operation=@p2 and d.f2=@p3 `,
-			[syncParams.periodBegin, department.id, storeInternal.id],
-		))!; // проверка на сущестование документа в базе приемнике
+			[syncParams.periodBegin, storeInternal.doc.Department, storeInternal.id],
+		))!; // проверка на сущестоваstoreInternal.doc.Department в базе приемнике
 		if (ResultDocOfBaseRecivier) {
-
-		} else {
-			NOSQLDOC.Storehouse = storeInternal;
-			NOSQLDOC.Department = department;
-			NOSQLDOC.Suplier 
-			// todo ? https://smv-jetti.web.app/Catalog.Operation/4CF6EAC0-D2FD-11E9-A931-91F77FF9385E согласны этим данным у нас есть Supler
-			NOSQLDOC.PayDate = syncParams.periodBegin;
-			// ! todo Nikita say:  я не уверен что это правильно?
-			NOSQLDOC.Items = storeInternal;
+			isNewDoc = false;
+		}
+		(NOSQLDOC.id = uuidv1().toUpperCase()), (NOSQLDOC.date = dateWrite);
+		NOSQLDOC.posted = 0;
+		NOSQLDOC.code = codez;
+		NOSQLDOC.description = '';
+		NOSQLDOC.deleted = 0;
+		NOSQLDOC.parent = null;
+		NOSQLDOC.isfolder = false;
+		NOSQLDOC.user = null;
+		NOSQLDOC.company = syncParams.exchangeID;
+		NOSQLDOC.doc.Storehouse = storeInternal.id;
+		NOSQLDOC.doc.Department = company;
+		NOSQLDOC.doc.PayDate = syncParams.periodBegin;
+		NOSQLDOC.doc.Items = value;
+		NOSQLDOC.doc.Suplier = Suppler;
+		const jsonDoc = JSON.stringify(NOSQLDOC);
+		try {
+			if (isNewDoc)
+				await InsertDocumentNoEchange(
+					jsonDoc,
+					NOSQLDOC.id,
+					dsql,
+				);
+			else await UpdateDocument(jsonDoc, NOSQLDOC.id, dsql);
+		} catch (exep) {
+			console.log(exep);
 		}
 	}
 }

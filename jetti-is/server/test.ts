@@ -42,13 +42,13 @@ const params = {
 	periodBegin: new Date('2020-07-02'), // ImportPurchaseRetToJetti date period 2019-03-26
 	periodEnd: new Date('2020-07-02'),
 	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
-	execFlag: 126,
+	execFlag: 128,
 	objectList: [],
 	forcedUpdate: true,
 	logLevel: 2,
 	flow: 0,
 	syncFunctionName: 'AutosincIkoToJetty',
-	info: 'Test Autosync'
+	info: 'Test Autosync',
 };
 AutosyncIIkoToJetty(params).catch((error) => {
 	console.log(error);
@@ -98,4 +98,6 @@ QueuePost(params).catch((error) => { console.log(error); });
 
 // QueuePost(params).catch((error) => { console.log(error); });
 
-// SaveProjectParams().catch((error) => { console.log(error); }); // ! обровить данные проектов в базе
+SaveProjectParams().catch((error) => {
+	console.log(error);
+}); // ! обровить данные проектов в базе

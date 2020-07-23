@@ -156,8 +156,7 @@ async function syncInventSQL(
 				coalesce(di.amount,0) as QtyFact,cast(0 as numeric(19,9)) as QtyDiff,
 				cast(0 as numeric(19,9)) as DifSumma
 				from dbo.IncomingInventoryItem di
-				where di.inventory_id =@p1
-   			`,
+				where di.inventory_id =@p1`,
 			[iikoDoc.id],
 		);
 		PositionInentoryzation = await exchangeManyOrNone(
