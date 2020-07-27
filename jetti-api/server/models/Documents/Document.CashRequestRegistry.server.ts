@@ -308,10 +308,10 @@ HAVING SUM(Balance.[Amount]) > 0;
     FROM #CashRequestBalance AS CRT
       LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and (CRT.BankAccountPerson = sa.BankAccountPerson or @p5 = 1)
       LEFT JOIN #SalaryAmountCashRequest sacr ON CRT.CashRequest = sacr.CashRequest and CRT.CashRecipient = sacr.CashRecipient and (CRT.BankAccountPerson = sacr.BankAccountPerson or @p5 = 1)
-      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and (DocCR.[CashKind] <> 'CASH' or @p5 = 1)
+      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and ((DocCR.[CashKind] = 'CASH' and @p5 = 1) or (DocCR.[CashKind] = 'BANK' and @p5 = 0))
       LEFT JOIN dbo.[Catalog.Person.BankAccount.v] cpb ON
       (DocCR.[SalaryProject.id] = cpb.SalaryProject or (cpb.SalaryProject is NULL and DocCR.[SalaryProject.id] is NULL))
-      and CRT.[CashRecipient] = cpb.owner and cpb.deleted = 0
+      and CRT.[CashRecipient] = cpb.owner and cpb.deleted = 0 and @p5 = 1
     ORDER BY OperationType, Delayed, CashRequest, AmountBalance DESC, CashRecipient`;
 
     if (!this.Operation) {
