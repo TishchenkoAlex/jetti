@@ -1,3 +1,4 @@
+import { insertJobStat } from './../Tasks/task';
 import { RegisteredSyncFunctions } from './../fuctions/syncFunctionsMeta';
 import { ISyncParams } from './../exchange/iiko-to-jetti-connection';
 import * as express from 'express';
@@ -79,7 +80,10 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 
 		if (opts.endDate && jobOpts.repeat) jobOpts.repeat.endDate = new Date(opts.endDate);
 
-		const job = await JQueue.add(data, jobOpts);
+		let job;
+		if (RegisteredSyncFunctions().get(params.syncFunctionName)) job = await JQueue.add(params.syncFunctionName, data, jobOpts);
+		else job = await JQueue.add(data, jobOpts);
+		await insertJobStat(data, jobOpts, 'created');
 
 		res.json(job);
 
@@ -91,7 +95,6 @@ router.post('/add', async (req: Request, res: Response, next: NextFunction) => {
 
 router.post('/get', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		throw new Error('simple test err');
 		const jobs = await getJobs(req.body);
 		res.json(jobs);
 	} catch (err) {
@@ -113,6 +116,25 @@ router.post('/delete', async (req: Request, res: Response, next: NextFunction) =
 	}
 });
 
+router.post('/pause', async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		await JQueue.pause();
+		res.json('OK');
+	} catch (err) {
+		res.status(500).json(err.toString());
+		next(err);
+	}
+});
+
+router.post('/resume', async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		await JQueue.resume();
+		res.json('OK');
+	} catch (err) {
+		res.status(500).json(err.toString());
+		next(err);
+	}
+});
 
 export async function execJob(job) {
 	const params = job.data.params as ISyncParams;

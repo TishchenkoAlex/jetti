@@ -22,6 +22,7 @@ export default async function (job: Queue.Job) {
 	}
 
 	try {
+		params.job = job;
 		await syncFunction(params);
 		await job.progress(100);
 	} catch (ex) {

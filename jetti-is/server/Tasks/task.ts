@@ -1,7 +1,10 @@
+import { SQLPool } from './../sql/sql-pool';
 import * as Queue from 'bull';
 import { DB_NAME, REDIS_DB_HOST, REDIS_DB_AUTH } from '../env/environment';
 import taskExecution from './taskExecution';
 import { RedisOptions } from 'ioredis';
+import { ExchangeSqlConfig } from '../exchange/iiko-to-jetti-connection';
+import { SQLClient } from '../sql/sql-client';
 
 const redis: RedisOptions = {
 	host: REDIS_DB_HOST,
@@ -40,7 +43,35 @@ const options: Queue.QueueOptions = {
 
 export const JQueue = new Queue(DB_NAME, options);
 
-JQueue.process(async (job) => await taskExecution(job));
+// default job worker
+JQueue.process(4, async (job) => await taskExecution(job));
+
+// named workers
+JQueue.process('AutosyncIIkoToJetty', 1, async (job) => await taskExecution(job));
+JQueue.process('AutosyncSMSQL', 1, async (job) => await taskExecution(job));
+JQueue.process('QueuePost', 1, async (job) => await taskExecution(job));
+JQueue.process('QueueSyncSMSQL', 1, async (job) => await taskExecution(job));
+JQueue.process('QueueTesting', 1, async (job) => await taskExecution(job));
+
+JQueue.on('active', async (job) => {
+	await updateJobStat(job, { status: 'active' });
+});
+
+JQueue.on('failed', async (job, err) => {
+	await updateJobStat(job, { status: 'failed', error: err.message });
+});
+
+JQueue.on('progress', async (job, progress: number) => {
+	await updateJobStat(job, { status: 'active', progress: progress });
+});
+
+JQueue.on('completed', async job => {
+	await updateJobStat(job, { status: 'completed' });
+});
+
+JQueue.on('removed', async job => {
+	await updateJobStat(job, { status: 'removed' });
+});
 
 export interface IGetTaskParams {
 	StartDate?: Date;
@@ -171,3 +202,48 @@ export function msToTime(s: number): string {
 
 	return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
 }
+
+
+const exchangeSQLAdmin = new SQLPool(ExchangeSqlConfig);
+const esql = new SQLClient(exchangeSQLAdmin);
+
+export const updateJobStat = async (job, updatedData) => {
+	const jobId = job.data.job.id;
+	await esql.none(
+		`UPDATE dbo.jobStats
+        SET
+          ${Object.keys(updatedData).map((key, index) => '' + key + ' = @p' + (index + 1)).join(', ')}
+		WHERE
+			docid = '${jobId}'`, Object.values(updatedData));
+};
+
+export const insertJobStat = async (data, jobOpts, status) => {
+
+	await esql.none(
+		`INSERT INTO dbo.jobStats
+		(created, finished, status, docid, description, info, params, options)
+		select created, finished, status, docid, description, info, params, options
+		from OPENJSON(@p1) WITH (
+		[created] [datetime],
+		[finished] [datetime],
+		[status] [nvarchar](50),
+		[docid] UNIQUEIDENTIFIER,
+		[description] nvarchar(150),
+		[info] nvarchar(max),
+		[params] NVARCHAR(max) N'$.params' AS JSON,
+		[options] NVARCHAR(max) N'$.options' AS JSON
+		)`,
+		[
+			JSON.stringify({
+				docid: data.job.id,
+				created: new Date,
+				finished: null,
+				status: status,
+				description: data.job.description,
+				info: data.job.info,
+				params: data.params,
+				options: jobOpts,
+			}),
+		],
+	);
+};
