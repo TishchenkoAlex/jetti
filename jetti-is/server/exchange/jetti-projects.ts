@@ -55,7 +55,7 @@ export const RussiaSourceSMV: IExchangeSource = {
 	firstDate: new Date('2020-07-01'),
 	company: 'E5850830-02D2-11EA-A524-E592E08C23A5',
 	currency: 'A4867005-66B8-4A8A-9105-3F25BB081936',
-	TransitStorehouse: '',
+	TransitStorehouse: '7642EDF0-CB88-11EA-A616-C7FB62AF187B',
 	CounterpartieFolder: '42E29350-AF24-11EA-B93F-AD0D181CA7FB',
 	ProductFolder: '149A6390-B16F-11EA-AF55-1D3B6811F490',
 	exchangeStores: [

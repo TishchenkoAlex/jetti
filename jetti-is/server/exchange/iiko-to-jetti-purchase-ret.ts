@@ -215,7 +215,6 @@ async function syncInventSQL(
 				JSON.stringify(PositionPurchaseRet),
 			],
 		);
-		// пишем документ по времени в  10:00
 		const datez: Date = iikoDoc.date;
 		const userModifay: any = await GetCatalog(
 			syncParams.project.id,
@@ -409,18 +408,20 @@ export async function ImportPurchaseRetSQLToJetti(
 			const rawDoc: any = {};
 			row.forEach((col) => (rawDoc[col.metadata.colName] = col.value));
 			batch.push(rawDoc);
-			req.pause();
-			if (syncParams.logLevel > 1)
-				await saveLogProtocol(
-					syncParams.syncid,
-					0,
-					0,
-					syncStage,
-					`inserting to batch ${i} Purshase Ret docs`,
-				);
-			for (const doc of batch) {
-				const docResult = transformPurchaseRet(syncParams, doc);
-				await syncInventSQL(syncParams, docResult, ssql, dsql);
+			if (batch.length === ssqlcfg.batch.max) {
+				if (syncParams.logLevel > 1)
+					await saveLogProtocol(
+						syncParams.syncid,
+						0,
+						0,
+						syncStage,
+						`inserting to batch ${i} Purshase Ret docs`,
+					);
+				for (const doc of batch) {
+					const docResult = transformPurchaseRet(syncParams, doc);
+					await syncInventSQL(syncParams, docResult, ssql, dsql);
+				}
+				req.pause();
 			}
 			batch = [];
 			req.resume();

@@ -8,24 +8,16 @@ import {
 	saveLogProtocol,
 	exchangeManyOrNone,
 	GetSqlConfig,
-	GetExchangeCatalogID,
 } from './iiko-to-jetti-connection';
 import {
 	DateToString,
 	GetCatalog,
-	InsertCatalog,
-	UpdateCatalog,
-	nullOrID,
 	Ref,
 	InsertDocument,
 	GetDocument,
 	UpdateDocument,
 	setQueuePostDocument,
 } from './iiko-to-jetti-utils';
-import { dateReviverUTC } from '../fuctions/dateReviver';
-import { text } from 'body-parser';
-import { stdout } from 'process';
-import { countReset } from 'console';
 
 ///////////////////////////////////////////////////////////
 const syncStage = 'Document.Purshase';
@@ -86,9 +78,7 @@ const newPurchase = () => {
 		deleted: 0,
 		doc: {
 			Group: 'E74FF926-C149-11E7-BD8F-43B2F3011722',
-			// todo if (souce.id === urkaina) FBDEBFA0-3634-11EA-A656-856C3785004E
 			Operation: '6A2D525E-C149-11E7-9418-D72026C63174',
-			// todo first date
 			Amount: null,
 			currency: '',
 			f1: '',
@@ -116,16 +106,13 @@ const newPurchase = () => {
 };
 
 ///////////////////////////////////////////////////////////
-async function syncInventSQL(
+async function syncPurchaseSQL(
 	syncParams: ISyncParams,
 	iikoDoc: IPurchaseInvent,
 	sourceSQL: SQLClient,
 	destSQL: SQLClient,
 ): Promise<any> {
 	try {
-		// орбработка документов продаж по кассовой смене
-		const startd: number = Date.now();
-
 		if (syncParams.logLevel > 1)
 			await saveLogProtocol(
 				syncParams.syncid,
@@ -143,7 +130,7 @@ async function syncInventSQL(
 			syncParams.source.id,
 			'Counterpartie',
 			destSQL,
-		); //контр агент
+		);
 		if (!contrAgent) {
 			await saveLogProtocol(
 				syncParams.syncid,
@@ -175,21 +162,17 @@ async function syncInventSQL(
 			syncParams.source.id,
 			'Storehouse',
 			destSQL,
-		); // склад
+		);
 		const company = (await destSQL.oneOrNone<{ id: Ref }>(
 			`select cast(dbo.CompanyOnDate(@p1, @p2) as nvarchar(50)) as id;`,
 			[iikoDoc.date, store.doc.Department],
-		))!; // организация
-
+		))!;
 		const contract = (await destSQL.oneOrNone<{ id: Ref }>(
-			`SELECT max([id]), count(id) FROM [sm].[dbo].[Documents]	
-			where [type]='Catalog.Contract' and deleted=0 and JSON_VALUE(doc,'$.owner')=@p1 and company=@p2 and  JSON_VALUE(doc,'$.currency')=@p3;`,
+			`SELECT max([id]), count(id) FROM [sm].[dbo].[Documents] where [type]='Catalog.Contract' and deleted=0 and JSON_VALUE(doc,'$.owner')=@p1 and company=@p2 and  JSON_VALUE(doc,'$.currency')=@p3;`,
 			[contrAgent.id, company.id, syncParams.source.currency],
-		))!; // контракт
-
+		))!;
 		if (!contract) throw new Error('Contract not exists');
 		if (!contrAgent) throw new Error('Agent not exists');
-
 		if (!store) throw new Error('Storehouse not exists');
 
 		const typeFranchise: any = await destSQL.oneOrNone(
@@ -201,8 +184,7 @@ async function syncInventSQL(
 		}
 
 		let PositionPurchase: any = await sourceSQL.manyOrNone(
-			`SELECT 
-            cast(tr.to_product as nvarchar(38)) as SKU,
+			`SELECT cast(tr.to_product as nvarchar(38)) as SKU,
             coalesce(tr.sum,0) as Amount,
             coalesce(tr.to_amount,0) as Qty,
             case
@@ -257,8 +239,6 @@ async function syncInventSQL(
         SELECT N'Operation ('+d.description+N') #'+@p1+N', '+convert(nvarchar(30), @p2, 127) as dsc FROM [dbo].[Catalog.Operation.v] d WITH (NOEXPAND) where d.[id] = @p3 `,
 			[codez, datez.toJSON(), Operation],
 		);
-
-		// заполняем документ
 		let isNewDoc: Boolean = false;
 		let NoSqlDocument: any = await GetDocument(
 			iikoDoc.project,
@@ -323,10 +303,8 @@ async function syncInventSQL(
 		NoSqlDocument.doc.DocNumber = iikoDoc.documentNumber;
 		NoSqlDocument.doc.Contract = store.id;
 		if (syncParams.source.id === 'Ukraine') {
-			// проверка на Украину
 			NoSqlDocument.doc.Operation = 'FBDEBFA0-3634-11EA-A656-856C3785004E';
 		}
-		//проверка dateIncoming
 		if (NoSqlDocument.doc.PayDate >= '20200101') {
 			NoSqlDocument.doc.Group = 'E74FF926-C149-11E7-BD8F-43B2F3011722';
 			NoSqlDocument.doc.Operation = 'B4FE6830-2D40-11EA-A1A8-811EE0404FBB';
@@ -373,10 +351,8 @@ export async function ImportPurchaseSQLToJetti(
 	);
 
 	let i = 0;
-	// условия к выборке
 	let sw = '';
 	if (docList.length === 0) {
-		// выборка по интервалу дат
 		sw = ` where ( cast(dateIncoming as DATE) between '${DateToString(
 			syncParams.periodBegin,
 		)}' and '${DateToString(syncParams.periodEnd)}' `;
@@ -389,7 +365,6 @@ export async function ImportPurchaseSQLToJetti(
 		} else sw += ') ';
 		if (syncParams.exchangeID === null) {
 			if (syncParams.source.exchangeStores.length > 0) {
-				// ограничение по списку складов
 				sw += ` and  defaultStore in (`;
 				i = 0;
 				for (const store of syncParams.source.exchangeStores) {
@@ -403,7 +378,6 @@ export async function ImportPurchaseSQLToJetti(
 			sw += ` and  defaultStore = '${syncParams.exchangeID}' `;
 		}
 	} else {
-		// выборка по списку документов
 		i = 0;
 		for (const d of docList) {
 			i++;
@@ -445,12 +419,24 @@ export async function ImportPurchaseSQLToJetti(
 					syncStage,
 					`inserting to batch ${i} Purshase docs`,
 				);
-			for (const doc of batch) {
-				const docResult = transformPurshase(syncParams, doc);
-				await syncInventSQL(syncParams, docResult, ssql, dsql);
+
+			if (batch.length === ssqlcfg.batch.max) {
+				req.pause();
+				if (syncParams.logLevel > 1)
+					await saveLogProtocol(
+						syncParams.syncid,
+						0,
+						0,
+						syncStage,
+						`inserting to batch ${i} Sales docs`,
+					);
+				for (const doc of batch) {
+					const docResult = transformPurshase(syncParams, doc);
+					await syncPurchaseSQL(syncParams, docResult, ssql, dsql);
+				}
+				batch = [];
+				req.resume();
 			}
-			batch = [];
-			req.resume();
 		},
 		async (rowCount: number, more: boolean) => {
 			if (rowCount && !more && batch.length > 0) {
@@ -464,7 +450,7 @@ export async function ImportPurchaseSQLToJetti(
 					);
 				for (const doc of batch) {
 					const docResult = transformPurshase(syncParams, doc);
-					await syncInventSQL(syncParams, docResult, ssql, dsql);
+					await syncPurchaseSQL(syncParams, docResult, ssql, dsql);
 				}
 			}
 			await saveLogProtocol(

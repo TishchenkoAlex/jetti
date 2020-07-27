@@ -294,27 +294,26 @@ async function syncSalesSQL(
 			// сопоставление по SKU
 			posz = await exchangeManyOrNone(
 				`
-        SELECT
-          (SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
-          p.[Qty],
-          p.[Price],
-          p.[Amount] as [AmountFull],
-          p.[QtyAcc] as [Discount],
-          p.[QtyFact] as [AmountDiscount],
-          p.[openTime] as [TimeStart],
-          p.[deliverTime] as [TimeFeed],
-          p.[printTime] as [TimePrint]
+			SELECT
+        	(SELECT top 1 [id] FROM dbo.catalog c where [project]=@p1 and [exchangeCode]=p.[SKU] and [exchangeBase]=@p2 and [exchangeType] = 'Product') as [SKU],
+        	p.[Qty],
+        	p.[Price],
+        	p.[Amount] as [AmountFull],
+        	p.[QtyAcc] as [Discount],
+        	p.[QtyFact] as [AmountDiscount],
+        	p.[openTime] as [TimeStart],
+        	p.[deliverTime] as [TimeFeed],
+        	p.[printTime] as [TimePrint]
         FROM OPENJSON(@p3) WITH (
-          [SKU] UNIQUEIDENTIFIER,
-          [openTime] DATETIME,
-          [deliverTime] DATETIME,
-          [printTime] DATETIME,
-          [Qty] money,
-          [Price] money,
-          [Amount] money,
-          [QtyAcc] money,
-          [QtyFact] money) as p
-      `,
+        	[SKU] UNIQUEIDENTIFIER,
+        	[openTime] DATETIME,
+        	[deliverTime] DATETIME,
+        	[printTime] DATETIME,
+        	[Qty] money,
+        	[Price] money,
+        	[Amount] money,
+        	[QtyAcc] money,
+        	[QtyFact] money) as p`,
 				[syncParams.project.id, syncParams.source.id, JSON.stringify(posz)],
 			);
 			// исключим из продаж модификаторы по нулевой цене
