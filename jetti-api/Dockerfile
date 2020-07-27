@@ -1,4 +1,4 @@
-FROM node
+FROM node:lts
 # Create app directory
 RUN mkdir -p /usr/jetti
 WORKDIR /usr/jetti

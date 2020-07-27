@@ -20,11 +20,17 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
+        , ISNULL(JSON_VALUE(data, '$.Role'), '') "Role"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')) "Unit"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forSales')) "forSales"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forPurсhases')) "forPurсhases"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.PriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.PriceList] TO JETTI;
@@ -97,20 +103,21 @@
     )
     GO
     
-    CREATE OR ALTER VIEW [Register.Info.MainSpecification]
+    CREATE OR ALTER VIEW [Register.Info.ProductSpecificationByDepartment]
     WITH SCHEMABINDING
     AS
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"')) "SKU"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResourceSpecification"')) "ResourceSpecification"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.Active')) "Active"
-      FROM dbo.[Register.Info] WHERE type = N'Register.Info.MainSpecification';
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Specification"')) "Specification"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.ProductSpecificationByDepartment';
     GO
-    GRANT SELECT,DELETE ON [Register.Info.MainSpecification] TO JETTI;
+    GRANT SELECT,DELETE ON [Register.Info.ProductSpecificationByDepartment] TO JETTI;
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Info.MainSpecification] ON [dbo].[Register.Info.MainSpecification](
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.ProductSpecificationByDepartment] ON [dbo].[Register.Info.ProductSpecificationByDepartment](
       company,date,id
     )
     GO
