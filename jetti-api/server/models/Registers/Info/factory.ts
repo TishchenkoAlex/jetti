@@ -20,9 +20,11 @@ import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
+import { RegisterInfoModifier } from './Modifier';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
+    'Register.Info.Modifier' |
     'Register.Info.PriceList' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
@@ -46,6 +48,7 @@ export type RegisterInfoTypes =
 
 export type RegistersInfo =
     RegisterInfoHoliday |
+    RegisterInfoModifier |
     RegisterInfoPriceList |
     RegisterInfoDepartmentStatus |
     RegisterInfoRoyaltySales |
@@ -70,6 +73,7 @@ export interface IRegisteredRegisterInfo {
 
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
+    { type: 'Register.Info.Modifier', Class: RegisterInfoModifier },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
