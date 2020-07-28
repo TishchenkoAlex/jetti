@@ -20,14 +20,14 @@ import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
-import { RegisterInfoModifier } from './Modifier';
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
 import { RegisterInfoProductModifier } from './ProductModifier';
+import { RegisterInfoSelfEmployed } from './SelfEmployed';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
-    'Register.Info.Modifier' |
     'Register.Info.PriceList' |
+    'Register.Info.SelfEmployed' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
     'Register.Info.ExchangeRates.National' |
@@ -52,7 +52,6 @@ export type RegisterInfoTypes =
 
 export type RegistersInfo =
     RegisterInfoHoliday |
-    RegisterInfoModifier |
     RegisterInfoPriceList |
     RegisterInfoDepartmentStatus |
     RegisterInfoRoyaltySales |
@@ -62,6 +61,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
+    RegisterInfoSelfEmployed |
     RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
     RegisterInfoIncomeDocumentRegistry |
@@ -79,8 +79,9 @@ export interface IRegisteredRegisterInfo {
 
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
-    { type: 'Register.Info.Modifier', Class: RegisterInfoModifier },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
+    { type: 'Register.Info.SelfEmployed', Class: RegisterInfoSelfEmployed },
+    { type: 'Register.Info.ProductModifier', Class: RegisterInfoProductModifier },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.ExchangeRates.National', Class: RegisterInfoExchangeRatesNational },

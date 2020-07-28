@@ -27,12 +27,14 @@ export type CatalogTypes =
   'Catalog.Operation.Group' |
   'Catalog.Operation.Type' |
   'Catalog.Manager' |
+  'Catalog.Person.Contract' |
   'Catalog.Person.BankAccount' |
   'Catalog.Person' |
   'Catalog.PriceType' |
   'Catalog.PlanningScenario' |
   'Catalog.Product' |
   'Catalog.Storehouse' |
+  'Catalog.ManufactureLocation' |
   'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
   'Catalog.Documents' |

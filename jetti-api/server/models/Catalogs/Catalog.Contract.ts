@@ -24,7 +24,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
   Status = 'OPEN';
 
-  @Props({ type: 'enum', value: ['AR', 'AP', 'EXPORT', 'COMMISSIONER', 'COMMITENT'], required: true })
+  @Props({ type: 'enum', value: ['AR', 'AP', 'EXPORT', 'COMMISSIONER', 'COMMITENT', 'SELF_EMPLOYED'], required: true })
   kind = 'AR';
 
   @Props({ type: 'date', required: true })

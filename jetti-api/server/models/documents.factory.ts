@@ -76,6 +76,7 @@ import { CatalogTaxPayerStatus } from './Catalogs/Catalog.TaxPayerStatus';
 import { CatalogRetailClient } from './Catalogs/Catalog.RetailClient';
 import { CatalogTaxOffice } from './Catalogs/Catalog.TaxOffice';
 import { CatalogPersonBankAccount } from './Catalogs/Catalog.Person.BankAccount';
+import { CatalogPersonContract } from './Catalogs/Catalog.Person.Contract';
 import { CatalogSalaryProject } from './Catalogs/Catalog.SalaryProject';
 import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
@@ -87,6 +88,7 @@ import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
 import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
+import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -198,9 +200,11 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Catalog', Class: CatalogCatalog },
   { type: 'Catalog.BudgetItem', Class: CatalogBudgetItem },
   { type: 'Catalog.Scenario', Class: CatalogScenario },
+  { type: 'Catalog.ManufactureLocation', Class: CatalogManufactureLocation },
   { type: 'Catalog.AcquiringTerminal', Class: CatalogAcquiringTerminal },
   { type: 'Catalog.Bank', Class: CatalogBank },
   { type: 'Catalog.Person.BankAccount', Class: CatalogPersonBankAccount },
+  { type: 'Catalog.Person.Contract', Class: CatalogPersonContract },
   { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
   { type: 'Catalog.TaxAssignmentCode', Class: CatalogTaxAssignmentCode },

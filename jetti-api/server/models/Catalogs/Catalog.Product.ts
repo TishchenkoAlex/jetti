@@ -9,6 +9,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   hierarchy: 'folders',
   dimensions: [
     { Unit: 'Catalog.Unit' },
+    { Kind: 'Catalog.ProductKind' }
   ],
 })
 export class CatalogProduct extends DocumentBase {
