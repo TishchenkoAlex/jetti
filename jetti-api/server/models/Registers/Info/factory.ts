@@ -20,12 +20,9 @@ import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
-<<<<<<< HEAD
 import { RegisterInfoModifier } from './Modifier';
-=======
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
 import { RegisterInfoProductModifier } from './ProductModifier';
->>>>>>> 4e4c52a4a8e431057478f352ddbfab0ba1860d7b
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
