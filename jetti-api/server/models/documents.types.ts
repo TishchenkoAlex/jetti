@@ -1,6 +1,7 @@
 export type CatalogTypes =
   'Catalog.Attachment' |
   'Catalog.Attachment.Type' |
+  'Catalog.AllUnic.Lot' |
   'Catalog.Catalog' |
   'Catalog.Account' |
   'Catalog.Balance' |
@@ -72,7 +73,7 @@ export type CatalogTypes =
   'Catalog.TaxOffice' |
   'Catalog.RetailClient' |
   'Catalog.Contract.Intercompany' |
-  'Catalog.ResourceSpecification' |
+  'Catalog.Specification' |
   'Catalog.InvestorGroup' |
   'Catalog.ReasonTypes' |
   'Catalog.Employee'

@@ -81,11 +81,12 @@ import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
 import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
-import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
+import { CatalogSpecification } from './Catalogs/Catalog.Specification';
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
+import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -136,6 +137,7 @@ export interface RegisteredDocumentType { type: DocTypes; Class: typeof Document
 export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
+  { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
   { type: 'Catalog.Balance.Analytics', Class: CatalogBalanceAnalytics },
@@ -209,7 +211,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
   { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
-  { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
+  { type: 'Catalog.Specification', Class: CatalogSpecification },
   { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },
   { type: 'Catalog.Employee', Class: CatalogEmployee },
 

@@ -477,7 +477,7 @@ ORDER BY
     return Registers;
   }
   // возвращает остаток по заявке
-  async  getAmountBalance(tx: MSSQL): Promise<number> {
+  async getAmountBalance(tx: MSSQL): Promise<number> {
     if (this.Status !== 'APPROVED') return 0;
     const query = `
       SELECT
@@ -491,7 +491,7 @@ ORDER BY
 
   // возвращает остаток по заявке в разрезе получателей и счетов
   // todo: обратится в базу х100
-  public async  getAmountBalanceWithCashRecipientsAndBankAccounts(
+  public async getAmountBalanceWithCashRecipientsAndBankAccounts(
     tx: MSSQL, onlyWithPositiveBalance: boolean):
     Promise<{ CashRecipient: TypesCashRecipient, BankAccountPerson: CatalogPersonBankAccount, Amount: number }[]> {
     const query = `
@@ -510,7 +510,7 @@ ORDER BY
   }
 
   // возвращает связанные документы
-  async  getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
+  async getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
     const query = `
     select
     id,

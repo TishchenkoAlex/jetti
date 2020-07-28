@@ -23,6 +23,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       case 'Fill':
         await this.Fill(tx);
         return this;
+      case 'RefreshLinkedDocuments':
+        await this.RefreshLinkedDocuments(tx);
+        return this;
       case 'Create':
         await this.Create(tx);
         return this;
@@ -51,6 +54,19 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
   }
 
+  // удаляет из ТЧ помеченные на удаления операции
+  async RefreshLinkedDocuments(tx: MSSQL) {
+    const docsIdString = [...new Set(this.CashRequests.filter(c => c.LinkedDocument).map(x => '\'' + x.LinkedDocument + '\''))].join(',');
+    if (!docsIdString) return;
+    const query = `SELECT id FROM [dbo].[Document.Operation] WHERE id IN (${docsIdString}) and deleted = 1`;
+    const deletedDocs = await tx.manyOrNone<{ id }>(query);
+    for (const deletedDoc of deletedDocs) {
+      this.CashRequests
+        .filter(e => e.LinkedDocument === deletedDoc.id)
+        .forEach(e => e.LinkedDocument = null);
+    }
+  }
+
   public async Create(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`${this.description} cоздание возможно только в документе со статусом "APPROVED"!`);
     if (this.CashRequests.filter(c => !c.OperationType || (this.Operation && this.Operation !== c.OperationType))) {
@@ -70,64 +86,68 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   private async CreateByOperationType(OperationType: string | null, tx: MSSQL) {
     if (!OperationType) OperationType = this.Operation;
     const rowsWithAmount = this.CashRequests.filter(c => (c.OperationType === OperationType && c.Amount > 0));
-
     let Operation: DocumentOperation | null;
     let BankAccountSupplier, currentCR, addBaseOnParams, LinkedDocument;
     const usedCashRegisters: Ref[] = [];
     const usedLinkedDocuments: string[] = [];
     const cashOper = OperationType === 'Выплата заработной платы (наличные)';
+    const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
 
     if (OperationType === 'Выплата заработной платы') {
-      const UniqCashRequest = [...new Set(rowsWithAmount.map(x => x.CashRequest))];
       if (UniqCashRequest.length > 1) throw Error('Для корректной выгрузки, в реестре на выплату должна присутствовать только ОДНА Заявка на расход ДС (Ведомость на выплату З/П)');
     }
 
-    for (const row of rowsWithAmount) {
-      if (currentCR !== row.CashRequest) usedCashRegisters.length = 0;
-      if ((currentCR === row.CashRequest && !cashOper) || usedCashRegisters.indexOf(row.CashRegister) !== -1) continue;
-      addBaseOnParams = [];
-      usedCashRegisters.push(row.CashRegister);
-      LinkedDocument = row.LinkedDocument;
-      currentCR = row.CashRequest;
-      if (OperationType === 'Выплата заработной платы') {
-        rowsWithAmount.filter(el => (el.CashRequest === currentCR)).forEach(el => {
-          addBaseOnParams.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson, Amount: el.Amount });
-          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
-        });
+    for (const CashRequestId of UniqCashRequest) {
+      const rowsByCashReqest = rowsWithAmount.filter(row => row.CashRequest === CashRequestId);
+      usedCashRegisters.length = 0;
+      for (const row of rowsByCashReqest) {
+        if ((currentCR === row.CashRequest && !cashOper) || usedCashRegisters.indexOf(row.CashRegister) !== -1) continue;
+        addBaseOnParams = [];
+        usedCashRegisters.push(row.CashRegister);
+        LinkedDocument = row.LinkedDocument;
+        currentCR = row.CashRequest;
+        if (OperationType === 'Выплата заработной платы') {
+          rowsByCashReqest.filter(el => (el.CashRequest === currentCR)).forEach(el => {
+            addBaseOnParams.push({ CashRecipient: el.CashRecipient, BankAccountPerson: el.BankAccountPerson, Amount: el.Amount });
+            if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
+          });
+        }
+        if (cashOper) {
+          rowsByCashReqest.filter(el => (el.CashRequest === currentCR && el.CashRegister === row.CashRegister)).forEach(el => {
+            addBaseOnParams.push({ CashRecipient: el.CashRecipient, Amount: el.Amount });
+            if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
+          });
+        }
+        if (LinkedDocument && usedLinkedDocuments.indexOf(LinkedDocument) === -1) {
+          usedLinkedDocuments.push(LinkedDocument);
+          Operation = await lib.doc.byIdT<DocumentOperation>(LinkedDocument, tx);
+        } else {
+          Operation = createDocument<DocumentOperation>('Document.Operation');
+        }
+        const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
+        if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
+        if (OperationType !== 'Выплата заработной платы') {
+          // исключение ошибки при проверке заполненности счета в базеон
+          if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
+          if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+          BankAccountSupplier =
+            OperationType === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
+          if (OperationType === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
+          OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+        }
+        await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
+        // переопределение счета
+        if (OperationType !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
+        if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
+        if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
+        if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
+        if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+        await lib.doc.postById(OperationServer.id, tx);
+        rowsByCashReqest.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
       }
-      if (cashOper) {
-        rowsWithAmount.filter(el => (el.CashRequest === currentCR && el.CashRegister === row.CashRegister)).forEach(el => {
-          addBaseOnParams.push({ CashRecipient: el.CashRecipient, Amount: el.Amount });
-          if (el.LinkedDocument && usedLinkedDocuments.indexOf(el.LinkedDocument) === -1) LinkedDocument = el.LinkedDocument;
-        });
-      }
-      if (LinkedDocument && usedLinkedDocuments.indexOf(LinkedDocument) === -1) {
-        usedLinkedDocuments.push(LinkedDocument);
-        Operation = await lib.doc.byIdT<DocumentOperation>(LinkedDocument, tx);
-      } else {
-        Operation = createDocument<DocumentOperation>('Document.Operation');
-      }
-      const OperationServer = await createDocumentServer('Document.Operation', Operation!, tx);
-      if (!OperationServer.code) OperationServer.code = await lib.doc.docPrefix(OperationServer.type, tx);
-      if (OperationType !== 'Выплата заработной платы') {
-        // исключение ошибки при проверке заполненности счета в базеон
-        if (row.CashRecipientBankAccount) OperationServer['BankAccountSupplier'] = row.CashRecipientBankAccount;
-        if (row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
-        BankAccountSupplier =
-          OperationType === 'Оплата ДС в другую организацию' ? row.BankAccountIn : row.CashRecipientBankAccount;
-        if (OperationType === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
-        OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      }
-      await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
-      // переопределение счета
-      if (OperationType !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-      if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
-      if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
-      if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
-      if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
-      await lib.doc.postById(OperationServer.id, tx);
-      rowsWithAmount.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
     }
+
+
   }
 
   private async UnloadToText(tx: MSSQL) {
@@ -196,19 +216,19 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
     if (this.unsupportedOperations().indexOf(this.Operation) !== -1) throw new Error(`Unsupported operation type ${this.Operation}`);
     let query = '';
-    let salaryProject: any;
+    // let salaryProject: any;
     const isCashSalary = this.Operation === 'Выплата заработной платы (наличные)';
-    if (isCashSalary) {
-      query = `
-      SELECT TOP 1 id
-      FROM dbo.[Catalog.SalaryProject.v]
-      WHERE currency = @p1
-      and company = @p2
-      and deleted = 0`;
-      salaryProject = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
-      if (!salaryProject) throw new Error(`Не найден зарплатный проект по организации и валюте `);
-      salaryProject = salaryProject.id;
-    }
+    // if (isCashSalary) {
+    //   query = `
+    //   SELECT TOP 1 id
+    //   FROM dbo.[Catalog.SalaryProject.v]
+    //   WHERE currency = @p1
+    //   and company = @p2
+    //   and deleted = 0`;
+    //   salaryProject = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
+    //   if (!salaryProject) throw new Error(`Не найден зарплатный проект по организации и валюте `);
+    //   salaryProject = salaryProject.id;
+    // }
 
     this.CashRequests = [];
     query = `
@@ -269,7 +289,7 @@ HAVING SUM(Balance.[Amount]) > 0;
         , CAST(IIF(DocCR.Operation = N'Выплата заработной платы', sacr.Amount, DocCR.[Amount]) AS MONEY) - IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS AmountPaid
         , CAST(IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS MONEY) AS AmountBalance
         , CRT.OperationType OperationType
-        , CRT.BankAccountPerson
+        , IIF(@p5 = 1,cpb.id,CRT.BankAccountPerson) AS BankAccountPerson
         , CAST(0 AS MONEY) AS AmountRequest
         , DATEDIFF(DAY, GETDATE(), DocCR.[PayDay]) AS Delayed
         , CAST(IIF(DocCR.Operation = N'Выплата заработной платы',sa.Amount,CRT.[AmountBalance]) AS MONEY) AS Amount
@@ -288,7 +308,10 @@ HAVING SUM(Balance.[Amount]) > 0;
     FROM #CashRequestBalance AS CRT
       LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and (CRT.BankAccountPerson = sa.BankAccountPerson or @p5 = 1)
       LEFT JOIN #SalaryAmountCashRequest sacr ON CRT.CashRequest = sacr.CashRequest and CRT.CashRecipient = sacr.CashRecipient and (CRT.BankAccountPerson = sacr.BankAccountPerson or @p5 = 1)
-      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and (DocCR.[CashKind] <> 'CASH' or @p5 = 1)
+      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and ((DocCR.[CashKind] = 'CASH' and @p5 = 1) or (DocCR.[CashKind] = 'BANK' and @p5 = 0))
+      LEFT JOIN dbo.[Catalog.Person.BankAccount.v] cpb ON
+      (DocCR.[SalaryProject.id] = cpb.SalaryProject or (cpb.SalaryProject is NULL and DocCR.[SalaryProject.id] is NULL))
+      and CRT.[CashRecipient] = cpb.owner and cpb.deleted = 0 and @p5 = 1
     ORDER BY OperationType, Delayed, CashRequest, AmountBalance DESC, CashRecipient`;
 
     if (!this.Operation) {
@@ -307,22 +330,22 @@ HAVING SUM(Balance.[Amount]) > 0;
         , this.unsupportedOperations()]
     );
 
-    if (isCashSalary) {
-      const persons = [...new Set(CashRequests.map(x => x.CashRecipient))];
-      query = `
-      SELECT id, owner person
-        FROM dbo.[Catalog.Person.BankAccount.v]
-      WHERE
-      owner IN (${persons.map(el => '\'' + el + '\'').join()})
-      and SalaryProject = @p1
-      and deleted = 0`;
-      const BankAccounts = await tx.manyOrNone<{ id: string, person: string }>(query, [salaryProject]);
-      let BankAccountPerson: any;
-      for (const row of CashRequests) {
-        BankAccountPerson = BankAccounts.find(e => e.person === row.CashRecipient);
-        if (BankAccountPerson) row.BankAccountPerson = BankAccountPerson.id;
-      }
-    }
+    // if (isCashSalary) {
+    //   const persons = [...new Set(CashRequests.map(x => x.CashRecipient))];
+    //   query = `
+    //   SELECT id, owner person
+    //     FROM dbo.[Catalog.Person.BankAccount.v]
+    //   WHERE
+    //   owner IN (${persons.map(el => '\'' + el + '\'').join()})
+    //   and SalaryProject = @p1
+    //   and deleted = 0`;
+    //   const BankAccounts = await tx.manyOrNone<{ id: string, person: string }>(query, [salaryProject]);
+    //   let BankAccountPerson: any;
+    //   for (const row of CashRequests) {
+    //     BankAccountPerson = BankAccounts.find(e => e.person === row.CashRecipient);
+    //     if (BankAccountPerson) row.BankAccountPerson = BankAccountPerson.id;
+    //   }
+    // }
 
     for (const row of CashRequests) {
       this.CashRequests.push({

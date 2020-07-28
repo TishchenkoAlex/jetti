@@ -1,0 +1,73 @@
+#kubectl apply -f deploy/is.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: is
+  name: is
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: is
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: is
+        tier: web
+    spec:
+      containers:
+      - env:
+        - name: DB_PORT
+          value: "1433"
+        - name: DB_HOST
+          value: JETTI-DB-01
+        - name: DB_NAME
+          value: jettiIS
+        - name: DB_USER
+          value: jetti
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mssql-db-credentials
+        - name: REDIS_DB_HOST
+          value: redis-master
+        - name: JTW_KEY
+          valueFrom:
+            secretKeyRef:
+              key: JTW_KEY
+              name: jwt-key
+        - name: EXCHANGE_ACCESS_KEY
+          value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
+        - name: REFRESH_ID
+          value: "0002"
+        - name: NODE_ENV
+          value: production
+        image: eu.gcr.io/jetti-x100/is-api:latest
+        imagePullPolicy: Always
+        name: is
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1024Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: is
+  labels:
+    app: is
+spec:
+  type: NodePort
+  sessionAffinity: ClientIP
+  selector:
+    app: is
+  ports:
+  - port: 8080
+    targetPort: 8080

@@ -1,3 +1,4 @@
+// ng build --prod --aot && firebase deploy --only hosting:x100
 import { Configuration } from 'msal';
 import { MsalAngularConfiguration } from '@azure/msal-angular';
 
@@ -10,6 +11,7 @@ export const environment = {
   auth: `${domain}/auth/`,
   socket: domain,
   host: domain,
+  title: 'Jetti',
   path: '',
   BPAPI
 };

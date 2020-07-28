@@ -225,6 +225,11 @@ export class ApiService {
     return this.http.post<{ [x: string]: any }>(query, callConfig).toPromise();
   }
 
+  documentsDataAsJSON(documents: string[]): Promise<string> {
+    const query = `${environment.api}documentsDataAsJSON`;
+    return this.http.post<string>(query, documents).toPromise();
+  }
+
   jobAdd(data: any, opts?: any) {
     const query = `${environment.api}jobs/add`;
     return this.http.post<IJob>(query, { data: data, opts: opts });

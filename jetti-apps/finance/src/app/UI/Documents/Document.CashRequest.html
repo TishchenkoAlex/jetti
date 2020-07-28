@@ -39,8 +39,8 @@
           <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
             tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
           <button pButton type="button" id="StartProcess" label="Start agreement" class="ui-button-danger"
-            *ngIf="!readonlyMode && isPosted && !form.get('workflowID').value" (click)="StartProcess()"
-            [disabled]="!form.valid || (lds.busy$ | async)"></button>
+            *ngIf="logic_USECASHREQUESTAPPROVING && !readonlyMode && isPosted && !form.get('workflowID').value"
+            (click)="StartProcess()" [disabled]="!form.valid || (lds.busy$ | async)"></button>
           <button pButton type="button" id="Modify" label="Continue agreement" class="ui-button-warning"
             *ngIf="isPosted && canModifyProcess" (click)="ContinueAgreement()"
             [disabled]="!form.valid || (lds.busy$ | async)"></button>
@@ -200,8 +200,10 @@
       <div fxLayout="row" fxLayoutGap="35px" fxLayout.xs="column">
         <j-control [control]="vk.parent" [form]="form"></j-control>
         <j-control [control]="vk.user" [form]="form"></j-control>
-        <j-control [control]="vk.workflow" [form]="form"></j-control>
-        <j-control [control]="vk.workflowID" [form]="form"></j-control>
+        <span *ngIf="logic_USECASHREQUESTAPPROVING">
+          <j-control [control]="vk.workflow" [form]="form"></j-control>
+          <j-control [control]="vk.workflowID" [form]="form"></j-control>
+        </span>
       </div>
     </p-panel>
 
@@ -211,8 +213,8 @@
     <j-register-movements-list *ngIf="!movements.collapsed" [doc]="viewModel"></j-register-movements-list>
   </p-panel>
 
-  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование" *ngIf="form.get('workflowID').value" #bp
-    toggler="header">
+  <p-panel [toggleable]="true" [collapsed]="true" header="Согласование"
+    *ngIf="logic_USECASHREQUESTAPPROVING && form.get('workflowID').value" #bp toggler="header">
     <bp-task *ngIf="!bp.collapsed" [ProcessID]="form.get('workflowID').value"></bp-task>
   </p-panel>
 

@@ -37,6 +37,18 @@ export class RegisterAccumulationAcquiring extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInBalance = 0;
 
+  @Props({ type: 'number', resource: true })
+  AmountOperation = 0;
+
+  @Props({ type: 'number', resource: true })
+  AmountPaid = 0;
+
+  @Props({ type: 'date', resource: true })
+  DateOperation = null;
+
+  @Props({ type: 'date', resource: true })
+  DatePaid = null;
+
   @Props({ type: 'string' })
   AuthorizationCode = '';
 

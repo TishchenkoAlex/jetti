@@ -10,6 +10,7 @@ export const environment = {
   auth: `${domain}/auth/`,
   socket: domain,
   host: domain,
+  title: 'Jetti [DEV]',
   path: '',
   BPAPI
 };

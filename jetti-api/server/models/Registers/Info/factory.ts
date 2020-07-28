@@ -15,12 +15,17 @@ import { RegisterInfoBudgetItemRule } from './BudgetItemRule';
 import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
 import { RegisterInfoSettlementsReconciliation } from './SettlementsReconciliation';
-import { RegisterInfoMainSpecification } from './MainSpecification';
+import { RegisterInfoProductSpecificationByDepartment } from './ProductSpecificationByDepartment';
 import { RegisterInfoIntercompanyHistory } from './IntercompanyHistory';
 import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
+<<<<<<< HEAD
 import { RegisterInfoModifier } from './Modifier';
+=======
+import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
+import { RegisterInfoProductModifier } from './ProductModifier';
+>>>>>>> 4e4c52a4a8e431057478f352ddbfab0ba1860d7b
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
@@ -28,8 +33,9 @@ export type RegisterInfoTypes =
     'Register.Info.PriceList' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
+    'Register.Info.ExchangeRates.National' |
     'Register.Info.Settings' |
-    'Register.Info.MainSpecification' |
+    'Register.Info.ProductSpecificationByDepartment' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
     'Register.Info.RLS.Period' |
@@ -43,6 +49,7 @@ export type RegisterInfoTypes =
     'Register.Info.CompanyPrice' |
     'Register.Info.ShareEmission' |
     'Register.Info.LoanOwner' |
+    'Register.Info.ProductModifier' |
     'Register.Info.EmployeeHistory' |
     'Register.Info.CounterpartiePriceList';
 
@@ -55,14 +62,16 @@ export type RegistersInfo =
     RegisterInfoSettlementsReconciliation |
     RegisterInfoCompanyResponsiblePersons |
     RegisterInfoExchangeRates |
+    RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
-    RegisterInfoMainSpecification |
+    RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
     RegisterInfoIncomeDocumentRegistry |
     RegisterInfoCompanyPrice |
     RegisterInfoShareEmission |
     RegisterInfoLoanOwner |
+    RegisterInfoProductModifier |
     RegisterInfoEmployeeHistory |
     RegisterInfoRLS;
 
@@ -77,7 +86,8 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
-    { type: 'Register.Info.MainSpecification', Class: RegisterInfoMainSpecification },
+    { type: 'Register.Info.ExchangeRates.National', Class: RegisterInfoExchangeRatesNational },
+    { type: 'Register.Info.ProductSpecificationByDepartment', Class: RegisterInfoProductSpecificationByDepartment },
     { type: 'Register.Info.Settings', Class: RegisterInfoSettings },
     { type: 'Register.Info.Depreciation', Class: RegisterInfoDepreciation },
     { type: 'Register.Info.RLS.Period', Class: RegisterInfoRLSPeriod },

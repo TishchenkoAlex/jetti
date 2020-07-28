@@ -1,3 +1,4 @@
+import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
@@ -19,6 +20,9 @@ import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catal
 import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
+import * as iconv from 'iconv-lite';
+import * as xml2js from 'xml2js';
+import axios from 'axios';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -73,6 +77,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
     getAttachmentsByOwner: (ownerId: Ref, withDeleted: boolean, tx: MSSQL) => Promise<CatalogAttachment[]>
@@ -88,13 +93,19 @@ export interface JTL {
     GUID: () => Promise<string>,
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
     exchangeDB: () => MSSQL,
-    taskPoolTx: () => MSSQL
+    taskPoolTx: () => MSSQL,
+    decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
+    xmlStringToJSON: (xmlString: string) => string,
+    executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
     updateQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
     deleteQueue: (id: string, taskPoolTx?: MSSQL) => Promise<void>
     getQueueById: (id: string, taskPoolTx?: MSSQL) => Promise<IQueueRow | null>
+    addTask: (queueId: string, taskParams, taskOpts) => Promise<any>
+    getTasks: (queueId: string, params: IGetTaskParams) => Promise<{ repeatable: any[], jobs: any[] }>
+    deleteTasks: (queueId: string, params: IDeleteTaskParams) => Promise<void>
   };
 }
 
@@ -136,6 +147,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
+    round,
     addAttachments,
     delAttachments,
     getAttachmentsByOwner,
@@ -151,13 +163,19 @@ export const lib: JTL = {
     closeMonthErrors,
     getObjectPropertyById,
     exchangeDB,
-    taskPoolTx
+    taskPoolTx,
+    decodeBase64StringAsUTF8,
+    xmlStringToJSON,
+    executeGETRequest
   },
   queue: {
     insertQueue,
     updateQueue,
     deleteQueue,
-    getQueueById
+    getQueueById,
+    addTask,
+    getTasks,
+    deleteTasks
   }
 };
 
@@ -469,9 +487,29 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   finally { await lib.util.adminMode(false, tx); }
 }
 
+function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
+  const buff = new Buffer(string, 'base64');
+  return iconv.decode(Buffer.from(buff), encodingIn).toString();
+}
+
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+}
+
+function xmlStringToJSON(xmlString: string): string {
+  const parser = new xml2js.Parser();
+  let result = '';
+  parser.parseString(xmlString, (err, res: string) => {
+    if (err) throw new Error(err);
+    result = res;
+  });
+  return result;
+}
+
+async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.baseURL });
+  return await instance.get(opts.query);
 }
 
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
@@ -526,6 +564,23 @@ async function getQueueById(id: string, taskPoolTX?: MSSQL): Promise<IQueueRow |
   if (taskPoolTX) taskPoolTX = taskPoolTx();
   const query = `SELECT * FROM  [exc].[Queue] WHERE id = @p1`;
   return await taskPoolTX!.oneOrNone(query, [id]);
+}
+
+async function addTask(queueId: string, taskParams, taskOpts): Promise<any> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/add`, { params: taskParams, opts: taskOpts });
+}
+
+async function getTasks(queueId: string, params: IGetTaskParams): Promise<{ repeatable: any[], jobs: any[] }> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/get`, params);
+}
+
+async function deleteTasks(queueId: string, params: IDeleteTaskParams): Promise<void> {
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/delete`, params);
+}
+
+function round(num: number, precision = 4): number {
+  const factor = +`1${'0'.repeat(precision)}`;
+  return Math.round(num * factor) / factor;
 }
 
 async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Promise<any[]> {

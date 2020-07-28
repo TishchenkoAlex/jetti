@@ -1,7 +1,9 @@
+import { environment } from 'src/environments/environment';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { ScrollPanel } from '../../node_modules/primeng/scrollpanel';
 import { AuthService } from './auth/auth.service';
+import { Title } from '@angular/platform-browser';
 
 enum MenuOrientation { STATIC, OVERLAY, SLIM, HORIZONTAL }
 
@@ -31,10 +33,10 @@ export class AppComponent implements AfterViewInit {
   resetMenu: boolean;
   menuHoverActive: boolean;
 
-  @ViewChild('layoutMenuScroller', {static: false }) layoutMenuScrollerViewChild: ScrollPanel;
+  @ViewChild('layoutMenuScroller', { static: false }) layoutMenuScrollerViewChild: ScrollPanel;
 
   constructor(
-    public auth: AuthService, private swUpdate: SwUpdate) {
+    public auth: AuthService, private swUpdate: SwUpdate, private titleService: Title) {
 
     if (this.swUpdate.isEnabled) {
       this.swUpdate.available.subscribe(() => {
@@ -48,6 +50,11 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     setTimeout(() => this.layoutMenuScrollerViewChild.moveBar(), 100);
+    this.setTitle(environment.title);
+  }
+
+  setTitle(newTitle) {
+    this.titleService.setTitle(newTitle);
   }
 
   onMenuButtonClick(event) {

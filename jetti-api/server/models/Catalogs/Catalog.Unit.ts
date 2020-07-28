@@ -18,4 +18,7 @@ export class CatalogUnit extends DocumentBase {
   @Props({ type: 'number', useIn: 'elements' })
   Rate = 0;
 
+  @Props({ type: 'enum', value: ['NONE', 'WEIGHT', 'AREA', 'LENGTH', 'VOLUME'], required: true })
+  kind = 'NONE';
+
 }

@@ -1,3 +1,4 @@
+#ng build --configuration production && firebase deploy --only hosting:x100
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,8 +49,12 @@ spec:
               name: jwt-key
         - name: EXCHANGE_ACCESS_KEY
           value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
+        - name: JETTI_IS_HOST
+          value: https://is.jetti-app.com
+        - name: LOGIC_USECASHREQUESTAPPROVING
+          value: "1"
         - name: REFRESH_ID
-          value: "0022"
+          value: "002"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
@@ -61,7 +66,7 @@ spec:
         resources:
           requests:
             cpu: 250m
-            memory: 512Mi
+            memory: 1024Mi
 ---
 apiVersion: v1
 kind: Service

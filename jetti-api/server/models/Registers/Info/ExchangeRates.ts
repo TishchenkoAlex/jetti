@@ -21,5 +21,3 @@ export class RegisterInfoExchangeRates extends RegisterInfo {
     Object.assign(this, init);
   }
 }
-
-
