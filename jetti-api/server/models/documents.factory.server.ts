@@ -1,3 +1,4 @@
+import { CatalogPersonContractServer } from './Catalogs/Catalog.Person.Contract.server';
 import { CatalogContractServer } from './Catalogs/Catalog.Contract.server';
 import { CatalogEmployeeServer } from './Catalogs/Catalog.Employee.server';
 import { CatalogStaffingTableServer } from './Catalogs/Catalog.StaffingTable.server';
@@ -48,6 +49,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
+  { type: 'Catalog.Person.Contract', Class: CatalogPersonContractServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },

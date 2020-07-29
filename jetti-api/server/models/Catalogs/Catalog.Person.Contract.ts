@@ -12,8 +12,14 @@ export class CatalogPersonContract extends DocumentBase {
   @Props({ type: 'Catalog.Person.Contract', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'string', style: { width: '300px' }, readOnly: true })
+  description = '';
+
   @Props({ type: 'Catalog.Person', required: true, order: 1 })
   owner: Ref = null;
+
+  @Props({ type: 'Catalog.Currency', required: true })
+  currency: Ref = null;
 
   @Props({ type: 'enum', value: ['OPEN', 'CLOSE', 'PENDING'], required: true })
   Status = 'OPEN';
@@ -21,7 +27,10 @@ export class CatalogPersonContract extends DocumentBase {
   @Props({ type: 'date', required: true })
   StartDate: Ref = null;
 
-  @Props({ type: 'date', required: false })
+  @Props({ type: 'date', required: true })
   EndDate: Ref = null;
+
+  @Props({ type: 'Catalog.Person.BankAccount', required: true })
+  BankAccount: Ref = null;
 
 }
