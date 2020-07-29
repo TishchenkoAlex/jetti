@@ -2218,9 +2218,11 @@
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([owner.v].description, '') [owner.value], d.[owner] [owner.id], [owner.v].type [owner.type]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
         , d.[Status] [Status]
         , d.[StartDate] [StartDate]
         , d.[EndDate] [EndDate]
+        , ISNULL([BankAccount.v].description, '') [BankAccount.value], d.[BankAccount] [BankAccount.id], [BankAccount.v].type [BankAccount.type]
       
         , ISNULL(l5.description, d.description) [PersonContract.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PersonContract.Level4]
@@ -2239,6 +2241,8 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [owner.v] WITH (NOEXPAND) ON [owner.v].id = d.[owner]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.Person.BankAccount.v] [BankAccount.v] WITH (NOEXPAND) ON [BankAccount.v].id = d.[BankAccount]
     
       GO
       GRANT SELECT ON dbo.[Catalog.Person.Contract] TO jetti;
@@ -2986,6 +2990,7 @@
         , ISNULL([BalanceAnalytics.v].description, '') [BalanceAnalytics.value], d.[BalanceAnalytics] [BalanceAnalytics.id], [BalanceAnalytics.v].type [BalanceAnalytics.type]
         , d.[workflowID] [workflowID]
         , d.[ManualInfo] [ManualInfo]
+        , d.[BudgetPayment] [BudgetPayment]
         , d.[RelatedURL] [RelatedURL]
         , ISNULL([tempCompanyParent.v].description, '') [tempCompanyParent.value], d.[tempCompanyParent] [tempCompanyParent.id], [tempCompanyParent.v].type [tempCompanyParent.type]
         , d.[tempSalaryKind] [tempSalaryKind]
