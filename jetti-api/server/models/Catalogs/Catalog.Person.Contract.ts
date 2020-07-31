@@ -30,7 +30,10 @@ export class CatalogPersonContract extends DocumentBase {
   @Props({ type: 'date', required: true })
   EndDate: Ref = null;
 
-  @Props({ type: 'Catalog.Person.BankAccount', required: true })
+  @Props({ type: 'Catalog.Person.BankAccount', required: true,
+      owner: [
+        { dependsOn: 'owner', filterBy: 'owner' }
+      ] })
   BankAccount: Ref = null;
 
 }

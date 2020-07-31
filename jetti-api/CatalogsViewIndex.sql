@@ -2131,9 +2131,11 @@
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Person.Contract'
     
@@ -2870,6 +2872,7 @@
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."workflowID"')), '') [workflowID]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."ManualInfo"')), 0) [ManualInfo]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."BudgetPayment"')), 0) [BudgetPayment]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."RelatedURL"')), '') [RelatedURL]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."tempCompanyParent"')) [tempCompanyParent]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."tempSalaryKind"')), '') [tempSalaryKind]
