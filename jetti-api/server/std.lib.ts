@@ -602,7 +602,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
   for (const attachment of attachments) {
     if (!attachment.owner) throw new Error('Attachment owner is empty!');
     let ob;
-    if (attachment.id) ob = await createDocServerById(attachment.id, tx);
+    if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
       if (!userId) userId = await getCurrentUserIdByMail() as string;
@@ -611,8 +611,10 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
       ob.company = (await byId(attachment.owner, tx))!.company;
     }
     Object.keys(attachment)
-      .filter(e => keys.includes(e))
+      .filter(e => keys.includes(e) && attachment[e])
       .forEach(e => ob[e] = attachment[e]);
+
+    if (!ob.user) ob.user = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; //EXCHANGE SERVICE
 
     ob = await saveDoc(ob, tx);
     const resOb = {

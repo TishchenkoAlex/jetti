@@ -1,9 +1,17 @@
+import { CatalogAttachment } from './models/Catalogs/Catalog.Attachment';
 import { x100DATA_POOL } from './sql.pool.x100-DATA';
 import { Ref } from './models/document';
 import { MSSQL } from './mssql';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { lib } from './std.lib';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
+import {
+  updateOperationTaxCheck,
+  getTaxCheckFromURL,
+  ITaxCheck,
+  IUpdateOperationTaxCheckResponse,
+  findTaxCheckAttachmentsByOperationId
+} from './x100/functions/taxCheck';
 
 export interface Ix100Lib {
   account: {
@@ -14,6 +22,8 @@ export interface Ix100Lib {
     counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
   };
   doc: {
+    updateOperationTaxCheck: (taxCheck: ITaxCheck)
+      => Promise<IUpdateOperationTaxCheckResponse>
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
@@ -21,6 +31,8 @@ export interface Ix100Lib {
     IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
   };
   util: {
+    getTaxCheckFromURL: (taxCheckURL: string) => Promise<ITaxCheck>,
+    findTaxCheckAttachmentsByOperationId: (operId: string, tx: MSSQL) => Promise<any[]>,
     salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>,
@@ -38,6 +50,7 @@ export const x100: Ix100Lib = {
     counterpartieByINNAndKPP
   },
   doc: {
+    updateOperationTaxCheck
   },
   info: {
     companyByDepartment,
@@ -45,6 +58,8 @@ export const x100: Ix100Lib = {
     IntercompanyByCompany,
   },
   util: {
+    getTaxCheckFromURL,
+    findTaxCheckAttachmentsByOperationId,
     salaryCompanyByCompany,
     bankStatementUnloadById,
     closeMonthErrors,
@@ -100,6 +115,8 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
   }
   return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
 }
+
+
 
 async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
   let result: Ref | null = null;
