@@ -1,3 +1,4 @@
+import { RegisterInfoTaxCheck } from './TaxCheck';
 import { RegisterInfoShareEmission } from './ShareEmission';
 import { RegisterInfoCompanyPrice } from './CompanyPrice';
 import { RegisterInfoRoyaltySales } from './RoyaltySales';
@@ -48,6 +49,7 @@ export type RegisterInfoTypes =
     'Register.Info.LoanOwner' |
     'Register.Info.ProductModifier' |
     'Register.Info.EmployeeHistory' |
+    'Register.Info.TaxCheck' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
@@ -70,6 +72,7 @@ export type RegistersInfo =
     RegisterInfoLoanOwner |
     RegisterInfoProductModifier |
     RegisterInfoEmployeeHistory |
+    RegisterInfoTaxCheck |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -102,6 +105,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.LoanOwner', Class: RegisterInfoLoanOwner },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
     { type: 'Register.Info.EmployeeHistory', Class: RegisterInfoEmployeeHistory },
+    { type: 'Register.Info.TaxCheck', Class: RegisterInfoTaxCheck },
 ];
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {
