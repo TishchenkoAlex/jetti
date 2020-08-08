@@ -1,3 +1,4 @@
+import { TypesCompanyOrCounterpartieOrPersonOrRetailClient } from './Types.CompanyOrCounterpartieOrPersonOrRetailClient';
 import { AllTypes } from './../documents.types';
 import { TypesCompanyOrCompanyGroup } from './Types.CompanyOrCompanyGroup';
 import { ComplexTypes } from '../documents.types';
@@ -69,5 +70,6 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.CounterpartieOrPerson', Class: TypesCounterpartieOrPerson },
   { type: 'Types.PersonOrCounterpartieBankAccount', Class: TypesPersonOrCounterpartieBankAccount },
   { type: 'Types.CompanyOrCounterpartieOrPerson', Class: TypesCompanyOrCounterpartieOrPerson },
+  { type: 'Types.CompanyOrCounterpartieOrPersonOrRetailClient', Class: TypesCompanyOrCounterpartieOrPersonOrRetailClient },
   { type: 'Types.CompanyOrCompanyGroup', Class: TypesCompanyOrCompanyGroup },
 ];
