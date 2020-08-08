@@ -451,3 +451,23 @@
     )
     GO
     
+    CREATE OR ALTER VIEW [Register.Info.TaxCheck]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , ISNULL(JSON_VALUE(data, '$.clientInn'), '') "clientInn"
+        , ISNULL(JSON_VALUE(data, '$.inn'), '') "inn"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.totalAmount')) "totalAmount"
+        , ISNULL(JSON_VALUE(data, '$.receiptId'), '') "receiptId"
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.operationTime'),127) "operationTime"
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.modifyDate'),127) "modifyDate"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.TaxCheck';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.TaxCheck] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.TaxCheck] ON [dbo].[Register.Info.TaxCheck](
+      company,date,id
+    )
+    GO
+    

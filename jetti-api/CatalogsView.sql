@@ -2515,12 +2515,15 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , d.[Email] [Email]
         , d.[Gender] [Gender]
+        , d.[isActive] [isActive]
+        , d.[CreateDate] [CreateDate]
         , d.[FirstName] [FirstName]
         , d.[LastName] [LastName]
         , d.[MiddleName] [MiddleName]
+        , d.[Phone] [Phone]
         , d.[Address] [Address]
+        , d.[Email] [Email]
       
         , ISNULL(l5.description, d.description) [RetailClient.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [RetailClient.Level4]

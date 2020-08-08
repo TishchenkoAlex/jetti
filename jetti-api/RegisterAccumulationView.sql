@@ -29,6 +29,37 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
     
+    CREATE OR ALTER VIEW [Register.Accumulation.PaymentBatch]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, PaymentsKind, Counterpartie, ProductPackage, Product, Currency, PayDay
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Price] * IIF(r.kind = 1, 1, -1) [Price], d.[Price] * IIF(r.kind = 1, 1, null) [Price.In], d.[Price] * IIF(r.kind = 1, null, 1) [Price.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], batch
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [PaymentsKind] NVARCHAR(250) N'$.PaymentsKind'
+        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
+        , [ProductPackage] UNIQUEIDENTIFIER N'$.ProductPackage'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
+        , [PayDay] DATE N'$.PayDay'
+        , [Qty] MONEY N'$.Qty'
+        , [Price] MONEY N'$.Price'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PaymentBatch';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
+    GO
+    
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
     AS
       SELECT
@@ -341,7 +372,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Customer, Product, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse, OpenTime, PrintTime, DeliverTime, BillTime, CloseTime
+        d.exchangeRate, currency, Department, Customer, Product, Analytic, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse, OpenTime, PrintTime, DeliverTime, BillTime, CloseTime
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -358,6 +389,7 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Customer] UNIQUEIDENTIFIER N'$.Customer'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Analytic] UNIQUEIDENTIFIER N'$.Analytic'
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
