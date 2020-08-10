@@ -22,8 +22,6 @@ export interface Ix100Lib {
     counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
   };
   doc: {
-    updateOperationTaxCheck: (taxCheck: ITaxCheck)
-      => Promise<IUpdateOperationTaxCheckResponse>
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
@@ -51,7 +49,6 @@ export const x100: Ix100Lib = {
     counterpartieByINNAndKPP
   },
   doc: {
-    updateOperationTaxCheck
   },
   info: {
     companyByDepartment,
