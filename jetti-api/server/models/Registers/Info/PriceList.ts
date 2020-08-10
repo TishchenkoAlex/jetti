@@ -35,7 +35,7 @@ export class RegisterInfoPriceList extends RegisterInfo {
   forSales = false;
 
   @Props({ type: 'boolean' })
-  forPurсhases = false;
+  forPurchases = false;
 
   @Props({ type: 'boolean' })
   isActive = false;

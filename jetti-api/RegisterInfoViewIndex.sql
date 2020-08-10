@@ -20,16 +20,58 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
+        , ISNULL(JSON_VALUE(data, '$.Role'), '') "Role"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')) "Unit"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forSales')) "forSales"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forPurchases')) "forPurchases"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.PriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.PriceList] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.PriceList] ON [dbo].[Register.Info.PriceList](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.SelfEmployed]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) "Person"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) "BankAccount"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.SelfEmployed';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.SelfEmployed] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.SelfEmployed] ON [dbo].[Register.Info.SelfEmployed](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.ProductModifier]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Modifier"')) "Modifier"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Qty')) "Qty"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.ProductModifier';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.ProductModifier] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.ProductModifier] ON [dbo].[Register.Info.ProductModifier](
       company,date,id
     )
     GO
@@ -97,20 +139,21 @@
     )
     GO
     
-    CREATE OR ALTER VIEW [Register.Info.MainSpecification]
+    CREATE OR ALTER VIEW [Register.Info.ProductSpecificationByDepartment]
     WITH SCHEMABINDING
     AS
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"')) "SKU"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResourceSpecification"')) "ResourceSpecification"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.Active')) "Active"
-      FROM dbo.[Register.Info] WHERE type = N'Register.Info.MainSpecification';
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Specification"')) "Specification"
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.ProductSpecificationByDepartment';
     GO
-    GRANT SELECT,DELETE ON [Register.Info.MainSpecification] TO JETTI;
+    GRANT SELECT,DELETE ON [Register.Info.ProductSpecificationByDepartment] TO JETTI;
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Info.MainSpecification] ON [dbo].[Register.Info.MainSpecification](
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.ProductSpecificationByDepartment] ON [dbo].[Register.Info.ProductSpecificationByDepartment](
       company,date,id
     )
     GO
@@ -284,6 +327,7 @@
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) "companyOrGroup"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) "Loan"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) "User"
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
@@ -403,6 +447,26 @@
     GRANT SELECT,DELETE ON [Register.Info.EmployeeHistory] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.EmployeeHistory] ON [dbo].[Register.Info.EmployeeHistory](
+      company,date,id
+    )
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Info.TaxCheck]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , ISNULL(JSON_VALUE(data, '$.clientInn'), '') "clientInn"
+        , ISNULL(JSON_VALUE(data, '$.inn'), '') "inn"
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.totalAmount')) "totalAmount"
+        , ISNULL(JSON_VALUE(data, '$.receiptId'), '') "receiptId"
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.operationTime'),127) "operationTime"
+        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.modifyDate'),127) "modifyDate"
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.TaxCheck';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.TaxCheck] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.TaxCheck] ON [dbo].[Register.Info.TaxCheck](
       company,date,id
     )
     GO

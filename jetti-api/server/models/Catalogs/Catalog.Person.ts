@@ -7,6 +7,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   menu: 'Физлица',
   prefix: 'PERS-',
   relations: [
+    { name: 'Contract', type: 'Catalog.Person.Contract', field: 'owner' },
     { name: 'BankAccount', type: 'Catalog.Person.BankAccount', field: 'owner' },
     { name: 'Employee', type: 'Catalog.Employee', field: 'Person' },
     { name: 'Loan', type: 'Catalog.Loan', field: 'owner' }

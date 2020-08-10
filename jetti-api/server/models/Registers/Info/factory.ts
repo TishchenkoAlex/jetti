@@ -1,3 +1,4 @@
+import { RegisterInfoTaxCheck } from './TaxCheck';
 import { RegisterInfoShareEmission } from './ShareEmission';
 import { RegisterInfoCompanyPrice } from './CompanyPrice';
 import { RegisterInfoRoyaltySales } from './RoyaltySales';
@@ -22,10 +23,12 @@ import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
 import { RegisterInfoProductModifier } from './ProductModifier';
+import { RegisterInfoSelfEmployed } from './SelfEmployed';
 
 export type RegisterInfoTypes =
     'Register.Info.Holiday' |
     'Register.Info.PriceList' |
+    'Register.Info.SelfEmployed' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
     'Register.Info.ExchangeRates.National' |
@@ -46,6 +49,7 @@ export type RegisterInfoTypes =
     'Register.Info.LoanOwner' |
     'Register.Info.ProductModifier' |
     'Register.Info.EmployeeHistory' |
+    'Register.Info.TaxCheck' |
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
@@ -59,6 +63,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
+    RegisterInfoSelfEmployed |
     RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
     RegisterInfoIncomeDocumentRegistry |
@@ -67,6 +72,7 @@ export type RegistersInfo =
     RegisterInfoLoanOwner |
     RegisterInfoProductModifier |
     RegisterInfoEmployeeHistory |
+    RegisterInfoTaxCheck |
     RegisterInfoRLS;
 
 export interface IRegisteredRegisterInfo {
@@ -77,6 +83,8 @@ export interface IRegisteredRegisterInfo {
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
+    { type: 'Register.Info.SelfEmployed', Class: RegisterInfoSelfEmployed },
+    { type: 'Register.Info.ProductModifier', Class: RegisterInfoProductModifier },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.ExchangeRates.National', Class: RegisterInfoExchangeRatesNational },
@@ -97,6 +105,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.LoanOwner', Class: RegisterInfoLoanOwner },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
     { type: 'Register.Info.EmployeeHistory', Class: RegisterInfoEmployeeHistory },
+    { type: 'Register.Info.TaxCheck', Class: RegisterInfoTaxCheck },
 ];
 
 export function createRegisterInfo<T extends RegisterInfo>(init: Partial<T>): T {

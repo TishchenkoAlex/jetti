@@ -317,6 +317,9 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'boolean', label: 'Ручной ввод назначения платежа', hiddenInList: true })
   ManualInfo = false;
 
+  @Props({ type: 'boolean', label: 'Оплата в бюджет', hiddenInList: true })
+  BudgetPayment = false;
+
   @Props({ type: 'URL', hiddenInList: true, isAdditional: true })
   RelatedURL = '';
 

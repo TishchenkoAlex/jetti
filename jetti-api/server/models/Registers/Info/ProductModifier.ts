@@ -3,9 +3,12 @@ import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 
 @JRegisterInfo({
   type: 'Register.Info.ProductModifier',
-  description: 'Loan owner',
+  description: 'Product modifier',
 })
 export class RegisterInfoProductModifier extends RegisterInfo {
+
+  @Props({ type: 'Catalog.Department', required: true })
+  Department: Ref = null;
 
   @Props({ type: 'Catalog.Product', required: true })
   Product: Ref = null;

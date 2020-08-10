@@ -1468,6 +1468,7 @@
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BaseUnit"')) [BaseUnit]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Unit'
     
@@ -1985,6 +1986,37 @@
       GO
       --------------------------------------------------------------------------------------
       
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ManufactureLocation.v];
+      GO
+
+      CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.ManufactureLocation'
+    
+      GO
+
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.ManufactureLocation.v] ON [Catalog.ManufactureLocation.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.code.f] ON [Catalog.ManufactureLocation.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.description.f] ON [Catalog.ManufactureLocation.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.description] ON [Catalog.ManufactureLocation.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.code] ON [Catalog.ManufactureLocation.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.user] ON [Catalog.ManufactureLocation.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.company] ON [Catalog.ManufactureLocation.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.ManufactureLocation.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ManufactureLocation.v];
+      GO
+
+      RAISERROR('Catalog.ManufactureLocation complete', 0 ,1) WITH NOWAIT;
+      GO
+      --------------------------------------------------------------------------------------
+      
       ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AcquiringTerminal.v];
       GO
 
@@ -2089,6 +2121,43 @@
       GO
 
       RAISERROR('Catalog.Person.BankAccount complete', 0 ,1) WITH NOWAIT;
+      GO
+      --------------------------------------------------------------------------------------
+      
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.Contract.v];
+      GO
+
+      CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.Person.Contract'
+    
+      GO
+
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.Contract.v] ON [Catalog.Person.Contract.v](id);
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.code.f] ON [Catalog.Person.Contract.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.description.f] ON [Catalog.Person.Contract.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.description] ON [Catalog.Person.Contract.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.code] ON [Catalog.Person.Contract.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.user] ON [Catalog.Person.Contract.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.company] ON [Catalog.Person.Contract.v](company,id) INCLUDE([date]);
+
+      GRANT SELECT ON dbo.[Catalog.Person.Contract.v] TO jetti;
+      GO
+
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.Contract.v];
+      GO
+
+      RAISERROR('Catalog.Person.Contract complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
@@ -2355,12 +2424,15 @@
       CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Email"')), '') [Email]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Gender"')), '') [Gender]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CreateDate'),127) [CreateDate]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."LastName"')), '') [LastName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Email"')), '') [Email]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.RetailClient'
     
@@ -2423,10 +2495,10 @@
       GO
       --------------------------------------------------------------------------------------
       
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ResourceSpecification.v];
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Specification.v];
       GO
 
-      CREATE OR ALTER VIEW dbo.[Catalog.ResourceSpecification.v] WITH SCHEMABINDING AS
+      CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
@@ -2435,27 +2507,27 @@
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ResourceSpecification'
+      WHERE [type] = 'Catalog.Specification'
     
       GO
 
-      CREATE UNIQUE CLUSTERED INDEX [Catalog.ResourceSpecification.v] ON [Catalog.ResourceSpecification.v](id);
+      CREATE UNIQUE CLUSTERED INDEX [Catalog.Specification.v] ON [Catalog.Specification.v](id);
       
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.code.f] ON [Catalog.ResourceSpecification.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.description.f] ON [Catalog.ResourceSpecification.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.description] ON [Catalog.ResourceSpecification.v](description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.code] ON [Catalog.ResourceSpecification.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.user] ON [Catalog.ResourceSpecification.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResourceSpecification.v.company] ON [Catalog.ResourceSpecification.v](company,id) INCLUDE([date]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code.f] ON [Catalog.Specification.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description.f] ON [Catalog.Specification.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description] ON [Catalog.Specification.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code] ON [Catalog.Specification.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.user] ON [Catalog.Specification.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.company] ON [Catalog.Specification.v](company,id) INCLUDE([date]);
 
-      GRANT SELECT ON dbo.[Catalog.ResourceSpecification.v] TO jetti;
+      GRANT SELECT ON dbo.[Catalog.Specification.v] TO jetti;
       GO
 
       ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ResourceSpecification.v];
+        ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Specification.v];
       GO
 
-      RAISERROR('Catalog.ResourceSpecification complete', 0 ,1) WITH NOWAIT;
+      RAISERROR('Catalog.Specification complete', 0 ,1) WITH NOWAIT;
       GO
       --------------------------------------------------------------------------------------
       
@@ -2803,6 +2875,7 @@
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."workflowID"')), '') [workflowID]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."ManualInfo"')), 0) [ManualInfo]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."BudgetPayment"')), 0) [BudgetPayment]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."RelatedURL"')), '') [RelatedURL]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."tempCompanyParent"')) [tempCompanyParent]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."tempSalaryKind"')), '') [tempSalaryKind]

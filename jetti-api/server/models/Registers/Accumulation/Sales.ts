@@ -1,3 +1,4 @@
+import { AllDocTypes, CatalogTypes } from './../../documents.types';
 import { Props, Ref } from '../../document';
 import { JRegisterAccumulation, RegisterAccumulation } from './RegisterAccumulation';
 
@@ -18,6 +19,9 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
 
   @Props({ type: 'Catalog.Product', required: true, dimension: true })
   Product: Ref = null;
+
+  @Props({ type: 'Types.Catalog', dimension: true })
+  Analytic: Ref = null;
 
   @Props({ type: 'Catalog.Manager', dimension: true  })
   Manager: Ref = null;

@@ -73,6 +73,80 @@
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.PaymentBatch];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Price] * IIF(r.kind = 1, 1, -1) [Price], d.[Price] * IIF(r.kind = 1, 1, null) [Price.In], d.[Price] * IIF(r.kind = 1, null, 1) [Price.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [batch]
+    INTO [Register.Accumulation.PaymentBatch]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [PaymentsKind] NVARCHAR(250) N'$.PaymentsKind'
+        , [Counterpartie] CHAR(36) N'$.Counterpartie'
+        , [ProductPackage] CHAR(36) N'$.ProductPackage'
+        , [Product] CHAR(36) N'$.Product'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [PayDay] DATE N'$.PayDay'
+        , [Qty] MONEY N'$.Qty'
+        , [Price] MONEY N'$.Price'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [batch] CHAR(36) N'$.batch'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.PaymentBatch';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.PaymentBatch.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.PaymentBatch]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Price] * IIF(r.kind = 1, 1, -1) [Price], d.[Price] * IIF(r.kind = 1, 1, null) [Price.In], d.[Price] * IIF(r.kind = 1, null, 1) [Price.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out], [batch]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [PaymentsKind] NVARCHAR(250) N'$.PaymentsKind'
+        , [Counterpartie] CHAR(36) N'$.Counterpartie'
+        , [ProductPackage] CHAR(36) N'$.ProductPackage'
+        , [Product] CHAR(36) N'$.Product'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [PayDay] DATE N'$.PayDay'
+        , [Qty] MONEY N'$.Qty'
+        , [Price] MONEY N'$.Price'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [batch] CHAR(36) N'$.batch'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PaymentBatch';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Price], [Amount], [AmountInBalance], [batch]) WITH (MAXDOP=4);
+    ALTER TABLE [Register.Accumulation.PaymentBatch] ADD CONSTRAINT [PK_Register.Accumulation.PaymentBatch] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -827,7 +901,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
+      d.exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -845,6 +919,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
+        , [Analytic] CHAR(36) N'$.Analytic'
         , [Manager] CHAR(36) N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
@@ -876,7 +951,7 @@
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
+        d.exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -893,6 +968,7 @@
         , [Department] CHAR(36) N'$.Department'
         , [Customer] CHAR(36) N'$.Customer'
         , [Product] CHAR(36) N'$.Product'
+        , [Analytic] CHAR(36) N'$.Analytic'
         , [Manager] CHAR(36) N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
@@ -921,7 +997,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]) WITH (MAXDOP=4);
     ALTER TABLE [Register.Accumulation.Sales] ADD CONSTRAINT [PK_Register.Accumulation.Sales] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;

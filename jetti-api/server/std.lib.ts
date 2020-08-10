@@ -77,6 +77,7 @@ export interface JTL {
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
   util: {
+    formatDate: (date: Date) => string
     round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
@@ -147,6 +148,7 @@ export const lib: JTL = {
     exchangeRate
   },
   util: {
+    formatDate,
     round,
     addAttachments,
     delAttachments,
@@ -578,6 +580,13 @@ async function deleteTasks(queueId: string, params: IDeleteTaskParams): Promise<
   return await execQueueAPIPostRequest(queueId, `api/v1.0/task/delete`, params);
 }
 
+function formatDate(date: Date): string {
+  const dd = date.getDate();
+  const mm = date.getMonth() + 1;
+  const yy = date.getFullYear();
+  return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy}`;
+}
+
 function round(num: number, precision = 4): number {
   const factor = +`1${'0'.repeat(precision)}`;
   return Math.round(num * factor) / factor;
@@ -593,7 +602,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
   for (const attachment of attachments) {
     if (!attachment.owner) throw new Error('Attachment owner is empty!');
     let ob;
-    if (attachment.id) ob = await createDocServerById(attachment.id, tx);
+    if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
       if (!userId) userId = await getCurrentUserIdByMail() as string;
@@ -602,8 +611,10 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
       ob.company = (await byId(attachment.owner, tx))!.company;
     }
     Object.keys(attachment)
-      .filter(e => keys.includes(e))
+      .filter(e => keys.includes(e) && attachment[e])
       .forEach(e => ob[e] = attachment[e]);
+
+    if (!ob.user) ob.user = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; //EXCHANGE SERVICE
 
     ob = await saveDoc(ob, tx);
     const resOb = {

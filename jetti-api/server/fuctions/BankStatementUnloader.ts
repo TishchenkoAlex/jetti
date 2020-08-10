@@ -110,6 +110,10 @@ export class BankStatementUnloader {
 
   private static async getQueryTextCommon(): Promise<string> {
 
+    if (this.operation === 'DB1C4760-D0D0-11EA-AF5B-791AD1831643') { // С р/с - выплата зарплаты (САМОЗАНЯТОМУ СОТРУДНИКУ)
+      return this.getQueryTextCommonВыплатаЗарплатыСАМОЗАНЯТОМУСОТРУДНИКУ();
+    }
+
     if (this.isUKRAINE()) {
       switch (this.operation) {
         case 'E47A8910-4599-11EA-AAE2-A1796B9A826A': // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
@@ -256,6 +260,49 @@ export class BankStatementUnloader {
     LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
     LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
+    order by Obj.company, BAComp.[code], Obj.[date]`;
+  }
+
+  private static getQueryTextCommonВыплатаЗарплатыСАМОЗАНЯТОМУСОТРУДНИКУ() {
+    return `     SELECT
+    N'Платежное поручение' as N'СекцияДокумент'
+    ,Obj.[code] as N'Номер'
+    ,FORMAT (Obj.[date], 'dd.MM.yyyy') as N'Дата'
+    ,CAST(JSON_VALUE(Obj.doc, '$.Amount') as money) as N'Сумма'
+    ,BAComp.[code] as N'ПлательщикСчет'
+    ,N'ИНН ' + JSON_VALUE(Comp.doc, '$.Code1') + ' ' + JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик'
+    ,JSON_VALUE(Comp.doc, '$.Code1') as N'ПлательщикИНН'
+    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик1'
+    ,BAComp.[code] as N'ПлательщикРасчСчет'
+    ,BankComp.description as N'ПлательщикБанк1'
+    ,JSON_VALUE(BankComp.doc, '$.Address') as N'ПлательщикБанк2'
+    ,BankComp.[code] as N'ПлательщикБИК'
+    ,JSON_VALUE(BankComp.doc, '$.KorrAccount') as N'ПлательщикКорсчет'
+    ,BAEmployee.[code] as N'ПолучательСчет'
+    ,N'ИНН ' + Employee.[code] + ' ' + Employee.[description] as N'Получатель'
+    ,Employee.[code] as N'ПолучательИНН'
+    ,Employee.[description] as N'Получатель1'
+    ,BAEmployee.[code] as N'ПолучательРасчСчет'
+    ,BankEmployee.description as N'ПолучательБанк1'
+    ,JSON_VALUE(BankEmployee.doc, '$.Address') as N'ПолучательБанк2'
+    ,BankEmployee.[code] as N'ПолучательБИК'
+    ,JSON_VALUE(BankEmployee.doc, '$.KorrAccount') as N'ПолучательКорсчет'
+    ,'01' as N'ВидОплаты'
+    ,'' as N'ПолучательКПП'
+    ,5 as N'Очередность'
+    ,Obj.[info] as N'НазначениеПлатежа'
+    ,Obj.company  as Company_ig
+    ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
+    ,Obj.[date] as ObjDate_ig
+    ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
+    FROM [dbo].[Documents] as Obj
+    LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as Employee on Employee.id = JSON_VALUE(Obj.doc, '$.Employee') and Employee.[type] = 'Catalog.Person'
+    LEFT JOIN [dbo].[Documents] as BAEmployee on BAEmployee.id = JSON_VALUE(Obj.doc, '$.BankAccountPerson') and BAEmployee.[type] = 'Catalog.Person.BankAccount'
+    LEFT JOIN [dbo].[Documents] as BankEmployee on BankEmployee.id = JSON_VALUE(BAEmployee.doc, '$.Bank') and BankEmployee.[type] = 'Catalog.Bank'
+    WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = 'DB1C4760-D0D0-11EA-AF5B-791AD1831643' -- С р/с - выплата зарплаты (САМОЗАНЯТОМУ СОТРУДНИКУ)
     order by Obj.company, BAComp.[code], Obj.[date]`;
   }
 

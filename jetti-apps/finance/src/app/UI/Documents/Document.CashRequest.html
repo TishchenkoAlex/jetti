@@ -136,9 +136,9 @@
             [control]="vk.TaxRate" [form]="form"></j-control>
           <j-control [control]="vk.PayDay" [form]="form"></j-control>
         </div>
-
-        <div *ngIf="form.get('Operation').value === 'Перечисление налогов и взносов'" fxLayout="row"
-          fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+        <br>
+        <div *ngIf="form.get('BudgetPayment').value || form.get('Operation').value === 'Перечисление налогов и взносов'"
+          fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <p-fieldset legend="Налоговые реквизиты" [toggleable]="true" collapsed=true>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
               <j-control [control]="vk.TaxPaymentCode" [form]="form"></j-control>
@@ -156,7 +156,10 @@
         </div>
 
         <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="0px" fxLayoutGap.xs="0px">
-          <j-control [control]="vk.ManualInfo" [form]="form"></j-control>
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+            <j-control [control]="vk.ManualInfo" [form]="form"></j-control>
+            <j-control [control]="vk.BudgetPayment" [form]="form"></j-control>
+          </div>
           <j-control [control]="vk.info" [form]="form"></j-control>
         </div>
 

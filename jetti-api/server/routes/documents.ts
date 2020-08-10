@@ -1,4 +1,4 @@
-import { DocumentCashRequestServer } from './../models/Documents/Document.CashRequest.server';
+import { x100 } from './../x100.lib';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
@@ -602,6 +602,12 @@ router.post('/createDocument/:type', async (req: Request, res: Response, next: N
         }
       }
     });
+  } catch (err) { next(err); }
+});
+
+router.post('/updateOperationTaxCheck', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await x100.util.updateOperationTaxCheck(req.body));
   } catch (err) { next(err); }
 });
 

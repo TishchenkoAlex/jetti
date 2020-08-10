@@ -22,6 +22,7 @@ import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
 import { getUser } from '../../routes/auth';
 import { x100 } from '../../x100.lib';
+import { getPersonContract } from '../Catalogs/Catalog.Person.Contract.server';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -678,6 +679,8 @@ ORDER BY
     }
   }
 
+
+
   async FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
     let CashOrBank;
     CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
@@ -698,8 +701,16 @@ ORDER BY
       docOperation['CashRegister'] = CashOrBank.id;
       docOperation.f1 = docOperation['CashRegister'];
     } else if (CashOrBank.type === 'Catalog.BankAccount') {
+
+      const personContract = await getPersonContract([this.CashRecipient, this.company, this.date], tx);
+      if (personContract) {
+        docOperation.Operation = 'DB1C4760-D0D0-11EA-AF5B-791AD1831643'; // С р/с - выплата зарплаты (САМОЗАНЯТОМУ СОТРУДНИКУ без ведомости)
+        docOperation['PersonContract'] = personContract;
+      } else {
+        docOperation.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      }
+
       docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
-      docOperation.Operation = 'E47A8910-4599-11EA-AAE2-A1796B9A826A'; // С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
       docOperation['BankAccount'] = CashOrBank.id;
       docOperation['AmountPenalty'] = this.AmountPenalty;
       docOperation['EnforcementProceedings'] = this.EnforcementProceedings;
@@ -711,7 +722,7 @@ ORDER BY
         if (ba) {
           const owner = await lib.doc.byId(ba.owner, tx);
           const prefix = ba.code.trim().startsWith('408208') ? '{VO70060}' : '';
-          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}.Без налога(НДС)`;
+          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}. Без налога(НДС)`;
         }
       }
     }

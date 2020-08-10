@@ -27,12 +27,16 @@ export type CatalogTypes =
   'Catalog.Operation.Group' |
   'Catalog.Operation.Type' |
   'Catalog.Manager' |
+  'Catalog.Person.Contract' |
+  'Catalog.Product.Package' |
   'Catalog.Person.BankAccount' |
   'Catalog.Person' |
   'Catalog.PriceType' |
   'Catalog.PlanningScenario' |
   'Catalog.Product' |
+  'Catalog.Product.Analytic' |
   'Catalog.Storehouse' |
+  'Catalog.ManufactureLocation' |
   'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
   'Catalog.Documents' |
@@ -127,6 +131,7 @@ export type ComplexTypes =
   'Types.CounterpartieOrPerson' |
   'Types.PersonOrCounterpartieBankAccount' |
   'Types.CompanyOrCounterpartieOrPerson' |
+  'Types.CompanyOrCounterpartieOrPersonOrRetailClient' |
   'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalance';
 

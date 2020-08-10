@@ -1,3 +1,4 @@
+import { RegisterAccumulationPaymentBatch } from './PaymentBatch';
 import { RegisterAccumulationStaffingTable } from './StaffingTable';
 import { RegisterAccumulationAcquiring } from './Acquiring';
 import { RegisterAccumulationIntercompany } from './Intercompany';
@@ -22,6 +23,7 @@ import { RegisterAccumulationOrderPayment } from './OrderPayment';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
+  'Register.Accumulation.PaymentBatch' |
   'Register.Accumulation.OrderPayment' |
   'Register.Accumulation.Acquiring' |
   'Register.Accumulation.AP' |
@@ -45,6 +47,7 @@ export type RegisterAccumulationTypes =
 interface IRegisteredRegisterAccumulation { type: RegisterAccumulationTypes; Class: typeof RegisterAccumulation; }
 export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] = [
   { type: 'Register.Accumulation.AccountablePersons', Class: RegisterAccumulationAccountablePersons },
+  { type: 'Register.Accumulation.PaymentBatch', Class: RegisterAccumulationPaymentBatch },
   { type: 'Register.Accumulation.OrderPayment', Class: RegisterAccumulationOrderPayment },
   { type: 'Register.Accumulation.AP', Class: RegisterAccumulationAP },
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },

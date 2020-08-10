@@ -13,6 +13,9 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
+  @Props({ type: 'Types.CounterpartieOrPerson', resource: true })
+  Loan: Ref = null;
+
   @Props({ type: 'Catalog.User', resource: true, required: true })
   User: Ref = null;
 
