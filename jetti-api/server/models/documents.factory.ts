@@ -1,3 +1,4 @@
+import { CatalogProductPackage } from './Catalogs/Catalog.Product.Package';
 import { CatalogEmployee } from './Catalogs/Catalog.Employee';
 import { CatalogAttachmentType } from './Catalogs/Catalog.Attachment.Type';
 import { CatalogReasonTypes } from './Catalogs/Catalog.ReasonTypes';
@@ -89,6 +90,7 @@ import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
 import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
+import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -187,6 +189,8 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.JobTitle.Category', Class: CatalogJobTitleCategory },
   { type: 'Catalog.PersonIdentity', Class: CatalogPersonIdentity },
   { type: 'Catalog.ReasonTypes', Class: CatalogReasonTypes },
+  { type: 'Catalog.Product.Package', Class: CatalogProductPackage },
+  { type: 'Catalog.Product.Analytic', Class: CatalogProductAnalytic },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
