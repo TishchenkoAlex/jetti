@@ -15,7 +15,7 @@ export class CatalogProductAnalytic extends DocumentBase {
   @Props({ type: 'string', hiddenInList: true, controlType: 'textarea' })
   Note = '';
 
-  @Props({ type: 'boolean' })
+  @Props({ type: 'boolean', label: 'isActive' })
   isActive = '';
 
   @Props({ type: 'number' })

@@ -18,7 +18,7 @@ export class CatalogProductPackage extends DocumentBase {
   @Props({ type: 'Catalog.Product' })
   Product: Ref = null;
 
-  @Props({ type: 'number' })
+  @Props({ type: 'number', label: 'Qty' })
   Qty = 0;
 
   @Props({ type: 'boolean' })
