@@ -16,6 +16,9 @@ export class RegisterInfoEmployeeHistory extends RegisterInfo {
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
+  @Props({ type: 'Catalog.Department.Company' })
+  DepartmentCompany: Ref = null;
+
   @Props({ type: 'Catalog.JobTitle' })
   JobTitle: Ref = null;
 

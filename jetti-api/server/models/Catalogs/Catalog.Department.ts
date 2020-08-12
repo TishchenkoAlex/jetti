@@ -55,6 +55,12 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'string', required: false })
   Address = '';
 
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота' })
+  Longitude = '';
+
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта' })
+  Latitude = '';
+
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
   IntegrationType = '';
 
