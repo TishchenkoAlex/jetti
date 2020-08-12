@@ -16,6 +16,7 @@ export type CatalogTypes =
   'Catalog.Counterpartie' |
   'Catalog.Currency' |
   'Catalog.Department' |
+  'Catalog.Department.Company' |
   'Catalog.Department.Kind' |
   'Catalog.Department.StatusReason' |
   'Catalog.PersonIdentity' |

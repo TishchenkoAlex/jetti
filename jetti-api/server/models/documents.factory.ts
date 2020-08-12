@@ -91,6 +91,7 @@ import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
 import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
+import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -160,6 +161,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Salary.Analytics', Class: CatalogSalaryAnalytics },
   { type: 'Catalog.Department', Class: CatalogDepartment },
   { type: 'Catalog.Department.Kind', Class: CatalogDepartmentKind },
+  { type: 'Catalog.Department.Company', Class: CatalogDepartmentCompany },
   { type: 'Catalog.Department.StatusReason', Class: CatalogDepartmentStatusReason },
   { type: 'Catalog.Expense', Class: CatalogExpense },
   { type: 'Catalog.Expense.Analytics', Class: CatalogExpenseAnalytics },
