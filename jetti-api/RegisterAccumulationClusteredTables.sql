@@ -1461,7 +1461,7 @@
     DROP TABLE IF EXISTS [Register.Accumulation.StaffingTable];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
-      d.exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person]
+      d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person]
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.StaffingTable]
@@ -1470,6 +1470,7 @@
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [Department] CHAR(36) N'$.Department'
+        , [DepartmentCompany] CHAR(36) N'$.DepartmentCompany'
         , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
         , [Employee] CHAR(36) N'$.Employee'
         , [Person] CHAR(36) N'$.Person'
@@ -1489,7 +1490,7 @@
       INSERT INTO [Register.Accumulation.StaffingTable]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person]
+        d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person]
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
@@ -1497,6 +1498,7 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [Department] CHAR(36) N'$.Department'
+        , [DepartmentCompany] CHAR(36) N'$.DepartmentCompany'
         , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
         , [Employee] CHAR(36) N'$.Employee'
         , [Person] CHAR(36) N'$.Person'
@@ -1513,7 +1515,7 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]) WITH (MAXDOP=4);
     ALTER TABLE [Register.Accumulation.StaffingTable] ADD CONSTRAINT [PK_Register.Accumulation.StaffingTable] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
