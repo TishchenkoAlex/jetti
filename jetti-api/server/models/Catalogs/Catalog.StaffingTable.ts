@@ -24,10 +24,10 @@ export class CatalogStaffingTable extends DocumentBase {
   @Props({ type: 'Catalog.JobTitle', required: true, isProtected: true })
   JobTitle: Ref = null;
 
-  @Props({ type: 'Catalog.Department', required: true, isProtected: true, label: 'Подразделени (фин. структура)' })
+  @Props({ type: 'Catalog.Department', required: true, isProtected: true, label: 'Подразделение (фин. структура)' })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Department.Company', required: true, isProtected: true, label: 'Подразделени (орг. структура)' })
+  @Props({ type: 'Catalog.Department.Company', required: true, isProtected: true, label: 'Подразделение (орг. структура)' })
   DepartmentCompany: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true, isProtected: true })

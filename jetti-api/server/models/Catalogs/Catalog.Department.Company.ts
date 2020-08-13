@@ -25,7 +25,7 @@ export class CatalogDepartmentCompany extends DocumentBase {
   })
   ShortName = '';
 
-  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя' })
+  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all' })
   StaffingPositionManager: Ref = null;
 
 }
