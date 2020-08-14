@@ -148,6 +148,35 @@ export async function GetSqlConfig(
 	return SqlConfig;
 }
 ///////////////////////////////////////////////////////////
+// Параметры коннекта с SQL базой
+export async function GetMySqlConfig(
+	baseid: string,
+): Promise<any> {
+	// чтение параметров подключения к базе MySQL по ID
+	const bp: any = await esql.oneOrNone(
+		`
+    select c.baseType as baseType, c.exchangeType as exchangeType,
+      json_value(c.data, '$.db_host') as db_host,
+      json_value(c.data, '$.db_port') as db_port,
+      json_value(c.data, '$.db_name') as db_name,
+      json_value(c.data, '$.db_user') as db_user,
+      json_value(c.data, '$.db_password') as db_password
+      from dbo.connections c
+      where c.id = @p1 `,
+		[baseid],
+	);
+
+	return {
+		connectionLimit: 100,
+		host: bp.db_host,
+		port: bp.db_port,
+		user: bp.db_user,
+		password: bp.db_password,
+		database: bp.db_name,
+		connectTimeout: 20 * 60 * 1000 * 4 * 10
+	};
+}
+///////////////////////////////////////////////////////////
 // получить ID элемента справочника в базе приемнике
 export async function GetExchangeCatalogID(
 	project: string,
