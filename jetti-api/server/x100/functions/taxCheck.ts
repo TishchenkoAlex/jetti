@@ -5,6 +5,7 @@ import { CatalogAttachment } from '../../models/Catalogs/Catalog.Attachment';
 import { RegisterInfoTaxCheck } from '../../models/Registers/Info/TaxCheck';
 import axios, { AxiosInstance } from 'axios';
 import { Agent } from 'https';
+import { Cipher } from 'crypto';
 
 export interface ITaxCheck {
     clientInn: string;
@@ -20,29 +21,38 @@ export interface IUpdateOperationTaxCheckResponse {
     status: 'created' | 'updated' | 'exist' | 'error';
     operationId: string | null;
     info: string | null;
+    counter?: null | number | undefined;
 }
 
 export const AttachmentType_taxCheck = '97B25D60-D171-11EA-8F9B-B93FB2CAD87D';
 export const AttachmentType_apiHost = 'https://lknpd.nalog.ru/api/v1/receipt';
 
 export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL): Promise<RegisterInfoTaxCheck | null> {
+    const countTextTax = `
+    USE sm
+    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and clientInn=@p1
+    `;
 
+    const OperationCounterTax: any = await tx.oneOrNone<RegisterInfoTaxCheck>(countTextTax,
+        [
+            taxCheck.clientInn
+        ]);
     const queryText = `
-      SELECT *
-      FROM [dbo].[Register.Info.TaxCheck]
-      WHERE clientInn = @p1
-          and inn = @p2
-          and totalAmount = @p3
-          and [date] < @p4
-          ${ taxCheck.operationId ? 'and [document] = @p5' : ''}`;
-    return (await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
+    SELECT *
+    FROM [dbo].[Register.Info.TaxCheck]
+    WHERE clientInn = @p1
+        and inn = @p2
+        and totalAmount = @p3
+        and [date] < @p4
+        ${ taxCheck.operationId ? 'and [document] = @p5' : ''}`;
+    return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
         [
             taxCheck.clientInn,
             taxCheck.inn,
             taxCheck.totalAmount,
             taxCheck.operationTime,
             taxCheck.operationId
-        ]));
+        ]);
 }
 
 export async function findTaxCheckAttachmentsByOperationId(operId: string, tx: MSSQL): Promise<any[]> {
@@ -89,6 +99,10 @@ export async function getTaxCheckFromURL(taxCheckURL: string): Promise<ITaxCheck
 }
 
 export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpdateOperationTaxCheckResponse> {
+    const countTextTax = `
+    USE sm
+    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and clientInn=@p1
+    `
 
     if (taxCheck.operationTime && typeof taxCheck.operationTime === 'string')
         taxCheck.operationTime = new Date(taxCheck.operationTime);
@@ -96,7 +110,10 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     const tx = new MSSQL(JETTI_POOL);
     const result: IUpdateOperationTaxCheckResponse = { status: 'created', operationId: null, info: null };
     const tc = await findTaxCheckInRegisterInfo(taxCheck, tx);
-
+    const OperationCounterTax: any = await tx.oneOrNone<RegisterInfoTaxCheck>(countTextTax,
+        [
+            taxCheck.clientInn
+        ]);
     if (!tc) {
         result.status = 'error';
         result.info =
@@ -105,11 +122,11 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
       ИНН получателя ${taxCheck.clientInn}
       на сумму ${taxCheck.totalAmount}
       ранне ${taxCheck.operationTime}!`;
+        result.counter = OperationCounterTax[''];
         return result;
     }
 
     result.operationId = tc.document;
-
     if (tc.receiptId) {
         if (tc.receiptId !== taxCheck.receiptId) {
             result.status = 'updated';
@@ -117,6 +134,7 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
         } else if (tc.totalAmount === taxCheck.totalAmount) {
             result.status = 'exist';
             result.info = `Запись существует. Чек отражен документом ${await lib.util.getObjectPropertyById(tc.document as string, 'description', tx)}`;
+            result.counter = OperationCounterTax[''];
             return result;
         }
     }
@@ -125,6 +143,7 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     if (!doc) {
         result.status = 'error';
         result.info = `Отсутстует документ с ID ${tc.document}`;
+        result.counter = OperationCounterTax[''];
         return result;
     }
 
@@ -146,6 +165,7 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     }
 
     result.info = `Чек отражен документом ${await lib.util.getObjectPropertyById(tc.document as string, 'description', tx)}`;
+    result.counter = OperationCounterTax[''];
     return result;
 
 }

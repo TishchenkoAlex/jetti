@@ -16,7 +16,7 @@ export class CatalogStaffingTableServer extends CatalogStaffingTable implements 
     };
 
     this.description =
-      `${this.CloseDate ? '(closed) ' : ''}${await getDescription(this.JobTitle)} / ${await getDescription(this.Department)} (${await getDescription(this.Currency)}) [${this.Cost}]`;
+      `${this.CloseDate ? '(closed) ' : ''}${await getDescription(this.JobTitle)} / ${await getDescription(this.DepartmentCompany)} (${await getDescription(this.Currency)}) [${this.Cost}]`;
     return this;
   }
 

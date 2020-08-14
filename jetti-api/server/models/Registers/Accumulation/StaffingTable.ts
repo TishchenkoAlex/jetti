@@ -10,6 +10,9 @@ export class RegisterAccumulationStaffingTable extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
+  @Props({ type: 'Catalog.Department.Company', dimension: true })
+  DepartmentCompany: Ref = null;
+
   @Props({ type: 'Catalog.StaffingTable', dimension: true })
   StaffingTablePosition: Ref = null;
 
