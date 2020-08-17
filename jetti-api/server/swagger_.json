@@ -1,0 +1,385 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "НЕLLO HUMAN and WELCOME to JETTIs SWAGGER!",
+    "version" : "1.0.0",
+    "title" : "JETTIs SWAGGER",
+    "termsOfService" : "http://swagger.io/terms/",
+    "contact" : {
+      "email" : "dbez@jetti.x100.com"
+    },
+    "license" : {
+      "name" : "JETTI inc.",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "sm.jetti-app.com",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "document",
+    "description" : "Everything about documents"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/document/{id}" : {
+      "get" : {
+        "tags" : [ "document" ],
+        "summary" : "Find document by ID",
+        "description" : "Returns a single document",
+        "operationId" : "getById",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "ID of document to return",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "asArray",
+          "in" : "query",
+          "description" : "Return document as array of key-values",
+          "type" : "boolean"
+        }, {
+          "in" : "header",
+          "name" : "Authorization",
+          "description" : "TOKEN: Bearer {VALUE}",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Document"
+            }
+          },
+          "400" : {
+            "description" : "Invalid document ID"
+          },
+          "404" : {
+            "description" : "Document not found"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "document" ],
+        "summary" : "Delete document by ID",
+        "description" : "Returns error or nothing",
+        "operationId" : "deleteById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "ID of document to delete",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "header",
+          "name" : "Authorization",
+          "description" : "TOKEN: Bearer {VALUE}",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          },
+          "400" : {
+            "description" : "Invalid document ID"
+          },
+          "404" : {
+            "description" : "Document not found"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/api/document" : {
+      "post" : {
+        "tags" : [ "document" ],
+        "summary" : "Updates a document in the DB with form data",
+        "description" : "",
+        "operationId" : "update",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "DocumentUpdateRequest",
+          "description" : "Document object that needs to be updated in DB and options",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DocumentUpdateRequest"
+          }
+        }, {
+          "in" : "header",
+          "name" : "Content-Type",
+          "description" : "header:Content-Type = application/json;charset=utf-8",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "header",
+          "name" : "Authorization",
+          "description" : "TOKEN: Bearer {VALUE}",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "405" : {
+            "description" : "Invalid input"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/exchange/login" : {
+      "post" : {
+        "tags" : [ "common" ],
+        "summary" : "Get token",
+        "description" : "",
+        "operationId" : "getToken",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "UserCredentials",
+          "description" : "User mail and password",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/UserCredentials"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/UserAuthSettings"
+            }
+          },
+          "405" : {
+            "description" : "Invalid input"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/executeOperation" : {
+      "post" : {
+        "tags" : [ "common" ],
+        "summary" : "Execute an operation method ",
+        "description" : "",
+        "operationId" : "executeOperation",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "args",
+          "description" : "Execution parameters as key-value array",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ExecuteOperationRequest"
+          }
+        } ],
+        "responses" : {
+          "405" : {
+            "description" : "Invalid input"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    }
+  },
+  "definitions" : {
+    "UserAuthSettings" : {
+      "type" : "object",
+      "properties" : {
+        "account" : {
+          "$ref" : "#/definitions/UserAccount"
+        },
+        "token" : {
+          "type" : "string",
+          "example" : "some token"
+        }
+      }
+    },
+    "UserAccount" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string",
+          "example" : "setka.service.account@sushi-master.net"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "setka service account"
+        },
+        "isAdmin" : {
+          "type" : "boolean",
+          "example" : true
+        }
+      }
+    },
+    "Document" : {
+      "type" : "object",
+      "required" : [ "date", "type", "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "54748760-9604-11EA-BB8A-AF1C6CC66467"
+        },
+        "parent" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "54748760-9604-11EA-BB8A-AF1C6CC66467"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "doc code"
+        },
+        "date" : {
+          "type" : "string",
+          "example" : "datetime",
+          "format" : "date-time"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "some description"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "example" : "datetime",
+          "format" : "date-time"
+        },
+        "posted" : {
+          "type" : "boolean"
+        },
+        "deleted" : {
+          "type" : "boolean"
+        },
+        "isfolder" : {
+          "type" : "boolean"
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "Catalog.Bank"
+        },
+        "company" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "54748760-9604-11EA-BB8A-AF1C6CC66467"
+        },
+        "user" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "54748760-9604-11EA-BB8A-AF1C6CC66467"
+        },
+        "info" : {
+          "type" : "string",
+          "example" : "some info"
+        },
+        "ExchangeCode" : {
+          "type" : "string",
+          "example" : "some info"
+        },
+        "ExchangeBase" : {
+          "type" : "string",
+          "example" : "some info"
+        },
+        "doc" : {
+          "type" : "object",
+          "additionalProperties" : true,
+          "example" : "{'key': value}"
+        }
+      }
+    },
+    "DocumentUpdateRequest" : {
+      "type" : "object",
+      "properties" : {
+        "document" : {
+          "$ref" : "#/definitions/Document"
+        },
+        "options" : {
+          "$ref" : "#/definitions/UpdateOptions"
+        }
+      }
+    },
+    "ExecuteOperationRequest" : {
+      "type" : "object",
+      "properties" : {
+        "operationId" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "54748760-9604-11EA-BB8A-AF1C6CC66467"
+        },
+        "method" : {
+          "type" : "string",
+          "example" : "Method name (default: 'RESTMethod')"
+        },
+        "args" : {
+          "type" : "object",
+          "additionalProperties" : true,
+          "example" : "key-value array"
+        }
+      }
+    },
+    "UserCredentials" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string",
+          "example" : "setka.service.account@sushi-master.net"
+        },
+        "password" : {
+          "type" : "string",
+          "example" : "some password"
+        }
+      }
+    },
+    "UpdateOptions" : {
+      "type" : "object",
+      "properties" : {
+        "async" : {
+          "type" : "boolean",
+          "example" : "asynchronous execution if true",
+          "default" : "false"
+        },
+        "saveMode" : {
+          "type" : "string",
+          "enum" : [ "Post, Save" ],
+          "example" : "Post or Save (default: Save)",
+          "default" : "Save"
+        },
+        "skipExisting" : {
+          "type" : "boolean",
+          "example" : "Existing documents will be skipped (default: false)",
+          "default" : "false"
+        },
+        "queueOptions" : {
+          "type" : "string",
+          "example" : "QueueOptions in JSON"
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "api_key" : {
+      "type" : "apiKey",
+      "in" : "header",
+      "name" : "api_key"
+    }
+  },
+  "externalDocs" : {
+    "description" : "Find out more about Swagger",
+    "url" : "http://swagger.io"
+  }
+}
