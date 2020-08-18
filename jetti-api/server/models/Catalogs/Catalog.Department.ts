@@ -49,6 +49,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Brand' })
   Brand: Ref = null;
 
+  @Props({ type: 'Catalog.PriceType' })
+  PriceType: Ref = null;
+
   @Props({ type: 'Catalog.Department.Kind' })
   kind: Ref = null;
 

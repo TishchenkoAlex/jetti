@@ -10,6 +10,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   dimensions: [{ JobTitle: 'Catalog.JobTitle' }, { Department: 'Catalog.Department' }],
   relations: [{ name: 'Employee history', type: 'Register.Info.EmployeeHistory', field: '[StaffingPosition].id' }]
 })
+
 export class CatalogStaffingTable extends DocumentBase {
 
   @Props({ type: 'Catalog.StaffingTable', hiddenInList: true, order: -1 })
