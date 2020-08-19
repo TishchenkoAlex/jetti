@@ -391,6 +391,25 @@ ORDER BY
     return this;
   }
 
+  async getLatestSameCashRequest(tx: MSSQL) {
+    const q = `
+    select
+      document,
+      receiptId
+    from [sm].[dbo].[Register.Info.TaxCheck] where document in (
+      select top 1 document from
+        [x100-DATA].[dbo].[Register.Accumulation.Bank]
+      where company = @p1
+        and Analytics = @p2
+        and CashFlow = @p3
+        and Amount <> 0
+      order by date desc)`;
+    const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
+    if (!qRes || qRes.receiptId) return null;
+    const cr = await lib.doc.byId(qRes.document, tx);
+    throw new Error(`Проведение не возможно, не предоставлен чек по последней оплаченной заявке: ${cr?.description}`);
+  }
+
   async onPost(tx: MSSQL) {
 
     if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
