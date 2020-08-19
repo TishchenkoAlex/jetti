@@ -28,74 +28,103 @@ import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import { initGlobal } from './fuctions/initGlobals';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
+import * as redis from 'redis';
 
-initGlobal();
-
-const root = './';
 const app = express();
-
-
-app.use(compression());
-app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
-app.use(express.static(path.join(root, 'dist')));
-
-const api = `/api`;
-app.use(api, authHTTP, jettiDB, documents);
-app.use(api, authHTTP, jettiDB, userSettings);
-app.use(api, authHTTP, jettiDB, suggests);
-app.use(api, authHTTP, jettiDB, registers);
-app.use(api, authHTTP, tasksDB, tasks);
-app.use(api, authHTTP, tasksDB, form);
-app.use(api, authHTTP, jettiDB, bp);
-app.use(api, authHTTP, jettiDB, swagger);
-app.use('/auth', jettiDB, auth);
-app.use('/exchange', jettiDB, exchange);
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.get('*', (req: Request, res: Response) => {
-  res.status(200);
-  res.send('Jetti API');
-});
-
-app.use(errorHandler);
-function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  const errAny = err as any;
-  const errText = `${err.message}${errAny.response ? ' Response data: ' + JSON.stringify(errAny.response.data) : ''}`;
-  console.error(errText);
-  const status = err && errAny.status ? errAny.status : 500;
-  res.status(status).send(errText);
-}
-
 export const HTTP = httpServer.createServer(app);
 export const IO = socketIO(HTTP);
-IO.use(authIO);
-IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
-IO.of('/').adapter.on('error', (error) => { });
 
-const port = (process.env.PORT) || '3000';
-HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
-JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
+export const subscriber = redis.createClient(6380, REDIS_DB_HOST,
+  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
+export const publisher = redis.createClient(6380, REDIS_DB_HOST,
+  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
 
-let script = '';
+subscriber.on('error', function (error) {
+  console.error(error);
+});
 
-if (process.env.NODE_ENV !== 'production') {
-  script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
-  fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
+publisher.on('error', function (error) {
+  console.error(error);
+});
 
-  script = SQLGenegatorMetadata.CreateViewCatalogs();
-  fs.writeFile('CatalogsView.sql', script, (err) => { });
+subscriber.on('message', function (channel, message) {
 
-  /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
+});
 
-  script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-  fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
+subscriber.subscribe('updateDynamicMeta');
 
-  script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
-  fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
+onProcessStart();
 
-  script = SQLGenegatorMetadata.RegisterAccumulationView();
-  fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+async function onProcessStart() {
+
+
+
+  const root = './';
+  app.use(compression());
+  app.use(cors());
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+  app.use(express.static(path.join(root, 'dist')));
+
+
+  const api = `/api`;
+  app.use(api, authHTTP, jettiDB, documents);
+  app.use(api, authHTTP, jettiDB, userSettings);
+  app.use(api, authHTTP, jettiDB, suggests);
+  app.use(api, authHTTP, jettiDB, registers);
+  app.use(api, authHTTP, tasksDB, tasks);
+  app.use(api, authHTTP, tasksDB, form);
+  app.use(api, authHTTP, jettiDB, bp);
+  app.use(api, authHTTP, jettiDB, swagger);
+  app.use('/auth', jettiDB, auth);
+  app.use('/exchange', jettiDB, exchange);
+  app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+  app.get('*', (req: Request, res: Response) => {
+    res.status(200);
+    res.send('Jetti API');
+  });
+
+  function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+    const errAny = err as any;
+    const errText = `${err.message}${errAny.response ? ' Response data: ' + JSON.stringify(errAny.response.data) : ''}`;
+    console.error(errText);
+    const status = err && errAny.status ? errAny.status : 500;
+    res.status(status).send(errText);
+  }
+
+  app.use(errorHandler);
+
+  IO.use(authIO);
+  IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+  IO.of('/').adapter.on('error', (error) => { });
+
+  let script = '';
+
+  const port = (process.env.PORT) || '3000';
+  HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
+  JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
+
+  await initGlobal();
+
+  if (!global['isProd']) {
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
+    fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
+    fs.writeFile('CatalogsView.sql', script, (err) => { });
+
+    /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+      fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
+
+    script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
+    fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
+    fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.RegisterAccumulationView();
+    fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+  }
+
 }

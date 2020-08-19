@@ -79,6 +79,16 @@ export class ApiService {
     return (this.http.get(query)).toPromise();
   }
 
+  getDocPropValuesByType(type: string, propNames: string[]): Promise<{ propName: string, propValue: any }[]> {
+    const query = `${environment.api}getDocPropValuesByType`;
+    return (this.http.post<{ propName: string, propValue: any }[]>(query, { type: type, propNames: propNames })).toPromise();
+  }
+
+  getDocMetaByType(type: string): Promise<{ Prop, Props }> {
+    const query = `${environment.api}getDocMetaByType/${type}`;
+    return (this.http.get<{ Prop, Props }>(query)).toPromise();
+  }
+
   formControlRef(id: string): Promise<RefValue> {
     const query = `${environment.api}formControlRef/${id}`;
     return (this.http.get<RefValue>(query)).toPromise();

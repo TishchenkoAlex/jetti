@@ -81,6 +81,7 @@ export type CatalogTypes =
   'Catalog.Specification' |
   'Catalog.InvestorGroup' |
   'Catalog.ReasonTypes' |
+  'Catalog.Dynamic' |
   'Catalog.Employee'
   ;
 

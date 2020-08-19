@@ -45,6 +45,29 @@ export const sqlConfig: ConnectionConfigAndPool = {
   }
 };
 
+export const sqlConfigMeta: ConnectionConfigAndPool = {
+  server: process.env.DB_HOST!,
+  authentication: {
+    type: 'default',
+    options: {
+      userName: process.env.DB_USER_META,
+      password: process.env.DB_PASSWORD_META
+    }
+  },
+  options: {
+    encrypt: false,
+    database: DB_NAME,
+    port: DB_PORT,
+    requestTimeout: 5 * 60 * 1000,
+    rowCollectionOnRequestCompletion: true,
+  },
+  pool: {
+    min: 0,
+    max: 1000,
+    idleTimeoutMillis: 20 * 60 * 1000
+  }
+};
+
 export const sqlConfigX100DATA: ConnectionConfigAndPool = {
   server: process.env.DB_HOST!,
   authentication: {

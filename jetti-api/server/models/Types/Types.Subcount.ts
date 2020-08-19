@@ -7,7 +7,7 @@ import { TypesBase } from './TypesBase';
 export class TypesSubcount extends TypesBase {
 
   QueryList() {
-    const select = RegisteredDocument
+    const select = RegisteredDocument()
       .map(el => ({ type: el.type as AllTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
 
     select.push({ type: 'number', description: 'number' });
@@ -22,7 +22,7 @@ export class TypesSubcount extends TypesBase {
 
   getTypes() {
     return [
-      ...RegisteredDocument.map(e => e.type),
+      ...RegisteredDocument().map(e => e.type),
       'number',
       'date',
       'datetime',

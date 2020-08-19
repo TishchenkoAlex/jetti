@@ -18,7 +18,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
       parent = ob?.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob?.parent;
     }
     // folders
-    const queryList = configSchema.get(params.type)?.QueryList;
+    const queryList = configSchema().get(params.type)?.QueryList;
     const parentWhere = parent ? 'd.[parent.id] = @p1' : 'd.[parent.id] is NULL';
     let queryText = `SELECT * FROM (${queryList}) d WHERE ${parentWhere} and isfolder = 1`;
     if (parent) {
@@ -44,7 +44,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   params.command = params.command || 'first';
 
-  const cs = configSchema.get(params.type);
+  const cs = configSchema().get(params.type);
   let { QueryList, Props } = cs!;
 
   let row: DocumentBase | null = null;

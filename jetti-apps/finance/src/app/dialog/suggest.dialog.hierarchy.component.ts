@@ -6,7 +6,6 @@ import { debounceTime, filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
-import { createDocument } from '../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
 import { ApiDataSource } from '../common/datatable/api.datasource.v2';
@@ -35,7 +34,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
   locale = calendarLocale;
   dateFormat = dateFormat;
-  doc: DocumentBase | undefined;
+  doc: { Prop, Props } | undefined;
   columns: ColumnDef[] = [];
   selectedNode: TreeNode | null;
   selectedRow: DocumentBase = null;
@@ -74,12 +73,15 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   constructor(private api: ApiService, public ds: DocService, public lds: LoadingService,
     public route: ActivatedRoute, public router: Router, private auth: AuthService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.readonly = this.auth.isRoleAvailableReadonly();
     const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
-    try { this.doc = createDocument(this.type); } catch { }
-    const schema = this.doc ? this.doc.Props() : {};
-    const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
+    if (this.type) {
+      this.doc = await this.api.getDocMetaByType(this.type);
+      this.dataSource = new ApiDataSource(this.api, this.type, 18, true);
+    }
+    const schema = this.doc ? this.doc.Props : {};
+    const dimensions = this.doc ? (this.doc.Prop as DocumentOptions).dimensions || [] : [];
     [...data, ...dimensions].forEach(el => {
       const field = Object.keys(el)[0];
       const fieldProp = schema[field];
@@ -105,9 +107,9 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.hierarchy = !!(this.doc.Prop() as DocumentOptions).hierarchy;
+    this.hierarchy = (this.doc.Prop as DocumentOptions).hierarchy === 'folders';
     this.treeNodesVisible = this.hierarchy && !this.settings.filter.length;
-    this.dataSource = new ApiDataSource(this.api, this.type, 18, true);
+
 
     this.setFilters();
     this.setSortOrder();
