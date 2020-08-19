@@ -3,6 +3,7 @@ import { ColumnDef } from './column';
 import { DocumentOptions, Ref } from './document';
 import { AllDocTypes, AllTypes } from './documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from './user.settings';
+import { simpleTypes } from './Types/Types.factory';
 
 export interface MenuItem { type: string; icon: string; label: string; items?: MenuItem[]; routerLink?: string[]; }
 
@@ -128,6 +129,8 @@ export interface IViewModel {
   model: { [x: string]: any };
 }
 
+
+
 export class Type {
 
   public static isDocument(type: string) {
@@ -153,5 +156,11 @@ export class Type {
   // stored types
   public static isRefType(type: string) {
     return this.isDocument(type) || this.isCatalog(type);
+  }
+
+  public static defaultValue(type: AllTypes) {
+    if (this.isRefType(type)) return null;
+    const simple = simpleTypes().find(e => e.type === type);
+    return simple ? simple.defaultValue : null;
   }
 }

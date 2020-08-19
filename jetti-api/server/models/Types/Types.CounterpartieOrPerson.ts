@@ -7,7 +7,7 @@ export class TypesCounterpartieOrPerson extends TypesBase {
 
   getTypes() {
 
-    return RegisteredDocument
+    return RegisteredDocument()
       .filter(d =>
         d.type === 'Catalog.Counterpartie' ||
         d.type === 'Catalog.Person')

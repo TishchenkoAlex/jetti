@@ -1,3 +1,5 @@
+import { RegisterInfoDynamic } from './../../Dynamic/dynamic.prototype';
+import { RegisterInfoMetadataProps } from './Metadata.Props';
 import { RegisterInfoShareEmission } from './ShareEmission';
 import { RegisterInfoCompanyPrice } from './CompanyPrice';
 import { RegisterInfoRoyaltySales } from './RoyaltySales';
@@ -21,8 +23,12 @@ import { RegisterInfoIncomeDocumentRegistry } from './IncomeDocumentRegistry';
 import { RegisterInfoLoanOwner } from './LoanOwner';
 import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
+import { RegisterInfoMetadata } from './Metadata';
 
 export type RegisterInfoTypes =
+    'Register.Info.Dynamic' |
+    'Register.Info.Metadata.Props' |
+    'Register.Info.Metadata' |
     'Register.Info.Holiday' |
     'Register.Info.PriceList' |
     'Register.Info.SettlementsReconciliation' |
@@ -47,6 +53,9 @@ export type RegisterInfoTypes =
     'Register.Info.CounterpartiePriceList';
 
 export type RegistersInfo =
+    RegisterInfoDynamic |
+    RegisterInfoMetadataProps |
+    RegisterInfoMetadata |
     RegisterInfoHoliday |
     RegisterInfoPriceList |
     RegisterInfoDepartmentStatus |
@@ -72,6 +81,9 @@ export interface IRegisteredRegisterInfo {
 }
 
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
+    { type: 'Register.Info.Dynamic', Class: RegisterInfoDynamic },
+    { type: 'Register.Info.Metadata.Props', Class: RegisterInfoMetadataProps },
+    { type: 'Register.Info.Metadata', Class: RegisterInfoMetadata },
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SettlementsReconciliation', Class: RegisterInfoSettlementsReconciliation },

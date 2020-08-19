@@ -3,7 +3,6 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { merge } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { INoSqlDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocService } from '../doc.service';
 import { DynamicComponent } from '../dynamic-component/dynamic-component';
 import { scrollIntoViewIfNeeded } from '../utils';
@@ -63,7 +62,7 @@ export class TabControllerComponent {
 
   private getTabTitle(detail) {
     if (detail instanceof FormGroup) {
-      const doc = detail.getRawValue() as INoSqlDocument;
+      const doc = detail.getRawValue();
       const metadata = detail['metadata'];
       return { header: doc.description || metadata.description, icon: metadata.icon };
     } else {

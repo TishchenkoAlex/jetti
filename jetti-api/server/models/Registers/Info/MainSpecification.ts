@@ -13,8 +13,8 @@ export class RegisterInfoMainSpecification extends RegisterInfo {
   @Props({ type: 'Catalog.Product' })
   SKU: Ref = null;
 
-  @Props({ type: 'Catalog.ResourceSpecification' })
-  ResourceSpecification: Ref = null;
+  @Props({ type: 'Catalog.Specification' })
+  Specification: Ref = null;
 
   @Props({ type: 'boolean' })
   Active = '';

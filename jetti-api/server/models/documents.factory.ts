@@ -46,7 +46,7 @@ import { CatalogSubSystem } from './Catalogs/Catalog.SubSystem';
 import { CatalogUnit } from './Catalogs/Catalog.Unit';
 import { CatalogUser } from './Catalogs/Catalog.User';
 import { DocumentBase, Ref } from './document';
-import { DocTypes } from './documents.types';
+import { DocTypes, AllTypes } from './documents.types';
 import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';
@@ -81,12 +81,16 @@ import { CatalogTaxBasisPayment } from './Catalogs/Catalog.TaxBasisPayment';
 import { CatalogSalaryAnalytics } from './Catalogs/Catalog.Salary.Analytics';
 import { CatalogCompanyGroup } from './Catalogs/Catalog.Company.Group';
 import { CatalogPlanningScenario } from './Catalogs/Catalog.PlanningScenario';
-import { CatalogResourceSpecification } from './Catalogs/Catalog.ResourceSpecification';
+import { CatalogSpecification } from './Catalogs/Catalog.Specification';
 import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
 import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
+import { CatalogDynamic } from './Dynamic/dynamic.prototype';
+import { v1 } from 'uuid';
+import { simpleTypes } from './Types/Types.factory';
+import { Type } from './common-types';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -122,19 +126,48 @@ export interface IFlatDocument {
 }
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
-  const doc = RegisteredDocument.find(el => el.type === type);
+  const doc = RegisteredDocument().find(el => el.type === type);
   if (doc) {
     const result = <T>new doc.Class;
-    const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
-    ArrayProps.forEach(prop => result[prop].length = 0);
+    if (doc.dynamic) {
+      const docMeta = global['dynamicMeta'].Metadata.find(e => e.type === type);
+      const Props = docMeta.Props();
+      Object.keys(Props)
+        .forEach(propName => {
+          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'default');
+          result[propName] = defVal || Type.defaultValue(Props[propName].type);
+        });
+      result.Props = () => ({ ...Props });
+      result.Prop = () => ({ ...docMeta.Prop() });
+      result.type = type;
+      if (!document && !result.date) result.date = new Date;
+    } else {
+      const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
+      ArrayProps.forEach(prop => result[prop].length = 0);
+    }
     if (document) result.map(document);
+
     return result;
   } else throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
 }
 
-export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; }
+export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; dynamic?: boolean; }
 
-export const RegisteredDocument: RegisteredDocumentType[] = [
+export function RegisteredDocument(): RegisteredDocumentType[] {
+  return [
+    ...RegisteredDocumentDynamic(),
+    ...RegisteredDocumentStatic
+  ];
+}
+
+export function RegisteredDocumentDynamic(): RegisteredDocumentType[] {
+  return [
+    ...global['dynamicMeta'] ? global['dynamicMeta']['RegisteredDocument'] : []
+  ];
+}
+
+export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
+  { type: 'Catalog.Dynamic', Class: CatalogDynamic },
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
   { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
@@ -211,7 +244,7 @@ export const RegisteredDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
   { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
-  { type: 'Catalog.ResourceSpecification', Class: CatalogResourceSpecification },
+  { type: 'Catalog.Specification', Class: CatalogSpecification },
   { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },
   { type: 'Catalog.Employee', Class: CatalogEmployee },
 

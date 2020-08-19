@@ -6,7 +6,7 @@ import { TypesBase } from './TypesBase';
 export class TypesCompanyOrCompanyGroup extends TypesBase {
 
   getTypes() {
-    return RegisteredDocument
+    return RegisteredDocument()
       .filter(d =>
         d.type === 'Catalog.Company' ||
         d.type === 'Catalog.Company.Group')

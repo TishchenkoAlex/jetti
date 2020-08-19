@@ -6,7 +6,7 @@ import { TypesBase } from './TypesBase';
 export class TypesCatalog extends TypesBase {
 
   getTypes() {
-    return RegisteredDocument
+    return RegisteredDocument()
       .filter(d => d.type.startsWith('Catalog.'))
       .map(e => e.type);
   }

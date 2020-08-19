@@ -1,3 +1,5 @@
+import { JETTI_POOL_META } from './sql.pool.meta';
+import { JETTI_POOL } from './sql.pool.jetti';
 import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
@@ -7,7 +9,7 @@ import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { DocTypes, CatalogTypes } from './models/documents.types';
+import { DocTypes, CatalogTypes, AllDocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
@@ -21,6 +23,10 @@ import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
 import * as iconv from 'iconv-lite';
+import * as xml2js from 'xml2js';
+import axios from 'axios';
+import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
+import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -74,6 +80,11 @@ export interface JTL {
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
+  meta: {
+    updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
+    riseUpdateMetadataEvent: () => Promise<void>,
+    getTX: () => MSSQL
+  };
   util: {
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
@@ -91,7 +102,10 @@ export interface JTL {
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
+    jettiPoolTx: () => MSSQL,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
+    xmlStringToJSON: (xmlString: string) => string,
+    executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -137,6 +151,11 @@ export const lib: JTL = {
     docPrefix,
     isDocumentUsedInAccumulationWithPropValueById
   },
+  meta: {
+    updateSQLViewsByType,
+    riseUpdateMetadataEvent,
+    getTX
+  },
   info: {
     sliceLast,
     exchangeRate
@@ -158,7 +177,10 @@ export const lib: JTL = {
     getObjectPropertyById,
     exchangeDB,
     taskPoolTx,
-    decodeBase64StringAsUTF8
+    decodeBase64StringAsUTF8,
+    xmlStringToJSON,
+    executeGETRequest,
+    jettiPoolTx
   },
   queue: {
     insertQueue,
@@ -354,7 +376,7 @@ function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
 }
 
 async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
-  const metadata = configSchema.get(type);
+  const metadata = configSchema().get(type);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
     const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${type}"), '0000000000') result `;
@@ -487,6 +509,54 @@ function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+}
+
+function xmlStringToJSON(xmlString: string): string {
+  const parser = new xml2js.Parser();
+  let result = '';
+  parser.parseString(xmlString, (err, res: string) => {
+    if (err) throw new Error(err);
+    result = res;
+  });
+  return result;
+}
+
+async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.baseURL });
+  return await instance.get(opts.query);
+}
+
+async function updateSQLViewsByType(type: DocTypes): Promise<void> {
+  const tx = getTX();
+  const existsViews = await getExistsViews([type], tx);
+  const queries = [
+    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true, existsViews),
+    ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+  ];
+  // console.log(queries);
+  for (const querText of queries) {
+    try {
+      await tx.none(`execute sp_executesql @p1`, [querText]);
+    } catch (error) {
+      if (queries.indexOf(querText)) throw new Error(error);
+    }
+  }
+}
+
+async function getExistsViews(viewsNames: string[], tx: MSSQL): Promise<string[]> {
+  const res = await tx.manyOrNone<{ TABLE_NAME: string }>(
+    `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+  WHERE TABLE_TYPE = 'VIEW'
+  AND TABLE_NAME in (${viewsNames.map(e => `\'${e}\'`).join()})`);
+  return res ? res.map(e => e.TABLE_NAME) : [];
+}
+
+function getTX(): MSSQL {
+  return new MSSQL(JETTI_POOL_META);
+}
+
+function jettiPoolTx(): MSSQL {
+  return new MSSQL(JETTI_POOL);
 }
 
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {

@@ -78,7 +78,7 @@ export class MSSQL {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
-          if (error) return reject(error);
+          if (error) { if (!global['isProd']) console.error(error, sql); return reject(error); }
           if (!rowCount) return resolve([]);
           const result = rows.map(row => {
             const data = {} as T;
@@ -99,7 +99,7 @@ export class MSSQL {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
-          if (error) return reject(error);
+          if (error) { if (!global['isProd']) console.error(error, sql); return reject(error); }
           if (!rowCount) return resolve(null);
           const data = {} as T;
           rows[0].forEach(col => data[col.metadata.colName] = col.value);
@@ -118,11 +118,30 @@ export class MSSQL {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
-          if (error) return reject(error);
+          if (error) {
+            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}`); return reject(error);
+          }
           return resolve();
         });
         this.setParams(params, request);
         connection.execSql(request);
+      } catch (error) { return reject(error); }
+    });
+  }
+
+  noneBatch(sql: string, params: any[] = []): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
+        const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
+          if (!this.connection) this.sqlPool.pool.release(connection);
+          if (error) {
+            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${sql}`); return reject(error);
+          }
+          return resolve();
+        });
+        this.setParams(params, request);
+        connection.execSqlBatch(request);
       } catch (error) { return reject(error); }
     });
   }

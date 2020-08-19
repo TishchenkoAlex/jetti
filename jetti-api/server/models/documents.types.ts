@@ -73,9 +73,10 @@ export type CatalogTypes =
   'Catalog.TaxOffice' |
   'Catalog.RetailClient' |
   'Catalog.Contract.Intercompany' |
-  'Catalog.ResourceSpecification' |
+  'Catalog.Specification' |
   'Catalog.InvestorGroup' |
   'Catalog.ReasonTypes' |
+  'Catalog.Dynamic' |
   'Catalog.Employee'
   ;
 

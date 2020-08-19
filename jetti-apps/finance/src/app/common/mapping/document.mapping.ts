@@ -1,7 +1,6 @@
-import { IFlatDocument } from './../../../../../../jetti-api/server/models/documents.factory';
 
-export function viewModelToFlatDocument(viewModel: { [key: string]: any }): IFlatDocument {
-  const newDoc: IFlatDocument = {
+export function viewModelToFlatDocument(viewModel: { [key: string]: any }) {
+  const newDoc = {
     id: viewModel.id || null,
     type: viewModel.type,
     date: viewModel.date || new Date(),

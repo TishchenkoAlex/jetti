@@ -20,6 +20,7 @@ import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
 import { DocumentCashRequestServer } from './Documents/Document.CashRequest.server';
 import { PostResult } from './post.interfaces';
 import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequestRegistry.server';
+import { CatalogCatalogServer } from './Catalogs/Catalog.Catalog.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -48,6 +49,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
+  { type: 'Catalog.Catalog', Class: CatalogCatalogServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
@@ -76,29 +78,11 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   result['serverModule'] = {};
 
   const Props = Object.assign({}, result.Props());
-  // if (document && document.isfolder) {
-  // упрощенные метаданные формы для Папки
-  // Object.keys(Props).;
-  // Props = {
-  //   id: Props.id,
-  //   type: Props.type,
-  //   date: Props.date,
-  //   code: Props.code,
-  //   description: Props.description,
-  //   company: Props.company,
-  //   user: Props.user,
-  //   posted: Props.posted,
-  //   deleted: Props.deleted,
-  //   parent: Props.parent,
-  //   isfolder: Props.isfolder,
-  //   info: Props.info,
-  //   timestamp: Props.timestamp
-  // };
-  // }
-
   const Prop = { ...result.Prop() as DocumentOptions };
+
   let Operation: CatalogOperation | null = null;
   let Grop: RefValue | null = null;
+
   if (result instanceof DocumentOperation && document && document.id) {
     result.f1 = null; result.f2 = null; result.f3 = null;
     Prop.commands = [];

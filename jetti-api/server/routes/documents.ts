@@ -299,6 +299,24 @@ router.get('/getObjectPropertyById/:id/:valuePath', async (req: Request, res: Re
   } catch (err) { next(err); }
 });
 
+router.get('/getDocMetaByType/:type', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const doc = createDocument(req.params.type as any);
+    res.json({ Prop: doc.Prop(), Props: doc.Props() });
+  } catch (err) { next(err); }
+});
+
+router.post('/getDocPropValuesByType', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { type, propNames } = req.body;
+    const prop = createDocument(type).Prop();
+    const propValues = propNames
+      .filter(propName => Object.keys(prop).find(existProp => existProp === propName))
+      .map(key => ({ propName: key, propValue: prop[key] }));
+    res.json(propValues);
+  } catch (err) { next(err); }
+});
+
 router.post('/valueChanges/:type/:property', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);

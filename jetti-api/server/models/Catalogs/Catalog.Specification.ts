@@ -1,14 +1,14 @@
 import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
-  type: 'Catalog.ResourceSpecification',
+  type: 'Catalog.Specification',
   description: 'Ресурсная спецификация',
   icon: 'fa fa-list',
   menu: 'Ресурсные спецификации'
 })
-export class CatalogResourceSpecification extends DocumentBase {
+export class CatalogSpecification extends DocumentBase {
 
-  @Props({ type: 'Catalog.ResourceSpecification', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Specification', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Company', hiddenInList: true })

@@ -26,27 +26,27 @@ export function allTypes(): { type: AllTypes, description: string }[] {
 }
 
 export function documentsTypes(): { type: AllTypes, description: string }[] {
-  return RegisteredDocument
+  return RegisteredDocument()
     .map(el => ({
       type: el.type as AllTypes,
       description: (<DocumentOptions>(createDocument(el.type).Prop())).description
     }));
 }
 
-export function simpleTypes(): { type: AllTypes, description: string }[] {
+export function simpleTypes(): { type: AllTypes, description: string, defaultValue?: any }[] {
 
-  const result: { type: AllTypes, description: string }[] = [];
+  const result: { type: AllTypes, description: string, defaultValue?: any }[] = [];
 
-  result.push({ type: 'number', description: 'number' });
-  result.push({ type: 'date', description: 'date' });
-  result.push({ type: 'datetime', description: 'datetime' });
-  result.push({ type: 'string', description: 'string' });
-  result.push({ type: 'boolean', description: 'boolean' });
-  result.push({ type: 'table', description: 'table' });
-  result.push({ type: 'javascript', description: 'javascript' });
-  result.push({ type: 'enum', description: 'emum' });
-  result.push({ type: 'link', description: 'link' });
-  result.push({ type: 'URL', description: 'URL' });
+  result.push({ type: 'number', description: 'number', defaultValue: 0 });
+  result.push({ type: 'date', description: 'date', defaultValue: null });
+  result.push({ type: 'datetime', description: 'datetime', defaultValue: null });
+  result.push({ type: 'string', description: 'string', defaultValue: '' });
+  result.push({ type: 'boolean', description: 'boolean', defaultValue: false });
+  result.push({ type: 'table', description: 'table', defaultValue: [] });
+  result.push({ type: 'javascript', description: 'javascript', defaultValue: '' });
+  result.push({ type: 'enum', description: 'emum', defaultValue: '' });
+  result.push({ type: 'link', description: 'link', defaultValue: '' });
+  result.push({ type: 'URL', description: 'URL', defaultValue: '' });
 
   return result;
 }
