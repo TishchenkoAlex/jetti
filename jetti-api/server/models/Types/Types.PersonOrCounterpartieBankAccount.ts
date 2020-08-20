@@ -6,7 +6,7 @@ import { TypesBase } from './TypesBase';
 export class TypesPersonOrCounterpartieBankAccount extends TypesBase {
 
   getTypes() {
-    return RegisteredDocument
+    return RegisteredDocument()
       .filter(d => d.type === 'Catalog.Counterpartie.BankAccount' || d.type === 'Catalog.Person.BankAccount')
       .map(e => e.type);
   }

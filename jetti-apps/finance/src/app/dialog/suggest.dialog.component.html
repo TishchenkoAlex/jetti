@@ -26,8 +26,8 @@
       </div>
     </p-toolbar>
     <div>
-      <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
-        sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection"
+      <p-table #tbl *ngIf="dataSource" [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id"
+        [lazy]="true" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [(selection)]="selection"
         [filterDelay]="500" [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="'415px'"
         [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [multiSortMeta]="multiSortMeta"
         [lazyLoadOnInit]="false" [scrollable]="true" [reorderableColumns]="true" [resizableColumns]="true">
@@ -82,7 +82,7 @@
               </div>
               <div *ngSwitchDefault>
                 <j-autocomplete-png [checkValue]="false" [disabled]="isFilterFixed(column.field)"
-                  [type]="filters[column.field]?.value?.type || column.type || 'string'"
+                  [type]="filters[column.field]?.value?.type || column.type || 'string'" [noEvent]="true"
                   [ngModel]="filters[column.field]?.value" [showOpen]="false" [showFind]="false" [showClear]="true"
                   (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
                 </j-autocomplete-png>

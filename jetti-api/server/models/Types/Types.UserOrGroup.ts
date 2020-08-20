@@ -6,7 +6,7 @@ import { TypesBase } from './TypesBase';
 export class TypesUserOrGroup extends TypesBase {
 
   getTypes() {
-    return RegisteredDocument
+    return RegisteredDocument()
       .filter(d => d.type === 'Catalog.User' || d.type === 'Catalog.UsersGroup')
       .map(e => e.type);
   }

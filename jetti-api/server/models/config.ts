@@ -4,7 +4,7 @@ import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
-import { createDocument, RegisteredDocument } from './documents.factory';
+import { createDocument, RegisteredDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
 import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
 import { createTypes, RegisteredTypes } from './Types/Types.factory';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
@@ -24,32 +24,46 @@ export interface IConfigSchema {
   doc?: DocumentBase;
 }
 
-export const configSchema = new Map([
-  ...RegisteredDocument.map(el => {
-    const doc = createDocument(el.type);
-    const Prop = doc.Prop() as DocumentOptions;
-    const Props = doc.Props();
-    const result: IConfigSchema = ({
-      type: el.type,
-      description: Prop.description,
-      icon: Prop.icon,
-      menu: Prop.menu,
-      prefix: Prop.prefix,
-      dimensions: Prop.dimensions,
-      // QueryObject: SQLGenegator.QueryObject(Props, el.type),
-      QueryList: SQLGenegator.QueryList(Props, el.type),
-      Props: Props,
-      Prop: Prop,
-      copyTo: Prop.copyTo,
-      doc: doc
-    });
-    if (el.type === 'Catalog.Subcount') { result.QueryList = (doc as CatalogSubcount).QueryList(); }
-    if (el.type === 'Catalog.Documents') { result.QueryList = (doc as CatalogDocuments).QueryList(); }
-    if (el.type === 'Catalog.Catalogs') { result.QueryList = (doc as CatalogCatalogs).QueryList(); }
-    if (el.type === 'Catalog.Objects') { result.QueryList = (doc as CatalogObjects).QueryList(); }
-    if (el.type === 'Catalog.Forms') { result.QueryList = (doc as CatalogForms).QueryList(); }
-    return result;
-  }),
+export function configSchema(): Map<AllDocTypes, IConfigSchema> {
+  return new Map(
+    [...configSchemaStatic,
+    ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentDynamic())
+    ]
+      .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+}
+
+function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
+  return [
+    ...RegisteredDocuments.map(el => {
+      const doc = createDocument(el.type);
+      const Prop = doc.Prop() as DocumentOptions;
+      const Props = doc.Props();
+      const result: IConfigSchema = ({
+        type: el.type,
+        description: Prop.description,
+        icon: Prop.icon,
+        menu: Prop.menu,
+        prefix: Prop.prefix,
+        dimensions: Prop.dimensions,
+        // QueryObject: SQLGenegator.QueryObject(Props, el.type),
+        QueryList: SQLGenegator.QueryList(Props, el.type),
+        Props: Props,
+        Prop: Prop,
+        copyTo: Prop.copyTo,
+        doc: doc
+      });
+      if (el.type === 'Catalog.Subcount') { result.QueryList = (doc as CatalogSubcount).QueryList(); }
+      if (el.type === 'Catalog.Documents') { result.QueryList = (doc as CatalogDocuments).QueryList(); }
+      if (el.type === 'Catalog.Catalogs') { result.QueryList = (doc as CatalogCatalogs).QueryList(); }
+      if (el.type === 'Catalog.Objects') { result.QueryList = (doc as CatalogObjects).QueryList(); }
+      if (el.type === 'Catalog.Forms') { result.QueryList = (doc as CatalogForms).QueryList(); }
+      return result;
+    })];
+}
+
+export const configSchemaStatic = [
+  ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentStatic)
+  ,
   ...RegisteredTypes.map(el => {
     const doc = createTypes(el.type as ComplexTypes);
     const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
@@ -59,4 +73,4 @@ export const configSchema = new Map([
       Props: fakeDoc.Props()
     });
   }),
-].map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+];

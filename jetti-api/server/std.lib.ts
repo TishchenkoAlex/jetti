@@ -1,3 +1,5 @@
+import { JETTI_POOL_META } from './sql.pool.meta';
+import { JETTI_POOL } from './sql.pool.jetti';
 import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
@@ -7,12 +9,12 @@ import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { DocTypes, CatalogTypes } from './models/documents.types';
+import { DocTypes, CatalogTypes, AllDocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -23,6 +25,8 @@ import { IQueueRow } from './models/Tasks/common';
 import * as iconv from 'iconv-lite';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
+import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
+import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -43,6 +47,7 @@ export interface JTL {
     byId: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     byIdT: <T extends DocumentBase>(id: Ref, tx: MSSQL) => Promise<T | null>;
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
+    findDocumentByKey: (searchKey: { key: string, value?: any }[], tx: MSSQL) => Promise<IFlatDocument[] | null>
     findDocumentByProps: <T>(
       type: CatalogTypes,
       propsFilter: { propKey: string, propValue: any }[],
@@ -65,7 +70,7 @@ export interface JTL {
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
-    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
+    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: number, opts?: IUpdateInsertDocumentOptions) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
@@ -75,6 +80,11 @@ export interface JTL {
     sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
+  };
+  meta: {
+    updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
+    riseUpdateMetadataEvent: () => void,
+    getTX: () => MSSQL
   };
   util: {
     formatDate: (date: Date) => string
@@ -95,6 +105,7 @@ export interface JTL {
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
+    jettiPoolTx: () => MSSQL,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
     xmlStringToJSON: (xmlString: string) => string,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
@@ -107,6 +118,9 @@ export interface JTL {
     addTask: (queueId: string, taskParams, taskOpts) => Promise<any>
     getTasks: (queueId: string, params: IGetTaskParams) => Promise<{ repeatable: any[], jobs: any[] }>
     deleteTasks: (queueId: string, params: IDeleteTaskParams) => Promise<void>
+  };
+  queuePost: {
+    addId: (id: string, flow: number, taskPoolTX?: MSSQL) => Promise<void>
   };
 }
 
@@ -125,6 +139,7 @@ export const lib: JTL = {
     byCode,
     byId,
     byIdT,
+    findDocumentByKey,
     findDocumentByProps,
     createDoc,
     createDocServer,
@@ -142,6 +157,11 @@ export const lib: JTL = {
     flatDocument,
     docPrefix,
     isDocumentUsedInAccumulationWithPropValueById
+  },
+  meta: {
+    updateSQLViewsByType,
+    riseUpdateMetadataEvent,
+    getTX
   },
   info: {
     sliceLast,
@@ -168,7 +188,8 @@ export const lib: JTL = {
     taskPoolTx,
     decodeBase64StringAsUTF8,
     xmlStringToJSON,
-    executeGETRequest
+    executeGETRequest,
+    jettiPoolTx
   },
   queue: {
     insertQueue,
@@ -178,6 +199,9 @@ export const lib: JTL = {
     addTask,
     getTasks,
     deleteTasks
+  },
+  queuePost: {
+    addId
   }
 };
 
@@ -229,34 +253,22 @@ async function byIdT<T extends DocumentBase>(id: string, tx: MSSQL): Promise<T |
   if (result) return createDocument<T>(result.type, result); else return null;
 }
 
-async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): Promise<T> {
-  return await createDocument<T>(type, document);
-}
+async function findDocumentByKey(searchKey: { key: string, value?: any }[], tx: MSSQL): Promise<IFlatDocument[] | null> {
 
-async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL): Promise<T> {
-  return await createDocumentServer<T>(type, document, tx);
-}
+  if (!searchKey || !searchKey.length) return null;
 
-async function createDocServerById<T extends DocumentBaseServer>(id: string, tx: MSSQL): Promise<T | null> {
-  const flatDoc = await byId(id, tx);
-  if (!flatDoc) return null;
-  return await createDocServer<T>(flatDoc.type, flatDoc, tx);
-}
-
-async function saveDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
-  const savedVersion = await byId(servDoc.id, tx);
-  const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
-  const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
-  if (isPostedBefore) await unpostDocument(servDoc, tx);
-  if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
-  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx);
-  else servDoc = await updateDocument(servDoc, tx);
-  if (isPostedAfter) await postDocument(servDoc, tx);
-  return servDoc;
-}
-
-async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
-  return await updateDocument(servDoc, tx);
+  const result = await tx.manyOrNone<INoSqlDocument | null>(`
+  SELECT
+  *
+  FROM "Documents"
+  WHERE 1 = 1 AND
+  ${searchKey
+      .map((e, index) => `${e.key} = @p${++index}`)
+      .join(' AND ')}`
+    , searchKey.map(e => e.value)
+  );
+  if (!result) return null;
+  return result.map(doc => flatDocument(doc!));
 }
 
 async function findDocumentByProps<T>(
@@ -306,6 +318,45 @@ async function findDocumentByProps<T>(
 
 }
 
+async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): Promise<T> {
+  return await createDocument<T>(type, document);
+}
+
+async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL): Promise<T> {
+  return await createDocumentServer<T>(type, document, tx);
+}
+
+async function createDocServerById<T extends DocumentBaseServer>(id: string, tx: MSSQL): Promise<T | null> {
+  const flatDoc = await byId(id, tx);
+  if (!flatDoc) return null;
+  return await createDocServer<T>(flatDoc.type, flatDoc, tx);
+}
+
+async function saveDoc(
+  servDoc: DocumentBaseServer
+  , tx: MSSQL
+  , queuePostFlow?: number
+  , opts?: IUpdateInsertDocumentOptions): Promise<DocumentBaseServer> {
+  const savedVersion = await byId(servDoc.id, tx);
+  const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
+  const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
+  if (isPostedBefore) await unpostDocument(servDoc, tx);
+  if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
+  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx, opts);
+  else servDoc = await updateDocument(servDoc, tx, opts);
+  if (isPostedAfter) {
+    if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
+    else await postDocument(servDoc, tx);
+  }
+  return servDoc;
+}
+
+async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
+  return await updateDocument(servDoc, tx);
+}
+
+
+
 async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
   return (await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, 'Accumulation', tx) ||
     await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, '[Register.Info]', tx));
@@ -353,10 +404,10 @@ function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocu
   if (!flatDoc) throw new Error(`lib.noSqlDocument: source is null!`);
   const { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ...doc } = flatDoc;
   return <INoSqlDocument>
-    { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, doc };
+    { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ExchangeCode: flatDoc['ExchangeCode'], ExchangeBase: flatDoc['ExchangeBase'], doc };
 }
 
-function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
+export function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
   if (!noSqldoc) throw new Error(`lib.flatDocument: source is null!`);
   const { doc, ...header } = noSqldoc;
   const flatDoc = { ...header, ...doc };
@@ -364,7 +415,7 @@ function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
 }
 
 async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
-  const metadata = configSchema.get(type);
+  const metadata = configSchema().get(type);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
     const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${type}"), '0000000000') result `;
@@ -514,6 +565,30 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
   return await instance.get(opts.query);
 }
 
+async function updateSQLViewsByType(type: DocTypes): Promise<void> {
+  const tx = getTX();
+  const queries = [
+    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
+    ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+  ];
+  // console.log(queries);
+  for (const querText of queries) {
+    try {
+      await tx.none(`execute sp_executesql @p1`, [querText]);
+    } catch (error) {
+      if (queries.indexOf(querText)) throw new Error(error);
+    }
+  }
+}
+
+function getTX(): MSSQL {
+  return new MSSQL(JETTI_POOL_META);
+}
+
+function jettiPoolTx(): MSSQL {
+  return new MSSQL(JETTI_POOL);
+}
+
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
 
   if (!row.date) row.date = new Date();
@@ -530,6 +605,13 @@ async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRo
 
   return row;
 
+}
+
+async function addId(id: string, flow: number, taskPoolTX?: MSSQL): Promise<void> {
+  if (!id) return;
+  if (!taskPoolTX) taskPoolTX = taskPoolTx();
+  await taskPoolTX!.none(`INSERT INTO [exc].[QueuePost]([id],[flow])
+  VALUES (@p1, @p2)`, [id, flow]);
 }
 
 async function updateQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
@@ -614,7 +696,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
       .filter(e => keys.includes(e) && attachment[e])
       .forEach(e => ob[e] = attachment[e]);
 
-    if (!ob.user) ob.user = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; //EXCHANGE SERVICE
+    if (!ob.user) ob.user = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; // EXCHANGE SERVICE
 
     ob = await saveDoc(ob, tx);
     const resOb = {

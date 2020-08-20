@@ -47,7 +47,7 @@ import { CatalogSubSystem } from './Catalogs/Catalog.SubSystem';
 import { CatalogUnit } from './Catalogs/Catalog.Unit';
 import { CatalogUser } from './Catalogs/Catalog.User';
 import { DocumentBase, Ref } from './document';
-import { DocTypes } from './documents.types';
+import { DocTypes, AllTypes } from './documents.types';
 import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';
@@ -92,6 +92,10 @@ import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
+import { CatalogDynamic } from './Dynamic/dynamic.prototype';
+import { v1 } from 'uuid';
+import { simpleTypes } from './Types/Types.factory';
+import { Type } from './common-types';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -107,7 +111,10 @@ export interface INoSqlDocument {
   parent: Ref;
   info: string;
   timestamp: Date;
+  ExchangeCode?: string;
+  ExchangeBase?: string;
   doc: { [x: string]: any };
+  docByKeys?: { key: string, value: any }[];
 }
 
 export interface IFlatDocument {
@@ -124,22 +131,53 @@ export interface IFlatDocument {
   parent: Ref;
   info: string;
   timestamp: Date | null;
+  ExchangeCode?: string;
+  ExchangeBase?: string;
 }
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
-  const doc = RegisteredDocument.find(el => el.type === type);
+  const doc = RegisteredDocument().find(el => el.type === type);
   if (doc) {
     const result = <T>new doc.Class;
-    const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
-    ArrayProps.forEach(prop => result[prop].length = 0);
+    if (doc.dynamic) {
+      const docMeta = global['dynamicMeta'].Metadata.find(e => e.type === type);
+      const Props = docMeta.Props();
+      Object.keys(Props)
+        .forEach(propName => {
+          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'default');
+          result[propName] = defVal || Type.defaultValue(Props[propName].type);
+        });
+      result.Props = () => ({ ...Props });
+      result.Prop = () => ({ ...docMeta.Prop() });
+      result.type = type;
+      if (!document && !result.date) result.date = new Date;
+    } else {
+      const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
+      ArrayProps.forEach(prop => result[prop].length = 0);
+    }
     if (document) result.map(document);
+
     return result;
   } else throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
 }
 
-export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; }
+export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; dynamic?: boolean; }
 
-export const RegisteredDocument: RegisteredDocumentType[] = [
+export function RegisteredDocument(): RegisteredDocumentType[] {
+  return [
+    ...RegisteredDocumentDynamic(),
+    ...RegisteredDocumentStatic
+  ];
+}
+
+export function RegisteredDocumentDynamic(): RegisteredDocumentType[] {
+  return [
+    ...global['dynamicMeta'] ? global['dynamicMeta']['RegisteredDocument'] : []
+  ];
+}
+
+export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
+  { type: 'Catalog.Dynamic', Class: CatalogDynamic },
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
   { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },

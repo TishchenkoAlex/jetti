@@ -28,18 +28,31 @@ import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import { initGlobal } from './fuctions/initGlobals';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
+import * as redis from 'redis';
+import { updateDynamicMeta } from './models/Dynamic/Dynamic.common';
 
-initGlobal();
+const app = express();
+export const HTTP = httpServer.createServer(app);
+export const IO = socketIO(HTTP);
+
+export const subscriber = redis.createClient(6380, REDIS_DB_HOST,
+  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
+export const publisher = redis.createClient(6380, REDIS_DB_HOST,
+  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
+
+subscriber.on('message', function (channel, message) {
+  if (channel === 'updateDynamicMeta') updateDynamicMeta();
+});
+
+subscriber.subscribe('updateDynamicMeta');
 
 const root = './';
-const app = express();
-
-
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(express.static(path.join(root, 'dist')));
+
 
 const api = `/api`;
 app.use(api, authHTTP, jettiDB, documents);
@@ -59,7 +72,6 @@ app.get('*', (req: Request, res: Response) => {
   res.send('Jetti API');
 });
 
-app.use(errorHandler);
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   const errAny = err as any;
   const errText = `${err.message}${errAny.response ? ' Response data: ' + JSON.stringify(errAny.response.data) : ''}`;
@@ -68,34 +80,38 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
   res.status(status).send(errText);
 }
 
-export const HTTP = httpServer.createServer(app);
-export const IO = socketIO(HTTP);
+app.use(errorHandler);
+
 IO.use(authIO);
 IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
 IO.of('/').adapter.on('error', (error) => { });
+
+let script = '';
 
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-let script = '';
+initGlobal().then(e => {
+  if (!global['isProd']) {
 
-if (process.env.NODE_ENV !== 'production') {
-  script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
-  fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
+    fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 
-  script = SQLGenegatorMetadata.CreateViewCatalogs();
-  fs.writeFile('CatalogsView.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
+    fs.writeFile('CatalogsView.sql', script, (err) => { });
 
-  /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
+    /*   script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+      fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { }); */
 
-  script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-  fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
+    fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
 
-  script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
-  fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
+    fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
 
-  script = SQLGenegatorMetadata.RegisterAccumulationView();
-  fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
-}
+    script = SQLGenegatorMetadata.RegisterAccumulationView();
+    fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+  }
+});
+

@@ -15,7 +15,7 @@ export class CatalogObjects extends DocumentBase {
 
 
   QueryList() {
-    const select = RegisteredDocument.filter(el => el.type.startsWith('Catalog.') || el.type.startsWith('Documents.'))
+    const select = RegisteredDocument().filter(el => el.type.startsWith('Catalog.') || el.type.startsWith('Documents.'))
       .map(el => ({ type: el.type as DocTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
 
     return buildSubcountQueryList(select);

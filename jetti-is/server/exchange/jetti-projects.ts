@@ -159,12 +159,24 @@ export const KazakhstanSourceSM: IExchangeSource = {
 	exchangeStores: [],
 	exchangeDeparments: [],
 };
+export const SmartassSourceSM: IExchangeSource = {
+	id: 'Smartass',
+	code: 'SM',
+	firstDate: new Date('2020-01-01'),
+	company: 'A919FA80-DB9A-11EA-80C9-190BA33E6566',
+	currency: 'B559C270-42E6-11E8-9F62-93768160FCE2',
+	TransitStorehouse: '',
+	CounterpartieFolder: '',
+	ProductFolder: '',
+	exchangeStores: [],
+	exchangeDeparments: [],
+};
 
 // тестовые прараметры для проекта SM
 export const SMProject: IJettiProject = {
 	id: 'SM',
 	destination: 'SM',
-	sources: [RussiaSourceSM, UkraineSourceSM, KazakhstanSourceSM],
+	sources: [RussiaSourceSM, UkraineSourceSM, KazakhstanSourceSM, SmartassSourceSM],
 	baseURL: 'https://sm.jetti-app.com',
 	queuePostURL: 'api/post',
 	loginURL: 'exchange/login',

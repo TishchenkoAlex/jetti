@@ -71,26 +71,38 @@ async function QueuePostJetti(sp: ISyncParams) {
 						}),
 					})
 					.then(async (response) => {
-						if (sp.logLevel > 2)
+						if (sp.logLevel > 2) {
+							let st = '';
+							if ('status' in response) st = response.status.toString();
 							await saveLogProtocol(
 								sp.syncid,
 								0,
 								0,
 								syncStage,
-								`Posted document id=${row.id}. Status=${response.status}`,
+								`Posted document id=${row.id}. Status=${st}`,
 							);
+						}
 						await dsql.none(`delete from [exc].[QueuePost] where id = @p1 `, [
 							row.id,
 						]); // удаляем из очереди
 						pcnt = pcnt + 1;
 					})
 					.catch(async (error) => {
+						let err = `Error posting document id=${row.id}: ${error.message}.`;
+						let errd = error.message;
+						if ('response' in error) {
+							if ('status' in error.response) err = err + ` Status=${error.response.status}.`;
+							if ('data' in error.response) {
+								err = err + ` ${error.response.data}`;
+								errd = error.response.data;
+							}
+						}
 						await saveLogProtocol(
 							sp.syncid,
 							0,
 							1,
 							syncStage,
-							`Error posting document id=${row.id}: ${error.message}. Status=${error.response.status}. ${error.response.data}`,
+							err,
 						);
 						await dsql.none(
 							`

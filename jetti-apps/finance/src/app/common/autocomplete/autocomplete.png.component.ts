@@ -3,14 +3,13 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, fo
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
-import { Observable, Subscription, of } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
-import { OwnerRef, StorageType, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
+import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
 import { IComplexObject } from '../dynamic-form/dynamic-form-base';
 import { calendarLocale, dateFormat } from './../../primeNG.module';
-import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { v1 } from 'uuid';
 import { DocService } from '../doc.service';
 import { filter } from 'rxjs/operators';
@@ -48,6 +47,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   @Input() showClear = true;
   @Input() showLabel = true;
   @Input() type: AllTypes;
+  @Input() noEvent = false;
   @Input() inputStyle: { [x: string]: any };
   @Input() checkValue = true;
   @Input() openButton = true;
@@ -71,6 +71,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   useHierarchyList = false;
   filters = new FormListSettings();
   uuid = v1().toLocaleUpperCase();
+  typeBefore: string;
 
   get isComplexValue() { return this.value && this.value.type && this.value.type.includes('.'); }
   get isTypeControl() { return this.type && this.type.startsWith('Types.'); }
@@ -79,15 +80,13 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   get EMPTY() { return { id: null, code: null, type: this.type, value: null }; }
   get isEMPTY() { return this.isComplexControl && !(this.value && this.value.value); }
   get isCatalogParent() { return this.type.startsWith('Catalog.') && this.id === 'parent'; }
-  get hierarchy() { const prop = this.DocProp; return prop ? prop.hierarchy : undefined; }
-  get DocProp() { return this.isTypeValue || !this.isComplexControl ? undefined : createDocument(this.value.type as any).Prop() as DocumentOptions; }
 
   private _value: IComplexObject;
   @Input() set value(obj) {
     if (this.isTypeControl && this.placeholder) {
       this.placeholder = this.placeholder.split('[')[0] + '[' + (obj && obj.type ? obj.type : '') + ']';
     }
-    if (this._value && (this._value.id === obj.id)) {
+    if (this._value && this._value.id === obj.id) {
       this._value = obj;
       this.suggest.patchValue(this._value, patchOptionsNoEvents);
       this.NO_EVENT = false;
@@ -150,11 +149,23 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
 
   handleReset = (event: Event) => this.value = this.EMPTY;
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
-  handleSearch = (event: Event) => {
-    this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders';
-    this.filters = new FormListSettings();
-    if (!this.isTypeValue) this.filters = this.calcFilters();
-    this.showDialog = true;
+  handleSearch = async (event: Event) => {
+    // this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders';
+    this.useHierarchyList = !this.isTypeValue && !this.type.startsWith('Document.');
+    // if (this.useHierarchyList && this.value.type && this.typeBefore !== this.value.type) {
+    //   this.api.getDocPropValuesByType(this.value.type, ['hierarchy'])
+    //     .then(PropValues => {
+    //       this.useHierarchyList = (PropValues && PropValues.length ? PropValues[0].propValue : '') === 'folders';
+    //       this.typeBefore = this.value.type;
+    //       this.filters = new FormListSettings();
+    //       if (!this.isTypeValue) this.filters = this.calcFilters();
+    //       this.showDialog = true;
+    //     });
+    // } else {
+      this.filters = new FormListSettings();
+      if (!this.isTypeValue) this.filters = this.calcFilters();
+      this.showDialog = true;
+    // }
   }
 
   select = () => setTimeout(() => {
@@ -164,10 +175,11 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     }
   })
   onBlur = (event: Event) => {
-    if (this.value && this.suggest.value && (this.value.id !== this.suggest.value.id)) { this.value = this.value; }
+    //   if (this.value && this.suggest.value && (this.value.id !== this.suggest.value.id)) { this.value = this.value; }
   }
 
   searchComplete(row: ISuggest) {
+    if (this.noEvent) return;
     this.showDialog = false;
     this.select();
     if (!row) return;
@@ -220,19 +232,6 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     const funcBody = `f = ${functions[funcName].toString()}; return f();`;
     const func = new Function('doc, row, value, filter', funcBody);
     return func.bind(this, form.getRawValue(), this.formControl.parent.value, this.formControl.value, Filter)();
-  }
-
-
-  async asyncgetFilterFromModule(Filter: FormListFilter[]): Promise<FormListFilter[]> {
-    const form = this.formControl.root as FormGroup;
-    const funcName = `getFilter_${this.id}`;
-    if (!form['metadata'] || !form['metadata']['module'] || !(form['metadata']['module'] as String).includes(funcName)) return Filter;
-    const functions = new Function('', form['metadata']['module']).bind(this)();
-    let funcBody = functions[funcName].toString().replace(/\api\./g, 'await api.') as String;
-    funcBody = `f = async ${funcBody}; return f();`;
-    const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
-    const func = new AsyncFunction('doc, row, value, filter, api', funcBody);
-    return await func.bind(this, form.getRawValue(), this.formControl.parent.value, this.formControl.value, Filter, this.api)();
   }
 
   calcDialogWidth() {

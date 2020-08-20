@@ -5,7 +5,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Catalog construcror',
   icon: 'fa fa-list',
   menu: 'Catalog construcror',
-  dimensions: [
+  commands: [
+    { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 2 },
+    { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 1 }
   ]
 })
 export class CatalogCatalog extends DocumentBase {
@@ -16,13 +18,16 @@ export class CatalogCatalog extends DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '50%' } })
   description = '';
 
+  @Props({ type: 'string', label: 'type' })
+  typeString = '';
+
   @Props({ type: 'string' })
   prefix = '';
 
   @Props({ type: 'string', value: 'fa fa-list', required: true })
   icon = 'fa fa-list';
 
-  @Props({ type: 'string' , required: true})
+  @Props({ type: 'string', required: true })
   menu = '';
 
   @Props({ type: 'enum', value: ['code', 'description'], required: true })
@@ -31,7 +36,7 @@ export class CatalogCatalog extends DocumentBase {
   @Props({ type: 'enum', value: ['folders', 'elements'], required: true })
   hierarchy = 'elements';
 
-  @Props({ type: 'javascript', hiddenInList: true, style: { height: '600px' } })
+  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Module' })
   module = '';
 
   @Props({ type: 'table' })
@@ -47,13 +52,13 @@ export class CatalogCatalog extends DocumentBase {
   commandsOnClient: Command[] = [new Command()];
 
   @Props({ type: 'table', label: 'Relations' })
-  relations: Relation[]  = [new Relation()];
+  relations: Relation[] = [new Relation()];
 
   @Props({ type: 'table', label: 'Dimensions' })
-  dimensions: Dimension[]  = [new Dimension()];
+  dimensions: Dimension[] = [new Dimension()];
 }
 
-class Parameter {
+export class Parameter {
   @Props({ type: 'string', required: true })
   parameter = '';
 
@@ -97,7 +102,7 @@ class Command {
   @Props({ type: 'string', required: true })
   label = '';
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   icon = '';
 
   @Props({ type: 'number', required: true })
@@ -112,7 +117,7 @@ class Relation {
   @Props({ type: 'Catalog.Subcount', required: true })
   type: Ref = null;
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   field = '';
 
 }

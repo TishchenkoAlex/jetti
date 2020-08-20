@@ -20,7 +20,6 @@ import { LoadingService } from './../../common/loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
-import { createDocument } from '../../../../../../jetti-api/server/models/documents.factory';
 import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
 
@@ -71,7 +70,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   dataSource: ApiDataSource;
   readonly = false;
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.type) this.type = this.route.snapshot.params.type;
     if (!this.group) this.group = this.route.snapshot.params.group;
     if (!this.settings) this.settings = this.data.settings;
@@ -79,10 +78,11 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    if (!this.data) {
-      const Doc = createDocument(this.type);
-      this.data = { schema: Doc.Props(), metadata: Doc.Prop() as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
+    if (!this.data && this.type) {
+      const DocMeta = await this.ds.api.getDocMetaByType(this.type);
+      this.data = { schema: DocMeta.Props, metadata: DocMeta.Prop as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
     }
+
     this.columns = buildColumnDef(this.data.schema, this.settings);
     if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
 

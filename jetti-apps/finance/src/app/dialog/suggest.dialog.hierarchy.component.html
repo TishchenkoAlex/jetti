@@ -22,7 +22,7 @@
       </div>
     </p-toolbar>
 
-    <div *ngIf="treeNodesVisible">
+    <div *ngIf="treeNodesVisible && dataSource">
       <p-treeTable #treeTable [value]="treeNodes" selectionMode="single" dataKey="id" [(selection)]="selectedNode"
         (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)" [multiSortMeta]="multiSortMeta"
         [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
@@ -129,7 +129,7 @@
       </p-treeTable>
     </div>
 
-    <div *ngIf="!treeNodesVisible">
+    <div *ngIf="!treeNodesVisible && dataSource">
       <p-table #tbl [value]="dataSource.result$ | async" selectionMode="single" dataKey="id" [lazy]="true"
         sortMode="multiple" [scrollable]="true" [reorderableColumns]="true" [filterDelay]="500"
         [metaKeySelection]="true" [columns]="columns" class="noselect" [scrollHeight]="scrollHeight +'px'"

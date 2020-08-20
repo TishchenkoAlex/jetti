@@ -6,7 +6,6 @@ import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
 import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
-import { createDocument } from '../../../../../jetti-api/server/models/documents.factory';
 import { DocTypes, AllTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
 import { ApiDataSource } from '../common/datatable/api.datasource.v2';
@@ -36,7 +35,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   @Output() Close = new EventEmitter();
   @ViewChild(BaseTreeListComponent, { static: false }) tl: BaseTreeListComponent;
 
-  doc: DocumentBase | undefined;
+  doc: { Prop, Props } | undefined;
 
   columns: ColumnDef[] = [];
   selection: any[] = [];
@@ -62,14 +61,18 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   constructor(private api: ApiService, public ds: DocService, public lds: LoadingService,
     public route: ActivatedRoute, public router: Router, private auth: AuthService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.readonly = this.auth.isRoleAvailableReadonly();
+
     const columns: ColumnDef[] = [];
     const data: { [x: string]: AllTypes }[] = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     if (this.type.startsWith('Document.')) data.push({ date: 'datetime' });
-    try { this.doc = createDocument(this.type); } catch { }
-    const schema = this.doc ? this.doc.Props() : {};
-    const dimensions = this.doc ? (this.doc.Prop() as DocumentOptions).dimensions || [] : [];
+    if (this.type) {
+      this.doc = await this.api.getDocMetaByType(this.type);
+      this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
+    }
+    const schema = this.doc ? this.doc.Props : {};
+    const dimensions = this.doc ? (this.doc.Prop as DocumentOptions).dimensions || [] : [];
     [...data, ...dimensions].forEach(el => {
       const field = Object.keys(el)[0]; const type = el[field];
       let value = schema[field] && schema[field].value;
@@ -87,11 +90,10 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
     this.columns = [...columns.filter(c => !c.hidden)];
     if (this.doc) {
-      this.showTree = (this.doc.Prop() as DocumentOptions).hierarchy === 'folders';
+      this.showTree = (this.doc.Prop as DocumentOptions).hierarchy === 'folders';
       this.showTreeButton = this.showTree;
     }
 
-    this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     this.setSortOrder();
     this.setFilters();
     this.prepareDataSource();
