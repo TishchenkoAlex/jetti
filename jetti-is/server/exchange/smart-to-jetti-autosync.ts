@@ -1,10 +1,8 @@
 import { ISyncParams, getSyncParams, saveSyncParams, saveLogProtocol, finishSync } from './iiko-to-jetti-connection';
 import { ImportRetailClientToJetti } from './smart-to-jetti-catalog-retail-client';
-import { parse } from 'path';
 
 // Автосинхронизация Smartass - Jetti
 export async function AutosyncSmartToJetty(params: any) {
-	console.log(params);
 	const syncParams: ISyncParams = await getSyncParams(params);
 
 	await saveSyncParams(syncParams);
