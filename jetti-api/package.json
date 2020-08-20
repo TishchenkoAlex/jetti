@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "tsc && node dist/server/index.js",
+    "start": "tsc && node dist/server/index.js",
     "tsc": "tsc",
     "build": "tsc && docker build -t eu.gcr.io/jetti-x100/jetti-api:latest . && docker push eu.gcr.io/jetti-x100/jetti-api:latest"
   },

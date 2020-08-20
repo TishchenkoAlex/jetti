@@ -6,6 +6,7 @@ import { RegisterInfoTaxCheck } from '../../models/Registers/Info/TaxCheck';
 import axios, { AxiosInstance } from 'axios';
 import { Agent } from 'https';
 import { Cipher } from 'crypto';
+import moment = require('moment');
 
 export interface ITaxCheck {
     clientInn: string;
@@ -30,12 +31,12 @@ export const AttachmentType_apiHost = 'https://lknpd.nalog.ru/api/v1/receipt';
 export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL): Promise<RegisterInfoTaxCheck | null> {
     const countTextTax = `
     USE sm
-    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and clientInn=@p1
+    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and inn=@p1
     `;
 
     const OperationCounterTax: any = await tx.oneOrNone<RegisterInfoTaxCheck>(countTextTax,
         [
-            taxCheck.clientInn
+            taxCheck.inn
         ]);
     const queryText = `
     SELECT *
@@ -49,7 +50,7 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.clientInn,
             taxCheck.inn,
-            taxCheck.totalAmount,
+            Math.floor(taxCheck.totalAmount),
             taxCheck.operationTime,
             taxCheck.operationId
         ]);
@@ -101,8 +102,7 @@ export async function getTaxCheckFromURL(taxCheckURL: string): Promise<ITaxCheck
 export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpdateOperationTaxCheckResponse> {
     const countTextTax = `
     USE sm
-    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and clientInn=@p1
-    `
+    SELECT COUNT(*) FROM [dbo].[Register.Info.TaxCheck]  where receiptId='' and inn=@p1`;
 
     if (taxCheck.operationTime && typeof taxCheck.operationTime === 'string')
         taxCheck.operationTime = new Date(taxCheck.operationTime);
@@ -112,17 +112,21 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     const tc = await findTaxCheckInRegisterInfo(taxCheck, tx);
     const OperationCounterTax: any = await tx.oneOrNone<RegisterInfoTaxCheck>(countTextTax,
         [
-            taxCheck.clientInn
+            taxCheck.inn
         ]);
+
+    let counter;
+    if (OperationCounterTax['']) {
+        if (OperationCounterTax[''] === 0) {
+            counter = 'У вас нет задолжностей по чекам.';
+        } else {
+            counter = `Количество не отправленных чеков: ${OperationCounterTax['']}`;
+        }
+    }
     if (!tc) {
         result.status = 'error';
         result.info =
-            `Не найден документ операции по реквизитам:
-      ИНН плательщика ${taxCheck.inn},
-      ИНН получателя ${taxCheck.clientInn}
-      на сумму ${taxCheck.totalAmount}
-      ранне ${taxCheck.operationTime}!`;
-        result.counter = OperationCounterTax[''];
+            `Не найден документ операции по реквизитам: ИНН плательщика ${taxCheck.inn}, ИНН получателя ${taxCheck.clientInn} на сумму ${taxCheck.totalAmount} ранне ${moment(taxCheck.operationTime).locale('ru').format('LLL')}!`;
         return result;
     }
 
@@ -131,10 +135,11 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
         if (tc.receiptId !== taxCheck.receiptId) {
             result.status = 'updated';
             result.info = `Привязан к ${await lib.util.getObjectPropertyById(tc.document as string, 'description', tx)}' вместо чека №${tc.receiptId}`;
+            result.counter = counter;
         } else if (tc.totalAmount === taxCheck.totalAmount) {
             result.status = 'exist';
             result.info = `Запись существует. Чек отражен документом ${await lib.util.getObjectPropertyById(tc.document as string, 'description', tx)}`;
-            result.counter = OperationCounterTax[''];
+            result.counter = counter;
             return result;
         }
     }
@@ -143,7 +148,7 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     if (!doc) {
         result.status = 'error';
         result.info = `Отсутстует документ с ID ${tc.document}`;
-        result.counter = OperationCounterTax[''];
+
         return result;
     }
 
@@ -165,7 +170,7 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     }
 
     result.info = `Чек отражен документом ${await lib.util.getObjectPropertyById(tc.document as string, 'description', tx)}`;
-    result.counter = OperationCounterTax[''];
+    result.counter = counter;
     return result;
 
 }
