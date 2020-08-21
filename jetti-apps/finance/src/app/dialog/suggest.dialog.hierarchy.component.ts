@@ -77,7 +77,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     this.readonly = this.auth.isRoleAvailableReadonly();
     const data = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     if (this.type) {
-      this.doc = await this.api.getDocMetaByType(this.type);
+      if (!this.type.startsWith('Types.')) this.doc = await this.api.getDocMetaByType(this.type);
       this.dataSource = new ApiDataSource(this.api, this.type, 18, true);
     }
     const schema = this.doc ? this.doc.Props : {};

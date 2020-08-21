@@ -68,7 +68,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     const data: { [x: string]: AllTypes }[] = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
     if (this.type.startsWith('Document.')) data.push({ date: 'datetime' });
     if (this.type) {
-      this.doc = await this.api.getDocMetaByType(this.type);
+      if (!this.type.startsWith('Types.')) this.doc = await this.api.getDocMetaByType(this.type);
       this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     }
     const schema = this.doc ? this.doc.Props : {};
