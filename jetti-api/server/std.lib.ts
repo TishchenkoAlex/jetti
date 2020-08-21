@@ -83,7 +83,7 @@ export interface JTL {
   };
   meta: {
     updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
-    riseUpdateMetadataEvent: () => Promise<void>,
+    riseUpdateMetadataEvent: () => void,
     getTX: () => MSSQL
   };
   util: {
@@ -567,9 +567,8 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
 
 async function updateSQLViewsByType(type: DocTypes): Promise<void> {
   const tx = getTX();
-  const existsViews = await getExistsViews([type], tx);
   const queries = [
-    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true, existsViews),
+    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
     ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
   ];
   // console.log(queries);
@@ -580,14 +579,6 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
-}
-
-async function getExistsViews(viewsNames: string[], tx: MSSQL): Promise<string[]> {
-  const res = await tx.manyOrNone<{ TABLE_NAME: string }>(
-    `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
-  WHERE TABLE_TYPE = 'VIEW'
-  AND TABLE_NAME in (${viewsNames.map(e => `\'${e}\'`).join()})`);
-  return res ? res.map(e => e.TABLE_NAME) : [];
 }
 
 function getTX(): MSSQL {

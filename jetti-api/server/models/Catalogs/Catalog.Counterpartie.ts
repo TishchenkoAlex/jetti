@@ -45,7 +45,7 @@ export class CatalogCounterpartie extends DocumentBase {
   @Props({ type: 'string', required: false })
   Phone: Ref = null;
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isUnique: true })
   Code1: Ref = null;
 
   @Props({ type: 'string', required: false })

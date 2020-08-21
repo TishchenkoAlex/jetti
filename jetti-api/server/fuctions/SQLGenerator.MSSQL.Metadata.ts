@@ -276,7 +276,7 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false, existsViews?: string[]) {
+  static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
     const allTypes = types || RegisteredDocument();
     const subQueries: string[] = [];
@@ -285,8 +285,6 @@ export class SQLGenegatorMetadata {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
       const select = SQLGenegator.QueryListRaw(doc.Props(), doc.type);
-      // query += `
-      // if (!existsViews || (existsViews && existsViews.includes(catalog.type)))
       subQueries.push(`BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
         END TRY
