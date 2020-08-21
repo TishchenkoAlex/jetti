@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
+    "@types/redis": "^2.8.25",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",

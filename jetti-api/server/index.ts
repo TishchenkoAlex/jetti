@@ -29,21 +29,18 @@ import { initGlobal } from './fuctions/initGlobals';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
 import * as redis from 'redis';
-import { updateDynamicMeta } from './models/Dynamic/Dynamic.common';
+import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
 
 const app = express();
 export const HTTP = httpServer.createServer(app);
 export const IO = socketIO(HTTP);
 
-export const subscriber = redis.createClient(6380, REDIS_DB_HOST,
-  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
-export const publisher = redis.createClient(6380, REDIS_DB_HOST,
-  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
+export const subscriber = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
+export const publisher = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
 
 subscriber.on('message', function (channel, message) {
   if (channel === 'updateDynamicMeta') updateDynamicMeta();
 });
-
 subscriber.subscribe('updateDynamicMeta');
 
 const root = './';
@@ -52,7 +49,6 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(express.static(path.join(root, 'dist')));
-
 
 const api = `/api`;
 app.use(api, authHTTP, jettiDB, documents);

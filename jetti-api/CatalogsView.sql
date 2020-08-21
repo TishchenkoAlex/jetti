@@ -1,17 +1,48 @@
 
-    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-    SELECT
+      CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
+      SELECT
       'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
-      d.id, d.date [date],
-      d.description Presentation,
-      d.info,
-      d.type,CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
-    FROM dbo.[Documents] d
-    GO
-    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
-    GO
+        d.id, d.date[date],
+        d.description Presentation,
+          d.info,
+          d.type, CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
+      FROM dbo.[Documents] d
+      GO
+      GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
+      
+GO
 
-    
+
+      CREATE OR ALTER VIEW dbo.[Catalog.Dynamic] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Dynamic", d.posted, d.deleted, d.isfolder, d.timestamp
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+      
+        , ISNULL(l5.description, d.description) [Dynamic.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Dynamic.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Dynamic.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Dynamic.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Dynamic.Level1]
+      FROM [Catalog.Dynamic.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.Dynamic.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.Dynamic.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.Dynamic.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.Dynamic.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.Dynamic.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Dynamic] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Attachment] AS
         
@@ -47,11 +78,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Documents] [owner.v] ON [owner.v].id = d.[owner]
         LEFT JOIN dbo.[Catalog.Attachment.Type.v] [AttachmentType.v] WITH (NOEXPAND) ON [AttachmentType.v].id = d.[AttachmentType]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Attachment] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Attachment] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type] AS
         
@@ -86,11 +117,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Attachment.Type] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Attachment.Type] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot] AS
         
@@ -123,11 +154,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
         LEFT JOIN dbo.[Catalog.Product.v] [Product.v] WITH (NOEXPAND) ON [Product.v].id = d.[Product]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.AllUnic.Lot] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.AllUnic.Lot] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Account] AS
         
@@ -157,11 +188,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Account] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Account] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Balance] AS
         
@@ -190,11 +221,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Balance] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Balance] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics] AS
         
@@ -221,11 +252,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Balance.Analytics] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Balance.Analytics] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.BankAccount] AS
         
@@ -259,11 +290,11 @@
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Bank.v] [Bank.v] WITH (NOEXPAND) ON [Bank.v].id = d.[Bank]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.BankAccount] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BankAccount] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.CashFlow] AS
         
@@ -290,11 +321,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.CashFlow] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.CashFlow] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.CashRegister] AS
         
@@ -326,11 +357,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.CashRegister] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.CashRegister] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Currency] AS
         
@@ -358,11 +389,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Currency] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Currency] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Company] AS
         
@@ -411,11 +442,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [Intercompany.v] WITH (NOEXPAND) ON [Intercompany.v].id = d.[Intercompany]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
         LEFT JOIN dbo.[Catalog.TaxOffice.v] [TaxOffice.v] WITH (NOEXPAND) ON [TaxOffice.v].id = d.[TaxOffice]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Company] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Company] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Company.Group] AS
         
@@ -443,11 +474,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Company.Group] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Company.Group] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Country] AS
         
@@ -476,11 +507,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Country] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Country] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie] AS
         
@@ -522,11 +553,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount] AS
         
@@ -562,11 +593,11 @@
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Bank.v] [Bank.v] WITH (NOEXPAND) ON [Bank.v].id = d.[Bank]
         LEFT JOIN dbo.[Documents] [owner.v] ON [owner.v].id = d.[owner]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Contract] AS
         
@@ -621,11 +652,11 @@
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.Counterpartie.BankAccount.v] [BankAccount.v] WITH (NOEXPAND) ON [BankAccount.v].id = d.[BankAccount]
         LEFT JOIN dbo.[Catalog.Manager.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Contract] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Contract] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany] AS
         
@@ -664,11 +695,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [KorrCompany.v] WITH (NOEXPAND) ON [KorrCompany.v].id = d.[KorrCompany]
         LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Contract.Intercompany] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Contract.Intercompany] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] AS
         
@@ -695,11 +726,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.BusinessDirection] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BusinessDirection] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics] AS
         
@@ -729,11 +760,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Unit.v] [Unit.v] WITH (NOEXPAND) ON [Unit.v].id = d.[Unit]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Salary.Analytics] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Salary.Analytics] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department] AS
         
@@ -750,6 +781,7 @@
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
+        , ISNULL([PriceType.v].description, '') [PriceType.value], d.[PriceType] [PriceType.id], [PriceType.v].type [PriceType.type]
         , ISNULL([kind.v].description, '') [kind.value], d.[kind] [kind.id], [kind.v].type [kind.type]
         , d.[Address] [Address]
         , d.[Longitude] [Longitude]
@@ -776,12 +808,13 @@
         LEFT JOIN dbo.[Catalog.TaxOffice.v] [TaxOffice.v] WITH (NOEXPAND) ON [TaxOffice.v].id = d.[TaxOffice]
         LEFT JOIN dbo.[Catalog.Person.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
         LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
+        LEFT JOIN dbo.[Catalog.PriceType.v] [PriceType.v] WITH (NOEXPAND) ON [PriceType.v].id = d.[PriceType]
         LEFT JOIN dbo.[Catalog.Department.Kind.v] [kind.v] WITH (NOEXPAND) ON [kind.v].id = d.[kind]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind] AS
         
@@ -808,11 +841,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Department.Kind] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Department.Kind] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.Company] AS
         
@@ -842,11 +875,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.StaffingTable.v] [StaffingPositionManager.v] WITH (NOEXPAND) ON [StaffingPositionManager.v].id = d.[StaffingPositionManager]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Department.Company] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Department.Company] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason] AS
         
@@ -873,11 +906,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Department.StatusReason] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Department.StatusReason] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Expense] AS
         
@@ -909,11 +942,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Account.v] [Account.v] WITH (NOEXPAND) ON [Account.v].id = d.[Account]
         LEFT JOIN dbo.[Catalog.BudgetItem.v] [BudgetItem.v] WITH (NOEXPAND) ON [BudgetItem.v].id = d.[BudgetItem]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Expense] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Expense] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics] AS
         
@@ -942,11 +975,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.BudgetItem.v] [BudgetItem.v] WITH (NOEXPAND) ON [BudgetItem.v].id = d.[BudgetItem]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Expense.Analytics] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Expense.Analytics] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Income] AS
         
@@ -978,11 +1011,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Account.v] [Account.v] WITH (NOEXPAND) ON [Account.v].id = d.[Account]
         LEFT JOIN dbo.[Catalog.BudgetItem.v] [BudgetItem.v] WITH (NOEXPAND) ON [BudgetItem.v].id = d.[BudgetItem]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Income] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Income] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Loan] AS
         
@@ -1034,11 +1067,11 @@
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
         LEFT JOIN dbo.[Catalog.LoanRepaymentProcedure.v] [LoanRepaymentProcedure.v] WITH (NOEXPAND) ON [LoanRepaymentProcedure.v].id = d.[LoanRepaymentProcedure]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Loan] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Loan] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure] AS
         
@@ -1065,11 +1098,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] AS
         
@@ -1098,11 +1131,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Balance.v] [Balance.v] WITH (NOEXPAND) ON [Balance.v].id = d.[Balance]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.LoanTypes] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.LoanTypes] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Manager] AS
         
@@ -1132,11 +1165,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Manager] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Manager] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person] AS
         
@@ -1186,11 +1219,11 @@
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.JobTitle.v] [JobTitle.v] WITH (NOEXPAND) ON [JobTitle.v].id = d.[JobTitle]
         LEFT JOIN dbo.[Catalog.PersonIdentity.v] [DocumentType.v] WITH (NOEXPAND) ON [DocumentType.v].id = d.[DocumentType]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Person] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Person] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.PriceType] AS
         
@@ -1220,11 +1253,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.PriceType] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.PriceType] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product] AS
         
@@ -1266,11 +1299,11 @@
         LEFT JOIN dbo.[Catalog.Expense.v] [Expense.v] WITH (NOEXPAND) ON [Expense.v].id = d.[Expense]
         LEFT JOIN dbo.[Catalog.Expense.Analytics.v] [Analytics.v] WITH (NOEXPAND) ON [Analytics.v].id = d.[Analytics]
         LEFT JOIN dbo.[Catalog.Product.Report.v] [ProductReport.v] WITH (NOEXPAND) ON [ProductReport.v].id = d.[ProductReport]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Product] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Product] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario] AS
         
@@ -1297,11 +1330,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.PlanningScenario] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.PlanningScenario] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory] AS
         
@@ -1328,11 +1361,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.ProductKind] AS
         
@@ -1360,11 +1393,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.ProductKind] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.ProductKind] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Report] AS
         
@@ -1395,11 +1428,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
         LEFT JOIN dbo.[Catalog.Unit.v] [Unit.v] WITH (NOEXPAND) ON [Unit.v].id = d.[Unit]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Product.Report] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Product.Report] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Storehouse] AS
         
@@ -1428,11 +1461,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Storehouse] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Storehouse] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation] AS
         
@@ -1463,11 +1496,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Operation] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Operation] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group] AS
         
@@ -1497,11 +1530,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Operation.Group] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Operation.Group] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type] AS
         
@@ -1528,11 +1561,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.OrderSource] AS
         
@@ -1559,11 +1592,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.OrderSource] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.OrderSource] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Unit] AS
         
@@ -1594,11 +1627,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Unit.v] [BaseUnit.v] WITH (NOEXPAND) ON [BaseUnit.v].id = d.[BaseUnit]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.User] AS
         
@@ -1631,11 +1664,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [Person.v] WITH (NOEXPAND) ON [Person.v].id = d.[Person]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.User] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.User] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup] AS
         
@@ -1662,11 +1695,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.UsersGroup] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.UsersGroup] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Role] AS
         
@@ -1693,11 +1726,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Role] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Role] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.SubSystem] AS
         
@@ -1725,11 +1758,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.SubSystem] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.SubSystem] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.JobTitle] AS
         
@@ -1760,11 +1793,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.JobTitle.Category.v] [Category.v] WITH (NOEXPAND) ON [Category.v].id = d.[Category]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.JobTitle] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.JobTitle] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category] AS
         
@@ -1791,11 +1824,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.JobTitle.Category] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.JobTitle.Category] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity] AS
         
@@ -1822,11 +1855,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.PersonIdentity] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.PersonIdentity] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes] AS
         
@@ -1853,11 +1886,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Package] AS
         
@@ -1889,11 +1922,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Product.v] [Product.v] WITH (NOEXPAND) ON [Product.v].id = d.[Product]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Product.Package] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Product.Package] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic] AS
         
@@ -1923,11 +1956,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Product.Analytic] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Product.Analytic] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable] AS
         
@@ -1966,11 +1999,11 @@
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Department.Company.v] [DepartmentCompany.v] WITH (NOEXPAND) ON [DepartmentCompany.v].id = d.[DepartmentCompany]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.StaffingTable] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.StaffingTable] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Brand] AS
         
@@ -1997,11 +2030,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Brand] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Brand] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation] AS
         
@@ -2029,11 +2062,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation] AS
         
@@ -2063,11 +2096,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.ObjectsExploitation.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.ObjectsExploitation] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.ObjectsExploitation] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Catalog] AS
         
@@ -2077,6 +2110,7 @@
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[typeString] [typeString]
         , d.[prefix] [prefix]
         , d.[icon] [icon]
         , d.[menu] [menu]
@@ -2100,11 +2134,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Catalog] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Catalog] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem] AS
         
@@ -2134,11 +2168,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.BudgetItem.v] [parent2.v] WITH (NOEXPAND) ON [parent2.v].id = d.[parent2]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Scenario] AS
         
@@ -2167,11 +2201,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Scenario] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Scenario] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation] AS
         
@@ -2198,11 +2232,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.ManufactureLocation] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.ManufactureLocation] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal] AS
         
@@ -2237,11 +2271,11 @@
         LEFT JOIN dbo.[Catalog.BankAccount.v] [BankAccount.v] WITH (NOEXPAND) ON [BankAccount.v].id = d.[BankAccount]
         LEFT JOIN dbo.[Catalog.Counterpartie.v] [Counterpartie.v] WITH (NOEXPAND) ON [Counterpartie.v].id = d.[Counterpartie]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.AcquiringTerminal] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.AcquiringTerminal] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Bank] AS
         
@@ -2273,11 +2307,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount] AS
         
@@ -2311,11 +2345,11 @@
         LEFT JOIN dbo.[Catalog.Person.v] [owner.v] WITH (NOEXPAND) ON [owner.v].id = d.[owner]
         LEFT JOIN dbo.[Catalog.Bank.v] [Bank.v] WITH (NOEXPAND) ON [Bank.v].id = d.[Bank]
         LEFT JOIN dbo.[Catalog.SalaryProject.v] [SalaryProject.v] WITH (NOEXPAND) ON [SalaryProject.v].id = d.[SalaryProject]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Person.BankAccount] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Person.BankAccount] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract] AS
         
@@ -2351,11 +2385,11 @@
         LEFT JOIN dbo.[Catalog.Person.v] [owner.v] WITH (NOEXPAND) ON [owner.v].id = d.[owner]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.Person.BankAccount.v] [BankAccount.v] WITH (NOEXPAND) ON [BankAccount.v].id = d.[BankAccount]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Person.Contract] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Person.Contract] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion] AS
         
@@ -2382,11 +2416,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.BusinessRegion] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BusinessRegion] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxRate] AS
         
@@ -2414,11 +2448,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxRate] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxRate] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode] AS
         
@@ -2446,11 +2480,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode] AS
         
@@ -2480,11 +2514,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Balance.Analytics.v] [BalanceAnalytics.v] WITH (NOEXPAND) ON [BalanceAnalytics.v].id = d.[BalanceAnalytics]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxPaymentCode] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxPaymentCode] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment] AS
         
@@ -2511,11 +2545,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxBasisPayment] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxBasisPayment] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod] AS
         
@@ -2542,11 +2576,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus] AS
         
@@ -2574,11 +2608,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxPayerStatus] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxPayerStatus] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice] AS
         
@@ -2609,11 +2643,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.TaxOffice] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.TaxOffice] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.RetailClient] AS
         
@@ -2649,11 +2683,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.RetailClient] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.RetailClient] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject] AS
         
@@ -2688,11 +2722,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Bank.v] [bank.v] WITH (NOEXPAND) ON [bank.v].id = d.[bank]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.SalaryProject] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.SalaryProject] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Specification] AS
         
@@ -2725,11 +2759,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePerson.v] WITH (NOEXPAND) ON [ResponsiblePerson.v].id = d.[ResponsiblePerson]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Specification] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Specification] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup] AS
         
@@ -2756,11 +2790,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.InvestorGroup] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.InvestorGroup] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Employee] AS
         
@@ -2789,11 +2823,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [Person.v] WITH (NOEXPAND) ON [Person.v].id = d.[Person]
-    
-      GO
-      GRANT SELECT ON dbo.[Catalog.Employee] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.Employee] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] AS
         
@@ -2820,11 +2854,11 @@
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.ExchangeRates] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.ExchangeRates] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.Invoice] AS
         
@@ -2865,11 +2899,11 @@
         LEFT JOIN dbo.[Catalog.Counterpartie.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
         LEFT JOIN dbo.[Catalog.Manager.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.Invoice] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.Invoice] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.Operation] AS
         
@@ -2909,11 +2943,11 @@
         LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
         LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
         LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.Operation] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.Operation] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.PriceList] AS
         
@@ -2943,11 +2977,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.PriceType.v] [PriceType.v] WITH (NOEXPAND) ON [PriceType.v].id = d.[PriceType]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.PriceList] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.PriceList] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.Settings] AS
         
@@ -2978,11 +3012,11 @@
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [balanceCurrency.v] WITH (NOEXPAND) ON [balanceCurrency.v].id = d.[balanceCurrency]
         LEFT JOIN dbo.[Catalog.Currency.v] [accountingCurrency.v] WITH (NOEXPAND) ON [accountingCurrency.v].id = d.[accountingCurrency]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.Settings] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.Settings] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.UserSettings] AS
         
@@ -3017,11 +3051,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Documents] [UserOrGroup.v] ON [UserOrGroup.v].id = d.[UserOrGroup]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.UserSettings] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.UserSettings] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.WorkFlow] AS
         
@@ -3051,11 +3085,11 @@
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Documents] [Document.v] ON [Document.v].id = d.[Document]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.CashRequest] AS
         
@@ -3144,11 +3178,11 @@
         LEFT JOIN dbo.[Catalog.TaxPaymentPeriod.v] [TaxPaymentPeriod.v] WITH (NOEXPAND) ON [TaxPaymentPeriod.v].id = d.[TaxPaymentPeriod]
         LEFT JOIN dbo.[Catalog.Balance.Analytics.v] [BalanceAnalytics.v] WITH (NOEXPAND) ON [BalanceAnalytics.v].id = d.[BalanceAnalytics]
         LEFT JOIN dbo.[Catalog.Company.v] [tempCompanyParent.v] WITH (NOEXPAND) ON [tempCompanyParent.v].id = d.[tempCompanyParent]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
-      GO
-      
+    ;
+GO
+GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
+GO
+
 
       CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry] AS
         
@@ -3186,9 +3220,6 @@
         LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
         LEFT JOIN dbo.[Catalog.BusinessDirection.v] [BusinessDirection.v] WITH (NOEXPAND) ON [BusinessDirection.v].id = d.[BusinessDirection]
         LEFT JOIN dbo.[Catalog.Currency.v] [сurrency.v] WITH (NOEXPAND) ON [сurrency.v].id = d.[сurrency]
-    
-      GO
-      GRANT SELECT ON dbo.[Document.CashRequestRegistry] TO jetti;
-      GO
-      
-    
+    ;
+GO
+GRANT SELECT ON dbo.[Document.CashRequestRegistry] TO jetti;
