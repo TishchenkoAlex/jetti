@@ -582,7 +582,7 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
 }
 
 function getTX(): MSSQL {
-  return new MSSQL(JETTI_POOL_META);
+  return new MSSQL(TASKS_POOL);
 }
 
 function jettiPoolTx(): MSSQL {
