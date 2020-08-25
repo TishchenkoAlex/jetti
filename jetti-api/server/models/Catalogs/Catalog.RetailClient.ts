@@ -5,6 +5,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   description: 'Розничный клиент',
   icon: 'fa fa-list',
   menu: 'Розничные клиенты',
+  hierarchy: 'folders'
 })
 export class CatalogRetailClient extends DocumentBase {
 
