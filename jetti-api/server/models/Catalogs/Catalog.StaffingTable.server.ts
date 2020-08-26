@@ -8,6 +8,8 @@ export class CatalogStaffingTableServer extends CatalogStaffingTable implements 
 
   beforeSave = async (tx: MSSQL): Promise<this> => {
 
+    if (this.isfolder) return this;
+
     const defVal = '<пусто>';
     const getDescription = async (id: Ref): Promise<string> => {
       if (!id) return defVal;
