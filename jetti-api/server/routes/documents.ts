@@ -44,7 +44,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     const email = User(req).email;
     const id: string | undefined = params.id;
     const type: DocTypes = params.type;
-    const Operation: string | undefined = req.query.Operation as string || undefined;
+    const Operation: string | undefined = req.query.Operation as string || params.operation as string || undefined;
     const isFolder: boolean = req.query.isfolder === 'true';
 
     let doc: IFlatDocument | DocumentOperation | null = null;
@@ -115,9 +115,10 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
     const metadata = ServerDoc.Prop() as DocumentOptions;
-    if (params.group) {
+    if (params.operation)
+      metadata['Operation'] = await lib.doc.formControlRef(params.operation, sdb);
+    else if (params.group && params.operation)
       metadata['Group'] = await lib.doc.formControlRef(params.group, sdb);
-    }
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }

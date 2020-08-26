@@ -15,7 +15,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
     { type: 'Document.Operation', icon: '', label: 'Operation', order: 1 }
   ],
   hierarchy: 'folders',
-  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableOperationRulesDesigner()}; return {onOpen};}`
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableOperationRulesDesigner()}; return {onOpen};}`,
+  commands: [
+    { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 1 },
+  ]
 })
 export class CatalogOperation extends DocumentBase {
 
@@ -27,6 +30,9 @@ export class CatalogOperation extends DocumentBase {
 
   @Props({ type: 'string', order: 3, required: true, style: { width: '50%' } })
   description = '';
+
+  @Props({ type: 'string', order: 3, required: true, style: { width: '50%' } })
+  shortName = '';
 
   @Props({ type: 'javascript', required: true, hiddenInList: true, style: { height: '50vh' }, value: '' })
   script = '';
@@ -47,7 +53,7 @@ export class CatalogOperation extends DocumentBase {
   commandsOnClient: Command[] = [new Command()];
 }
 
-class Parameter {
+export class Parameter {
   @Props({ type: 'string', required: true })
   parameter = '';
 

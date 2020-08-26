@@ -83,6 +83,7 @@ export interface JTL {
   };
   meta: {
     updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
+    updateSQLViewsByOperationId: (id: string) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     getTX: () => MSSQL
   };
@@ -160,6 +161,7 @@ export const lib: JTL = {
   },
   meta: {
     updateSQLViewsByType,
+    updateSQLViewsByOperationId,
     riseUpdateMetadataEvent,
     getTX
   },
@@ -570,6 +572,21 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
     ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+  ];
+  // console.log(queries);
+  for (const querText of queries) {
+    try {
+      await tx.none(`execute sp_executesql @p1`, [querText]);
+    } catch (error) {
+      if (queries.indexOf(querText)) throw new Error(error);
+    }
+  }
+}
+async function updateSQLViewsByOperationId(id: string): Promise<void> {
+  const tx = getTX();
+  const queries = [
+    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true),
+    ...await SQLGenegatorMetadata.CreateViewOperations([id], true)
   ];
   // console.log(queries);
   for (const querText of queries) {

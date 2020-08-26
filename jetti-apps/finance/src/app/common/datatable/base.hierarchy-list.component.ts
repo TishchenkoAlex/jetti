@@ -17,7 +17,7 @@ import { UserSettingsService } from './../../auth/settings/user.settings.service
 import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
-import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+import { IViewModel, Type } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
@@ -54,8 +54,8 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   @ViewChild('tbl', { static: false }) tbl: Table;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
   get id() { return this.selectedData ? this.selectedData.id : null; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; this.selectedNode = { data: { id: id }, key: id, type: this.type }; }
   get selectedData() {

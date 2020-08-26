@@ -1,9 +1,7 @@
-import { DocTypes, AllDocTypes } from './../../models/documents.types';
-// tslint:disable:prefer-const
 import { DocListRequestBody, DocListResponse } from '../../models/common-types';
 import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';
-import { FilterInterval, FormListFilter } from './../../models/user.settings';
+import { FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { filterBuilder } from '../../fuctions/filterBuilder';
@@ -29,13 +27,13 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     queryText = queryText + 'ORDER BY description';
     const folders = await tx.manyOrNone(queryText, [parent]);
     // elements
-    let deletedFilter = params.filter.find(e => e.left === 'deleted');
+    const deletedFilter = params.filter.find(e => e.left === 'deleted');
     params.filter = [];
     params.filter.push(new FormListFilter('parent', '=', { id: parent, type: params.type }));
     params.filter.push(new FormListFilter('isfolder', '=', 0));
     if (deletedFilter) params.filter.push(new FormListFilter('deleted', '=', 0));
     params.listOptions.withHierarchy = false;
-    let result = await List(params, tx);
+    const result = await List(params, tx);
 
     result.data = folders.concat(result.data);
 
@@ -45,7 +43,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   params.command = params.command || 'first';
 
   const cs = configSchema().get(params.type);
-  let { QueryList, Props } = cs!;
+  const { QueryList, Props } = cs!;
 
   let row: DocumentBase | null = null;
   let query = '';

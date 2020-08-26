@@ -35,10 +35,8 @@ const app = express();
 export const HTTP = httpServer.createServer(app);
 export const IO = socketIO(HTTP);
 
-export const subscriber = redis.createClient(6380, REDIS_DB_HOST,
-  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
-export const publisher = redis.createClient(6380, REDIS_DB_HOST,
-  { auth_pass: REDIS_DB_AUTH, tls: { servername: REDIS_DB_HOST } });
+export const subscriber = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
+export const publisher = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
 
 subscriber.on('message', function (channel, message) {
   if (channel === 'updateDynamicMeta') updateDynamicMeta();
@@ -94,6 +92,11 @@ JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 initGlobal().then(e => {
   if (!global['isProd']) {
+
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, (err) => { }));
+
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
+
 
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });

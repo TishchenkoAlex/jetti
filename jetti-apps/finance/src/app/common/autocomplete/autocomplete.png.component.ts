@@ -4,7 +4,7 @@ import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALID
 import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription } from 'rxjs';
-import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
+import { ISuggest, Type } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
@@ -151,7 +151,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   handleOpen = (event: Event) => this.router.navigate([this.value.type || this.type, this.value.id]);
   handleSearch = async (event: Event) => {
     // this.useHierarchyList = !this.isTypeValue && this.hierarchy === 'folders';
-    this.useHierarchyList = !this.isTypeValue && !this.type.startsWith('Document.');
+    this.useHierarchyList = !this.isTypeValue && !Type.isDocument(this.type);
     // if (this.useHierarchyList && this.value.type && this.typeBefore !== this.value.type) {
     //   this.api.getDocPropValuesByType(this.value.type, ['hierarchy'])
     //     .then(PropValues => {
@@ -162,9 +162,9 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     //       this.showDialog = true;
     //     });
     // } else {
-      this.filters = new FormListSettings();
-      if (!this.isTypeValue) this.filters = this.calcFilters();
-      this.showDialog = true;
+    this.filters = new FormListSettings();
+    if (!this.isTypeValue) this.filters = this.calcFilters();
+    this.showDialog = true;
     // }
   }
 
@@ -206,7 +206,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
     }
     if (!result.filter.find(e => e.left === 'company')) {
       let company;
-      if (this.type.startsWith('Document.')) {
+      if (Type.isDocument(this.type)) {
         const doc = this.formControl && this.formControl.root.value;
         if (doc && doc.company.id) company = doc.company;
       } else if (this.type === 'Types.Document') {

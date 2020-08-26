@@ -4,7 +4,7 @@ import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
-import { createDocument, RegisteredDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
+import { createDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
 import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
 import { createTypes, RegisteredTypes } from './Types/Types.factory';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
@@ -25,14 +25,10 @@ export interface IConfigSchema {
 }
 
 export function configSchema(): Map<AllDocTypes, IConfigSchema> {
-  return new Map(
-    [...configSchemaStatic,
-    ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentDynamic())
-    ]
-      .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+  return global['configSchema'];
 }
 
-function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
+export function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
   return [
     ...RegisteredDocuments.map(el => {
       const doc = createDocument(el.type);

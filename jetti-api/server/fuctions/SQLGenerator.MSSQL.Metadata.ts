@@ -1,12 +1,10 @@
-import { query } from 'express';
 import { DocTypes } from './../models/documents.types';
 import { DocumentOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
-import { type } from 'os';
-import { MSSQL } from '../mssql';
+import { lib } from '../std.lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
@@ -226,6 +224,93 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
+  static async CreateViewOperations(operationsId?: string[], asArrayOfQueries = false) {
+
+    const type = 'Document.Operation';
+    const id = await lib.util.GUID();
+    const tx = lib.util.jettiPoolTx();
+
+    const getOperationsWithShortNames = async (operationsId?: string[]) => {
+      let query =
+        `SELECT id, shortName FROM [dbo].[Catalog.Operation.v]
+    WHERE posted = 1 and shortName <> ''`;
+      if (operationsId) query += `and id in (${operationsId.map(e => '\'' + e + '\'').join()})`;
+      const res = await tx.manyOrNone<{ id: string, shortName: string }>(query);
+      return res ? res : [];
+    };
+
+    const getOperationProps = async (operId: string) =>
+      (await lib.doc.createDocServer(type, { id: id, Operation: operId } as any, tx)).Props();
+
+    const subQueries: string[] = [];
+    const operations = await getOperationsWithShortNames(operationsId);
+
+    for (const operation of operations) {
+      const Props = await getOperationProps(operation.id);
+      let select = SQLGenegator.QueryList(Props, type);
+      const name = `Operation.${operation.shortName.trim()}`;
+      select = select
+        .replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `FROM [${name}.v] d WITH (NOEXPAND)`)
+        .replace('d.description,', `d.description "${operation.shortName.trim()}", `);
+
+      subQueries.push(`
+      CREATE OR ALTER VIEW dbo.[${name}] AS
+      ${select}; `);
+
+      subQueries.push(`GRANT SELECT ON dbo.[${name}] TO jetti; `);
+    }
+    return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
+  }
+
+  static async CreateViewOperationsIndex(operationsId?: string[], asArrayOfQueries = false) {
+
+    const type = 'Document.Operation';
+    const id = await lib.util.GUID();
+    const tx = lib.util.jettiPoolTx();
+
+    const getOperationsWithShortNames = async (operationsId?: string[]) => {
+      let query =
+        `SELECT id, shortName FROM[dbo].[Catalog.Operation.v]
+      WHERE posted = 1 and shortName <> ''`;
+      if (operationsId) query += `and id in (${operationsId.map(e => '\'' + e + '\'').join()})`;
+      const res = await tx.manyOrNone<{ id: string, shortName: string }>(query);
+      return res ? res : [];
+    };
+
+    const getOperationProps = async (operId: string) =>
+      (await lib.doc.createDocServer(type, { id: id, Operation: operId } as any, tx)).Props();
+
+    const subQueries: string[] = [];
+    const operations = await getOperationsWithShortNames(operationsId);
+
+    for (const operation of operations) {
+      const Props = await getOperationProps(operation.id);
+      const select = SQLGenegator.QueryListRaw(Props, type);
+      const name = `Operation.${operation.shortName.trim()}`;
+
+      subQueries.push(`BEGIN TRY
+      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${ name}.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH`);
+
+      subQueries.push(`CREATE OR ALTER VIEW dbo.[${name}.v] WITH SCHEMABINDING AS ${select} AND JSON_VALUE(doc, N'$.Operation') = '${operation.id}'; `);
+
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${name}.v] ON[${name}.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[${name}.v.date] ON[${name}.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX[${name}.v.parent] ON[${name}.v](parent, id) INCLUDE([company]); `);
+
+      subQueries.push(`GRANT SELECT ON dbo.[${name}.v]TO jetti; `);
+
+      subQueries.push(`ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${name}.v]; `);
+
+    }
+
+    return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
+  }
+
+
   static CreateViewCatalogs(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
     const subQueries: string[] = [];
@@ -278,7 +363,7 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
-    const allTypes = types || RegisteredDocument();
+    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
     const subQueries: string[] = [];
 
     for (const catalog of allTypes) {
@@ -336,7 +421,7 @@ export class SQLGenegatorMetadata {
     //   --WITH (STATE = ON);
     // --GO
     // `;
-    const allTypes = types || RegisteredDocument();
+    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
     const go = types ? 'GO' : 'GO';
     const queries = [];
     for (const catalog of allTypes) {

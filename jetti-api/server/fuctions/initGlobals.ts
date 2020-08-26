@@ -1,7 +1,7 @@
 import { x100 } from '../x100.lib';
 import { lib } from '../std.lib';
 import moment = require('moment');
-import { getDynamicMeta } from '../models/Dynamic/Dynamic.common';
+import { updateDynamicMeta } from '../models/Dynamic/Dynamic.common';
 
 export const initGlobal = async () => {
 
@@ -11,7 +11,7 @@ export const initGlobal = async () => {
     global['byCode'] = lib.doc.byCode;
     global['moment'] = moment;
     global['isProd'] = process.env.NODE_ENV === 'production';
-    global['dynamicMeta'] = await getDynamicMeta();
+    await updateDynamicMeta();
 
 };
 
