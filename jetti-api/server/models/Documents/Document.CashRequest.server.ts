@@ -391,7 +391,7 @@ ORDER BY
     return this;
   }
 
-  async getLatestSameCashRequest(tx: MSSQL) {
+  async checkTaxCheck(tx: MSSQL) {
     const q = `
     select
       document,
@@ -412,19 +412,27 @@ ORDER BY
 
   async onPost(tx: MSSQL) {
 
-    if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
-      throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
+    const superuser = await this.isSuperuser(tx);
+    if (!superuser) {
 
-    if (!this.CashFlow)
-      throw new Error(`${this.description} не может быть проведен:\n не указана статья ДДС`);
+      // if (this.Operation && this.Operation === 'Выплата заработной платы без ведомости') {
+      //   await this.checkTaxCheck(tx);
+      // }
 
-    if (!this.EnforcementProceedings && await this.useSalaryPenalty(tx))
-      throw new Error(`${this.description} не может быть проведен:\n не указан вид дохода`);
+      if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
+        throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
 
-    if (this.info) {
-      const curlength = (this.info as string).split('\n')[0].length;
-      if (curlength > 120 && await lib.util.getObjectPropertyById(this.company as any, 'county.code', tx) !== 'UKR')
-        throw Error(`Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
+      if (!this.CashFlow)
+        throw new Error(`${this.description} не может быть проведен:\n не указана статья ДДС`);
+
+      if (!this.EnforcementProceedings && await this.useSalaryPenalty(tx))
+        throw new Error(`${this.description} не может быть проведен:\n не указан вид дохода`);
+
+      if (this.info) {
+        const curlength = (this.info as string).split('\n')[0].length;
+        if (curlength > 120 && await lib.util.getObjectPropertyById(this.company as any, 'county.code', tx) !== 'UKR')
+          throw Error(`Назначение платежа превышает максимально допустимую длину (120 символов) на ${curlength - 120} символов`);
+      }
     }
 
     if (this.Status !== 'REJECTED') {

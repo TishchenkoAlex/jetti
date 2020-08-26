@@ -153,3 +153,68 @@ connection.query(`
 
 connection.end();
 */
+
+
+/* ================================================ MODIFICATIONS
+---------------------------------> ROMANIA -> SM
+const params = {
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SM',
+	sourceid: 'Romania',
+	autosync: true,
+	periodBegin: new Date('2020-06-01'), // ImportPurchaseRetToJetti date period 2019-03-26
+	periodEnd: new Date('2020-06-30'),
+	exchangeID: '', // '', //leftrovers = '' //B72A88A5-E93A-4959-B2DC-287B798CA171
+	execFlag: 512, //512
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 0,
+	syncFunctionName: 'AutosincIkoToJetty',
+	info: 'Test Autosync',
+	company:'FB954970-F8FD-11E9-8CC0-4361F9AEA805'
+};
+---------------------------------> RUSSIA -> SMV 
+const params = {
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SMV',
+	sourceid: 'Russia',
+	autosync: true,
+	periodBegin: new Date('2020-06-30'), 
+	periodEnd: new Date('2020-06-30'),
+	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', //
+	execFlag: 512,
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 0,
+	syncFunctionName: 'AutosincIkoToJetty',
+	info: 'Test Autosync',
+};
+AutosyncIIkoToJetty(params).catch((error) => {
+	console.log(error);
+});
+*/ 
+
+/* ================================================ LEFTROVERS
+---------------------------------> RUSSIA -> SMV
+const params = {
+	docid: 'D035ECB0-BA01-11EA-A123-0157C63EEA3C',
+	projectid: 'SMV',
+	sourceid: 'Russia',
+	autosync: true,
+	periodBegin: new Date('2020-06-30'), 
+	periodEnd: new Date('2020-06-30'),
+	exchangeID: 'B72A88A5-E93A-4959-B2DC-287B798CA171', // '', /
+	execFlag: 512,
+	objectList: [],
+	forcedUpdate: true,
+	logLevel: 2,
+	flow: 0,
+	syncFunctionName: 'AutosincIkoToJetty',
+	info: 'Test Autosync',
+};
+AutosyncIIkoToJetty(params).catch((error) => {
+	console.log(error);
+});
+*/

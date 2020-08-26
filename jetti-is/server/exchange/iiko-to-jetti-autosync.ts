@@ -19,6 +19,7 @@ import { ImportPurchaseToJetti } from './iiko-to-jetti-purchase';
 import { ImportPurchaseRetToJetti } from './iiko-to-jetti-purchase-ret';
 import { ImportTransferIntToJetti } from './iiko-to-jetti-doc-transfer-int';
 import { ImportLeftRoverToJetti } from './iiko-to-jetti-leftovers';
+import { ImportModificationToJetti } from './iiko-to-jetti-modifications';
 ///////////////////////////////////////////////////////////
 // Автосинхронизация IIKO - Jetti СМ с помощью sql-процедуры в базе x100-data
 export async function AutosyncSMSQL(params: any) {
@@ -158,31 +159,33 @@ export async function AutosyncIIkoToJetty(params: any) {
 		}
 	}
 
-	// документы
-	const syncFunc: any[] = [];
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 2) === 2) {
-		syncFunc.push(ImportPurchaseToJetti(syncParams));
-		syncFunc.push(ImportPurchaseRetToJetti(syncParams));
-	}
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 4) === 4)
-		syncFunc.push(ImportTransferIntToJetti(syncParams));
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 8) === 8)
-		syncFunc.push(ImportInventToJetti(syncParams));
-	// tslint:disable-next-line: no-bitwise
-	// if ((syncParams.execFlag & 16) === 16) syncFunc.push(ImportProductionToJetti(syncParams)); // производство
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 32) === 32)
-		syncFunc.push(ImportSalesToJetti(syncParams));
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 64) === 64)
-		syncFunc.push(ImportWriteOffToJetti(syncParams));
-	// tslint:disable-next-line: no-bitwise
-	if ((syncParams.execFlag & 128) === 128)
-		syncFunc.push(ImportLeftRoverToJetti(syncParams));
-
+// документы
+const syncFunc: any[] = [];
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 2) === 2) {
+	syncFunc.push(ImportPurchaseToJetti(syncParams));
+	syncFunc.push(ImportPurchaseRetToJetti(syncParams));
+}
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 4) === 4)
+	syncFunc.push(ImportTransferIntToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 8) === 8)
+	syncFunc.push(ImportInventToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+// if ((syncParams.execFlag & 16) === 16) syncFunc.push(ImportProductionToJetti(syncParams)); // производство
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 32) === 32)
+	syncFunc.push(ImportSalesToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 64) === 64)
+	syncFunc.push(ImportWriteOffToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+if ((syncParams.execFlag & 128) === 128)
+	syncFunc.push(ImportLeftRoverToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+if 	((syncParams.execFlag & 512) === 512)
+	syncFunc.push(ImportModificationToJetti(syncParams));
 	try {
 		await Promise.all(syncFunc);
 		await saveLogProtocol(

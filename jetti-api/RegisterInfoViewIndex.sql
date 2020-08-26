@@ -1,4 +1,18 @@
 
+    CREATE OR ALTER VIEW [Register.Info.Dynamic]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Dynamic';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Dynamic] TO JETTI;
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Dynamic] ON [dbo].[Register.Info.Dynamic](
+      company,date,id
+    )
+    GO
+    
     CREATE OR ALTER VIEW [Register.Info.Holiday]
     WITH SCHEMABINDING
     AS

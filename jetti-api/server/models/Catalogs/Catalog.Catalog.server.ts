@@ -2,9 +2,9 @@ import { DocTypes } from './../documents.types';
 import { CatalogCatalog, Parameter } from './Catalog.Catalog';
 import { IServerDocument } from './../documents.factory.server';
 import { MSSQL } from '../../mssql';
-import { IDynamicMetadata, riseUpdateMetadataEvent } from '../Dynamic/Dynamic.common';
 import { PropOptions, DocumentBase, DocumentOptions } from '../document';
 import { lib } from '../../std.lib';
+import { riseUpdateMetadataEvent, IDynamicMetadata } from '../Dynamic/dynamic.common';
 
 
 export class CatalogCatalogServer extends CatalogCatalog implements IServerDocument {

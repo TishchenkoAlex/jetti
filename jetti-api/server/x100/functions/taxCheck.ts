@@ -181,5 +181,8 @@ function getTaxCheckDescription(taxCheck: ITaxCheck): string {
 
 function getTaxCheckURL(taxCheck: ITaxCheck, urlType = 'print' || 'json'): string {
     if (taxCheck.URL) return taxCheck.URL;
-    return `${AttachmentType_apiHost}/${taxCheck.clientInn}/${taxCheck.receiptId}/${urlType}`;
+    return `${AttachmentType_apiHost}/${taxCheck.inn}/${taxCheck.receiptId}/${urlType}`;
 }
+
+
+
