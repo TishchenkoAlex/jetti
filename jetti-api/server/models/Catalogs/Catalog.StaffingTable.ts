@@ -13,13 +13,16 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 
 export class CatalogStaffingTable extends DocumentBase {
 
-  @Props({ type: 'Catalog.StaffingTable', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.StaffingTable', hiddenInList: false })
   parent: Ref = null;
 
   @Props({ type: 'string', required: true, order: 2, style: { width: '135px' }, isUnique: true })
   code = '';
 
-  @Props({ type: 'string', order: 3, readOnly: true, label: 'description (auto)' })
+  @Props({ type: 'boolean', hidden: false, hiddenInList: true, useIn: 'all' })
+  isfolder = false;
+
+  @Props({ type: 'string', order: 3, label: 'description (auto)' })
   description = '';
 
   @Props({ type: 'Catalog.JobTitle', required: true, isProtected: true })
