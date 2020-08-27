@@ -50,7 +50,7 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.clientInn,
             taxCheck.inn,
-            Math.floor(taxCheck.totalAmount),
+            taxCheck.totalAmount,
             taxCheck.operationTime,
             taxCheck.operationId
         ]);
