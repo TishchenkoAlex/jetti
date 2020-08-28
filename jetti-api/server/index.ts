@@ -99,6 +99,11 @@ Global.init().then(e => {
 
     SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
 
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, (err) => { }));
+
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
+
+
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 

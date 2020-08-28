@@ -1,4 +1,3 @@
-import { DocTypes } from './../../models/documents.types';
 import { DocListRequestBody, DocListResponse } from '../../models/common-types';
 import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';

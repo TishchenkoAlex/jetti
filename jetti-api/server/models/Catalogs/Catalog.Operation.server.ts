@@ -1,4 +1,4 @@
-import { CatalogOperation } from './Catalog.Operation';
+import { CatalogOperation, Parameter } from './Catalog.Operation';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
 import { lib } from '../../std.lib';
