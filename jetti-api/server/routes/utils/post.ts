@@ -49,11 +49,11 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
     INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
+      [parent], [isfolder], [company], [user], [info], [doc] ${opts!.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
     SELECT
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] 
-      ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
+      [parent], [isfolder], [company], [user], [info], [doc]
+      ${opts!.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
     FROM OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,
       [date] DATETIME,
@@ -68,7 +68,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
       [user] UNIQUEIDENTIFIER,
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
-      ${opts?.withExchangeInfo ? `         
+      ${opts!.withExchangeInfo ? `
       ,[ExchangeCode] NVARCHAR(50),
       [ExchangeBase] NVARCHAR(50)` : ''}
     );
@@ -95,7 +95,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
         date = i.date, code = i.code, description = i.description,
         posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
         "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
-        ${opts?.withExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
+        ${opts!.withExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
       FROM (
         SELECT *
         FROM OPENJSON(@p1) WITH (
@@ -111,7 +111,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
           [user] UNIQUEIDENTIFIER,
           [info] NVARCHAR(max),
           [parent] UNIQUEIDENTIFIER,
-          ${opts?.withExchangeInfo ? `         
+          ${opts!.withExchangeInfo ? `
           [ExchangeCode] NVARCHAR(50),
           [ExchangeBase] NVARCHAR(50),` : ''}
           [doc] NVARCHAR(max) N'$.doc' AS JSON
@@ -174,7 +174,7 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const getValueDescription = async (type: AllTypes, value: any) => {
     if (!value) return `<empty>`;
     if (!Type.isRefType(type)) return value;
-    return (await lib.doc.byId(value, tx))?.description;
+    return (await lib.doc.byId(value, tx))!.description;
   };
 
   const existErrors: string[] = [];

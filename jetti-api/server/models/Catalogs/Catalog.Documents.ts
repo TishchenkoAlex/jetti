@@ -1,3 +1,4 @@
+import { Type } from './../common-types';
 import { DocTypes } from '../documents.types';
 import { buildSubcountQueryList } from './../../fuctions/SQLGenerator.MSSQL';
 import { createDocument, RegisteredDocument } from './../../models/documents.factory';
@@ -16,7 +17,7 @@ export class CatalogDocuments extends DocumentBase {
 
 
   QueryList() {
-    const select = RegisteredDocument().filter(el => el.type.startsWith('Document.'))
+    const select = RegisteredDocument().filter(el => Type.isDocument(el.type))
       .map(el => ({ type: el.type as DocTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
 
     return buildSubcountQueryList(select);

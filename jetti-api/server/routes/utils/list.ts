@@ -1,9 +1,7 @@
-import { DocTypes, AllDocTypes } from './../../models/documents.types';
-// tslint:disable:prefer-const
 import { DocListRequestBody, DocListResponse } from '../../models/common-types';
 import { DocumentBase } from '../../models/document';
 import { configSchema } from './../../models/config';
-import { FilterInterval, FormListFilter } from './../../models/user.settings';
+import { FormListFilter } from './../../models/user.settings';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { filterBuilder } from '../../fuctions/filterBuilder';
@@ -11,14 +9,14 @@ import { filterBuilder } from '../../fuctions/filterBuilder';
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
 
-  if (params.listOptions && params.listOptions?.withHierarchy) {
+  if (params.listOptions && params.listOptions!.withHierarchy) {
     let parent: any = null;
     if (params.id) {
       const ob = await lib.doc.byId(params.id, tx);
-      parent = ob?.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob?.parent;
+      parent = ob!.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob!.parent;
     }
     // folders
-    const queryList = configSchema().get(params.type)?.QueryList;
+    const queryList = configSchema().get(params.type)!.QueryList;
     const parentWhere = parent ? 'd.[parent.id] = @p1' : 'd.[parent.id] is NULL';
     let queryText = `SELECT * FROM (${queryList}) d WHERE ${parentWhere} and isfolder = 1`;
     if (parent) {
@@ -29,13 +27,13 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     queryText = queryText + 'ORDER BY description';
     const folders = await tx.manyOrNone(queryText, [parent]);
     // elements
-    let deletedFilter = params.filter.find(e => e.left === 'deleted');
+    const deletedFilter = params.filter.find(e => e.left === 'deleted');
     params.filter = [];
     params.filter.push(new FormListFilter('parent', '=', { id: parent, type: params.type }));
     params.filter.push(new FormListFilter('isfolder', '=', 0));
     if (deletedFilter) params.filter.push(new FormListFilter('deleted', '=', 0));
     params.listOptions.withHierarchy = false;
-    let result = await List(params, tx);
+    const result = await List(params, tx);
 
     result.data = folders.concat(result.data);
 
@@ -44,8 +42,24 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   params.command = params.command || 'first';
 
+
+  // function indexedOperationType(type: DocTypes, id: string) {
+  //   if (type !== 'Document.Operation') return '';
+  //   const operType = indexedOperations().get(id);
+  //   return operType || '';
+  // }
+
   const cs = configSchema().get(params.type);
-  let { QueryList, Props } = cs!;
+
+  // if (params.type === 'Document.Operation') {
+  //   const operFilter = params.filter.find(e => e.left === 'Operation');
+  //   if (operFilter && operFilter.right && operFilter.right.id) {
+  //     const operType = indexedOperationType(params.type, operFilter.right.id);
+  //     if (operType) cs = configSchema().get(operType as DocTypes);
+  //   }
+  // }
+
+  const { QueryList, Props } = cs!;
 
   let row: DocumentBase | null = null;
   let query = '';

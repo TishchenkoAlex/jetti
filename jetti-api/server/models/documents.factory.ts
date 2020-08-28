@@ -93,9 +93,8 @@ import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocati
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
 import { CatalogDynamic } from './Dynamic/dynamic.prototype';
-import { v1 } from 'uuid';
-import { simpleTypes } from './Types/Types.factory';
 import { Type } from './common-types';
+import { Global } from './global';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -140,15 +139,15 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
   if (doc) {
     const result = <T>new doc.Class;
     if (doc.dynamic) {
-      const docMeta = global['dynamicMeta'].Metadata.find(e => e.type === type);
-      const Props = docMeta.Props();
+      const docMeta = Global.dynamicMeta().Metadata.find(e => e.type === type);
+      const Props = docMeta!.Props();
       Object.keys(Props)
         .forEach(propName => {
-          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'default');
+          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
           result[propName] = defVal || Type.defaultValue(Props[propName].type);
         });
       result.Props = () => ({ ...Props });
-      result.Prop = () => ({ ...docMeta.Prop() });
+      result.Prop = () => ({ ...docMeta!.Prop() });
       result.type = type;
       if (!document && !result.date) result.date = new Date;
     } else {

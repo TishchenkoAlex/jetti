@@ -4,7 +4,7 @@ import { FilterMetadata, SortMeta } from 'primeng/api';
 import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
-import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
+import { ISuggest, Type } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -56,7 +56,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
   private _docSubscription$: Subscription = Subscription.EMPTY;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
+  get isDoc() { return Type.isDocument(this.type); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }
   get selectionData() { return this.treeNodesVisible ? (this.selectedNode ? this.selectedNode.data : null) : this.selectedRow; }
   get isSelectEnabled() {

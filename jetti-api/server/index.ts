@@ -25,11 +25,13 @@ import { router as form } from './routes/form';
 import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
-import { initGlobal } from './fuctions/initGlobals';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
 import * as redis from 'redis';
 import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
+import { Global } from './models/global';
+
+// tslint:disable: no-shadowed-variable
 
 const app = express();
 export const HTTP = httpServer.createServer(app);
@@ -88,8 +90,17 @@ const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
-initGlobal().then(e => {
-  if (!global['isProd']) {
+Global.init().then(e => {
+  if (!Global.isProd) {
+
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, (err) => { }));
+
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
+
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, (err) => { }));
+
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
+
 
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });

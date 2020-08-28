@@ -89,6 +89,11 @@ export class ApiService {
     return (this.http.get<{ Prop, Props }>(query)).toPromise();
   }
 
+  async getIndexedOperationType(operationId: string): Promise<DocTypes> {
+    const query = `${environment.api}getIndexedOperationType/${operationId}`;
+    return (this.http.get<DocTypes>(query)).toPromise();
+  }
+
   formControlRef(id: string): Promise<RefValue> {
     const query = `${environment.api}formControlRef/${id}`;
     return (this.http.get<RefValue>(query)).toPromise();

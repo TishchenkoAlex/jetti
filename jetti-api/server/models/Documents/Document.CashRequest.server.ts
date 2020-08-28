@@ -407,7 +407,7 @@ ORDER BY
     const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
     if (!qRes || qRes.receiptId) return null;
     const cr = await lib.doc.byId(qRes.document, tx);
-    throw new Error(`Проведение не возможно, не предоставлен чек по последней оплаченной заявке: ${cr?.description}`);
+    throw new Error(`Проведение не возможно, не предоставлен чек по последней оплаченной заявке: ${cr!.description}`);
   }
 
   async onPost(tx: MSSQL) {
@@ -749,7 +749,7 @@ ORDER BY
         if (ba) {
           const owner = await lib.doc.byId(ba.owner, tx);
           const prefix = ba.code.trim().startsWith('408208') ? '{VO70060}' : '';
-          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}. Без налога(НДС)`;
+          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner!.description}. Без налога(НДС)`;
         }
       }
     }
