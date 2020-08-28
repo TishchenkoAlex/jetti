@@ -3,10 +3,9 @@ import { lib } from '../../std.lib';
 import { JETTI_POOL } from '../../sql.pool.jetti';
 import { CatalogAttachment } from '../../models/Catalogs/Catalog.Attachment';
 import { RegisterInfoTaxCheck } from '../../models/Registers/Info/TaxCheck';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { Agent } from 'https';
-import { Cipher } from 'crypto';
-import moment = require('moment');
+import * as moment from 'moment';
 
 export interface ITaxCheck {
     clientInn: string;

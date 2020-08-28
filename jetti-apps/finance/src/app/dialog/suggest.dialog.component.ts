@@ -4,7 +4,7 @@ import { FilterMetadata, SortMeta } from 'primeng/api';
 import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
-import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
+import { ISuggest, Type } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { DocTypes, AllTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -48,8 +48,9 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this.selection = [{ id: value.id, type: this.type }];
   }
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
+
   showTree = false;
   showTreeButton = false;
   dataSource: ApiDataSource;
@@ -66,9 +67,9 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
     const columns: ColumnDef[] = [];
     const data: { [x: string]: AllTypes }[] = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
-    if (this.type.startsWith('Document.')) data.push({ date: 'datetime' });
+    if (Type.isDocument(this.type)) data.push({ date: 'datetime' });
     if (this.type) {
-      if (!this.type.startsWith('Types.')) this.doc = await this.api.getDocMetaByType(this.type);
+      if (!Type.isType(this.type)) this.doc = await this.api.getDocMetaByType(this.type);
       this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     }
     const schema = this.doc ? this.doc.Props : {};

@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
+import { Type } from './common-types';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; isOwnerFixed?: boolean; }
 export type StorageType = 'folders' | 'elements' | 'all';
@@ -130,10 +131,10 @@ export class DocumentBase {
     }
   }
 
-  get isDoc() { return this.type && this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type && this.type.startsWith('Catalog.'); }
-  get isType() { return this.type && this.type.startsWith('Types.'); }
-  get isJornal() { return this.type && this.type.startsWith('Journal.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
+  get isType() { return Type.isType(this.type); }
+  get isJornal() { return Type.isJournal(this.type); }
 
   Props() {
 

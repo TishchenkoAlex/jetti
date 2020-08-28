@@ -8,7 +8,7 @@ import { merge, of as observableOf, Subscription, BehaviorSubject, Observable } 
 import { filter, take, map } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
-import { calculateDescription, IViewModel } from '../../../../../../jetti-api/server/models/common-types';
+import { calculateDescription, IViewModel, Type } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, Ref, Relation, Command, CopyTo } from '../../../../../../jetti-api/server/models/document';
 import { DocService } from '../doc.service';
 import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
@@ -36,9 +36,10 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   @Input() data: FormGroup;
   @ViewChildren(CdkTrapFocus) cdkTrapFocus: QueryList<CdkTrapFocus>;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isForm() { return this.type.startsWith('Form.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isForm() { return Type.isForm(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
+
   isCopy: boolean;
   isHistory: boolean;
   readonly: boolean;

@@ -12,8 +12,8 @@ export class TypesBase implements ITypes {
     const select = this.getTypes()
       .map(el => ({ type: el, description: (createDocument(el as DocTypes).Prop() as DocumentOptions).description }));
     return buildTypesQueryList(select);
-  }
 
+  }
   getTypes(): string[] {
     throw new Error('Method not implemented.');
   }

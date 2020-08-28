@@ -70,6 +70,7 @@ export interface JTL {
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
+    // tslint:disable-next-line: max-line-length
     saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: number, opts?: IUpdateInsertDocumentOptions) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
@@ -83,6 +84,7 @@ export interface JTL {
   };
   meta: {
     updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
+    updateSQLViewsByOperationId: (id: string) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     getTX: () => MSSQL
   };
@@ -160,6 +162,7 @@ export const lib: JTL = {
   },
   meta: {
     updateSQLViewsByType,
+    updateSQLViewsByOperationId,
     riseUpdateMetadataEvent,
     getTX
   },
@@ -415,10 +418,11 @@ export function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
 }
 
 async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
-  const metadata = configSchema().get(type);
+  const sqType = Type.isOperation(type) ? 'Document.Operation' : type;
+  const metadata = configSchema().get(sqType);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
-    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${type}"), '0000000000') result `;
+    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${sqType}"), '0000000000') result `;
     const result = await tx.oneOrNone<{ result: string }>(queryText);
     return result ? result.result : '';
   }
@@ -570,6 +574,21 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
     ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+  ];
+  // console.log(queries);
+  for (const querText of queries) {
+    try {
+      await tx.none(`execute sp_executesql @p1`, [querText]);
+    } catch (error) {
+      if (queries.indexOf(querText)) throw new Error(error);
+    }
+  }
+}
+async function updateSQLViewsByOperationId(id: string): Promise<void> {
+  const tx = getTX();
+  const queries = [
+    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true),
+    ...await SQLGenegatorMetadata.CreateViewOperations([id], true)
   ];
   // console.log(queries);
   for (const querText of queries) {

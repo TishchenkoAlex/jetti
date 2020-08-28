@@ -3,22 +3,23 @@ import { NextFunction, Request, Response } from 'express';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { IFlatDocument, INoSqlDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
-import { lib } from './../std.lib';import { MSSQL } from '../mssql';
+import { lib } from './../std.lib';
+import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { JETTI_POOL } from '../sql.pool.jetti';
 
 export const router = express.Router();
 
 export interface IUpdateDocumentRequest {
-  document: INoSqlDocument,
-  options: IUpdateOptions,
+  document: INoSqlDocument;
+  options: IUpdateOptions;
 }
 
 export interface IUpdateOptions {
-  updateType: 'Insert' | 'Update' | 'InsertOrUpdate',
-  commands: string[], // document server methods name
-  searchKey: { key: string, value?: any }[],
-  queueFlow: number
+  updateType: 'Insert' | 'Update' | 'InsertOrUpdate';
+  commands: string[]; // document server methods name
+  searchKey: { key: string, value?: any }[];
+  queueFlow: number;
 }
 
 // Get raw document by id
@@ -29,7 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     const flatDoc = await lib.doc.byId(req.params.id, tx);
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
-      delete noSqlDoc?.doc['serverModule'];
+      delete noSqlDoc!.doc['serverModule'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));

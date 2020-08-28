@@ -133,8 +133,12 @@ export interface IViewModel {
 
 export class Type {
 
+  public static isOperation(type: string) {
+    return type && type.startsWith('Operation.');
+  }
+
   public static isDocument(type: string) {
-    return type && type.startsWith('Document.');
+    return type && (type.startsWith('Document.') || this.isOperation(type));
   }
 
   public static isCatalog(type: string) {
