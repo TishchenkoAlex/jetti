@@ -4,7 +4,7 @@ import { FilterMetadata, SortMeta } from 'primeng/api';
 import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
-import { ISuggest, Type } from '../../../../../jetti-api/server/models/common-types';
+import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -16,6 +16,7 @@ import { LoadingService } from '../common/loading.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v1 } from 'uuid';
 import { TreeNode } from 'primeng/api';
+import { Type } from '../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +58,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   private _docSubscription$: Subscription = Subscription.EMPTY;
 
   get isDoc() { return Type.isDocument(this.type); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isCatalog() { return Type.isCatalog(this.type); }
   get selectionData() { return this.treeNodesVisible ? (this.selectedNode ? this.selectedNode.data : null) : this.selectedRow; }
   get isSelectEnabled() {
     const sel = this.selectionData;

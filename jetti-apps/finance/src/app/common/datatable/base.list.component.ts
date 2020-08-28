@@ -17,11 +17,12 @@ import { UserSettingsService } from './../../auth/settings/user.settings.service
 import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
-import { IViewModel, Type } from '../../../../../../jetti-api/server/models/common-types';
+import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

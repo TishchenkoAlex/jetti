@@ -5,6 +5,7 @@ import { lib } from '../std.lib';
 import * as moment from 'moment';
 import { getConfigSchema, IConfigSchema } from './config';
 import { getIndexedOperationsMap } from './indexedOperation';
+import { DocumentBase } from './document';
 
 export class Global {
 
@@ -12,6 +13,7 @@ export class Global {
     static lib = lib;
     static isProd: boolean = global['isProd'];
     static byCode = lib.doc.byCode;
+    static DocBase = DocumentBase;
 
     static indexedOperations = () => global['indexedOperations'] as Map<string, string>;
     static dynamicMeta = () => global['dynamicMeta'] as IDynamicMetadata;

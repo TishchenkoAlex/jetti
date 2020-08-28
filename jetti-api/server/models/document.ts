@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
-import { Type } from './common-types';
+import { Type } from './type';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; isOwnerFixed?: boolean; }
 export type StorageType = 'folders' | 'elements' | 'all';

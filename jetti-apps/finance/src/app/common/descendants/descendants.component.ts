@@ -6,7 +6,8 @@ import { DocumentBase } from '../../../../../../jetti-api/server/models/document
 import { Router } from '@angular/router';
 import { DocService } from '../doc.service';
 import { LoadingService } from '../loading.service';
-import { Type } from '../../../../../../jetti-api/server/models/common-types';
+import { Type } from '../../../../../../jetti-api/server/models/type';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

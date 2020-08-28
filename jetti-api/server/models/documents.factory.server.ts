@@ -46,20 +46,7 @@ export interface IServerDocument {
 
 export type DocumentBaseServer = DocumentBase & IServerDocument;
 
-export function RegisteredServerDocument(): RegisteredDocumentType[] {
-  return [
-    ...RegisteredDocumentDynamic(),
-    ...RegisteredDocumentStatic
-  ];
-}
-
-export function RegisteredDocumentDynamic(): RegisteredDocumentType[] {
-  return [
-    ...global['dynamicMeta'] ? global['dynamicMeta']['RegisteredServerDocument'] : []
-  ];
-}
-
-export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
+export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
@@ -80,7 +67,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
 export async function createDocumentServer<T extends DocumentBaseServer>
   (type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) {
   let result: T;
-  const doc = RegisteredServerDocument().find(el => el.type === type);
+  const doc = RegisteredServerDocument.find(el => el.type === type);
   if (doc) {
     const serverResult = <T>new doc.Class;
     const ArrayProps = Object.keys(serverResult).filter(k => Array.isArray(serverResult[k]));

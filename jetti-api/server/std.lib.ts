@@ -4,7 +4,7 @@ import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './mo
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
-import { RefValue, Type } from './models/common-types';
+import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
@@ -27,6 +27,7 @@ import * as xml2js from 'xml2js';
 import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
+import { Type } from './models/type';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 

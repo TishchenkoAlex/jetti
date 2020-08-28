@@ -1,4 +1,4 @@
-import { Type } from './../common-types';
+import { Type } from './../type';
 import { DocTypes } from '../documents.types';
 import { buildSubcountQueryList } from './../../fuctions/SQLGenerator.MSSQL';
 import { createDocument, RegisteredDocument } from './../../models/documents.factory';

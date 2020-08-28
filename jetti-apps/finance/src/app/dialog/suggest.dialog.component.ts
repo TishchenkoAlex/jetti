@@ -4,7 +4,7 @@ import { FilterMetadata, SortMeta } from 'primeng/api';
 import { Subject, Subscription, merge } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { ColumnDef } from '../../../../../jetti-api/server/models/column';
-import { ISuggest, Type } from '../../../../../jetti-api/server/models/common-types';
+import { ISuggest } from '../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, StorageType } from '../../../../../jetti-api/server/models/document';
 import { DocTypes, AllTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../jetti-api/server/models/user.settings';
@@ -16,6 +16,7 @@ import { DocService } from '../common/doc.service';
 import { LoadingService } from '../common/loading.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v1 } from 'uuid';
+import { Type } from '../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

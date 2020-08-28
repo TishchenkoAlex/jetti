@@ -5,7 +5,7 @@ import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
 import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
-import { Type } from '../../models/common-types';
+import { Type } from '../../models/type';
 
 export interface IUpdateInsertDocumentOptions { withExchangeInfo: boolean }
 

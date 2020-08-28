@@ -1,16 +1,15 @@
-import { DocumentOperationServer } from './../Documents/Document.Operation.server';
 import { CatalogOperationServer } from './../Catalogs/Catalog.Operation.server';
-import { DocumentOperation } from './../Documents/Document.Operation';
-import { DocTypes, AllDocTypes } from './../documents.types';
+import { DocTypes } from './../documents.types';
 import { CatalogCatalogServer } from './../Catalogs/Catalog.Catalog.server';
 import { JETTI_POOL } from '../../sql.pool.jetti';
 import { MSSQL } from '../../mssql';
-import { RegisteredDocumentType, RegisteredDocumentDynamic } from '../documents.factory';
+import { RegisteredDocumentType } from '../documents.factory';
 import { CatalogDynamic } from './dynamic.prototype';
 import { lib } from '../../std.lib';
 import { publisher } from '../..';
 import { Global } from '../global';
 import { getIndexedOperations } from '../indexedOperation';
+import { DocumentOperation } from '../Documents/Document.Operation';
 
 
 export interface IDynamicProps {
@@ -22,7 +21,6 @@ export interface IDynamicProps {
 export interface IDynamicMetadata {
     Metadata: IDynamicProps[];
     RegisteredDocument: RegisteredDocumentType[];
-    RegisteredServerDocument: RegisteredDocumentType[];
 }
 
 export function riseUpdateMetadataEvent() {
@@ -40,8 +38,7 @@ export const getDynamicMeta = async (): Promise<IDynamicMetadata> => {
     const operationsMeta = await getDynamicMetaOperation(tx);
     return {
         Metadata: [...catalogsMeta.Metadata, ...operationsMeta.Metadata],
-        RegisteredDocument: [...catalogsMeta.RegisteredDocument, ...operationsMeta.RegisteredDocument],
-        RegisteredServerDocument: [...catalogsMeta.RegisteredServerDocument, ...operationsMeta.RegisteredServerDocument],
+        RegisteredDocument: [...catalogsMeta.RegisteredDocument, ...operationsMeta.RegisteredDocument]
     };
 };
 
@@ -49,7 +46,7 @@ export const getDynamicMetaCatalog = async (tx: MSSQL) => {
 
     const query = `SELECT id, typeString type FROM [dbo].[Catalog.Catalog.v] where posted = 1`;
     const cats = await tx.manyOrNone<{ id: string }>(query);
-    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [], RegisteredServerDocument: [] };
+    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [] };
 
     for (const cat of cats) {
         const ob = await lib.doc.createDocServerById<CatalogCatalogServer>(cat.id, tx);
@@ -63,13 +60,12 @@ export const getDynamicMetaCatalog = async (tx: MSSQL) => {
 export const getDynamicMetaOperation = async (tx: MSSQL) => {
 
     const operations = await getIndexedOperations(tx);
-    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [], RegisteredServerDocument: [] };
+    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [] };
 
     for (const operation of operations) {
         const ob = await lib.doc.createDocServerById<CatalogOperationServer>(operation.id, tx);
         const meta = await ob!.getDynamicMetadata(tx);
         res.RegisteredDocument.push({ type: meta.type as DocTypes, Class: DocumentOperation, dynamic: true });
-        res.RegisteredServerDocument.push({ type: meta.type as DocTypes, Class: DocumentOperationServer, dynamic: true });
         res.Metadata.push(meta);
     }
     return res;

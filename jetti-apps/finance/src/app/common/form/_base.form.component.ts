@@ -8,7 +8,7 @@ import { merge, of as observableOf, Subscription, BehaviorSubject, Observable } 
 import { filter, take, map } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { dateReviverLocal } from '../../../../../../jetti-api/server/fuctions/dateReviver';
-import { calculateDescription, IViewModel, Type } from '../../../../../../jetti-api/server/models/common-types';
+import { calculateDescription, IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { DocumentBase, DocumentOptions, Ref, Relation, Command, CopyTo } from '../../../../../../jetti-api/server/models/document';
 import { DocService } from '../doc.service';
 import { FormControlInfo } from '../dynamic-form/dynamic-form-base';
@@ -17,6 +17,7 @@ import { TabsStore } from '../tabcontroller/tabs.store';
 import { AuthService } from 'src/app/auth/auth.service';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 export declare interface IFormEventsModel {
   onOpen(): void;

@@ -1,6 +1,6 @@
 import { RegisteredDocument } from '../documents.factory';
 import { TypesBase } from './TypesBase';
-import { Type } from '../common-types';
+import { Type } from '../type';
 
 export class TypesDocument extends TypesBase {
 

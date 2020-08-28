@@ -4,7 +4,7 @@ import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALID
 import { Router } from '@angular/router';
 import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { Observable, Subscription } from 'rxjs';
-import { ISuggest, Type } from '../../../../../../jetti-api/server/models/common-types';
+import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';
 import { FormListSettings, FormListFilter } from '../../../../../../jetti-api/server/models/user.settings';
 import { ApiService } from '../../services/api.service';
@@ -15,6 +15,7 @@ import { DocService } from '../doc.service';
 import { filter } from 'rxjs/operators';
 import { AllTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { patchOptionsNoEvents } from '../dynamic-form/dynamic-form.service';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 function AutocompleteValidator(component: AutocompleteComponent): ValidatorFn {
   return (c: AbstractControl) => {

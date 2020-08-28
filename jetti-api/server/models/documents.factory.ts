@@ -93,8 +93,8 @@ import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocati
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
 import { CatalogDynamic } from './Dynamic/dynamic.prototype';
-import { Type } from './common-types';
 import { Global } from './global';
+import { defaultTypeValue } from './Types/Types.factory';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -144,7 +144,7 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
       Object.keys(Props)
         .forEach(propName => {
           const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
-          result[propName] = defVal || Type.defaultValue(Props[propName].type);
+          result[propName] = defVal || defaultTypeValue(Props[propName].type);
         });
       result.Props = () => ({ ...Props });
       result.Prop = () => ({ ...docMeta!.Prop() });

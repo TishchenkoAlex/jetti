@@ -2,7 +2,7 @@ import { buildSubcountQueryList } from '../../fuctions/SQLGenerator.MSSQL';
 import { DocumentBase, DocumentOptions, JDocument, Props, Ref } from '../document';
 import { createDocument, RegisteredDocument } from '../documents.factory';
 import { DocTypes } from '../documents.types';
-import { Type } from '../common-types';
+import { Type } from '../type';
 
 @JDocument({
   type: 'Catalog.Objects',

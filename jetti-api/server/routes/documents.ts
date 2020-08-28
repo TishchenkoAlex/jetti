@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
-import { DocListRequestBody, IViewModel, RefValue, Type } from '../models/common-types';
+import { DocListRequestBody, IViewModel, RefValue } from '../models/common-types';
 import { createDocument, IFlatDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
@@ -21,6 +21,7 @@ import { DocumentWorkFlowServer } from '../models/Documents/Document.WorkFlow.se
 import { ColumnDef } from '../models/column';
 import { getIndexedOperationType } from '../models/indexedOperation';
 import { Global } from '../models/global';
+import { Type } from '../models/type';
 
 export const router = express.Router();
 

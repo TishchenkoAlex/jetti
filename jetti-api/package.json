@@ -21,6 +21,7 @@
     "iconv-lite": "^0.6.0",
     "ioredis": "^4.16.2",
     "jsonwebtoken": "^8.5.1",
+    "madge": "^3.9.2",
     "moment": "^2.24.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^2.3.0",
