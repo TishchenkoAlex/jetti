@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { v1 } from 'uuid';
 import { IFlatDocument } from './documents.factory';
 import { AllTypes, DocTypes, PrimitiveTypes } from './documents.types';
+import { PropOption } from './Forms/form';
 
 export interface OwnerRef { dependsOn: string; filterBy: string; isOwnerFixed?: boolean; }
 export type StorageType = 'folders' | 'elements' | 'all';
@@ -201,6 +202,14 @@ export class DocumentBase {
         .find(propOpt => propOpt === propOptions && props[propsName][propOpt] === propsValue))
       .forEach(propsName => res[propsName] = props[propsName]);
     return res;
+  }
+
+  PropsAdd(propName: string, propOption: {[x: string]: PropOption}) {
+    this.Props = () => {
+      const props = this.Props();
+      props.propName = { ...(props.propName || {}), ...propOption };
+      return props;
+    }
   }
 
 }
