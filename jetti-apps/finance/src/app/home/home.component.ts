@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { EventsService } from './../services/events.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,6 @@ export class HomeComponent  {
   }
 
   powerBi() {
-    window.open('https://bi.x100-group.com/Reports/', '_blank');
+    window.open(environment.PowerBIURL, '_blank');
   }
 }

@@ -22,6 +22,8 @@ import { DocumentCashRequestServer } from './Documents/Document.CashRequest.serv
 import { PostResult } from './post.interfaces';
 import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequestRegistry.server';
 import { CatalogCatalogServer } from './Catalogs/Catalog.Catalog.server';
+import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server';
+import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -53,6 +55,8 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Person.Contract', Class: CatalogPersonContractServer },
   { type: 'Catalog.Catalog', Class: CatalogCatalogServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
+  { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
+  { type: 'Catalog.Product', Class: CatalogProductServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
@@ -134,6 +138,8 @@ export async function createDocumentServer<T extends DocumentBaseServer>
       }
     }
   }
+
+  if (!Operation && result.onCreate) await result.onCreate(tx);
   // protect against mutate
   result.Props = () => Props;
   result.Prop = () => Prop;

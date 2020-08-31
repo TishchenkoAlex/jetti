@@ -23,4 +23,7 @@ export class CatalogEmployee extends DocumentBase {
   @Props({ type: 'string', required: true, order: 2, style: { width: '135px' }, isUnique: true })
   code = '';
 
+  @Props({ type: 'string', label: 'Description (auto)', order: 3, required: false, style: { width: '300px' } })
+  description = '';
+
 }

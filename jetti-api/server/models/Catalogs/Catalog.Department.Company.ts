@@ -19,13 +19,17 @@ export class CatalogDepartmentCompany extends DocumentBase {
   @Props({ type: 'Catalog.Department.Company', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  
+  @Props({ type: 'boolean', hidden: false, hiddenInList: true, order: 6 })
+  isfolder = false;
+
   @Props({
     type: 'string', required: false, hiddenInList: false
-    , label: 'Short name (max 30 symbols)', order: 16, validators: [{ key: 'maxLength', value: 30 }]
+    , label: 'Short name (max 30 symbols)', order: 4, validators: [{ key: 'maxLength', value: 30 }]
   })
   ShortName = '';
 
-  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all' })
+  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all', order: 5 })
   StaffingPositionManager: Ref = null;
 
 }
