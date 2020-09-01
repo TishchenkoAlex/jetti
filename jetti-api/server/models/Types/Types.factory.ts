@@ -16,7 +16,6 @@ import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpa
 import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
 import { RegisteredDocument, createDocument } from '../documents.factory';
 import { DocumentOptions } from '../document';
-import e = require('express');
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
