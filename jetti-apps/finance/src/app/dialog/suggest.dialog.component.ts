@@ -33,7 +33,7 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
   @Input() settings: FormListSettings = new FormListSettings();
   @Output() Select = new EventEmitter<ISuggest>();
   @Output() Close = new EventEmitter();
-  @ViewChild(BaseTreeListComponent, { static: false }) tl: BaseTreeListComponent;
+  @ViewChild(BaseTreeListComponent) tl: BaseTreeListComponent;
 
   doc: { Prop, Props } | undefined;
 

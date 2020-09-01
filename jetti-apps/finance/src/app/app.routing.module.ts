@@ -9,6 +9,7 @@ import { TabControllerComponent } from './common/tabcontroller/tabcontroller.com
 import { TabsStore } from './common/tabcontroller/tabs.store';
 import { ApiService } from './services/api.service';
 
+@Injectable()
 export class AppRouteReuseStrategy extends RouteReuseStrategy {
   shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
   store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void { }

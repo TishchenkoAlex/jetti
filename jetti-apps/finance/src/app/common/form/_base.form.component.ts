@@ -1,6 +1,6 @@
 import { IFormControlPlacing } from './../dynamic-form/dynamic-form-base';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren, Directive } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/components/common/menuitem';
@@ -29,6 +29,7 @@ export declare interface IFormEventsModel {
 }
 
 // tslint:disable-next-line: class-name
+@Directive()
 export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsModel {
 
   @Input() id: string;

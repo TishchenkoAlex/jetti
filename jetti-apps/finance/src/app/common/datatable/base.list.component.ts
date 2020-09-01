@@ -45,7 +45,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
 
   pageSize$: Observable<number>;
-  @ViewChild('tbl', { static: false }) tbl: Table;
+  @ViewChild('tbl') tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }

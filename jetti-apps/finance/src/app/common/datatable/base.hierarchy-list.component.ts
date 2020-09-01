@@ -52,7 +52,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   pageSize$: Observable<number>;
 
 
-  @ViewChild('tbl', { static: false }) tbl: Table;
+  @ViewChild('tbl') tbl: Table;
 
   get isDoc() { return this.type.startsWith('Document.'); }
   get isCatalog() { return this.type.startsWith('Catalog.'); }

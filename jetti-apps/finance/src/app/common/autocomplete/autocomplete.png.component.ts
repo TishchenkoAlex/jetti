@@ -53,7 +53,7 @@ export class AutocompleteComponent implements ControlValueAccessor, Validator, O
   @Input() openButton = true;
   @Output() change = new EventEmitter();
   @Output() focus = new EventEmitter();
-  @ViewChild('ac', { static: false }) input: AutoComplete;
+  @ViewChild('ac') input: AutoComplete;
   @Input() id: string;
   @Input() formControl: FormControl;
   @Input() appendTo;
