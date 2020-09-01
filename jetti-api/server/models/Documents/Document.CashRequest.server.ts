@@ -415,11 +415,12 @@ ORDER BY
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
 
-      // if (this.Operation && this.Operation === 'Выплата заработной платы без ведомости') {
-      //   await this.checkTaxCheck(tx);
-      // }
+      if (this.Operation && this.Operation === 'Выплата заработной платы без ведомости') {
+        await this.checkTaxCheck(tx);
+      }
 
       if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
+        // tslint:disable-next-line: max-line-length
         throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
 
       if (!this.CashFlow)

@@ -1,4 +1,3 @@
-import { JETTI_POOL_META } from './sql.pool.meta';
 import { JETTI_POOL } from './sql.pool.jetti';
 import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
@@ -14,7 +13,7 @@ import { RegisterAccumulationTypes } from './models/Registers/Accumulation/facto
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -70,7 +69,7 @@ export interface JTL {
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
-    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: number, opts?: IUpdateInsertDocumentOptions) => Promise<DocumentBaseServer>
+    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: Number) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
@@ -335,15 +334,14 @@ async function createDocServerById<T extends DocumentBaseServer>(id: string, tx:
 async function saveDoc(
   servDoc: DocumentBaseServer
   , tx: MSSQL
-  , queuePostFlow?: number
-  , opts?: IUpdateInsertDocumentOptions): Promise<DocumentBaseServer> {
+  , queuePostFlow?: number): Promise<DocumentBaseServer> {
   const savedVersion = await byId(servDoc.id, tx);
   const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
   if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
-  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx, opts);
-  else servDoc = await updateDocument(servDoc, tx, opts);
+  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx);
+  else servDoc = await updateDocument(servDoc, tx);
   if (isPostedAfter) {
     if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
     else await postDocument(servDoc, tx);
@@ -354,8 +352,6 @@ async function saveDoc(
 async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
   return await updateDocument(servDoc, tx);
 }
-
-
 
 async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
   return (await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, 'Accumulation', tx) ||
@@ -402,9 +398,13 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
 
 function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocument | null {
   if (!flatDoc) throw new Error(`lib.noSqlDocument: source is null!`);
-  const { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ...doc } = flatDoc;
+  const { id, date, type, code, description, company, user, posted, deleted,
+    isfolder, parent, info, timestamp, ExchangeCode, ExchangeBase, ...doc } = flatDoc;
   return <INoSqlDocument>
-    { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ExchangeCode: flatDoc['ExchangeCode'], ExchangeBase: flatDoc['ExchangeBase'], doc };
+    {
+      id, date, type, code, description, company, user, posted, deleted,
+      isfolder, parent, info, timestamp, ExchangeCode, ExchangeBase, doc
+    };
 }
 
 export function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {

@@ -16,6 +16,7 @@ import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpa
 import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
 import { RegisteredDocument, createDocument } from '../documents.factory';
 import { DocumentOptions } from '../document';
+import e = require('express');
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -23,7 +24,10 @@ export interface IRegisteredTypes {
 }
 
 export function allTypes(): { type: AllTypes, description: string }[] {
-  return [...documentsTypes(), ...simpleTypes()];
+  return [...documentsTypes(),
+  ...simpleTypes(),
+  ...RegisteredTypes
+    .map(el => ({ type: el.type, description: el.type }))];
 }
 
 export function documentsTypes(): { type: AllTypes, description: string }[] {

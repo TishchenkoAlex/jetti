@@ -118,6 +118,12 @@ export class DocumentBase {
   @Props({ type: 'Document.WorkFlow', hiddenInList: true, order: -1, hidden: true })
   workflow: Ref = null;
 
+  @Props({ type: 'string', hiddenInList: true, isAdditional: true, readOnly: true })
+  ExchangeCode = '';
+
+  @Props({ type: 'string', hiddenInList: true, isAdditional: true, readOnly: true })
+  ExchangeBase = '';
+
   private targetProp(target: Object, propertyKey: string): PropOptions {
     const result = Reflect.getMetadata(symbolProps, target, propertyKey);
     return result;
@@ -202,14 +208,6 @@ export class DocumentBase {
         .find(propOpt => propOpt === propOptions && props[propsName][propOpt] === propsValue))
       .forEach(propsName => res[propsName] = props[propsName]);
     return res;
-  }
-
-  PropsAdd(propName: string, propOption: {[x: string]: PropOption}) {
-    this.Props = () => {
-      const props = this.Props();
-      props.propName = { ...(props.propName || {}), ...propOption };
-      return props;
-    }
   }
 
 }

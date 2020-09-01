@@ -7,8 +7,6 @@ import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
 import { Type } from '../../models/common-types';
 
-export interface IUpdateInsertDocumentOptions { withExchangeInfo: boolean }
-
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   const beforePost: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['beforePost'];
@@ -38,22 +36,24 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   `, [serverDoc.id, serverDoc.date]);
 }
 
-export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, opts?: IUpdateInsertDocumentOptions) {
+export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
+  const updateExchangeInfo = serverDoc.ExchangeBase || serverDoc.ExchangeCode;
+
   let response: INoSqlDocument;
 
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
     INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
+      [parent], [isfolder], [company], [user], [info], [doc] ${updateExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
     SELECT
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] 
-      ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
+      [parent], [isfolder], [company], [user], [info], [doc]
+      ${updateExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
     FROM OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,
       [date] DATETIME,
@@ -68,7 +68,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
       [user] UNIQUEIDENTIFIER,
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
-      ${opts?.withExchangeInfo ? `         
+      ${updateExchangeInfo ? `
       ,[ExchangeCode] NVARCHAR(50),
       [ExchangeBase] NVARCHAR(50)` : ''}
     );
@@ -80,12 +80,13 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
 
 }
 
-export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, opts?: IUpdateInsertDocumentOptions) {
+export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
+  const updateExchangeInfo = serverDoc.ExchangeBase || serverDoc.ExchangeCode;
 
   let response: INoSqlDocument;
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
@@ -95,7 +96,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
         date = i.date, code = i.code, description = i.description,
         posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
         "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
-        ${opts?.withExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
+        ${updateExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
       FROM (
         SELECT *
         FROM OPENJSON(@p1) WITH (
@@ -111,7 +112,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
           [user] UNIQUEIDENTIFIER,
           [info] NVARCHAR(max),
           [parent] UNIQUEIDENTIFIER,
-          ${opts?.withExchangeInfo ? `         
+          ${updateExchangeInfo ? `
           [ExchangeCode] NVARCHAR(50),
           [ExchangeBase] NVARCHAR(50),` : ''}
           [doc] NVARCHAR(max) N'$.doc' AS JSON

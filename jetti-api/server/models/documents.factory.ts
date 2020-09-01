@@ -93,8 +93,6 @@ import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocati
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
 import { CatalogDynamic } from './Dynamic/dynamic.prototype';
-import { v1 } from 'uuid';
-import { simpleTypes } from './Types/Types.factory';
 import { Type } from './common-types';
 
 export interface INoSqlDocument {
@@ -111,8 +109,8 @@ export interface INoSqlDocument {
   parent: Ref;
   info: string;
   timestamp: Date;
-  ExchangeCode?: string;
-  ExchangeBase?: string;
+  ExchangeCode: string;
+  ExchangeBase: string;
   doc: { [x: string]: any };
   docByKeys?: { key: string, value: any }[];
 }
@@ -131,8 +129,8 @@ export interface IFlatDocument {
   parent: Ref;
   info: string;
   timestamp: Date | null;
-  ExchangeCode?: string;
-  ExchangeBase?: string;
+  ExchangeCode: string;
+  ExchangeBase: string;
 }
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {

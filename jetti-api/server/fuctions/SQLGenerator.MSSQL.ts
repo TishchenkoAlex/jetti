@@ -86,7 +86,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.info, d.timestamp,
-
+      d.ExchangeCode, d.ExchangeBase,
       "company".id "company.id",
       "company".description "company.value",
       "company".code "company.code",
@@ -206,6 +206,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.info, d.timestamp,
+      d.ExchangeCode, d.ExchangeBase,
 
       "company".id "company.id",
       "company".description "company.value",
@@ -252,6 +253,8 @@ export class SQLGenegator {
           [company] UNIQUEIDENTIFIER,
           [user] UNIQUEIDENTIFIER,
           [parent] UNIQUEIDENTIFIER,
+          [ExchangeCode] NVARCHAR(50),
+          [ExchangeBase] NVARCHAR(50),
           [doc] NVARCHAR(max) N'$.doc' AS JSON
         )
       ) d
@@ -286,7 +289,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT
-        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp, d.ExchangeCode, d.ExchangeBase
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
@@ -330,7 +333,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT
-        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp, d.ExchangeCode, d.ExchangeBase
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
@@ -383,7 +386,7 @@ export class SQLGenegator {
     }
 
     query = `
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]${query}
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, ExchangeCode, ExchangeBase, [user]${query}
       FROM dbo.[Documents]
       WHERE [type] = '${type}'
     `;
@@ -555,7 +558,7 @@ export function buildSubcountQueryList(select: { type: string; description: stri
 }
 
 export function excludeProps(doc) {
-  const { user, company, parent, info, isfolder, description, id, type, date, code, posted, deleted, timestamp, ...newObject } = doc;
+  const { user, company, parent, info, isfolder, description, id, type, date, code, posted, deleted, timestamp, ExchangeCode, ExchangeBase, ...newObject } = doc;
   return newObject;
 }
 
