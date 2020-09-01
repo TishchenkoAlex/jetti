@@ -5,6 +5,7 @@ import { IServerDocument } from '../documents.factory.server';
 export class CatalogOperationServer extends CatalogOperation implements IServerDocument {
 
   async onCreate(tx: MSSQL) {
+      if (this.script) return this;
     this.script = `/*
 
 // Account
