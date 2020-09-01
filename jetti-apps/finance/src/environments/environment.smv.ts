@@ -1,4 +1,4 @@
-// ng build --prod --aot && firebase deploy --only hosting:x100
+// ng build --configuration smv && firebase deploy --only hosting:smv
 import { Configuration } from 'msal';
 import { MsalAngularConfiguration } from '@azure/msal-angular';
 

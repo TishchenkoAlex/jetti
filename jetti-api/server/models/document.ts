@@ -204,12 +204,4 @@ export class DocumentBase {
     return res;
   }
 
-  PropsAdd(propName: string, propOption: {[x: string]: PropOption}) {
-    this.Props = () => {
-      const props = this.Props();
-      props.propName = { ...(props.propName || {}), ...propOption };
-      return props;
-    }
-  }
-
 }
