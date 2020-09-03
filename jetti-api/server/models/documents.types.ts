@@ -82,7 +82,8 @@ export type CatalogTypes =
   'Catalog.InvestorGroup' |
   'Catalog.ReasonTypes' |
   'Catalog.Dynamic' |
-  'Catalog.Employee'
+  'Catalog.Employee' |
+  'Catalog.ResponsibilityCenter'
   ;
 
 export type DocumentTypes =

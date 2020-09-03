@@ -31,7 +31,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     {
       method: 'FillSalaryBalanceByPersonsWithCurrentMonth'
       , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)', order: 5
-    }
+    },
+    { method: 'onCommandcheckTaxCheck', icon: 'pi pi-plus', label: 'Проверить возможность согласования', order: 6 }
   ],
   module: `
       {

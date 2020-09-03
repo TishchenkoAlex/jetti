@@ -5,6 +5,7 @@ import { SDB } from './middleware/db-sessions';
 import { User } from './user.settings';
 import axios from 'axios';
 import { bpApiHost } from '../env/environment';
+import { lib } from '../std.lib';
 
 export const router = express.Router();
 
@@ -63,6 +64,15 @@ router.get('/BP/isUserCurrentExecutant', async (req: Request, res: Response, nex
 
 router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { OperationTypeID, DocumentID } = req.body;
+
+    if (OperationTypeID === '' && DocumentID) {
+      const tx = SDB(req);
+      const servDoc = await lib.doc.createDocServerById(DocumentID, tx);
+      const err = await servDoc!['checkTaxCheck'](tx);
+      if (err) return res.json({error: true, message: err});
+    }
+
     const instance = axios.create({ baseURL: bpApiHost });
     const query = `/Processes/pwd/StartProcess/CashApplication`;
     return res.json((await instance.post(query, req.body)).data);

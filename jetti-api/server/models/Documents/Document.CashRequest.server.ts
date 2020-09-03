@@ -148,6 +148,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return user && await lib.util.isRoleAvailable('Cash request admin', user);
   }
 
+  async doCheckTaxCheck(tx: MSSQL) {
+    const user = await getUser(tx.user.email);
+    return user && !(await lib.util.isRoleAvailable('Dont check tax check', user));
+  }
+
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
     const query = `
           SELECT [id]
@@ -391,12 +396,18 @@ ORDER BY
     return this;
   }
 
-  async checkTaxCheck(tx: MSSQL) {
+  async onCommandcheckTaxCheck(tx: MSSQL) {
+    const err = await this.checkTaxCheck(tx);
+    throw new Error(err || 'Согласование возможно');
+  }
+
+  async checkTaxCheck(tx: MSSQL): Promise<string> {
+    if (!this.doCheckTaxCheck(tx)) return '';
     const q = `
     select
       document,
       receiptId
-    from [sm].[dbo].[Register.Info.TaxCheck] where document in (
+    from [dbo].[Register.Info.TaxCheck] where document in (
       select top 1 document from
         [x100-DATA].[dbo].[Register.Accumulation.Bank]
       where company = @p1
@@ -405,9 +416,9 @@ ORDER BY
         and Amount <> 0
       order by date desc)`;
     const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
-    if (!qRes || qRes.receiptId) return null;
+    if (!qRes || qRes.receiptId) return '';
     const cr = await lib.doc.byId(qRes.document, tx);
-    throw new Error(`Проведение не возможно, не предоставлен чек по последней оплаченной заявке: ${cr?.description}`);
+    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr?.description}`;
   }
 
   async onPost(tx: MSSQL) {
@@ -415,11 +426,8 @@ ORDER BY
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
 
-      // if (this.Operation && this.Operation === 'Выплата заработной платы без ведомости') {
-      //   await this.checkTaxCheck(tx);
-      // }
-
       if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
+        // tslint:disable-next-line: max-line-length
         throw new Error(`${this.description} не может быть проведен:\n организация-оправитель не может совпадать с организацией-получателем`);
 
       if (!this.CashFlow)

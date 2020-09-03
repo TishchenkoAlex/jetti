@@ -20,6 +20,8 @@ import { RegisterAccumulationSales } from './Sales';
 import { RegisterAccumulationBudgetItemTurnover } from './BudgetItemTurnover';
 import { RegisterAccumulationCashToPay } from './CashToPay';
 import { RegisterAccumulationOrderPayment } from './OrderPayment';
+import { RegisterAccumulationBalanceRC } from './Balance.RC';
+import { RegisterAccumulationPLRC } from './PL.RC';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
@@ -30,6 +32,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.AR' |
   'Register.Accumulation.Bank' |
   'Register.Accumulation.Balance' |
+  'Register.Accumulation.Balance.RC' |
   'Register.Accumulation.Balance.Report' |
   'Register.Accumulation.Cash' |
   'Register.Accumulation.Cash.Transit' |
@@ -37,6 +40,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Intercompany' |
   'Register.Accumulation.Loan' |
   'Register.Accumulation.PL' |
+  'Register.Accumulation.PL.RC' |
   'Register.Accumulation.Sales' |
   'Register.Accumulation.Salary' |
   'Register.Accumulation.Depreciation' |
@@ -53,12 +57,14 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },
   { type: 'Register.Accumulation.Bank', Class: RegisterAccumulationBank },
   { type: 'Register.Accumulation.Balance', Class: RegisterAccumulationBalance },
+  { type: 'Register.Accumulation.Balance.RC', Class: RegisterAccumulationBalanceRC },
   { type: 'Register.Accumulation.Balance.Report', Class: RegisterAccumulationBalanceReport },
   { type: 'Register.Accumulation.Cash', Class: RegisterAccumulationCash },
   { type: 'Register.Accumulation.Cash.Transit', Class: RegisterAccumulationCashTransit },
   { type: 'Register.Accumulation.Inventory', Class: RegisterAccumulationInventory },
   { type: 'Register.Accumulation.Loan', Class: RegisterAccumulationLoan },
   { type: 'Register.Accumulation.PL', Class: RegisterAccumulationPL },
+  { type: 'Register.Accumulation.PL.RC', Class: RegisterAccumulationPLRC },
   { type: 'Register.Accumulation.Sales', Class: RegisterAccumulationSales },
   { type: 'Register.Accumulation.Salary', Class: RegisterAccumulationSalary },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },

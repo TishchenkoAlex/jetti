@@ -34,6 +34,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.BusinessRegion' })
   BusinessRegion: Ref = null;
 
+  @Props({ type: 'Catalog.ResponsibilityCenter', required: true })
+  ResponsibilityCenter: Ref = null;
+
   @Props({ type: 'date', label: 'Opening date' })
   OpeningDate = new Date();
 
@@ -52,7 +55,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.PriceType' })
   PriceType: Ref = null;
 
-  @Props({ type: 'Catalog.Department.Kind' })
+  @Props({ type: 'Catalog.Department.Kind', required: true, isProtected: true })
   kind: Ref = null;
 
   @Props({ type: 'string', required: false })
