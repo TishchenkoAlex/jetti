@@ -2,10 +2,10 @@
   <ng-content></ng-content>
 
   <p-toolbar>
-    <div class="ui-toolbar-group-left">
-      <button pButton type="button" (click)="loadTasks()" label="Обновить" styleClass="ui-button-info"></button>
+    <div class="p-toolbar-group-left">
+      <button pButton type="button" (click)="loadTasks()" label="Обновить" styleClass="p-button-info"></button>
     </div>
-    <div class="ui-toolbar-group-right">
+    <div class="p-toolbar-group-right">
       <input type="text" placeholder="Строка поиска" (input)="Tasklist.filterGlobal($event.target.value, 'contains')"
         style="width:auto">
     </div>
@@ -39,7 +39,7 @@
             <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
           </a>
         </td>
-        <td *ngFor="let column of columns" class="ui-resizable-column" style="text-align: center;"
+        <td *ngFor="let column of columns" class="p-resizable-column" style="text-align: center;"
           [ngStyle]="column.style" [ngSwitch]="column.type">
           <span *ngSwitchCase="'date'">
             <span>
@@ -53,31 +53,31 @@
           <span *ngSwitchDefault>{{rowData[column.field]}}</span>
         </td>
         <td>
-          <div *ngIf="rowData.isModifyTask.toString() ==='true'" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
-            <button pButton type="button" class="ui-button-info"
+          <div *ngIf="rowData.isModifyTask.toString() ==='true'" class="p-g p-g-nopad" style="padding: 0em; margin: 0em;">
+            <button pButton type="button" class="p-button-info"
               icon="pi pi-times" (click)= "open(rowData)" label="Выполнить доработку" style="offset: 5px;"></button>
           </div>
           <div *ngIf="rowData.isModifyTask.toString() !=='true'">
-            <div *ngIf="!rowData.DecisionID" class="ui-g ui-g-nopad" style="padding: 0em; margin: 0em;">
-              <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button" class="ui-button-success"
+            <div *ngIf="!rowData.DecisionID" class="p-g p-g-nopad" style="padding: 0em; margin: 0em;">
+              <button *ngIf="rowData.CanApprove.toString()==='true'" pButton type="button" class="p-button-success"
                 icon="pi pi-check" (click)="CompleteTask(rowData)" label="Утвердить" style="offset: 5px;"></button>
               <span style="width: 5px;"></span>
-              <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button" class="ui-button-danger"
+              <button *ngIf="rowData.CanReject.toString()==='true'" pButton type="button" class="p-button-danger"
                 icon="pi pi-times" (click)="rowData.DecisionID = 1" label="Отклонить" style="offset: 5px;"></button>
-              <button *ngIf="rowData.CanModify.toString()==='true'" pButton type="button" class="ui-button-info"
+              <button *ngIf="rowData.CanModify.toString()==='true'" pButton type="button" class="p-button-info"
                 icon="pi pi-pencil" (click)="rowData.DecisionID = 2" label="Доработать"
                 style="offset: 5px;"></button>
             </div>
             <div *ngIf="rowData.DecisionID">
               <div>
-                <button pButton type="button" icon="pi pi-check" class="ui-button-success" label="OK"
+                <button pButton type="button" icon="pi pi-check" class="p-button-success" label="OK"
                   (click)="CompleteTask(rowData)"></button>
                 <span style="width: 5px;"></span>
                 <input type="text" pInputText
                   placeholder='{{rowData.DecisionID === 1 ? "Причина отклонения" : "Причина доработки"}}'
                   [(ngModel)]="rowData.DecisionComment">
                 <span style="width: 5px;"></span>
-                <button pButton type="button" icon="pi pi-times" class="ui-button-danger" label="Отмена"
+                <button pButton type="button" icon="pi pi-times" class="p-button-danger" label="Отмена"
                   (click)="rowData.DecisionID = 0"></button>
               </div>
             </div>
@@ -89,7 +89,7 @@
     <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
       <tr>
         <td [attr.colspan]="columnsLength + 2">
-          <div class="ui-g ui-fluid" style="padding:10px">
+          <div class="p-g p-fluid" style="padding:10px">
             <bp-task [Task]="rowData"></bp-task>
           </div>
         </td>

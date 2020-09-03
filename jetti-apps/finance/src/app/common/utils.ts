@@ -7,7 +7,7 @@ export function scrollIntoViewIfNeeded(type, style, direction = false) {
     if (highlight.length) target = highlight[0];
   }
   const table = document.getElementById(type);
-  const scrollEl = table ? table.getElementsByClassName('ui-table-scrollable-body') : [];
+  const scrollEl = table ? table.getElementsByClassName('p-table-scrollable-body') : [];
   if (!(target && scrollEl.length)) return;
 
   const targetRect = target.getBoundingClientRect();

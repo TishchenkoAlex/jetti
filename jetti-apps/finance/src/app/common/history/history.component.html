@@ -1,8 +1,8 @@
 <p-toolbar>
-  <div class="ui-toolbar-group-left">
-    <button id="open" label="Open" class="ui-button-success" pButton type="button" (click)="openOnClick()"
+  <div class="p-toolbar-group-left">
+    <button id="open" label="Open" class="p-button-success" pButton type="button" (click)="openOnClick()"
     [disabled]="(lds.busy$ | async) || !selection"></button>
-    <button id="restore" label="Restore" class="ui-button-warning" pButton type="button" (click)="restore()"
+    <button id="restore" label="Restore" class="p-button-warning" pButton type="button" (click)="restore()"
       [disabled]="(lds.busy$ | async) || !selection"></button>
   </div>
 </p-toolbar>
@@ -24,7 +24,7 @@
 
   <ng-template pTemplate="body" let-rowData>
     <tr [pSelectableRow]="rowData" (dblclick)="openHistory(rowData)">
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
           style="color: #5cb85c"></i>
         <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
@@ -33,16 +33,16 @@
         <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
         <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
       </td>
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         {{rowData.userName }}
       </td>
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         {{rowData.timestamp | date: 'dd.MM.y HH:mm:ss'}}
       </td>
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         {{rowData.code }}
       </td>
-      <td class="ui-resizable-column">
+      <td class="p-resizable-column">
         {{rowData.description }}
       </td>
     </tr>

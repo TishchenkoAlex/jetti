@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
+import { AutoComplete } from 'primeng/autocomplete';
 import { Observable, Subscription } from 'rxjs';
 import { ISuggest } from '../../../../../../jetti-api/server/models/common-types';
 import { OwnerRef, StorageType } from '../../../../../../jetti-api/server/models/document';

@@ -1,17 +1,17 @@
 <p-toolbar>
-  <div class="ui-toolbar-group-left">
-    <button pButton type="button" icon="pi pi-plus" class="ui-button-success" (click)="add()"></button>
-    <button pButton type="button" icon="pi pi-clone" class="ui-button-secondary" (click)="copy()"
+  <div class="p-toolbar-group-left">
+    <button pButton type="button" icon="pi pi-plus" class="p-button-success" (click)="add()"></button>
+    <button pButton type="button" icon="pi pi-clone" class="p-button-secondary" (click)="copy()"
       *ngIf="selection?.length === 1"></button>
-    <button pButton type="button" icon="pi pi-trash" class="ui-button-danger" (click)="delete()"
+    <button pButton type="button" icon="pi pi-trash" class="p-button-danger" (click)="delete()"
       *ngIf="selection?.length > 0"></button>
   </div>
-  <div class="ui-toolbar-group-right">
-    <div class="ui-inputgroup">
+  <div class="p-toolbar-group-right">
+    <div class="p-inputgroup">
     <input #searchKeyword type="text" placeholder="Keyword"
       style="width:auto">
-      <button pButton type="button" icon="pi pi-search" class="ui-button-success" (click)="search(searchKeyword.value)"></button>
-      <button pButton type="button" icon="pi pi-ban" class="ui-button-danger" (click)="searchKeyword.value = ''; search(searchKeyword.value)"></button>
+      <button pButton type="button" icon="pi pi-search" class="p-button-success" (click)="search(searchKeyword.value)"></button>
+      <button pButton type="button" icon="pi pi-ban" class="p-button-danger" (click)="searchKeyword.value = ''; search(searchKeyword.value)"></button>
   </div>
   </div>
 </p-toolbar>
@@ -19,7 +19,7 @@
 <p-table #tablePart [columns]="columns" [value]="dataSource" selectionMode="multiple" [metaKeySelection]="true"
   [(selection)]="selection" (sortFunction)="customSort($event)" [customSort]="true" dataKey="index" [scrollable]="true"
   (onEditComplete)="onEditComplete($event)" (onEditCancel)="onEditCancel($event)" (onEditInit)="onEditInit($event)"
-  scrollHeight="37vh" [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand">
+  scrollHeight="37vh" [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand" styleClass="p-datatable-sm">
 
   <ng-template pTemplate="colgroup" let-columns>
     <colgroup>
@@ -46,7 +46,7 @@
         {{rowIndex + 1}}
       </td>
       <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field"
-        class="ui-resizable-column">
+        class="p-resizable-column">
         <p-cellEditor>
           <ng-template pTemplate="input">
             <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
@@ -69,7 +69,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td class="ui-resizable-column"></td>
+      <td class="p-resizable-column"></td>
     </tr>
   </ng-template>
 

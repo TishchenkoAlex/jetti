@@ -50,7 +50,7 @@ export class ApiDataSource {
               this.renderedData = data.data;
               this.renderedDataList = data.data;
               this.continuation = data.continuation;
-              setTimeout(() => scrollIntoViewIfNeeded(type, 'ui-state-highlight', direction));
+              setTimeout(() => scrollIntoViewIfNeeded(type, 'p-state-highlight', direction));
             }),
             catchError(err => {
               this.renderedData = this.EMPTY.data;

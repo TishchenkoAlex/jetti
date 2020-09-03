@@ -2,22 +2,22 @@
 
   <div style="display: flex; flex-direction: column;">
     <p-toolbar *ngIf="!readonly">
-      <div class="ui-toolbar-group-left">
-        <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
+      <div class="p-toolbar-group-left">
+        <button id="add" icon="fa fa-plus" class="p-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
-        <button id="addFolder" icon="fas fa-folder-plus" class="ui-button-success" pButton type="button"
+        <button id="addFolder" icon="fas fa-folder-plus" class="p-button-success" pButton type="button"
           (click)="add(true)" pTooltip="Add folder" tooltipPosition="top" showDelay="2000"
           [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" (click)="open()"
+        <button id="open" icon="far fa-edit" class="p-button-secondary" pButton type="button" (click)="open()"
           [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
-        <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
+        <button id="copy" icon="far fa-copy" class="p-button-secondary" pButton type="button" (click)="copy()"
           [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
-        <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
+        <button id="delete" icon="far fa-trash-alt" class="p-button-danger" pButton type="button" (click)="delete()"
           [disabled]="(lds.busy$ | async)" *ngIf="selectionData"></button>
       </div>
-      <div class="ui-toolbar-group-right">
+      <div class="p-toolbar-group-right">
         <button pButton type="button" [label]="(this.showDeleted ? 'Hide ' : 'Show ') + 'deleted'"
-          class="ui-button-secondary" (click)="showDeletedSet(!this.showDeleted, true)"
+          class="p-button-secondary" (click)="showDeletedSet(!this.showDeleted, true)"
           [disabled]="(lds.busy$ | async)"></button>
       </div>
     </p-toolbar>
@@ -48,7 +48,7 @@
           <tr>
             <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th *ngFor="let column of columns" [ngStyle]="column.style" [ngSwitch]="column.type"
-              class="ui-fluid ui-column-filter">
+              class="p-fluid p-column-filter">
               <div *ngSwitchCase="'boolean'">
                 <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
                   (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
@@ -91,7 +91,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
           <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" (dblclick)="onNodeDblclick(rowNode)">
-            <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
+            <td class="p-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
             <td *ngFor="let column of columns" [ngStyle]="column.style">
               <span [ngSwitch]="column.type" [id]="column.field">
                 <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
@@ -153,7 +153,7 @@
           <tr>
             <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
             <th *ngFor="let column of tbl.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
-              class="ui-fluid ui-column-filter">
+              class="p-fluid p-column-filter">
               <div *ngSwitchCase="'boolean'">
                 <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
                   (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
@@ -197,8 +197,8 @@
 
         <ng-template pTemplate="body" let-rowData>
           <tr [pSelectableRow]="rowData" (dblclick)="select(rowData)" [class]="'scrollTo-' + type">
-            <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
-            <!-- <td class="ui-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
+            <td class="p-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
+            <!-- <td class="p-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
               <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
                 style="color: #5cb85c"></i>
               <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>

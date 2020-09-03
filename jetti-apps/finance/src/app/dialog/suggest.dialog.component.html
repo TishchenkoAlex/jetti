@@ -12,16 +12,16 @@
   </div> -->
   <div style="display: flex; flex-direction: column;">
     <p-toolbar *ngIf="!readonly">
-      <div class="ui-toolbar-group-left">
-        <button id="add" icon="fa fa-plus" class="ui-button-success" pButton type="button" (click)="add()"
+      <div class="p-toolbar-group-left">
+        <button id="add" icon="fa fa-plus" class="p-button-success" pButton type="button" (click)="add()"
           [disabled]="(lds.busy$ | async)"></button>
-        <button id="open" icon="far fa-edit" class="ui-button-secondary" pButton type="button" (click)="open()"
+        <button id="open" icon="far fa-edit" class="p-button-secondary" pButton type="button" (click)="open()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
-        <button id="copy" icon="far fa-copy" class="ui-button-secondary" pButton type="button" (click)="copy()"
+        <button id="copy" icon="far fa-copy" class="p-button-secondary" pButton type="button" (click)="copy()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length == 1"></button>
-        <button id="delete" icon="far fa-trash-alt" class="ui-button-danger" pButton type="button" (click)="delete()"
+        <button id="delete" icon="far fa-trash-alt" class="p-button-danger" pButton type="button" (click)="delete()"
           [disabled]="(lds.busy$ | async)" *ngIf="selection?.length"></button>
-        <button id="showTree" icon="fa fa-sitemap" class="ui-button-secondary" pButton type="button"
+        <button id="showTree" icon="fa fa-sitemap" class="p-button-secondary" pButton type="button"
           (click)="showTree = !showTree" [disabled]="(lds.busy$ | async)" *ngIf="showTreeButton"></button>
       </div>
     </p-toolbar>
@@ -49,7 +49,7 @@
           <tr cdkTrapFocus [cdkTrapFocusAutoCapture]="true" cdkFocusInitial>
             <th [ngStyle]="{'width': '26px', 'text-align': 'center'}"></th>
             <th *ngFor="let column of tbl.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
-              class="ui-fluid ui-column-filter">
+              class="p-fluid p-column-filter">
               <div *ngSwitchCase="'boolean'">
                 <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
                   (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
@@ -93,7 +93,7 @@
 
         <ng-template pTemplate="body" let-rowData>
           <tr [pSelectableRow]="rowData" (dblclick)="select(rowData)" [class]="'scrollTo-' + type">
-            <td class="ui-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
+            <td class="p-resizable-column" [ngStyle]="{'width': '26px', 'text-align': 'center'}">
               <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
                 style="color: #5cb85c"></i>
               <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>

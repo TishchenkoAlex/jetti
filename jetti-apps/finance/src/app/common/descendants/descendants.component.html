@@ -19,7 +19,7 @@
 
   <ng-template pTemplate="body" let-rowData>
     <tr [pSelectableRow]="rowData" (dblclick)="openDescedant(rowData)">
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         <i *ngIf="!rowData.isfolder && rowData['posted'] && !rowData['deleted']" class="fa fa-check-square"
           style="color: #5cb85c"></i>
         <i *ngIf="!rowData.isfolder && rowData['deleted']" class="fa fa-minus-square" style="color: #d9534f"></i>
@@ -28,19 +28,19 @@
         <i *ngIf="rowData.isfolder && rowData['deleted']" class="fa fa-folder" style="color: #d9534f"></i>
         <i *ngIf="rowData.isfolder && !rowData['deleted']" class="fa fa-folder" style="color: #5cb85c"></i>
       </td>
-      <td class="ui-resizable-column" style="text-align: left;">
+      <td class="p-resizable-column" style="text-align: left;">
         {{rowData.description }}
       </td>
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         {{rowData.company }}
       </td>
-      <td class="ui-resizable-column" style="text-align: right;">
+      <td class="p-resizable-column" style="text-align: right;">
         {{rowData.amount | number:'1.2-4' }}
       </td>
-      <td class="ui-resizable-column" style="text-align: center;">
+      <td class="p-resizable-column" style="text-align: center;">
         {{rowData.user }}
       </td>
-      <td class="ui-resizable-column" style="text-align: left;">
+      <td class="p-resizable-column" style="text-align: left;">
         {{rowData.info }}
       </td>
     </tr>

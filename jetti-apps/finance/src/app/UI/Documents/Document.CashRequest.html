@@ -4,44 +4,44 @@
       [header]="description?.value?.concat(isPosted ? ', [проведена]' : ', [не проведена]').concat(isSuperUser ? ' *GODMODE' : '')"
       [toggleable]="true" toggler="header">
       <p-toolbar *ngIf="!isHistory">
-        <div class="ui-toolbar-group-left">
+        <div class="p-toolbar-group-left">
           <button pButton type="button" id="PostClose " icon="fa fa-check-square" label="Post&Close"
-            pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
+            pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="p-button-warning"
             [disabled]="!form.valid || (lds.busy$ | async)" (click)="postClose()"
             *ngIf="!readonlyMode && !isDeleted"></button>
           <button pButton type="button" id="Post" icon="fa fa-check" pTooltip="Post" tooltipPosition="top"
-            showDelay="2000" class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
+            showDelay="2000" class="p-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
             (click)="post()" *ngIf="!readonlyMode && !isDeleted && isDoc"></button>
           <button pButton type="button" id="unPost" icon="far fa-square" pTooltip="Unpost" tooltipPosition="top"
-            showDelay="2000" class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
+            showDelay="2000" class="p-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
             (click)="unPost()" *ngIf="!readonlyMode && !isDeleted && isPosted && isDoc"></button>
           <button pButton type="button" id="Copy" icon="far fa-copy" pTooltip="Copy" tooltipPosition="top"
-            showDelay="2000" class="ui-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
+            showDelay="2000" class="p-button-secondary" [disabled]="!form.valid || (lds.busy$ | async)"
             (click)="copy()" *ngIf="!isDeleted && !isNew"></button>
           <button pButton type="button" id="Delete" icon="far fa-trash-alt" pTooltip="Delete" tooltipPosition="top"
-            showDelay="2000" class="ui-button-danger" *ngIf="!isNew" (click)="delete()"
+            showDelay="2000" class="p-button-danger" *ngIf="!isNew" (click)="delete()"
             [disabled]="(lds.busy$ | async)"></button>
         </div>
 
-        <div class="ui-toolbar-group-right">
-          <button pButton type="button" label="Report" class="ui-button-warning" (click)="OpenReport()"
+        <div class="p-toolbar-group-right">
+          <button pButton type="button" label="Report" class="p-button-warning" (click)="OpenReport()"
             [disabled]="(lds.busy$ | async)"></button>
-          <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async" styleClass="ui-button-secondary"
+          <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async" styleClass="p-button-secondary"
             label="base on">
           </p-splitButton>
           <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
-            styleClass="ui-button-secondary" label="commands">
+            styleClass="p-button-secondary" label="commands">
           </p-splitButton>
-          <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="ui-button-secondary" (click)="goto()"
+          <button *ngIf="!isNew" pButton type="button" icon="pi pi-list" class="p-button-secondary" (click)="goto()"
             pTooltip="Show in list" tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)"></button>
-          <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="ui-button-secondary" pTooltip="Print"
+          <button *ngIf="isPosted" pButton type="button" icon="pi pi-print" class="p-button-secondary" pTooltip="Print"
             tooltipPosition="top" showDelay="2000" (click)="print()" [disabled]="(lds.busy$ | async)"></button>
-          <button pButton type="button" icon="pi pi-refresh" class="ui-button-secondary" pTooltip="Refresh"
+          <button pButton type="button" icon="pi pi-refresh" class="p-button-secondary" pTooltip="Refresh"
             tooltipPosition="top" showDelay="2000" [disabled]="(lds.busy$ | async)" (click)="refresh()"></button>
-          <button pButton type="button" id="StartProcess" label="Start agreement" class="ui-button-danger"
+          <button pButton type="button" id="StartProcess" label="Start agreement" class="p-button-danger"
             *ngIf="logic_USECASHREQUESTAPPROVING && !readonlyMode && isPosted && !form.get('workflowID').value"
             (click)="StartProcess()" [disabled]="!form.valid || (lds.busy$ | async)"></button>
-          <button pButton type="button" id="Modify" label="Continue agreement" class="ui-button-warning"
+          <button pButton type="button" id="Modify" label="Continue agreement" class="p-button-warning"
             *ngIf="isPosted && canModifyProcess" (click)="ContinueAgreement()"
             [disabled]="!form.valid || (lds.busy$ | async)"></button>
         </div>

@@ -4,41 +4,41 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp [header]='header' [toggleable]="true">
           <p-toolbar *ngIf="!onlyViewMode">
-            <div *ngIf="isModeLoad" class="ui-toolbar-group-left">
+            <div *ngIf="isModeLoad" class="p-toolbar-group-left">
               <button pButton type="button" id="ReadReciever" label="2. Загрузить структуру приемника"
-                class="ui-button-info" (click)="ReadRecieverStructure()"></button>
+                class="p-button-info" (click)="ReadRecieverStructure()"></button>
               <button pButton type="button" id="matchColumnsByName" label="3. Сопоставить колонки по именам"
-                class="ui-button-info" (click)="matchColumnsByName()"></button>
+                class="p-button-info" (click)="matchColumnsByName()"></button>
               <button pButton type="button" id="loadToTempTable" label="4. Загрузить в таблицу (строками)"
-                class="ui-button-info" (click)="loadToTempTable()"></button>
+                class="p-button-info" (click)="loadToTempTable()"></button>
               <button pButton type="button" id="fillLoadingTable" label="5. Найти соответствия в БД"
-                class="ui-button-info" (click)="fillLoadingTable()"></button>
+                class="p-button-info" (click)="fillLoadingTable()"></button>
               <button pButton type="button" id="prepareToLoading" label="1-5. Подготовить загрузку"
-                class="ui-button-info" (click)="prepareToLoading()"></button>
-              <button pButton type="button" id="saveDataIntoDB" label="6. Загрузить в БД!" class="ui-button-danger"
+                class="p-button-info" (click)="prepareToLoading()"></button>
+              <button pButton type="button" id="saveDataIntoDB" label="6. Загрузить в БД!" class="p-button-danger"
                 (click)="saveDataIntoDB()"></button>
-              <button pButton type="button" id="prepareToLoading" label=". Подготовить загрузку" class="ui-button-info"
+              <button pButton type="button" id="prepareToLoading" label=". Подготовить загрузку" class="p-button-info"
                 (click)="prepareToLoading()"></button>
             </div>
             <div *ngIf="isModeModify">
-              <div class="ui-toolbar-group-left">
-                <button pButton type="button" id="fillPropSettings" label="Настроить поля" class="ui-button-info"
+              <div class="p-toolbar-group-left">
+                <button pButton type="button" id="fillPropSettings" label="Настроить поля" class="p-button-info"
                   (click)="fillPropSettings()"></button>
                 <button pButton type="button" id="createFilterAndModifyElements" label="Создать элементы"
-                  class="ui-button-info" (click)="createFilterAndModifyElements()"></button>
-                <button pButton type="button" id="selectFilter" label="Отобрать" class="ui-button-info"
+                  class="p-button-info" (click)="createFilterAndModifyElements()"></button>
+                <button pButton type="button" id="selectFilter" label="Отобрать" class="p-button-info"
                   (click)="selectFilter()"></button>
               </div>
 
-              <div class="ui-toolbar-group-right">
-                <button pButton type="button" id="saveToJSON" label="Сохранить в JSON" class="ui-button-info"
+              <div class="p-toolbar-group-right">
+                <button pButton type="button" id="saveToJSON" label="Сохранить в JSON" class="p-button-info"
                   (click)="saveToJSON()"></button>
                 <p-fileUpload customUpload="true" accept=".json" mode="basic" chooseLabel="Загрузить из JSON"
                   (onSelect)="loadFromJSON($event)">
                 </p-fileUpload>
-                <button pButton type="button" id="selectFilter" label="Сохранить в CSV" class="ui-button-success"
+                <button pButton type="button" id="selectFilter" label="Сохранить в CSV" class="p-button-success"
                   (click)="saveToFile()"></button>
-                <button pButton type="button" id="selectFilter" label="ЗАПИСАТЬ" class="ui-button-danger"
+                <button pButton type="button" id="selectFilter" label="ЗАПИСАТЬ" class="p-button-danger"
                   (click)="modify()"></button>
               </div>
             </div>

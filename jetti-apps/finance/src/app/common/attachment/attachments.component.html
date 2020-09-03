@@ -1,46 +1,46 @@
 <p-dataView [value]="attachmets$ | async" layout="grid" emptyMessage="No attachmets found">
   <p-header>
     <p-toolbar styleClass="NoBorder">
-      <div class="ui-toolbar-group-left">
-        <button [disabled]="!settings.length" pButton type="button" icon="pi pi-plus" class="ui-button-success"
+      <div class="p-toolbar-group-left">
+        <button [disabled]="!settings.length" pButton type="button" icon="pi pi-plus" class="p-button-success"
           (click)="showDialog($event, true)"></button>
       </div>
-      <div class="ui-toolbar-group-right">
+      <div class="p-toolbar-group-right">
         <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
       </div>
     </p-toolbar>
   </p-header>
   <ng-template let-item pTemplate="listItem">
-    <div class="ui-g-12">
+    <div class="p-g-12">
       <div class="item-details">
         <div>
           <img [src]="item.URL" style="max-width: 100%; height: auto;" (click)="showDialog($event, false, item)">
-          <div class="ui-g-12"><b>{{item.AttachmentTypeDescription}}: "{{item.description}}"</b></div>
-          <div *ngIf="item.TagsString" class="ui-g-12"><b>{{item.TagsString}}</b></div>
+          <div class="p-g-12"><b>{{item.AttachmentTypeDescription}}: "{{item.description}}"</b></div>
+          <div *ngIf="item.TagsString" class="p-g-12"><b>{{item.TagsString}}</b></div>
         </div>
         <button pButton type="button" icon="pi pi-search" (click)="showDialog($event, false, item)"></button>
         <button *ngIf="settings.length" pButton type="button" icon="pi pi-cog"
-          style="margin-left: 5px;margin-right: 5px;" class="ui-button-warning"
+          style="margin-left: 5px;margin-right: 5px;" class="p-button-warning"
           (click)="showDialog($event, true, item)"></button>
-        <button *ngIf="item.isFile" pButton type="button" icon="pi pi-download" class="ui-button-success"
+        <button *ngIf="item.isFile" pButton type="button" icon="pi pi-download" class="p-button-success"
           (click)="downloadAttachment(item)"></button>
       </div>
     </div>
   </ng-template>
 
   <ng-template let-item pTemplate="gridItem">
-    <div style="padding:.5em" class="ui-g-12 ui-md-3">
+    <div style="padding:.5em" class="p-g-12 p-md-3">
       <p-panel [header]="item.Description" [style]="{'text-align':'center', 'height': '100%'}">
         <img [src]="item.URL" style="max-width: 100%; width:auto; height:auto;"
           (click)="showDialog($event, false, item)">
         <div class="item-detail">{{item.AttachmentTypeDescription}}</div>
         <div class="item-detail"><b>{{item.description}}</b></div>
         <div *ngIf="item.TagsString" class="item-detail">{{item.TagsString}}</div>
-        <hr class="ui-widget-content" style="border-top:0">
+        <hr class="p-widget-content" style="border-top:0">
         <button pButton type="button" icon="pi pi-search" (click)="showDialog($event, false, item)"></button>
-        <button *ngIf="settings.length" pButton type="button" icon="pi pi-cog" class="ui-button-warning"
+        <button *ngIf="settings.length" pButton type="button" icon="pi pi-cog" class="p-button-warning"
           style="margin-left: 5px;margin-right: 5px;" (click)="showDialog($event, true, item)"></button>
-        <button *ngIf="item.isFile" pButton type="button" icon="pi pi-download" class="ui-button-success"
+        <button *ngIf="item.isFile" pButton type="button" icon="pi pi-download" class="p-button-success"
           (click)="downloadAttachment(item)"></button>
       </p-panel>
     </div>
@@ -99,12 +99,12 @@
 
     <div style="margin-top: 10px">
       <p-toolbar styleClass="NoBorder">
-        <div class="ui-toolbar-group-left">
-          <button pButton type="button" id="OK" icon="fa fa-check-square" label="Save" class="ui-button-warning"
+        <div class="p-toolbar-group-left">
+          <button pButton type="button" id="OK" icon="fa fa-check-square" label="Save" class="p-button-warning"
             (click)="saveAttachment()"></button>
         </div>
-        <div class="ui-toolbar-group-right">
-          <button pButton type="button" id="Remove" icon="far fa-trash-alt" label="Remove" class="ui-button-danger"
+        <div class="p-toolbar-group-right">
+          <button pButton type="button" id="Remove" icon="far fa-trash-alt" label="Remove" class="p-button-danger"
             *ngIf="this.selectedAttachment.id" (click)="delAttachment(this.selectedAttachment.id)"></button>
         </div>
       </p-toolbar>

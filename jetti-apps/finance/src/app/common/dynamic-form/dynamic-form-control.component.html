@@ -1,23 +1,23 @@
 <div [formGroup]="form" [ngSwitch]="control.controlType" *ngIf="!control.hidden" [style.marginTop]="marginTop()"
-  class="ui-fluid">
-  <div *ngSwitchCase="'string'" class="ui-inputgroup" style="display: flex"
-    [ngClass]="{'ui-float-label' : control.showLabel}">
+  class="p-fluid">
+  <div *ngSwitchCase="'string'" class="p-inputgroup" style="display: flex"
+    [ngClass]="{'p-float-label' : control.showLabel}">
     <input [required]="control.required" pInputText [formControlName]="control.key" [readonly]="control.readOnly"
       autocomplete="off" (focus)="$event.target.select()" spellcheck="false">
-    <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" (click)="handleReset($event)"
+    <button pButton type="button" icon="pi pi-times" class="p-button-secondary" (click)="handleReset($event)"
       pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1
       [disabled]="this.isEMPTY || control.readOnly"></button>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <div *ngSwitchCase="'URL'" class="ui-inputgroup" style="display: flex"
-    [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'URL'" class="p-inputgroup" style="display: flex"
+    [ngClass]="{'p-float-label' : control.showLabel}">
     <input [required]="control.required" pInputText [formControlName]="control.key" [readonly]="control.readOnly"
       autocomplete="off" (focus)="$event.target.select()" spellcheck="false">
-    <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary" pTooltip="Open"
+    <button pButton type="button" icon="pi pi-external-link" class="p-button-secondary" pTooltip="Open"
       tooltipPosition="top" showDelay="2000" [disabled]="this.isEMPTY" (click)="handleOpenURL($event)"
       [tabIndex]=-1></button>
-    <button pButton type="button" icon="pi pi-times" class="ui-button-secondary" (click)="handleReset($event)"
+    <button pButton type="button" icon="pi pi-times" class="p-button-secondary" (click)="handleReset($event)"
       pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1
       [disabled]="this.isEMPTY || control.readOnly"></button>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
@@ -27,20 +27,20 @@
     <a *ngIf="!this.isEMPTY" (click)="handleOpenURL()">{{control.label + ": " + formControl.value}}</a>
   </div>
 
-  <div *ngSwitchCase="'enum'" [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'enum'" [ngClass]="{'p-float-label' : control.showLabel}">
     <p-dropdown [options]="control.valuesOptions" [formControlName]="control.key" [autoDisplayFirst]="false"
       [readonly]="control.readOnly" [required]="control.required" appendTo="body"></p-dropdown>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <div *ngSwitchCase="'textarea'" [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'textarea'" [ngClass]="{'p-float-label' : control.showLabel}">
     <textarea [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
       (focus)="$event.target.select()" spellcheck="false" [ngStyle]="control.style">
     </textarea>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <div *ngSwitchCase="'number'" [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'number'" [ngClass]="{'p-float-label' : control.showLabel}">
     <p-spinner [required]="control.required" [formControlName]="control.key" [readonly]="control.readOnly"
       (onFocus)="$event.target.select()" [id]="control.key" size="30" [step]="0.01" [formatInput]="true" precision=2>
     </p-spinner>
@@ -53,7 +53,7 @@
     [showLabel]="control.showLabel" (focus)="pc.select()" [storageType]="control.storageType" [appendTo]="appendTo">
   </j-autocomplete-png>
 
-  <div *ngSwitchCase="'date'" [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'date'" [ngClass]="{'p-float-label' : control.showLabel}">
     <input pInputText class="calendar" [value]="dateTimeValue | date: 'yyyy-MM-dd'" [required]="control.required"
       [readonly]="control.readOnly" autocomplete="off" (input)="parseDate($event.target.value)"
       (focus)="$event.target.select()" spellcheck="false" type="date"
@@ -61,7 +61,7 @@
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <div *ngSwitchCase="'datetime'" [ngClass]="{'ui-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'datetime'" [ngClass]="{'p-float-label' : control.showLabel}">
     <input pInputText class="calendar" [value]="dateTimeValue | date:'yyyy-MM-ddTHH:mm:ss'" step="1"
       [required]="control.required" [readonly]="control.readOnly" autocomplete="off"
       (input)="parseDate($event.target.value)" (focus)="$event.target.select()" spellcheck="false" type="datetime-local"

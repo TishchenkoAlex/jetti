@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <p-tabView (onChange)="handleTabChange($event)">
     <p-tabPanel header="Реквизиты" *ngIf="showProp">
-      <!-- <span class="ui-float-label">
+      <!-- <span class="p-float-label">
                 <input id="float-input" type="text" size="30" pInputText>
                 <label for="float-input">Username</label>
             </span> -->
@@ -11,7 +11,7 @@
       <p-table  [value]="_ProcessParticipants$ | async" [resizableColumns]="true">
         <ng-template pTemplate="header">
           <tr>
-            <th *ngFor="let column of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;" [ngStyle] = "column.style">
+            <th *ngFor="let column of ProcessParticipantsFields" class="p-resizable-column" style="text-align: center;" [ngStyle] = "column.style">
               {{column.label}}
               <!-- <span *ngIf="column.visible" title=""></span> -->
             </th>
@@ -20,7 +20,7 @@
         <ng-template pTemplate="body" let-rowData>
           <tr>
             <!-- <td *ngFor="let column of rowDatasFields" [ngStyle]="{'background-columnor': rowData.Current.Trim() === '' ? 'rgb(138, 170, 121)': 'rgb(183, 182, 194)'}"> -->
-            <td *ngFor="let column of ProcessParticipantsFields" class="ui-resizable-column" style="text-align: center;"
+            <td *ngFor="let column of ProcessParticipantsFields" class="p-resizable-column" style="text-align: center;"
               [ngSwitch]="column.type" [ngStyle] = "column.style">
               <span *ngSwitchCase="'date'">
                 <span >

@@ -1,47 +1,47 @@
 <form novalidate [formGroup]="form">
 
   <div *ngIf="value?.type === 'string'">
-    <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : showLabel}">
       <input pInputText [ngModel]="suggest.value.value" [ngModelOptions]="{standalone: true}" [required]="required"
         [readonly]="readOnly" autocomplete="off" spellcheck="false" (focus)="$event.target.select()"
         (ngModelChange)="value={id: 'string', code: '', type: 'string', value: $event}">
-      <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
+      <button pButton type="button" icon="pi pi-close" class="p-button-secondary" (click)="handleReset($event)"
         pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
 
   <div *ngIf="value?.type === 'number'">
-    <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : showLabel}">
       <input pInputText [ngModel]="suggest.value.value" [ngModelOptions]="{standalone: true}" [required]="required"
         type="number" [readonly]="readOnly" autocomplete="off" (focus)="$event.target.select()"
         (ngModelChange)="value={id: 'number', code: '', type: 'number', value: $event}">
-      <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
+      <button pButton type="button" icon="pi pi-close" class="p-button-secondary" (click)="handleReset($event)"
         pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
   </div>
 
   <div *ngIf="value?.type === 'datetime'">
-    <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : showLabel}">
       <input pInputText class="calendar"
         [value]="isDate(suggest.value.value) ? (suggest.value.value | date:'yyy-MM-ddTHH:mm:ss') : null" step=1
         [required]="required" [readonly]="readOnly" autocomplete="off" spellcheck="false"
         (focus)="$event.target.select()" type="datetime-local" (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
-      <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
+      <button pButton type="button" icon="pi pi-close" class="p-button-secondary" (click)="handleReset($event)"
         pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1></button>
     </div>
   </div>
 
   <div *ngIf="value?.type === 'date'">
-    <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : showLabel}">
       <input pInputText class="calendar"
         [value]="isDate(suggest.value.value) ? (suggest.value.value | date:'yyy-MM-dd') : null" [required]="required"
         [readonly]="readOnly" autocomplete="off" spellcheck="false" (focus)="$event.target.select()" type="date"
         (input)="parseDate($event.target.value)">
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
-      <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
+      <button pButton type="button" icon="pi pi-close" class="p-button-secondary" (click)="handleReset($event)"
         pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1></button>
     </div>
   </div>
@@ -51,12 +51,12 @@
       [ngModelOptions]="{standalone: true}"
       (ngModelChange)="value={id: 'boolean', code: '', type: 'boolean', value: $event}">
     </p-checkbox>
-    <button pButton type="button" icon="pi pi-close" class="ui-button-secondary" (click)="handleReset($event)"
+    <button pButton type="button" icon="pi pi-close" class="p-button-secondary" (click)="handleReset($event)"
       pTooltip="Clear" tooltipPosition="top" showDelay="2000"></button>
   </div>
 
-  <span *ngIf="isComplexValue">
-    <div class="ui-inputgroup" style="display: flex" [ngClass]="{'ui-float-label' : showLabel}">
+  <div *ngIf="isComplexValue">
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : showLabel}">
       <p-autoComplete #ac [formControl]="suggest" [suggestions]="Suggests$ | async" [required]="required"
         [readonly]="readOnly" autocomplete="off" (completeMethod)="getSuggests($event.query)" field="value"
         (onSelect)="searchComplete(suggest.value)" [inputStyle]="inputStyle" dataKey="id"
@@ -77,18 +77,18 @@
         </ng-template>
 
       </p-autoComplete>
-      <button pButton type="button" icon="pi pi-search" class="ui-button-secondary"
+      <button pButton type="button" icon="pi pi-search" class="p-button-secondary" styleClass="p-button-success"
         *ngIf="showFind && !this.form.disabled" pTooltip="Select" tooltipPosition="top" showDelay="2000"
         (click)="handleSearch($event)" [tabIndex]=-1 [disabled]="suggest.disabled"></button>
-      <button pButton type="button" icon="pi pi-external-link" class="ui-button-secondary"
+      <button pButton type="button"  icon="pi pi-external-link" class="p-button-secondary"
         *ngIf="showOpen || this.form.disabled" pTooltip="Open" tooltipPosition="top" showDelay="2000"
         [disabled]="this.isEMPTY" (click)="handleOpen($event)" [tabIndex]=-1></button>
-      <button pButton type="button" icon="pi pi-times" class="ui-button-secondary"
+      <button pButton type="button"  icon="pi pi-times" class="p-button-secondary"
         *ngIf="showClear && !this.form.disabled" pTooltip="Clear" tooltipPosition="top" showDelay="2000"
         (click)="handleReset($event)" [tabIndex]=-1 [disabled]="this.suggest.disabled"></button>
       <label *ngIf="showLabel" for="suggest">{{placeholder}}</label>
     </div>
-  </span>
+  </div>
 </form>
 
 <div *ngIf="showDialog">
@@ -103,11 +103,11 @@
     </j-suggest-hierarchy-list>
     <p-footer>
       <p-toolbar>
-        <div class="ui-toolbar-group-left">
-          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
+        <div class="p-toolbar-group-left">
+          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="p-button-warning"
             [disabled]="!slh.isSelectEnabled" (click)="slh.select(slh.selectedNode)"></button>
         </div>
-        <div class="ui-toolbar-group-right">
+        <div class="p-toolbar-group-right">
           <button pButton type="button" icon="pi pi-fast-backward"
             (click)="slh.selectedRow = null; slh.dataSource?.first()"
             [disabled]="!slh.dataSource?.continuation?.first"></button>
@@ -136,11 +136,11 @@
     </j-suggest-list>
     <p-footer>
       <p-toolbar>
-        <div class="ui-toolbar-group-left">
-          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
+        <div class="p-toolbar-group-left">
+          <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="p-button-warning"
             [disabled]="!sl.selection[0]" (click)="sl.select(sl.selection[0])"></button>
         </div>
-        <div class="ui-toolbar-group-right">
+        <div class="p-toolbar-group-right">
           <button pButton type="button" icon="pi pi-fast-backward" (click)="sl.selection = []; sl.dataSource?.first()"
             [disabled]="!sl.dataSource?.continuation?.first"></button>
           <button pButton type="button" icon="pi pi-step-backward" (click)="sl.selection = []; sl.dataSource?.prev()"

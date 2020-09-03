@@ -6,9 +6,11 @@ import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
 import { TableDynamicControl } from '../../common/dynamic-form/dynamic-form-base';
 import { cloneFormGroup, patchOptionsNoEvents } from '../../common/dynamic-form/dynamic-form.service';
 import { ApiService } from '../../services/api.service';
-import { EditableColumn } from '../datatable/table';
+// import { EditableColumn } from '../datatable/table';
 import { DocService } from '../doc.service';
 import { SortEvent } from 'primeng/api';
+import { EditableColumn } from 'primeng/table';
+
 
 const TablePartValidator: ValidatorFn = (c: AbstractControl) => {
   let res = null;

@@ -1,13 +1,13 @@
 <div style="width: 300px; margin-right: 2px">
   <p-toolbar *ngIf="showCommands">
-    <div class="ui-toolbar-group-left">
-      <button pButton type="button" icon="pi pi-plus" class="ui-button-success" (click)="add()"
+    <div class="p-toolbar-group-left">
+      <button pButton type="button" icon="pi pi-plus" class="p-button-success" (click)="add()"
         [disabled]="(lds.busy$ | async)"></button>
-      <button pButton type="button" icon="far fa-edit" class="ui-button-secondary" (click)="open()"
+      <button pButton type="button" icon="far fa-edit" class="p-button-secondary" (click)="open()"
         [disabled]="(lds.busy$ | async)" *ngIf="selection?.data?.id"></button>
-      <button pButton type="button" icon="far fa-copy" class="ui-button-secondary" (click)="copy()"
+      <button pButton type="button" icon="far fa-copy" class="p-button-secondary" (click)="copy()"
         [disabled]="(lds.busy$ | async)" *ngIf="selection?.data?.id"></button>
-      <button pButton type="button" icon="far fa-trash-alt" class="ui-button-danger" (click)="delete()"
+      <button pButton type="button" icon="far fa-trash-alt" class="p-button-danger" (click)="delete()"
         *ngIf="selection?.data?.id"></button>
     </div>
   </p-toolbar>

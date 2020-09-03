@@ -1,4 +1,4 @@
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localeRUExtra from '@angular/common/locales/extra/ru';
 import localeRU from '@angular/common/locales/ru';
@@ -37,6 +37,7 @@ export function getJwtToken(): string {
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,

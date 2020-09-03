@@ -4,24 +4,24 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-toolbar>
 
-          <div class="ui-toolbar-group-left">
-            <button pButton type="button" id="getJobsStat" label="Статистика" class="ui-button-info"
+          <div class="p-toolbar-group-left">
+            <button pButton type="button" id="getJobsStat" label="Статистика" class="p-button-info"
               (click)="executeServerMethod('getJobsStat')"></button>
-            <p-splitButton styleClass="ui-button-success" label="Очередь" [model]="splitCommands.queue">
+            <p-splitButton styleClass="p-button-success" label="Очередь" [model]="splitCommands.queue">
             </p-splitButton>
           </div>
 
 
 
-          <div class="ui-toolbar-group-right">
-            <p-splitButton styleClass="ui-button-success" label="Новая задача" [model]="splitCommands.add">
+          <div class="p-toolbar-group-right">
+            <p-splitButton styleClass="p-button-success" label="Новая задача" [model]="splitCommands.add">
             </p-splitButton>
-            <!-- <p-splitButton styleClass="ui-button-warning" label="Отменить" [model]="splitCommands.cancel">
+            <!-- <p-splitButton styleClass="p-button-warning" label="Отменить" [model]="splitCommands.cancel">
             </p-splitButton> -->
-            <p-splitButton styleClass="ui-button-danger" label="УДАЛИТЬ" [model]="splitCommands.remove">
+            <p-splitButton styleClass="p-button-danger" label="УДАЛИТЬ" [model]="splitCommands.remove">
             </p-splitButton>
             <p-splitButton *ngIf="(commands$ | async)?.length" [model]="commands$ | async"
-              styleClass="ui-button-secondary" label="commands">
+              styleClass="p-button-secondary" label="commands">
             </p-splitButton>
           </div>
 

@@ -19,6 +19,20 @@
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Ng Serve",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}",
+      "program": "./node_modules/.bin/ng",
+      "args": [
+        "serve",
+        "--verbose=true"
+      ]
     }
   ]
 }

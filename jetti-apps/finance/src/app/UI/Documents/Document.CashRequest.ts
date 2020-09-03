@@ -226,6 +226,15 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   StartProcess() {
+    if (this.getValue('Operation') === 'Выплата заработной платы без ведомости') {
+      try {
+        this.commandOnSever('checkTaxCheck');
+      } catch (error) {
+        return;
+      }
+    }
+
+
     this.bpApi.StartProcess(
       this.viewModel as DocumentBase,
       this.metadata.type,

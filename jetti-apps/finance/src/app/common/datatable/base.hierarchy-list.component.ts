@@ -1,9 +1,6 @@
 import { AuthService } from 'src/app/auth/auth.service';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FilterMetadata } from 'primeng/components/common/filtermetadata';
-import { MenuItem } from 'primeng/components/common/menuitem';
-import { SortMeta } from 'primeng/components/common/sortmeta';
 import { iif as _if, merge, Observable, Subject, Subscription, fromEvent, of } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
@@ -18,11 +15,11 @@ import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
-import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
-import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
+import { DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
-import { TreeNode } from 'primeng/api';
+import { TreeNode, MenuItem, FilterMetadata, SortMeta } from 'primeng/api';
+import { Table } from 'primeng/table';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -409,7 +406,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
         } catch (err) { this.ds.openSnackBar('error', s.description, err); }
       }
       this.selection = [s];
-      setTimeout(() => scrollIntoViewIfNeeded(this.type, 'ui-state-highlight'));
+      setTimeout(() => scrollIntoViewIfNeeded(this.type, 'p-state-highlight'));
     }
     this.lds.counter = 0;
     this.dataSource.refresh(this.selection[0].id);

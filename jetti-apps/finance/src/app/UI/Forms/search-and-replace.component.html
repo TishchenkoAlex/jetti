@@ -4,14 +4,14 @@
       <form novalidate [formGroup]="form" cdkTrapFocus>
         <p-panel #mp [header]='header' [toggleable]="true">
           <p-toolbar *ngIf="!onlyViewMode">
-            <div class="ui-toolbar-group-left">
+            <div class="p-toolbar-group-left">
               <button pButton type="button" id="Search" icon="fab fa-searchengin" label="Search"
-                pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="ui-button-warning"
+                pTooltip="Post and close" tooltipPosition="top" showDelay="2000" class="p-button-warning"
                 (click)="ExecuteServerMethod('Search')"></button>
               <button pButton type="button" id="ExchangeData" icon="fas fa-exchange-alt" label="Fill exchange data"
-                class="ui-button-warning" (click)="ExecuteServerMethod('FillExchangeData')"></button>
+                class="p-button-warning" (click)="ExecuteServerMethod('FillExchangeData')"></button>
               <button pButton type="button" id="Replace" icon="fas fa-exchange-alt" label="Replace" pTooltip="Replace"
-                tooltipPosition="top" showDelay="2000" class="ui-button-danger"
+                tooltipPosition="top" showDelay="2000" class="p-button-danger"
                 (click)="ExecuteServerMethod('Replace')"></button>
             </div>
           </p-toolbar>

@@ -3,7 +3,6 @@ import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { ChangeDetectorRef, Input, OnDestroy, OnInit, QueryList, ViewChildren, Directive } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MenuItem } from 'primeng/components/common/menuitem';
 import { merge, of as observableOf, Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { filter, take, map } from 'rxjs/operators';
 import { v1 } from 'uuid';
@@ -17,6 +16,7 @@ import { TabsStore } from '../tabcontroller/tabs.store';
 import { AuthService } from 'src/app/auth/auth.service';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
+import { MenuItem } from 'primeng/api/public_api';
 
 export declare interface IFormEventsModel {
   onOpen(): void;
@@ -28,8 +28,8 @@ export declare interface IFormEventsModel {
   beforeUnPost(): void;
 }
 
-// tslint:disable-next-line: class-name
 @Directive()
+// tslint:disable-next-line: class-name
 export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsModel {
 
   @Input() id: string;

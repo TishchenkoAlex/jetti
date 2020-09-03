@@ -8,12 +8,10 @@ import { DocService } from 'src/app/common/doc.service';
 import { calendarLocale, dateFormat } from 'src/app/primeNG.module';
 import { Router } from '@angular/router';
 import { ITask } from './task.object';
-import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
 
 @Component({
   templateUrl: 'tasks-list.component.html',
   selector: 'bp-tasks-list',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('rowExpansionTrigger', [
       state('void', style({
