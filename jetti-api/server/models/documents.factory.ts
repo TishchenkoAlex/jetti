@@ -93,9 +93,8 @@ import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocati
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
 import { CatalogDynamic } from './Dynamic/dynamic.prototype';
-import { v1 } from 'uuid';
-import { simpleTypes } from './Types/Types.factory';
 import { Type } from './common-types';
+import { CatalogResponsibilityCenter } from './Catalogs/Catalog.ResponsibilityCenter';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -177,6 +176,7 @@ export function RegisteredDocumentDynamic(): RegisteredDocumentType[] {
 }
 
 export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
+  { type: 'Catalog.ResponsibilityCenter', Class: CatalogResponsibilityCenter },
   { type: 'Catalog.Dynamic', Class: CatalogDynamic },
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },

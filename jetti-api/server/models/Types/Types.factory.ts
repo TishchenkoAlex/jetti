@@ -23,7 +23,11 @@ export interface IRegisteredTypes {
 }
 
 export function allTypes(): { type: AllTypes, description: string }[] {
-  return [...documentsTypes(), ...simpleTypes()];
+  return [
+    ...documentsTypes(),
+    ...simpleTypes(),
+    ...RegisteredTypes.map(e => ({ type: e.type as any, description: e.type as string }))
+  ];
 }
 
 export function documentsTypes(): { type: AllTypes, description: string }[] {

@@ -241,6 +241,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   handleBpApiResponse(response: any, isModifyEvent = false) {
+    if (response.error) {
+      this.ds.openSnackBar('error', 'Ошибка', response.message);
+      return;
+    }
     switch (response) {
       case 'APPROVED':
         this.setValue('workflowID', '');
