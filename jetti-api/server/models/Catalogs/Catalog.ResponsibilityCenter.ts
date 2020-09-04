@@ -16,7 +16,7 @@ export class CatalogResponsibilityCenter extends DocumentBase {
   kind = '';
 
   @Props({ type: 'Catalog.Person', order: 2, required: true })
-  ResponsiblePerson = '';
+  ResponsiblePerson: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true, isProtected: true})
   Currency: Ref = null;
