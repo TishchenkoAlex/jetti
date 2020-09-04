@@ -7,6 +7,7 @@ import axios, { AxiosInstance } from 'axios';
 import { Agent } from 'https';
 import { Cipher } from 'crypto';
 import moment = require('moment');
+import { insertDocument } from '../../routes/utils/post';
 
 export interface ITaxCheck {
     clientInn: string;
@@ -38,20 +39,29 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.inn
         ]);
+ 
+    const DateStart = taxCheck.operationTime
+    const DateEnd = taxCheck.operationTime
+
+    DateStart.setDate(DateStart.getDate() - 1);
+    DateEnd.setDate(DateEnd.getDate() + 1);
+
     const queryText = `
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
     WHERE clientInn = @p1
         and inn = @p2
         and totalAmount = @p3
-        and [date] < @p4
-        ${ taxCheck.operationId ? 'and [document] = @p5' : ''}`;
+        and [date] > @p4
+        and [date] < @p5
+        ${ taxCheck.operationId ? 'and [document] = @p6' : ''}`;
     return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
         [
             taxCheck.clientInn,
             taxCheck.inn,
             taxCheck.totalAmount,
-            taxCheck.operationTime,
+            DateStart,
+            DateEnd,
             taxCheck.operationId
         ]);
 }

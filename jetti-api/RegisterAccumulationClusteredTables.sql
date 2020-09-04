@@ -489,6 +489,72 @@
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Balance.RC];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+    INTO [Register.Accumulation.Balance.RC]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Balance.RC';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.Balance.RC]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Balance.RC';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
+    ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -893,6 +959,72 @@
     ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+    RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.PL.RC];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+    INTO [Register.Accumulation.PL.RC]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.PL.RC';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.PL.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted);
+      INSERT INTO [Register.Accumulation.PL.RC]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PL.RC';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
+    ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
     GO
     
     RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
