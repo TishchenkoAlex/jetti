@@ -201,6 +201,33 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
     
+    CREATE OR ALTER VIEW [Register.Accumulation.Balance.RC]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, ResponsibilityCenter, Department, Balance, Analytics, Analytics2, Currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Balance.RC';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
+    GO
+    
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report]
     AS
       SELECT
@@ -366,6 +393,33 @@
     GO
 
     GRANT SELECT,DELETE ON [Register.Accumulation.PL] TO JETTI;
+    GO
+    
+    CREATE OR ALTER VIEW [Register.Accumulation.PL.RC]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, ResponsibilityCenter, Department, PL, Analytics, Analytics2, Currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PL.RC';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
     GO
     
     CREATE OR ALTER VIEW [Register.Accumulation.Sales]
