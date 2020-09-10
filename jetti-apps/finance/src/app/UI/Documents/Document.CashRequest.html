@@ -60,50 +60,57 @@
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.company" [form]="form"></j-control>
-          <j-control *ngIf="form.get('CashKind').value !== 'ANY'" [control]="vk['CashOrBank']" [form]="form">
+          <j-control *ngIf="CashKind !== 'ANY' && Operation !== 'Перемещение ДС'" [control]="vk['CashOrBank']" [form]="form">
           </j-control>
           <j-control [control]="vk.CashFlow" [form]="form"></j-control>
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
-          <j-control *ngIf="form.get('Operation').value !== 'Выплата заработной платы'" [control]="vk.CashRecipient"
+          <j-control *ngIf="Operation !== 'Выплата заработной платы'" [control]="vk.CashRecipient"
             [form]="form">
           </j-control>
-          <j-control *ngIf="form.get('CashKind').value === 'BANK' 
-            && form.get('Operation').value !== 'Оплата ДС в другую организацию' 
-            && form.get('Operation').value !== 'Выплата заработной платы'" [control]="vk['CashRecipientBankAccount']"
+          <j-control *ngIf="CashKind === 'BANK' 
+            && Operation !== 'Оплата ДС в другую организацию' 
+            && Operation !== 'Выплата заработной платы'
+            && Operation !== 'Перемещение ДС'" [control]="vk['CashRecipientBankAccount']"
             [form]="form">
           </j-control>
-          <j-control *ngIf="form.get('Operation').value !== 'Оплата ДС в другую организацию'" [control]="vk.Department"
+          <j-control *ngIf="Operation !== 'Оплата ДС в другую организацию'" [control]="vk.Department"
             [form]="form">
           </j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="Operation === 'Оплата поставщику'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.Contract" [form]="form"></j-control>
           <j-control [control]="vk.TaxAssignmentCode" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Оплата ДС в другую организацию'" fxLayout="row"
+        <div *ngIf="Operation === 'Оплата ДС в другую организацию'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
           <j-control [control]="vk.ContractIntercompany" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value  === 'Оплата по кредитам и займам полученным'" fxLayout="row"
+        <div *ngIf="Operation  === 'Оплата по кредитам и займам полученным'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.Loan" [form]="form"></j-control>
           <j-control [control]="vk.PaymentKind" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="Operation === 'Прочий расход ДС'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.ExpenseOrBalance" [form]="form"></j-control>
           <j-control [control]="vk.ExpenseAnalytics" [form]="form"></j-control>
         </div>
 
-        <span *ngIf="form.get('Operation').value === 'Выплата заработной платы'">
+        <div *ngIf="Operation === 'Перемещение ДС'" fxLayout="row" fxLayout.xs="column"
+          fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control [control]="vk.CashOrBank" [form]="form"></j-control>
+          <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
+        </div>
+
+        <span *ngIf="Operation === 'Выплата заработной платы'">
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
             <j-control [control]="vk.PayRollKind" [form]="form"></j-control>
             <j-control [control]="vk.SalaryProject" [form]="form"></j-control>
@@ -116,12 +123,12 @@
           </div>
         </span>
 
-        <div *ngIf="form.get('Operation').value === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="Operation === 'Выдача займа контрагенту'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.Loan" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="form.get('Operation').value === 'Выплата заработной платы без ведомости'" fxLayout="row"
+        <div *ngIf="Operation === 'Выплата заработной платы без ведомости'" fxLayout="row"
           fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.SalaryAnalitics" [form]="form"></j-control>
           <j-control [control]="vk.EnforcementProceedings" [form]="form"></j-control>
@@ -132,12 +139,12 @@
           <j-control [control]="vk.Amount" [form]="form"></j-control>
           <j-control [control]="vk['сurrency']" [form]="form"></j-control>
           <j-control
-            *ngIf="form.get('Operation').value !== 'Выплата заработной платы' && form.get('Operation').value !== 'Выплата заработной платы без ведомости'"
+            *ngIf="Operation !== 'Выплата заработной платы' && Operation !== 'Выплата заработной платы без ведомости'"
             [control]="vk.TaxRate" [form]="form"></j-control>
           <j-control [control]="vk.PayDay" [form]="form"></j-control>
         </div>
         <br>
-        <div *ngIf="form.get('BudgetPayment').value || form.get('Operation').value === 'Перечисление налогов и взносов'"
+        <div *ngIf="form.get('BudgetPayment').value || Operation === 'Перечисление налогов и взносов'"
           fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <p-fieldset legend="Налоговые реквизиты" [toggleable]="true" collapsed=true>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
@@ -166,7 +173,7 @@
       </div>
       <ng-content></ng-content>
 
-      <div *ngIf="form.get('Operation').value === 'Выплата заработной платы'" style="margin-top: 24px;">
+      <div *ngIf="Operation === 'Выплата заработной платы'" style="margin-top: 24px;">
         <p-tabView class="tabViewClassInForm">
           <p-tabPanel header="Сотрудники">
             <j-control [control]="vk.PayRolls" [form]="form"></j-control>

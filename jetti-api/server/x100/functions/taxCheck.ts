@@ -45,23 +45,22 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
 
     DateStart.setDate(DateStart.getDate() - 1);
     DateEnd.setDate(DateEnd.getDate() + 1);
-
+    console.log(  taxCheck.clientInn,
+        taxCheck.inn,
+        taxCheck.totalAmount)
     const queryText = `
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
     WHERE clientInn = @p1
         and inn = @p2
-        and totalAmount = @p3
-        and [date] > @p4
-        and [date] < @p5
-        ${ taxCheck.operationId ? 'and [document] = @p6' : ''}`;
+        and totalAmount = cast(@p3 as money)
+        ${ taxCheck.operationId ? 'and [document] = @p4' : ''}`;
+
     return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
         [
             taxCheck.clientInn,
             taxCheck.inn,
-            taxCheck.totalAmount,
-            DateStart,
-            DateEnd,
+            taxCheck.totalAmount.toString(),
             taxCheck.operationId
         ]);
 }
