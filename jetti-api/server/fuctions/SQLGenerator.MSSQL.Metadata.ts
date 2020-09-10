@@ -1,18 +1,20 @@
-import { query } from 'express';
 import { DocTypes } from './../models/documents.types';
 import { DocumentOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
-import { type } from 'os';
-import { MSSQL } from '../mssql';
+import { Type } from '../models/common-types';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
 // tslint:disable:forin
 
 export class SQLGenegatorMetadata {
+
+  static typeSpliter(type: string, begin: boolean, length = 30) {
+    return `\n${'-'.repeat(length)} ${begin ? 'BEGIN' : 'END'} ${type} ${'-'.repeat(length)}\n`;
+  }
 
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
@@ -164,7 +166,9 @@ export class SQLGenegatorMetadata {
     let query = '';
     for (const type of GetRegisterInfo()) {
       const register = createRegisterInfo({ type: type.type });
+      query += this.typeSpliter(type.type, true);
       query += SQLGenegatorMetadata.QueryRegisterIntoView(register.Props(), register.Prop().type.toString());
+      query += this.typeSpliter(type.type, false);
     }
     return query;
   }
@@ -253,10 +257,10 @@ export class SQLGenegatorMetadata {
         LEFT JOIN [${type}.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       `).replace('d.description,', `d.description "${name}",`);
 
-      subQueries.push(`\n
+      subQueries.push(`${this.typeSpliter(catalog.type, true)}\n
       CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
         ${select};`);
-      subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}] TO jetti;`);
+      subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}] TO jetti;${this.typeSpliter(catalog.type, false)}`);
     }
 
     if (!types) {
@@ -284,15 +288,21 @@ export class SQLGenegatorMetadata {
     for (const catalog of allTypes) {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
-      const select = SQLGenegator.QueryListRaw(doc.Props(), doc.type);
-      subQueries.push(`BEGIN TRY
+      const Props = doc.Props();
+      const select = SQLGenegator.QueryListRaw(Props, doc.type);
+      subQueries.push(`${this.typeSpliter(catalog.type, true)}
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
         END TRY
         BEGIN CATCH
         END CATCH`);
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
       subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
-      ${doc.type.startsWith('Document.') ? `
+      ${Object.keys(Props)
+        .filter(key => Props[key].isIndexed)
+        .map(key => `CREATE        NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+        .join('\n')}
+      ${Type.isDocument(doc.type) ? `
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id) INCLUDE([company]);
@@ -305,7 +315,8 @@ export class SQLGenegatorMetadata {
       subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;`);
 
       subQueries.push(`ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];`);
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];
+      ${this.typeSpliter(catalog.type, false)}`);
 
       // subQueries.push(`RAISERROR('${catalog.type} complete', 0 ,1) WITH NOWAIT;`);
     }
@@ -563,7 +574,9 @@ export class SQLGenegatorMetadata {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
       const register = createRegisterAccumulation({ type: type.type });
+      query += `${this.typeSpliter(type.type, true)}`;
       query += SQLGenegatorMetadata.RegisterAccumulationClusteredTable(register.Props(), register.Prop().type.toString());
+      query += `${this.typeSpliter(type.type, false)}`;
     }
     query = `
     DROP INDEX IF EXISTS [Documents.parent] ON [dbo].[Documents];
@@ -647,7 +660,9 @@ export class SQLGenegatorMetadata {
     let query = '';
     for (const type of RegisteredRegisterAccumulation) {
       const register = createRegisterAccumulation({ type: type.type });
+      query += `${this.typeSpliter(type.type, true)}`;
       query += SQLGenegatorMetadata.RegisterAccumulationViewQuery(register.Props(), register.Prop().type.toString());
+      query += `${this.typeSpliter(type.type, false)}`;
     }
     query = `
     ${query}
