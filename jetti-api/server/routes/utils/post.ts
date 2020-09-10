@@ -7,7 +7,7 @@ import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
 import { Type } from '../../models/common-types';
 
-export interface IUpdateInsertDocumentOptions { withExchangeInfo: boolean }
+export interface IUpdateInsertDocumentOptions { withExchangeInfo: boolean; }
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
@@ -52,7 +52,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
       [parent], [isfolder], [company], [user], [info], [doc] ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
     SELECT
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] 
+      [parent], [isfolder], [company], [user], [info], [doc]
       ${opts?.withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
     FROM OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,
@@ -68,7 +68,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
       [user] UNIQUEIDENTIFIER,
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
-      ${opts?.withExchangeInfo ? `         
+      ${opts?.withExchangeInfo ? `
       ,[ExchangeCode] NVARCHAR(50),
       [ExchangeBase] NVARCHAR(50)` : ''}
     );
@@ -111,7 +111,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
           [user] UNIQUEIDENTIFIER,
           [info] NVARCHAR(max),
           [parent] UNIQUEIDENTIFIER,
-          ${opts?.withExchangeInfo ? `         
+          ${opts?.withExchangeInfo ? `
           [ExchangeCode] NVARCHAR(50),
           [ExchangeBase] NVARCHAR(50),` : ''}
           [doc] NVARCHAR(max) N'$.doc' AS JSON
