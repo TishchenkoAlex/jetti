@@ -418,7 +418,7 @@ ORDER BY
     const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
     if (!qRes || qRes.receiptId) return '';
     const cr = await lib.doc.byId(qRes.document, tx);
-    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr?.description}`;
+    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr!.description}`;
   }
 
   async onPost(tx: MSSQL) {
@@ -638,6 +638,9 @@ ORDER BY
         break;
       case 'Перемещение ДС':
         await this.FillOperationПеремещениеДС(docOperation, tx, params);
+        break;
+      case 'Внутренний займ':
+        await this.FillOperationВнутреннийЗайм(docOperation, tx, params);
         break;
       case 'Выдача займа контрагенту':
         await this.FillOperationВыдачаЗаймаКонтрагенту(docOperation, tx, params);
@@ -945,6 +948,32 @@ ORDER BY
       docOperation.f1 = docOperation['BankAccountOut'];
       docOperation.f2 = docOperation['BankAccountTransit'];
     }
+  }
+
+  async FillOperationВнутреннийЗайм(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
+    const CashOrBankIn = (await lib.doc.byId(this.CashOrBankIn, tx));
+    if (!CashOrBankIn) throw new Error(`Приемник оплат не заполнен в ${this.description} `);
+
+    if (CashOrBank.type !== 'Catalog.CashRegister') throw new Error('Источником оплат может быть только касса!');
+    if (CashOrBankIn.type !== 'Catalog.CashRegister') throw new Error('Приемником оплат может быть только касса!');
+
+    docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // 4.2 - Расходный кассовый ордер
+    docOperation.Operation = 'C6BE0180-E64E-11EA-BB25-5F90F237D3BA'; // Из кассы - в другую кассу ИНТЕРКОМПАНИ (CRUD vs X100)
+    docOperation.date = this.date;
+    docOperation['CashRegisterOUT'] = this.CashOrBank;
+    docOperation['CashRegisterIN'] = this.CashOrBankIn;
+    docOperation['CashFlow'] = this.CashFlow;
+    docOperation['IntercompanyOUT'] = this.company;
+    docOperation['SKU'] = this.SKU;
+    docOperation['CurrencyVia'] = this.сurrency;
+    docOperation['AmountVia'] = this.Amount;
+    docOperation.f1 = docOperation['CashRegisterOUT'];
+    docOperation.f2 = docOperation['CashRegisterIN'];
+    docOperation.f2 = docOperation['SKU'];
+
   }
 
   async FillOperationВыдачаЗаймаКонтрагенту(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {

@@ -177,63 +177,6 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
-  static CreateViewCatalogs_(types?: { type: DocTypes }[]) {
-
-    let query = '';
-    const allTypes = types || RegisteredDocument();
-
-    for (const catalog of allTypes) {
-      const doc = createDocument(catalog.type);
-      if (doc['QueryList']) continue;
-      const Props = doc.Props();
-      const type = (doc.Prop() as DocumentOptions).type;
-      let select = SQLGenegator.QueryList(Props, doc.type);
-      const typeSplit = type.split('.');
-      let name = '';
-      for (let i = 1; i < typeSplit.length; i++) name += typeSplit[i];
-      select = select.replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `
-        , ISNULL(l5.description, d.description) [${name}.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [${name}.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [${name}.Level1]
-      FROM [${type}.v] d WITH (NOEXPAND)
-        LEFT JOIN [${type}.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [${type}.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [${type}.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [${type}.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [${type}.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
-      `).replace('d.description,', `d.description "${name}",`);
-
-      query += `\n
-      CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
-        ${select};
-      GO
-      GRANT SELECT ON dbo.[${catalog.type}] TO jetti;
-      GO
-      `;
-    }
-
-    if (!types) {
-      query = `
-    CREATE OR ALTER VIEW [dbo].[Catalog.Documents] AS
-    SELECT
-      'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
-      d.id, d.date [date],
-      d.description Presentation,
-      d.info,
-      d.type,CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
-    FROM dbo.[Documents] d
-    GO
-    GRANT SELECT ON [dbo].[Catalog.Documents] TO jetti;
-    GO
-
-    ${query}
-    `;
-    }
-    return query;
-  }
-
   static async CreateViewOperations(operationsId?: string[], asArrayOfQueries = false) {
 
     const tx = lib.util.jettiPoolTx();
@@ -247,11 +190,11 @@ export class SQLGenegatorMetadata {
         .replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `FROM [${type}.v] d WITH (NOEXPAND)`)
         .replace('d.description,', `d.description "${operation.shortName.trim()}", `);
 
-      subQueries.push(`
+      subQueries.push(`${this.typeSpliter(operation.type, true)}
       CREATE OR ALTER VIEW dbo.[${type}] AS
       ${select}; `);
 
-      subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti; `);
+      subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti;${this.typeSpliter(operation.type, false)}`);
     }
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
@@ -269,7 +212,8 @@ export class SQLGenegatorMetadata {
       const Props = (await doc.getPropsFunc(tx))();
       const select = SQLGenegator.QueryListRaw(Props, type)
         .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
-      subQueries.push(`BEGIN TRY
+      subQueries.push(`${this.typeSpliter(operation.type, true)}
+      BEGIN TRY
       ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${ type}.v];
       END TRY
       BEGIN CATCH
@@ -287,7 +231,8 @@ export class SQLGenegatorMetadata {
       subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti; `);
 
       subQueries.push(`ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v]; `);
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];
+      ${this.typeSpliter(operation.type, false)}`);
 
     }
 
@@ -347,7 +292,7 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
-    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
+    const allTypes = types || RegisteredDocument().filter(e => !Type.isOperation(e.type));
     const subQueries: string[] = [];
 
     for (const catalog of allTypes) {
@@ -364,9 +309,9 @@ export class SQLGenegatorMetadata {
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
       subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
       ${Object.keys(Props)
-        .filter(key => Props[key].isIndexed)
-        .map(key => `CREATE        NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
-        .join('\n')}
+          .filter(key => Props[key].isIndexed)
+          .map(key => `CREATE        NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+          .join('\n')}
       ${Type.isDocument(doc.type) ? `
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
@@ -398,71 +343,6 @@ export class SQLGenegatorMetadata {
       `);
     }
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
-  }
-
-
-  static CreateViewCatalogsIndex_(types?: { type: DocTypes }[], asArrayOfQueries = false) {
-
-    let query = '';
-    // --DROP SECURITY POLICY IF EXISTS [rls].[companyAccessPolicy];
-    // --GO
-
-    // --CREATE SECURITY POLICY [rls].[companyAccessPolicy]
-    //   --ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Documents.Hisroty]
-    //   --WITH (STATE = ON);
-    // --GO
-    // `;
-    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
-    const go = types ? 'GO' : 'GO';
-    const queries = [];
-    for (const catalog of allTypes) {
-      const doc = createDocument(catalog.type);
-      if (doc['QueryList']) continue;
-      const select = SQLGenegator.QueryListRaw(doc.Props(), doc.type);
-
-      query += `
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
-      ${go}
-
-      CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};
-      ${go}
-
-      CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
-      ${doc.type.startsWith('Document.') ? `
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id) INCLUDE([company]);`}
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code] ON [${catalog.type}.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.user] ON [${catalog.type}.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id) INCLUDE([date]);
-
-      GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;
-      ${go}
-
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];
-      ${go}
-
-      RAISERROR('${catalog.type} complete', 0 ,1) WITH NOWAIT;
-      ${go}
-      `;
-    }
-
-    if (!types) {
-      query = `
-      ${query}
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [Document.Operation.v]([Group],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
-`;
-    }
-    return query;
   }
 
   static CreateDocumentIndexes() {

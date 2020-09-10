@@ -60,7 +60,7 @@
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.company" [form]="form"></j-control>
-          <j-control *ngIf="CashKind !== 'ANY' && Operation !== 'Перемещение ДС'" [control]="vk['CashOrBank']" [form]="form">
+          <j-control *ngIf="CashKind !== 'ANY' && Operation !== 'Перемещение ДС' && Operation !== 'Внутренний займ'" [control]="vk['CashOrBank']" [form]="form">
           </j-control>
           <j-control [control]="vk.CashFlow" [form]="form"></j-control>
         </div>
@@ -72,7 +72,8 @@
           <j-control *ngIf="CashKind === 'BANK' 
             && Operation !== 'Оплата ДС в другую организацию' 
             && Operation !== 'Выплата заработной платы'
-            && Operation !== 'Перемещение ДС'" [control]="vk['CashRecipientBankAccount']"
+            && Operation !== 'Перемещение ДС'
+            && Operation !== 'Внутренний займ'" [control]="vk['CashRecipientBankAccount']"
             [form]="form">
           </j-control>
           <j-control *ngIf="Operation !== 'Оплата ДС в другую организацию'" [control]="vk.Department"
@@ -104,7 +105,7 @@
           <j-control [control]="vk.ExpenseAnalytics" [form]="form"></j-control>
         </div>
 
-        <div *ngIf="Operation === 'Перемещение ДС'" fxLayout="row" fxLayout.xs="column"
+        <div *ngIf="Operation === 'Перемещение ДС' || Operation === 'Внутренний займ'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
           <j-control [control]="vk.CashOrBank" [form]="form"></j-control>
           <j-control [control]="vk.CashOrBankIn" [form]="form"></j-control>
@@ -136,6 +137,7 @@
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control *ngIf="Operation === 'Внутренний займ'" [control]="vk.SKU" [form]="form"></j-control>
           <j-control [control]="vk.Amount" [form]="form"></j-control>
           <j-control [control]="vk['сurrency']" [form]="form"></j-control>
           <j-control

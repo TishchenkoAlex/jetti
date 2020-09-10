@@ -21,6 +21,9 @@ export class CatalogRetailClient extends DocumentBase {
   @Props({ type: 'date' })
   CreateDate = null;
 
+  @Props({ type: 'date' })
+  Birthday = null;
+
   @Props({ type: 'string' })
   FirstName = '';
 
