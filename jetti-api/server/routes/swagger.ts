@@ -30,7 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     const flatDoc = await lib.doc.byId(req.params.id, tx);
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
-      delete noSqlDoc?.doc['serverModule'];
+      delete noSqlDoc!.doc['serverModule'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));

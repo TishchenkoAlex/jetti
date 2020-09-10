@@ -23,6 +23,7 @@ import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { TreeNode } from 'primeng/api';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,8 +55,8 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   @ViewChild('tbl', { static: false }) tbl: Table;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
   get id() { return this.selectedData ? this.selectedData.id : null; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; this.selectedNode = { data: { id: id }, key: id, type: this.type }; }
   get selectedData() {

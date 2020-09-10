@@ -16,6 +16,7 @@ import { LoadingService } from '../common/loading.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v1 } from 'uuid';
 import { TreeNode } from 'primeng/api';
+import { Type } from '../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,8 +57,8 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
   private _docSubscription$: Subscription = Subscription.EMPTY;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
   get selectionData() { return this.treeNodesVisible ? (this.selectedNode ? this.selectedNode.data : null) : this.selectedRow; }
   get isSelectEnabled() {
     const sel = this.selectionData;

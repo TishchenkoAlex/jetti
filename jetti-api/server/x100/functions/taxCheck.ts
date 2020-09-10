@@ -3,11 +3,9 @@ import { lib } from '../../std.lib';
 import { JETTI_POOL } from '../../sql.pool.jetti';
 import { CatalogAttachment } from '../../models/Catalogs/Catalog.Attachment';
 import { RegisterInfoTaxCheck } from '../../models/Registers/Info/TaxCheck';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { Agent } from 'https';
-import { Cipher } from 'crypto';
-import moment = require('moment');
-import { insertDocument } from '../../routes/utils/post';
+import * as moment from 'moment';
 
 export interface ITaxCheck {
     clientInn: string;
@@ -39,15 +37,7 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.inn
         ]);
- 
-    const DateStart = taxCheck.operationTime
-    const DateEnd = taxCheck.operationTime
 
-    DateStart.setDate(DateStart.getDate() - 1);
-    DateEnd.setDate(DateEnd.getDate() + 1);
-    console.log(  taxCheck.clientInn,
-        taxCheck.inn,
-        taxCheck.totalAmount)
     const queryText = `
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]

@@ -4,10 +4,11 @@ import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
-import { createDocument, RegisteredDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
+import { createDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
 import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
 import { createTypes, RegisteredTypes } from './Types/Types.factory';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
+import { Global } from './global';
 
 export interface IConfigSchema {
   type: AllDocTypes;
@@ -25,14 +26,18 @@ export interface IConfigSchema {
 }
 
 export function configSchema(): Map<AllDocTypes, IConfigSchema> {
-  return new Map(
-    [...configSchemaStatic,
-    ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentDynamic())
-    ]
-      .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+  return Global.configSchema();
 }
 
-function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
+export function getConfigSchema() {
+  return new Map(
+      [...configSchemaStatic,
+      ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentDynamic())
+      ]
+          .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+}
+
+export function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
   return [
     ...RegisteredDocuments.map(el => {
       const doc = createDocument(el.type);

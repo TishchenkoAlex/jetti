@@ -1,12 +1,13 @@
-import { query } from 'express';
+import { Global } from './../models/global';
+import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
 import { DocTypes } from './../models/documents.types';
 import { DocumentOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
-import { type } from 'os';
-import { MSSQL } from '../mssql';
+import { lib } from '../std.lib';
+import { getIndexedOperations } from '../models/indexedOperation';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
@@ -226,6 +227,67 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
+  static async CreateViewOperations(operationsId?: string[], asArrayOfQueries = false) {
+
+    const tx = lib.util.jettiPoolTx();
+    const subQueries: string[] = [];
+    const operations = await getIndexedOperations(tx, operationsId);
+
+    for (const operation of operations) {
+      const type = operation.type as DocTypes;
+      let select = Global.configSchema().get(operation.type)!.QueryList;
+      select = select
+        .replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `FROM [${type}.v] d WITH (NOEXPAND)`)
+        .replace('d.description,', `d.description "${operation.shortName.trim()}", `);
+
+      subQueries.push(`
+      CREATE OR ALTER VIEW dbo.[${type}] AS
+      ${select}; `);
+
+      subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti; `);
+    }
+    return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
+  }
+
+  static async CreateViewOperationsIndex(operationsId?: string[], asArrayOfQueries = false) {
+
+    const tx = lib.util.jettiPoolTx();
+
+    const subQueries: string[] = [];
+    const operations = await getIndexedOperations(tx, operationsId);
+
+    for (const operation of operations) {
+      const type = operation.type as DocTypes;
+      const doc = await lib.doc.createDocServer<CatalogOperationServer>('Catalog.Operation', { id: operation.id, Operation: operation.id } as any, tx);
+      const Props = (await doc.getPropsFunc(tx))();
+      const select = SQLGenegator.QueryListRaw(Props, type)
+        .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
+      subQueries.push(`BEGIN TRY
+      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${ type}.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH`);
+
+      subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
+
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
+      ${Object.keys(Props)
+          .filter(key => Props[key].isIndexed)
+          .map(key => `CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.${key}] ON[${type}.v](${key}, id) INCLUDE([company]);`)
+          .join('\n')}`);
+
+      subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti; `);
+
+      subQueries.push(`ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v]; `);
+
+    }
+
+    return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
+  }
+
+
   static CreateViewCatalogs(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
     const subQueries: string[] = [];
@@ -278,7 +340,7 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
-    const allTypes = types || RegisteredDocument();
+    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
     const subQueries: string[] = [];
 
     for (const catalog of allTypes) {
@@ -336,7 +398,7 @@ export class SQLGenegatorMetadata {
     //   --WITH (STATE = ON);
     // --GO
     // `;
-    const allTypes = types || RegisteredDocument();
+    const allTypes = types || RegisteredDocument().filter(e => !e.type.startsWith('Operation.'));
     const go = types ? 'GO' : 'GO';
     const queries = [];
     for (const catalog of allTypes) {
