@@ -1,4 +1,4 @@
-import { CatalogTypes, AllTypes } from './../../models/documents.types';
+import { AllTypes, AllDocTypes } from './../../models/documents.types';
 import { Ref } from '../../models/document';
 import { INoSqlDocument } from '../../models/documents.factory';
 import { lib } from '../../std.lib';
@@ -163,11 +163,14 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const propsKeys = Object.keys(uniqueProps);
   if (!propsKeys.length) return;
 
+  const propFilter = {};
+  propsKeys.forEach(e => propFilter[e] = serverDoc[e]);
+
   const cat = await lib.doc.findDocumentByProps<any>(
-    serverDoc.type as CatalogTypes,
-    propsKeys.map(e => ({ propKey: e, propValue: serverDoc[e] })),
+    serverDoc.type as AllDocTypes,
+    propFilter,
     tx,
-    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'] });
+    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'].join(',') });
   const exist = cat.filter(e => e.id !== serverDoc.id);
   if (!exist.length) return;
 

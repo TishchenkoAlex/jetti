@@ -1,4 +1,3 @@
-import { JETTI_POOL_META } from './sql.pool.meta';
 import { JETTI_POOL } from './sql.pool.jetti';
 import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './models/Tasks/tasks';
 import { CatalogUser } from './models/Catalogs/Catalog.User';
@@ -9,7 +8,7 @@ import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { DocTypes, CatalogTypes, AllDocTypes } from './models/documents.types';
+import { DocTypes, AllDocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
@@ -50,14 +49,14 @@ export interface JTL {
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     findDocumentByKey: (searchKey: { key: string, value?: any }[], tx: MSSQL) => Promise<IFlatDocument[] | null>
     findDocumentByProps: <T>(
-      type: CatalogTypes,
-      propsFilter: { propKey: string, propValue: any }[],
+      type: AllDocTypes,
+      propsFilter: { [key: string]: any },
       tx: MSSQL,
       options?: {
         matching?: 'OR' | 'AND',
-        selectedFields?: string[],
+        selectedFields?: string,
         first?: number,
-        order?: string[],
+        order?: string,
         excludeDeleted?: boolean
       }
     ) => Promise<T[]>;
@@ -71,8 +70,12 @@ export interface JTL {
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
-    // tslint:disable-next-line: max-line-length
-    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: number, opts?: IUpdateInsertDocumentOptions) => Promise<DocumentBaseServer>
+    saveDoc: (
+      servDoc: DocumentBaseServer,
+      tx: MSSQL,
+      queuePostFlow?: number,
+      opts?: IUpdateInsertDocumentOptions
+    ) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
@@ -82,6 +85,23 @@ export interface JTL {
     sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
+  };
+  accum: {
+    balance: <T>(
+      registerName: string,
+      date: Date,
+      fields: string,
+      groupBy: string,
+      filter: { [key: string]: any }
+    ) => Promise<T[] | null>,
+    turnover: <T>(
+      registerName: string,
+      period: { begin: Date, end: Date },
+      fields: string,
+      groupBy: string,
+      filter: { [key: string]: any }
+    ) => Promise<T[] | null>,
+
   };
   meta: {
     updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
@@ -170,6 +190,10 @@ export const lib: JTL = {
   info: {
     sliceLast,
     exchangeRate
+  },
+  accum: {
+    balance: accumBalance,
+    turnover
   },
   util: {
     formatDate,
@@ -276,49 +300,41 @@ async function findDocumentByKey(searchKey: { key: string, value?: any }[], tx: 
 }
 
 async function findDocumentByProps<T>(
-  type: CatalogTypes,
-  propsFilter: { propKey: string, propValue: any }[],
+  type: AllDocTypes,
+  propsFilter: { [key: string]: any },
   tx: MSSQL,
-  options: {
+  options?: {
     matching?: 'OR' | 'AND',
-    selectedFields?: string[],
+    selectedFields?: string,
     first?: number,
-    order?: string[],
+    order?: string,
     excludeDeleted?: boolean
   }): Promise<T[]> {
 
-  if (!propsFilter.length) return [];
+  if (!Object.keys(propsFilter).length) return [];
 
   const {
     matching = 'AND',
-    selectedFields = ['id, description'],
+    selectedFields = 'id, description',
     first = 0,
-    order = ['description'],
+    order = 'description',
     excludeDeleted = false
-  } = options;
+  } = options || {};
 
-  const fieldsQ = selectedFields
-    .map(e => `${e.trim()}`)
-    .join(`, \n`);
-
-  const filterQ = propsFilter
-    .map(e => `${e.propKey} = @p${propsFilter.indexOf(e) + 1} `)
+  const filterQ = Object.keys(propsFilter)
+    .map((key, index) => `${key} = @p${++index} `)
     .join(` ${matching} \n`);
-
-  const orderQ = order
-    .map(e => `${e} `)
-    .join(`, \n`);
 
   const query = `
   SELECT DISTINCT ${first ? 'TOP ' + first : ''}
-  ${fieldsQ}
-  FROM[dbo].[${ type}.v]
+  ${selectedFields}
+  FROM [dbo].[${ type}.v]
   WHERE 1 = 1 AND
   ${excludeDeleted ? 'deleted = 0 AND' : ''}
   (${filterQ})
-  ORDER BY ${ orderQ} `;
+  ORDER BY ${order} `;
 
-  return await tx.manyOrNone<T>(query, propsFilter.map(e => e.propValue));
+  return await tx.manyOrNone<T>(query, Object.values(propsFilter));
 
 }
 
@@ -518,6 +534,66 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
     ORDER BY date DESC`;
   const result = await tx.oneOrNone<T>(queryText, [date, company]);
   return result;
+}
+
+async function accumBalance<T>(
+  registerName: string,
+  date: Date,
+  fields: string,
+  groupBy: string,
+  filter: { [key: string]: any }
+): Promise<T[] | null> {
+
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 2}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
+  const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
+  const params = Object.values(filter);
+
+  const queryText = `
+    SELECT
+    ${groupBy},
+    ${select}
+    FROM [Register.Accumulation.${registerName}]
+    WHERE
+      date <= @p1
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+    HAVING ${having}`;
+
+  const tx = x100.util.x100DataDB();
+  const result = await tx.manyOrNone<T>(queryText, [date, ...params]);
+  return result;
+
+}
+
+async function turnover<T>(
+  registerName: string,
+  period: { begin: Date, end: Date },
+  fields: string,
+  groupBy: string,
+  filter: { [key: string]: any }
+): Promise<T[] | null> {
+
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 3}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
+  const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
+  const params = Object.values(filter);
+
+  const queryText = `
+    SELECT
+      ${groupBy},
+      ${select}
+    FROM [Register.Accumulation.${registerName}]
+    WHERE
+      date BETWEEN @p1 AND @p2
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+      HAVING ${having}`;
+
+  const tx = x100.util.x100DataDB();
+  const result = await tx.manyOrNone<T>(queryText, [period.begin, period.end, ...params]);
+  return result;
+
 }
 
 export async function postById(id: Ref, tx: MSSQL) {
