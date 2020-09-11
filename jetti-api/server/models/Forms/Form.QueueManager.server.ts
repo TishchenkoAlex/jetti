@@ -1,9 +1,7 @@
-import { delay } from 'tarn/lib/utils';
 import { JQueue, processId } from '../Tasks/tasks';
 import { IServerForm } from './form.factory.server';
 import { FormQueueManager } from './Form.QueueManager';
-import { JobStatus } from 'bull';
-import Bull = require('bull');
+import * as Bull from 'bull';
 import { lib } from '../../std.lib';
 import { TASKS_POOL } from '../../sql.pool.tasks';
 import { MSSQL } from '../../mssql';
@@ -123,7 +121,7 @@ export default class FormQueueManagerServer extends FormQueueManager implements 
     for (const status of jobsStatus) {
       let jobs = (await JQueue.getJobs([status as any])).filter(e => e);
       if (this.StartDate && this.EndDate) {
-        const dates = { start: this.StartDate?.valueOf(), end: this.EndDate?.valueOf() };
+        const dates = { start: this.StartDate!.valueOf(), end: this.EndDate!.valueOf() };
         jobs = jobs.filter(e => (!e.processedOn || (e.processedOn && e.processedOn > dates.start))
           && (!e.finishedOn || (e.finishedOn && e.finishedOn < dates.end)));
       }

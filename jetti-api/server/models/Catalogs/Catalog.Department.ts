@@ -59,7 +59,16 @@ export class CatalogDepartment extends DocumentBase {
   kind: Ref = null;
 
   @Props({ type: 'string', required: false })
+  Mail = '';
+
+  @Props({ type: 'string', required: false })
+  Phone = '';
+
+  @Props({ type: 'string', required: false })
   Address = '';
+
+  @Props({ type: 'string', required: false })
+  AddressLegal = '';
 
   @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота' })
   Longitude = '';

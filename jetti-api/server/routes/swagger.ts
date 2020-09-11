@@ -1,24 +1,25 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { dateReviverUTC } from '../fuctions/dateReviver';
-import { IFlatDocument, INoSqlDocument } from '../models/documents.factory';
+import { INoSqlDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
-import { lib } from './../std.lib';import { MSSQL } from '../mssql';
+import { lib } from './../std.lib';
+import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { JETTI_POOL } from '../sql.pool.jetti';
 
 export const router = express.Router();
 
 export interface IUpdateDocumentRequest {
-  document: INoSqlDocument,
-  options: IUpdateOptions,
+  document: INoSqlDocument;
+  options: IUpdateOptions;
 }
 
 export interface IUpdateOptions {
-  updateType: 'Insert' | 'Update' | 'InsertOrUpdate',
-  commands: string[], // document server methods name
-  searchKey: { key: string, value?: any }[],
-  queueFlow: number
+  updateType: 'Insert' | 'Update' | 'InsertOrUpdate';
+  commands: string[]; // document server methods name
+  searchKey: { key: string, value?: any }[];
+  queueFlow: number;
 }
 
 // Get raw document by id
@@ -29,7 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     const flatDoc = await lib.doc.byId(req.params.id, tx);
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
-      delete noSqlDoc?.doc['serverModule'];
+      delete noSqlDoc!.doc['serverModule'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));
@@ -92,7 +93,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         let docServer: DocumentBaseServer | null = null;
         let flatDocument: any = null;
-        let existDoc = await lib.doc.findDocumentByKey(options.searchKey, tx);
+        const existDoc = await lib.doc.findDocumentByKey(options.searchKey, tx);
 
         if (!existDoc && options.updateType === 'Update')
           res.json(`Document not found by: ${JSON.stringify(options.searchKey)}`);
@@ -114,7 +115,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           flatDocument = { id: document.id || (await lib.util.GUID()) };
           if (document.type === 'Document.Operation') {
             flatDocument.Operation = document.doc.Operation;
-            if (!flatDocument.Operation) { res.json(`Value of required field 'Operation' are not filled`); return; };
+            if (!flatDocument.Operation) { res.json(`Value of required field 'Operation' are not filled`); return; }
           }
         }
 
@@ -136,10 +137,10 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           if (unknowKeys.length) {
             res.json(`Incorrect document meta: fields ${unknowKeys} do not exist in document type.`);
             return;
-          };
+          }
 
           document.docByKeys
-            .forEach(keyVal => docServer![keyVal.key] = keyVal.value)
+            .forEach(keyVal => docServer![keyVal.key] = keyVal.value);
 
         } else if (document.doc) {
           const unknowKeys = Object.keys(document.doc)
@@ -150,10 +151,10 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           if (unknowKeys.length) {
             res.json(`Incorrect document meta: fields ${unknowKeys} do not exist in document type.`);
             return;
-          };
+          }
 
           Object.keys(document.doc)
-            .forEach(key => docServer![key] = document.doc[key])
+            .forEach(key => docServer![key] = document.doc[key]);
         }
 
         Object.keys(document)
@@ -165,15 +166,15 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           .map(key => `${key}`)
           .join(',');
 
-        if (emptyProps.length) { res.json(`Values of required fields are not filled: ${emptyProps}`); return; };
+        if (emptyProps.length) { res.json(`Values of required fields are not filled: ${emptyProps}`); return; }
 
-        if (docServer.type === 'Document.Operation' && !docServer['Operation']) { res.json(`Value of required field 'Operation' are not filled`); return; };
+        if (docServer.type === 'Document.Operation' && !docServer['Operation']) { res.json(`Value of required field 'Operation' are not filled`); return; }
 
         if (options.commands) {
           for (const command of options.commands) {
             if (docServer[command]) {
               try {
-                await docServer[command]()
+                await docServer[command]();
               } catch (ex) {
                 res.json(`Error on executing "${command}"`);
                 return;
@@ -183,7 +184,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
               return;
             }
           }
-        };
+        }
 
         await lib.doc.saveDoc(
           docServer,
@@ -238,8 +239,8 @@ router.delete('/document/:id', async (req: Request, res: Response, next: NextFun
           if (typeof afterDelete === 'function') await afterDelete(tx);
           if (serverDoc && serverDoc.afterDelete) await serverDoc.afterDelete(tx);
         }
-        res.json({ Status: 'OK' })
-      } catch (ex) { res.status(500).json({ ...ex, Error: ex.message }) }
+        res.json({ Status: 'OK' });
+      } catch (ex) { res.status(500).json({ ...ex, Error: ex.message }); }
       finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
@@ -252,14 +253,12 @@ router.post('/executeOperation', async (req: Request, res: Response, next: NextF
       await lib.util.adminMode(true, tx);
       try {
         let err = '';
-        let { operationId, method, args } = JSON.parse(req.body);
+        const { operationId, method, args } = JSON.parse(req.body);
         let oper: DocumentBaseServer | null = null;
         if (!operationId) err = 'Empty arg "operationId"';
         else oper = await lib.doc.createDocServerById(operationId as any, tx);
         if (!oper) err = `Operation with id ${operationId} does not exist`;
         else {
-
-          const method = args.method || 'RESTMethod';
           let result = {};
           const docModule: (args: { [key: string]: any }) => Promise<any> = oper['serverModule'][args.method || 'RESTMethod'];
           if (typeof docModule === 'function') result = await docModule(args);

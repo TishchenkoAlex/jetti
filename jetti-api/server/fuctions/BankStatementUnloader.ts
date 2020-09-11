@@ -144,7 +144,7 @@ export class BankStatementUnloader {
       }
     }
     const operation = await lib.doc.byId(this.operation, this.tx);
-    throw new Error(`Не реализована выгрузка для операции ${operation?.description}`);
+    throw new Error(`Не реализована выгрузка для операции ${operation!.description}`);
   }
 
   private static getQueryTextCommonUKRAINEОплатаПоставщику() {
@@ -729,7 +729,7 @@ export class BankStatementUnloader {
     if (!doc) return 0;
     const parentCompany = await lib.doc.Ancestors(doc.company as Ref, tx, 1) as string;
     const country = await lib.util.getObjectPropertyById(parentCompany, 'Country.id', tx);
-    if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))?.description}`);
+    if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))!.description}`);
     this.country = country.id;
     this.tx = tx;
     this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');

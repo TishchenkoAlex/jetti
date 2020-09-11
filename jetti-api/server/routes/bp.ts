@@ -66,7 +66,7 @@ router.post('/BP/StartProcess', async (req: Request, res: Response, next: NextFu
   try {
     const { OperationTypeID, DocumentID } = req.body;
 
-    if (OperationTypeID === '' && DocumentID) {
+    if (OperationTypeID === 'Выплата заработной платы без ведомости' && DocumentID) {
       const tx = SDB(req);
       const servDoc = await lib.doc.createDocServerById(DocumentID, tx);
       const err = await servDoc!['checkTaxCheck'](tx);
