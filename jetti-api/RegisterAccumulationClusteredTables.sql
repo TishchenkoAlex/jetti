@@ -3,6 +3,8 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Documents.parent] ON [dbo].[Documents]([parent], [id]);
 
     
+------------------------------ BEGIN Register.Accumulation.AccountablePersons ------------------------------
+
     RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -74,6 +76,10 @@
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AccountablePersons ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PaymentBatch ------------------------------
+
     RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -149,6 +155,10 @@
     RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
+
     RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -224,6 +234,10 @@
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.OrderPayment ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AP ------------------------------
+
     RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -299,6 +313,10 @@
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AP ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AR ------------------------------
+
     RAISERROR('Register.Accumulation.AR start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -374,6 +392,10 @@
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AR ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Bank ------------------------------
+
     RAISERROR('Register.Accumulation.Bank start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -439,6 +461,10 @@
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Bank ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance ------------------------------
+
     RAISERROR('Register.Accumulation.Balance start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -496,6 +522,10 @@
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Balance ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.RC ------------------------------
+
     RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -563,6 +593,10 @@
     RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Balance.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.Report ------------------------------
+
     RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -630,6 +664,10 @@
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Balance.Report ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash ------------------------------
+
     RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -695,6 +733,10 @@
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Cash ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash.Transit ------------------------------
+
     RAISERROR('Register.Accumulation.Cash.Transit start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -762,6 +804,10 @@
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
+
     RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -841,6 +887,10 @@
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Inventory ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Loan ------------------------------
+
     RAISERROR('Register.Accumulation.Loan start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -916,6 +966,10 @@
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Loan ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL ------------------------------
+
     RAISERROR('Register.Accumulation.PL start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -975,6 +1029,10 @@
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.PL ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL.RC ------------------------------
+
     RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1042,6 +1100,10 @@
     RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.PL.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Sales ------------------------------
+
     RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1151,6 +1213,10 @@
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Sales ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Salary ------------------------------
+
     RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1230,6 +1296,10 @@
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Salary ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Depreciation ------------------------------
+
     RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1295,6 +1365,10 @@
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Depreciation ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.CashToPay ------------------------------
+
     RAISERROR('Register.Accumulation.CashToPay start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1372,6 +1446,10 @@
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.CashToPay ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
+
     RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1455,6 +1533,10 @@
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.BudgetItemTurnover ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Intercompany ------------------------------
+
     RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1526,6 +1608,10 @@
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Intercompany ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Acquiring ------------------------------
+
     RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1609,6 +1695,10 @@
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Acquiring ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
+
     RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1676,4 +1766,6 @@
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.StaffingTable ------------------------------
+
     

@@ -12,6 +12,8 @@
       
 GO
 
+------------------------------ BEGIN Catalog.Sample ------------------------------
+
 
       CREATE OR ALTER VIEW dbo.[Catalog.Sample] AS
         
@@ -42,7 +44,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Sample] TO jetti;
+------------------------------ END Catalog.Sample ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter] AS
@@ -78,7 +84,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ResponsibilityCenter] TO jetti;
+------------------------------ END Catalog.ResponsibilityCenter ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Dynamic ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Dynamic] AS
@@ -109,7 +119,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Dynamic] TO jetti;
+------------------------------ END Catalog.Dynamic ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Attachment ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Attachment] AS
@@ -149,7 +163,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Attachment] TO jetti;
+------------------------------ END Catalog.Attachment ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type] AS
@@ -188,7 +206,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Attachment.Type] TO jetti;
+------------------------------ END Catalog.Attachment.Type ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot] AS
@@ -225,7 +247,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.AllUnic.Lot] TO jetti;
+------------------------------ END Catalog.AllUnic.Lot ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Account ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Account] AS
@@ -259,7 +285,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Account] TO jetti;
+------------------------------ END Catalog.Account ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Balance ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Balance] AS
@@ -292,7 +322,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Balance] TO jetti;
+------------------------------ END Catalog.Balance ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics] AS
@@ -323,7 +357,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Balance.Analytics] TO jetti;
+------------------------------ END Catalog.Balance.Analytics ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.BankAccount ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.BankAccount] AS
@@ -361,7 +399,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BankAccount] TO jetti;
+------------------------------ END Catalog.BankAccount ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.CashFlow ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.CashFlow] AS
@@ -392,7 +434,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.CashFlow] TO jetti;
+------------------------------ END Catalog.CashFlow ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.CashRegister ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.CashRegister] AS
@@ -428,7 +474,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.CashRegister] TO jetti;
+------------------------------ END Catalog.CashRegister ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Currency ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Currency] AS
@@ -460,7 +510,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Currency] TO jetti;
+------------------------------ END Catalog.Currency ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Company ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Company] AS
@@ -515,7 +569,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Company] TO jetti;
+------------------------------ END Catalog.Company ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Company.Group ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Company.Group] AS
@@ -547,7 +605,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Company.Group] TO jetti;
+------------------------------ END Catalog.Company.Group ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Country ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Country] AS
@@ -580,7 +642,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Country] TO jetti;
+------------------------------ END Catalog.Country ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie] AS
@@ -626,7 +692,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
+------------------------------ END Catalog.Counterpartie ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount] AS
@@ -666,7 +736,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount] TO jetti;
+------------------------------ END Catalog.Counterpartie.BankAccount ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Contract ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Contract] AS
@@ -725,7 +799,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Contract] TO jetti;
+------------------------------ END Catalog.Contract ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany] AS
@@ -768,7 +846,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Contract.Intercompany] TO jetti;
+------------------------------ END Catalog.Contract.Intercompany ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection] AS
@@ -799,7 +881,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessDirection] TO jetti;
+------------------------------ END Catalog.BusinessDirection ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics] AS
@@ -833,7 +919,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Salary.Analytics] TO jetti;
+------------------------------ END Catalog.Salary.Analytics ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Department ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department] AS
@@ -854,7 +944,10 @@ GO
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
         , ISNULL([PriceType.v].description, '') [PriceType.value], d.[PriceType] [PriceType.id], [PriceType.v].type [PriceType.type]
         , ISNULL([kind.v].description, '') [kind.value], d.[kind] [kind.id], [kind.v].type [kind.type]
+        , d.[Mail] [Mail]
+        , d.[Phone] [Phone]
         , d.[Address] [Address]
+        , d.[AddressLegal] [AddressLegal]
         , d.[Longitude] [Longitude]
         , d.[Latitude] [Latitude]
         , d.[IntegrationType] [IntegrationType]
@@ -885,7 +978,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Department] TO jetti;
+------------------------------ END Catalog.Department ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Department.Kind ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind] AS
@@ -916,7 +1013,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Kind] TO jetti;
+------------------------------ END Catalog.Department.Kind ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Department.Company ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.Company] AS
@@ -927,6 +1028,7 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[kind] [kind]
         , d.[ShortName] [ShortName]
         , ISNULL([StaffingPositionManager.v].description, '') [StaffingPositionManager.value], d.[StaffingPositionManager] [StaffingPositionManager.id], [StaffingPositionManager.v].type [StaffingPositionManager.type]
       
@@ -950,7 +1052,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Company] TO jetti;
+------------------------------ END Catalog.Department.Company ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason] AS
@@ -981,7 +1087,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Department.StatusReason] TO jetti;
+------------------------------ END Catalog.Department.StatusReason ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Expense ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Expense] AS
@@ -1017,7 +1127,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Expense] TO jetti;
+------------------------------ END Catalog.Expense ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics] AS
@@ -1050,7 +1164,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Expense.Analytics] TO jetti;
+------------------------------ END Catalog.Expense.Analytics ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Income ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Income] AS
@@ -1086,7 +1204,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Income] TO jetti;
+------------------------------ END Catalog.Income ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Loan ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Loan] AS
@@ -1142,7 +1264,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Loan] TO jetti;
+------------------------------ END Catalog.Loan ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure] AS
@@ -1173,7 +1299,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure] TO jetti;
+------------------------------ END Catalog.LoanRepaymentProcedure ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.LoanTypes ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes] AS
@@ -1206,7 +1336,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.LoanTypes] TO jetti;
+------------------------------ END Catalog.LoanTypes ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Manager ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Manager] AS
@@ -1240,7 +1374,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Manager] TO jetti;
+------------------------------ END Catalog.Manager ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Person ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person] AS
@@ -1294,7 +1432,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Person] TO jetti;
+------------------------------ END Catalog.Person ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.PriceType ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.PriceType] AS
@@ -1307,6 +1449,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
         , d.[TaxInclude] [TaxInclude]
+        , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
       
         , ISNULL(l5.description, d.description) [PriceType.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PriceType.Level4]
@@ -1325,10 +1468,15 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.PriceType] TO jetti;
+------------------------------ END Catalog.PriceType ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Product ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product] AS
@@ -1384,7 +1532,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Product] TO jetti;
+------------------------------ END Catalog.Product ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario] AS
@@ -1415,7 +1567,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.PlanningScenario] TO jetti;
+------------------------------ END Catalog.PlanningScenario ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ProductCategory ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory] AS
@@ -1446,7 +1602,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
+------------------------------ END Catalog.ProductCategory ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ProductKind ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ProductKind] AS
@@ -1478,7 +1638,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ProductKind] TO jetti;
+------------------------------ END Catalog.ProductKind ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Product.Report ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Report] AS
@@ -1513,7 +1677,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Report] TO jetti;
+------------------------------ END Catalog.Product.Report ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Storehouse ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Storehouse] AS
@@ -1546,7 +1714,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Storehouse] TO jetti;
+------------------------------ END Catalog.Storehouse ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Operation ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation] AS
@@ -1558,6 +1730,7 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , d.[shortName] [shortName]
         , d.[script] [script]
         , d.[module] [module]
       
@@ -1581,7 +1754,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Operation] TO jetti;
+------------------------------ END Catalog.Operation ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Operation.Group ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group] AS
@@ -1615,7 +1792,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Group] TO jetti;
+------------------------------ END Catalog.Operation.Group ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Operation.Type ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type] AS
@@ -1646,7 +1827,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
+------------------------------ END Catalog.Operation.Type ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.OrderSource ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.OrderSource] AS
@@ -1677,7 +1862,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.OrderSource] TO jetti;
+------------------------------ END Catalog.OrderSource ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Unit ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Unit] AS
@@ -1712,7 +1901,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Unit] TO jetti;
+------------------------------ END Catalog.Unit ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.User ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.User] AS
@@ -1749,7 +1942,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.User] TO jetti;
+------------------------------ END Catalog.User ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.UsersGroup ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup] AS
@@ -1780,7 +1977,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.UsersGroup] TO jetti;
+------------------------------ END Catalog.UsersGroup ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Role ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Role] AS
@@ -1811,7 +2012,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Role] TO jetti;
+------------------------------ END Catalog.Role ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.SubSystem ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.SubSystem] AS
@@ -1843,7 +2048,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.SubSystem] TO jetti;
+------------------------------ END Catalog.SubSystem ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.JobTitle ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.JobTitle] AS
@@ -1878,7 +2087,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle] TO jetti;
+------------------------------ END Catalog.JobTitle ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category] AS
@@ -1909,7 +2122,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle.Category] TO jetti;
+------------------------------ END Catalog.JobTitle.Category ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity] AS
@@ -1940,7 +2157,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.PersonIdentity] TO jetti;
+------------------------------ END Catalog.PersonIdentity ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes] AS
@@ -1971,7 +2192,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
+------------------------------ END Catalog.ReasonTypes ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Product.Package ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Package] AS
@@ -2007,7 +2232,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Package] TO jetti;
+------------------------------ END Catalog.Product.Package ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic] AS
@@ -2041,7 +2270,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Analytic] TO jetti;
+------------------------------ END Catalog.Product.Analytic ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.StaffingTable ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable] AS
@@ -2084,7 +2317,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.StaffingTable] TO jetti;
+------------------------------ END Catalog.StaffingTable ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Brand ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Brand] AS
@@ -2115,7 +2352,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Brand] TO jetti;
+------------------------------ END Catalog.Brand ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation] AS
@@ -2147,7 +2388,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation] TO jetti;
+------------------------------ END Catalog.GroupObjectsExploitation ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation] AS
@@ -2181,7 +2426,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ObjectsExploitation] TO jetti;
+------------------------------ END Catalog.ObjectsExploitation ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Catalog ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Catalog] AS
@@ -2219,7 +2468,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Catalog] TO jetti;
+------------------------------ END Catalog.Catalog ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.BudgetItem ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem] AS
@@ -2253,7 +2506,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BudgetItem] TO jetti;
+------------------------------ END Catalog.BudgetItem ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Scenario ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Scenario] AS
@@ -2286,7 +2543,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Scenario] TO jetti;
+------------------------------ END Catalog.Scenario ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation] AS
@@ -2317,7 +2578,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ManufactureLocation] TO jetti;
+------------------------------ END Catalog.ManufactureLocation ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal] AS
@@ -2356,7 +2621,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.AcquiringTerminal] TO jetti;
+------------------------------ END Catalog.AcquiringTerminal ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Bank ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Bank] AS
@@ -2392,7 +2661,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
+------------------------------ END Catalog.Bank ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount] AS
@@ -2430,7 +2703,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Person.BankAccount] TO jetti;
+------------------------------ END Catalog.Person.BankAccount ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Person.Contract ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract] AS
@@ -2470,7 +2747,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Person.Contract] TO jetti;
+------------------------------ END Catalog.Person.Contract ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion] AS
@@ -2501,7 +2782,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessRegion] TO jetti;
+------------------------------ END Catalog.BusinessRegion ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxRate ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxRate] AS
@@ -2533,7 +2818,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxRate] TO jetti;
+------------------------------ END Catalog.TaxRate ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode] AS
@@ -2565,7 +2854,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode] TO jetti;
+------------------------------ END Catalog.TaxAssignmentCode ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode] AS
@@ -2599,7 +2892,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPaymentCode] TO jetti;
+------------------------------ END Catalog.TaxPaymentCode ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment] AS
@@ -2630,7 +2927,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxBasisPayment] TO jetti;
+------------------------------ END Catalog.TaxBasisPayment ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod] AS
@@ -2661,7 +2962,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod] TO jetti;
+------------------------------ END Catalog.TaxPaymentPeriod ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus] AS
@@ -2693,7 +2998,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPayerStatus] TO jetti;
+------------------------------ END Catalog.TaxPayerStatus ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.TaxOffice ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice] AS
@@ -2728,7 +3037,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.TaxOffice] TO jetti;
+------------------------------ END Catalog.TaxOffice ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.RetailClient ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.RetailClient] AS
@@ -2742,6 +3055,7 @@ GO
         , d.[Gender] [Gender]
         , d.[isActive] [isActive]
         , d.[CreateDate] [CreateDate]
+        , d.[Birthday] [Birthday]
         , d.[FirstName] [FirstName]
         , d.[LastName] [LastName]
         , d.[MiddleName] [MiddleName]
@@ -2768,7 +3082,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.RetailClient] TO jetti;
+------------------------------ END Catalog.RetailClient ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.SalaryProject ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject] AS
@@ -2807,7 +3125,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.SalaryProject] TO jetti;
+------------------------------ END Catalog.SalaryProject ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Specification ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Specification] AS
@@ -2844,7 +3166,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Specification] TO jetti;
+------------------------------ END Catalog.Specification ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup] AS
@@ -2875,7 +3201,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.InvestorGroup] TO jetti;
+------------------------------ END Catalog.InvestorGroup ------------------------------
+
 GO
+
+------------------------------ BEGIN Catalog.Employee ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Catalog.Employee] AS
@@ -2908,7 +3238,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Employee] TO jetti;
+------------------------------ END Catalog.Employee ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.ExchangeRates ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.ExchangeRates] AS
@@ -2939,7 +3273,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.ExchangeRates] TO jetti;
+------------------------------ END Document.ExchangeRates ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.Invoice ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.Invoice] AS
@@ -2984,7 +3322,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.Invoice] TO jetti;
+------------------------------ END Document.Invoice ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.Operation ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.Operation] AS
@@ -3028,7 +3370,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.Operation] TO jetti;
+------------------------------ END Document.Operation ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.PriceList ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.PriceList] AS
@@ -3062,7 +3408,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.PriceList] TO jetti;
+------------------------------ END Document.PriceList ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.Settings ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.Settings] AS
@@ -3097,7 +3447,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.Settings] TO jetti;
+------------------------------ END Document.Settings ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.UserSettings ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.UserSettings] AS
@@ -3136,7 +3490,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.UserSettings] TO jetti;
+------------------------------ END Document.UserSettings ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.WorkFlow ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.WorkFlow] AS
@@ -3170,7 +3528,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.WorkFlow] TO jetti;
+------------------------------ END Document.WorkFlow ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.CashRequest ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.CashRequest] AS
@@ -3204,6 +3566,7 @@ GO
         , ISNULL([ExpenseOrBalance.v].description, '') [ExpenseOrBalance.value], d.[ExpenseOrBalance] [ExpenseOrBalance.id], [ExpenseOrBalance.v].type [ExpenseOrBalance.type]
         , ISNULL([ExpenseAnalytics.v].description, '') [ExpenseAnalytics.value], d.[ExpenseAnalytics] [ExpenseAnalytics.id], [ExpenseAnalytics.v].type [ExpenseAnalytics.type]
         , ISNULL([SalaryAnalitics.v].description, '') [SalaryAnalitics.value], d.[SalaryAnalitics] [SalaryAnalitics.id], [SalaryAnalitics.v].type [SalaryAnalitics.type]
+        , ISNULL([SKU.v].description, '') [SKU.value], d.[SKU] [SKU.id], [SKU.v].type [SKU.type]
         , ISNULL([TaxRate.v].description, '') [TaxRate.value], d.[TaxRate] [TaxRate.id], [TaxRate.v].type [TaxRate.type]
         , d.[TaxKPP] [TaxKPP]
         , ISNULL([TaxPaymentCode.v].description, '') [TaxPaymentCode.value], d.[TaxPaymentCode] [TaxPaymentCode.id], [TaxPaymentCode.v].type [TaxPaymentCode.type]
@@ -3252,6 +3615,7 @@ GO
         LEFT JOIN dbo.[Documents] [ExpenseOrBalance.v] ON [ExpenseOrBalance.v].id = d.[ExpenseOrBalance]
         LEFT JOIN dbo.[Catalog.Expense.Analytics.v] [ExpenseAnalytics.v] WITH (NOEXPAND) ON [ExpenseAnalytics.v].id = d.[ExpenseAnalytics]
         LEFT JOIN dbo.[Catalog.Salary.Analytics.v] [SalaryAnalitics.v] WITH (NOEXPAND) ON [SalaryAnalitics.v].id = d.[SalaryAnalitics]
+        LEFT JOIN dbo.[Catalog.Product.v] [SKU.v] WITH (NOEXPAND) ON [SKU.v].id = d.[SKU]
         LEFT JOIN dbo.[Catalog.TaxRate.v] [TaxRate.v] WITH (NOEXPAND) ON [TaxRate.v].id = d.[TaxRate]
         LEFT JOIN dbo.[Catalog.TaxPaymentCode.v] [TaxPaymentCode.v] WITH (NOEXPAND) ON [TaxPaymentCode.v].id = d.[TaxPaymentCode]
         LEFT JOIN dbo.[Catalog.TaxAssignmentCode.v] [TaxAssignmentCode.v] WITH (NOEXPAND) ON [TaxAssignmentCode.v].id = d.[TaxAssignmentCode]
@@ -3263,7 +3627,11 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
+------------------------------ END Document.CashRequest ------------------------------
+
 GO
+
+------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
 
 
       CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry] AS
@@ -3305,3 +3673,4 @@ GO
     ;
 GO
 GRANT SELECT ON dbo.[Document.CashRequestRegistry] TO jetti;
+------------------------------ END Document.CashRequestRegistry ------------------------------
