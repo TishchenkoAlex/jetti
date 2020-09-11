@@ -49,13 +49,12 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     const type: DocTypes = params.type;
     const Operation: string | undefined = req.query.Operation as string || params.operation as string || undefined;
     const isFolder: boolean = req.query.isfolder === 'true';
+    const Group = params.group ? params.group : Operation ? (await lib.util.getObjectPropertyById(Operation, 'Group', sdb)).id : null;
 
     let doc: IFlatDocument | DocumentOperation | null = null;
     if (id) doc = await lib.doc.byId(id, sdb);
     if (!doc) {
-      doc = Operation ?
-        { ...createDocument(type), Operation, Group: (await lib.util.getObjectPropertyById(Operation, 'Group', sdb)).id } :
-        createDocument(type);
+      doc = { ...createDocument(type), Operation, Group };
       doc!.isfolder = isFolder;
     }
     const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, sdb);
@@ -120,7 +119,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     const metadata = ServerDoc.Prop() as DocumentOptions;
     if (params.operation)
       metadata['Operation'] = await lib.doc.formControlRef(params.operation, sdb);
-    else if (params.group && params.operation)
+    else if (params.group)
       metadata['Group'] = await lib.doc.formControlRef(params.group, sdb);
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
