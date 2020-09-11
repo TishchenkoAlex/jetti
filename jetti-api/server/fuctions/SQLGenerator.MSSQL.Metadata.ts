@@ -488,7 +488,8 @@ export class SQLGenegatorMetadata {
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [${type}]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
