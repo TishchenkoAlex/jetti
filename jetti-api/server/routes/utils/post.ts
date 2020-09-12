@@ -44,7 +44,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
-  const withExchangeInfo = opts && opts.withExchangeInfo;
+  const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
   let response: INoSqlDocument;
 
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
@@ -87,7 +87,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
-  const withExchangeInfo = opts && opts.withExchangeInfo;
+  const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
 
   let response: INoSqlDocument;
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`

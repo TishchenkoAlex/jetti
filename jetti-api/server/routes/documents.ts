@@ -198,6 +198,10 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        if (doc.ExchangeBase) {
+          serverDoc['ExchangeBase'] = doc.ExchangeBase;
+          serverDoc['ExchangeCode'] = doc.ExchangeCode;
+        }
         if (serverDoc.timestamp) {
           await updateDocument(serverDoc, tx);
           if (serverDoc.posted && serverDoc.isDoc) {
