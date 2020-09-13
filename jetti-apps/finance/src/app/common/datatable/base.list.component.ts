@@ -259,9 +259,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   async delete() {
-    for (const doc of this.selection) {
-      await this.ds.delete(doc.id);
-    }
+    for (const doc of this.selection) { await this.ds.delete(doc.id); }
   }
 
   async post(mode = 'post') {
