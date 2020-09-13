@@ -135,7 +135,9 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
     this._docSubscription$ = merge(...[
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
-        filter(doc => doc && doc.type === this.type))
+        filter(doc => doc
+          && doc.type === this.type
+          && !!(!this.group || !doc['Group'] || this.group === doc['Group']['id'])))
       .subscribe(doc => {
 
         if (this.treeNodesVisible) {

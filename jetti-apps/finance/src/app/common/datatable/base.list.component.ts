@@ -108,7 +108,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._docSubscription$ = merge(...[
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
-        filter(doc => doc && doc.type === this.type))
+        filter(doc => doc
+          && doc.type === this.type
+          && !!(!this.group || !doc['Group'] || this.group === doc['Group']['id'])))
       .subscribe(doc => {
         const exist = (this.dataSource.renderedData as DocumentBase[]).find(d => d.id === doc.id);
         if (exist) {
@@ -257,7 +259,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   }
 
   delete() {
-    this.selection.forEach(el => this.ds.delete(el.id));
+    for (const doc of this.selection) {
+      this.ds.delete(doc.id);
+    }
   }
 
   async post(mode = 'post') {
