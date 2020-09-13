@@ -258,9 +258,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.router.navigate([this.selection[0].type, this.selection[0].id]);
   }
 
-  delete() {
+  async delete() {
     for (const doc of this.selection) {
-      this.ds.delete(doc.id);
+      await this.ds.delete(doc.id);
     }
   }
 
