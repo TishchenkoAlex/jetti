@@ -32,7 +32,7 @@ export class CatalogOperation extends DocumentBase {
   @Props({ type: 'string', order: 3, required: true, style: { width: '50%' } })
   description = '';
 
-  @Props({ type: 'string', order: 3, required: true, style: { width: '50%' } })
+  @Props({ type: 'string', order: 3, required: false, style: { width: '50%' } })
   shortName = '';
 
   @Props({ type: 'javascript', required: true, hiddenInList: true, style: { height: '50vh' }, value: '' })

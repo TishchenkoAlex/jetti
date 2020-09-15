@@ -170,7 +170,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
 
-    if (col.field === 'Operation') {
+    if (col.field === 'Operation' && (Type.isOperation(this.type) || this.type === 'Document.Operation')) {
       let type = 'Document.Operation';
       if (event && event.id) type = await this.ds.api.getIndexedOperationType(event.id);
       if (this.type !== type) {
