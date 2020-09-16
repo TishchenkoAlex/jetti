@@ -144,13 +144,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async isSuperuser(tx: MSSQL) {
-    const user = await getUser(tx.user.email);
-    return user && await lib.util.isRoleAvailable('Cash request admin', user);
+    return lib.util.isRoleAvailable('Cash request admin', tx.user);
   }
 
   async doCheckTaxCheck(tx: MSSQL) {
-    const user = await getUser(tx.user.email);
-    return user && !(await lib.util.isRoleAvailable('Dont check tax check', user));
+    return lib.util.isRoleAvailable('Dont check tax check', tx.user);
   }
 
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {

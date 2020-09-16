@@ -44,7 +44,6 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
     const params: { [key: string]: any } = req.body;
-    const email = User(req).email;
     const id: string | undefined = params.id;
     const type: DocTypes = params.type;
     const Operation: string | undefined = req.query.Operation as string || params.operation as string || undefined;
@@ -63,7 +62,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     let model = {};
     const settings = new FormListSettings();
-    const userID = await lib.doc.byCode('Catalog.User', email, sdb);
+    const userID = sdb.user.env.id;
 
     if (id) {
 

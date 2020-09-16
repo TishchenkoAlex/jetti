@@ -14,6 +14,7 @@ import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { JQueue } from './models/Tasks/tasks';
 import { router as auth } from './routes/auth';
+import { router as utils } from './routes/utils';
 import { router as documents } from './routes/documents';
 import { authHTTP, authIO } from './routes/middleware/check-auth';
 import { router as registers } from './routes/registers';
@@ -53,6 +54,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(express.static(path.join(root, 'dist')));
 
 const api = `/api`;
+app.use(api, authHTTP, jettiDB, utils);
 app.use(api, authHTTP, jettiDB, documents);
 app.use(api, authHTTP, jettiDB, userSettings);
 app.use(api, authHTTP, jettiDB, suggests);

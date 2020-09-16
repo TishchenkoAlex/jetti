@@ -79,6 +79,9 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'string', isAdditional: true })
   AccountAD = '';
 
+  @Props({ type: 'string', label: 'Pincode', validators: [{ key: 'maxLength', value: 4 }] })
+  Pincode = '';
+
   @Props({ type: 'boolean', hiddenInList: false, isAdditional: true })
   Fired = false;
 

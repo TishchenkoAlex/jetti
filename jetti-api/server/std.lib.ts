@@ -92,14 +92,16 @@ export interface JTL {
       date: Date,
       fields: string,
       groupBy: string,
-      filter: { [key: string]: any }
+      filter: { [key: string]: any },
+      topRows?: number
     ) => Promise<T[] | null>,
     turnover: <T>(
       registerName: string,
       period: { begin: Date, end: Date },
       fields: string,
       groupBy: string,
-      filter: { [key: string]: any }
+      filter: { [key: string]: any },
+      topRows?: number
     ) => Promise<T[] | null>,
 
   };
@@ -121,8 +123,9 @@ export interface JTL {
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
+    // currentUser: () => Promise<void>,
     getUserRoles: (user: CatalogUser) => Promise<string[]>,
-    isRoleAvailable: (role: string, user: CatalogUser) => Promise<boolean>,
+    isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () => Promise<string>,
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
@@ -328,7 +331,7 @@ async function findDocumentByProps<T>(
   const query = `
   SELECT DISTINCT ${first ? 'TOP ' + first : ''}
   ${selectedFields}
-  FROM [dbo].[${ type}.v]
+  FROM [dbo].[${type}.v]
   WHERE 1 = 1 AND
   ${excludeDeleted ? 'deleted = 0 AND' : ''}
   (${filterQ})
@@ -541,7 +544,8 @@ async function accumBalance<T>(
   date: Date,
   fields: string,
   groupBy: string,
-  filter: { [key: string]: any }
+  filter: { [key: string]: any },
+  topRows?: number
 ): Promise<T[] | null> {
 
   const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 2}`).join('\n');
@@ -550,7 +554,7 @@ async function accumBalance<T>(
   const params = Object.values(filter);
 
   const queryText = `
-    SELECT
+    SELECT TOP ${topRows || 1000}
     ${groupBy},
     ${select}
     FROM [Register.Accumulation.${registerName}]
@@ -571,7 +575,8 @@ async function turnover<T>(
   period: { begin: Date, end: Date },
   fields: string,
   groupBy: string,
-  filter: { [key: string]: any }
+  filter: { [key: string]: any },
+  topRows?: number
 ): Promise<T[] | null> {
 
   const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 3}`).join('\n');
@@ -580,7 +585,7 @@ async function turnover<T>(
   const params = Object.values(filter);
 
   const queryText = `
-    SELECT
+    SELECT TOP ${topRows || 1000}
       ${groupBy},
       ${select}
     FROM [Register.Accumulation.${registerName}]
@@ -774,16 +779,16 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
   const keys = Object.keys(new CatalogAttachment);
   const result: any[] = [];
   let userId = '';
-  const getCurrentUserIdByMail = async () => {
-    return await byCode('Catalog.User', tx.user.email, tx);
-  };
+  // const getCurrentUserIdByMail = async () => {
+  //   return await byCode('Catalog.User', tx.user.email, tx);
+  // };
   for (const attachment of attachments) {
     if (!attachment.owner) throw new Error('Attachment owner is empty!');
     let ob;
     if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
-      if (!userId) userId = await getCurrentUserIdByMail() as string;
+      if (!userId) userId = tx.user.env.id;
       ob.user = userId;
       ob.date = new Date;
       ob.company = (await byId(attachment.owner, tx))!.company;
@@ -923,8 +928,8 @@ async function getUserRoles(user: CatalogUser): Promise<string[]> {
   return (await getUserPermissions(user)).Roles;
 }
 
-async function isRoleAvailable(role: string, user: CatalogUser): Promise<boolean> {
-  return !!(await getUserPermissions(user)).Roles.filter(e => e === role).length;
+async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
+  return tx && tx.user && tx.user.roles && tx.user.roles && tx.user.roles.includes(role);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {

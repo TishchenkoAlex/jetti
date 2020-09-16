@@ -53,6 +53,11 @@ Registers.Accumulation.push({
         return this;
     }
 
+    async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+        this[command](args, tx);
+        return this;
+      }
+
     async updateSQLViews() {
         await lib.meta.updateSQLViewsByOperationId(this.id as any);
     }
