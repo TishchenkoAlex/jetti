@@ -38,9 +38,9 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     ${isCompany ? `
     BEGIN
        SELECT
-          COUNT(ID) records,
-          TYPE type,
-          'Documents.doc' source 
+          COUNT(ID) Records,
+          TYPE Type,
+          'Documents.doc' Source 
        FROM
           DOCUMENTS 
        WHERE
@@ -127,9 +127,9 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     
     ` : ` 
     SELECT
-       COUNT(ID) records,
-       TYPE type,
-       'Documents.doc' source 
+       COUNT(ID) Records,
+       TYPE Type,
+       'Documents.doc' Source 
     FROM
        DOCUMENTS 
     WHERE
