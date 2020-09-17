@@ -26,6 +26,8 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     if (!this.OldValue) throw new Error('Searched value is not defined');
     const sdbq = new MSSQL(TASKS_POOL, this.user);
     await this.FillExchangeData(sdbq);
+    const ob = await lib.doc.byId(this.NewValue, sdbq);
+    const isCompany = ob && ob.type === 'Catalog.Company' || false;
 
     this.NewValueExchangeBase
     const query = `
@@ -33,17 +35,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     -- new val 300880BA-41BE-EA11-A95C-ADB4CBE992FE
     -- DECLARE @P1 VARCHAR(50) = 'CF7D06C0-E7D1-11EA-8F63-E1159173AA45';
     -- DECLARE @P2 VARCHAR(50) = '300880BA-41BE-EA11-A95C-ADB4CBE992FE';
-    DECLARE @ISCOMPANY INT = 
-    (
-       SELECT
-          COUNT(*) 
-       FROM
-          DOCUMENTS 
-       WHERE
-          ID = @P2 
-          AND TYPE = N'Catalog.Company'
-    )
-    IF @ISCOMPANY > 0 
+    ${isCompany ? `
     BEGIN
        SELECT
           COUNT(ID) RECORDS,
@@ -132,63 +124,65 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
           DOCUMENT = @P1 
        GROUP BY
           TYPE;
-    END
-    ELSE
-       BEGIN
-          SELECT
-             COUNT(ID) RECORDS,
-             TYPE TYPE,
-             'Documents.doc' SOURCE 
-          FROM
-             DOCUMENTS 
-          WHERE
-             CONTAINS(DOC, @P1) 
-          GROUP BY
-             TYPE 
-             SELECT
-                COUNT(ID) RECORDS,
-                TYPE,
-                'Accumulation.data' SOURCE 
-             FROM
-                ACCUMULATION 
-             WHERE
-                CONTAINS(DATA, @P1) 
-             GROUP BY
-                TYPE 
-             UNION
-             SELECT
-                COUNT(ID) RECORDS,
-                TYPE,
-                'Accumulation.document' SOURCE 
-             FROM
-                ACCUMULATION 
-             WHERE
-                DOCUMENT = @P1 
-             GROUP BY
-                TYPE 
-             UNION
-             SELECT
-                COUNT(ID) RECORDS,
-                TYPE,
-                'Register.Info.data' SOURCE 
-             FROM
-                [REGISTER.INFO] 
-             WHERE
-                CONTAINS(DATA, @P1) 
-             GROUP BY
-                TYPE 
-             UNION
-             SELECT
-                COUNT(ID) RECORDS,
-                TYPE,
-                'Register.Info.document' SOURCE 
-             FROM
-                [REGISTER.INFO] 
-             WHERE
-                DOCUMENT = @P1 
-             GROUP BY
-                TYPE 
-       END`;
+    
+    ` : ` 
+    SELECT
+       COUNT(ID) RECORDS,
+       TYPE TYPE,
+       'Documents.doc' SOURCE 
+    FROM
+       DOCUMENTS 
+    WHERE
+       CONTAINS(DOC, @P1) 
+    GROUP BY
+       TYPE 
+    
+    UNION
+    SELECT
+       COUNT(ID) RECORDS,
+       TYPE,
+       'Accumulation.data' SOURCE 
+    FROM
+       ACCUMULATION 
+    WHERE
+       CONTAINS(DATA, @P1) 
+    GROUP BY
+       TYPE 
+    UNION
+    SELECT
+       COUNT(ID) RECORDS,
+       TYPE,
+       'Accumulation.document' SOURCE 
+    FROM
+       ACCUMULATION 
+    WHERE
+       DOCUMENT = @P1 
+    GROUP BY
+       TYPE 
+    UNION
+    SELECT
+       COUNT(ID) RECORDS,
+       TYPE,
+       'Register.Info.data' SOURCE 
+    FROM
+       [REGISTER.INFO] 
+    WHERE
+       CONTAINS(DATA, @P1) 
+    GROUP BY
+       TYPE 
+    UNION
+    SELECT
+       COUNT(ID) RECORDS,
+       TYPE,
+       'Register.Info.document' SOURCE 
+    FROM
+       [REGISTER.INFO] 
+    WHERE
+       DOCUMENT = @P1 
+    GROUP BY
+       TYPE;
+ 
+ `}`;
 
     const searchRes = await sdbq.manyOrNone<{ Records: number, Type: string, Source: string }>(query, [this.OldValue]);
     this.SearchResult = [];
