@@ -137,21 +137,29 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
   }
 
   async Replace() {
+    const sdbq = new MSSQL(TASKS_POOL, this.user);
+    this.user.isAdmin = true;
+    await sdbq.tx(async tx => {
+      await lib.util.adminMode(true, tx);
+      try {
+        this.ReplaceInTx(tx);
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
+    })
+  }
+
+  async ReplaceInTx(tx: MSSQL) {
+
     if (!this.OldValue) throw new Error('Old value is not defined');
     if (!this.NewValue) throw new Error('New value is not defined');
     if (this.NewValue === this.OldValue) throw new Error('Bad params: The new value cannot be equal to the old value');
-    this.user.isAdmin = true;
-    const sdbq = new MSSQL(TASKS_POOL, this.user);
-    const NewValue = await lib.doc.byId(this.NewValue, sdbq);
-    const OldValue = await lib.doc.byId(this.OldValue, sdbq);
+
+    const NewValue = await lib.doc.byId(this.NewValue, tx);
+    const OldValue = await lib.doc.byId(this.OldValue, tx);
     if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);
 
     let query = `
-    BEGIN TRANSACTION
-
-        ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Update];
-        ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents > Hisroty.Insert];
-        ALTER TABLE [dbo].[Documents] DISABLE TRIGGER [Documents.CheckAccessToCommonDocs];
+        declare @isCompany int = (SELECT COUNT(*) FROM Documents WHERE id = @p2 AND type = N'Catalog.Company')
         update documents set doc = REPLACE(doc, @p1, @p2), timestamp = getdate()
         where id in (select id from documents where contains(doc, @p1));
         RAISERROR('REPLACE DOC', 0 ,1) WITH NOWAIT;
@@ -176,7 +184,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         END
         update CatalogMatching  set id = @p2 where id = @p1;
         RAISERROR('id', 0 ,1) WITH NOWAIT;
-        update documents set company = @p2 where company = @p1;
+        if @isCompany > 0 update documents set company = @p2 where company = @p1;
         RAISERROR('company', 0 ,1) WITH NOWAIT;
         update documents set parent = @p2 where parent = @p1;
         RAISERROR('parent', 0 ,1) WITH NOWAIT;
@@ -187,19 +195,15 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         update Accumulation set data = REPLACE(data, @p1, @p2)
         where id in (select id from Accumulation where contains(data, @p1));
         RAISERROR('REPLACE Accumulation', 0 ,1) WITH NOWAIT;
-        update Accumulation set company = @p2 where company = @p1;
+        if @isCompany > 0 update Accumulation set company = @p2 where company = @p1;
         RAISERROR('company', 0 ,1) WITH NOWAIT;
         update [Register.Info] set data = REPLACE(data, @p1, @p2)
         where id in (select id from [Register.Info] where contains(data, @p1));
         RAISERROR('REPLACE [Register.Info]', 0 ,1) WITH NOWAIT;
-        update [Register.Info] set company = @p2 where company = @p1;
-        RAISERROR('company', 0 ,1) WITH NOWAIT;
-        ALTER TABLE [dbo].[Documents] ENABLE TRIGGER [Documents > Hisroty.Update];
-        ALTER TABLE [dbo].[Documents] ENABLE TRIGGER [Documents > Hisroty.Insert];
-        ALTER TABLE [dbo].[Documents] ENABLE TRIGGER [Documents.CheckAccessToCommonDocs];
-    COMMIT;`;
+        if @isCompany > 0 update [Register.Info] set company = @p2 where company = @p1;
+        RAISERROR('company', 0 ,1) WITH NOWAIT;`;
 
-    await sdbq.manyOrNone(query,[this.OldValue, this.NewValue, this.ReplaceExchangeCode]);
+    await tx.none(query, [this.OldValue, this.NewValue, this.ReplaceExchangeCode]);
     return this;
   }
 }
