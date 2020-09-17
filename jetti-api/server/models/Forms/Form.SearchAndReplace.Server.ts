@@ -29,77 +29,166 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
 
     this.NewValueExchangeBase
     const query = `
-      select  COUNT(id) Records
-      ,type Type
-      ,'Documents.doc' Source
-      from Documents
-      where contains(doc, @p1)
-      GROUP BY type
-    UNION
-      select COUNT(id) Records
-      ,type
-      ,'Documents.company' source
-      from Documents 
-      where company = @p1
-      GROUP BY type
-      UNION 
-    
-      select COUNT(id) Records
-      ,type
-      
-      ,'Accumulation.data' source
-      from Accumulation 
-      where contains(data, @p1)
-      GROUP BY type
-    
-      UNION
-    
-      select COUNT(id) Records
-      ,type
-      
-      ,'Accumulation.company' source
-      from Accumulation 
-      where company = @p1
-      GROUP BY type
-    
-      UNION
-    
-      select COUNT(id) Records
-      ,type
-      
-      ,'Accumulation.document' source
-      from Accumulation 
-      where document = @p1
-      GROUP BY type
-    
-    UNION
-    
-      select COUNT(id) Records
-      ,type
-      
-      ,'Register.Info.data' source
-      from [Register.Info]
-      where contains(data, @p1)
-      GROUP BY type
-    
-    UNION
-    
-      select COUNT(id) Records
-      ,type
-      
-      ,'Register.Info.company' source
-      from [Register.Info]
-      where company = @p1
-      GROUP BY type
-    
-    UNION
-    
-      select COUNT(id) Records
-      ,type
-      ,'Register.Info.document' source
-      from [Register.Info]
-      where document = @p1
-      GROUP BY type `;
+    -- old val Catalog.Person/CF7D06C0-E7D1-11EA-8F63-E1159173AA45
+    -- new val 300880BA-41BE-EA11-A95C-ADB4CBE992FE
+    -- DECLARE @P1 VARCHAR(50) = 'CF7D06C0-E7D1-11EA-8F63-E1159173AA45';
+    -- DECLARE @P2 VARCHAR(50) = '300880BA-41BE-EA11-A95C-ADB4CBE992FE';
+    DECLARE @ISCOMPANY INT = 
+    (
+       SELECT
+          COUNT(*) 
+       FROM
+          DOCUMENTS 
+       WHERE
+          ID = @P2 
+          AND TYPE = N'Catalog.Company'
+    )
+    IF @ISCOMPANY > 0 
+    BEGIN
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE TYPE,
+          'Documents.doc' SOURCE 
+       FROM
+          DOCUMENTS 
+       WHERE
+          CONTAINS(DOC, @P1) 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Documents.company' SOURCE 
+       FROM
+          DOCUMENTS 
+       WHERE
+          COMPANY = @P1 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Accumulation.data' SOURCE 
+       FROM
+          ACCUMULATION 
+       WHERE
+          CONTAINS(DATA, @P1) 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Accumulation.company' SOURCE 
+       FROM
+          ACCUMULATION 
+       WHERE
+          COMPANY = @P1 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Accumulation.document' SOURCE 
+       FROM
+          ACCUMULATION 
+       WHERE
+          DOCUMENT = @P1 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Register.Info.data' SOURCE 
+       FROM
+          [REGISTER.INFO] 
+       WHERE
+          CONTAINS(DATA, @P1) 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Register.Info.company' SOURCE 
+       FROM
+          [REGISTER.INFO] 
+       WHERE
+          COMPANY = @P1 
+       GROUP BY
+          TYPE 
+       UNION
+       SELECT
+          COUNT(ID) RECORDS,
+          TYPE,
+          'Register.Info.document' SOURCE 
+       FROM
+          [REGISTER.INFO] 
+       WHERE
+          DOCUMENT = @P1 
+       GROUP BY
+          TYPE;
+    END
+    ELSE
+       BEGIN
+          SELECT
+             COUNT(ID) RECORDS,
+             TYPE TYPE,
+             'Documents.doc' SOURCE 
+          FROM
+             DOCUMENTS 
+          WHERE
+             CONTAINS(DOC, @P1) 
+          GROUP BY
+             TYPE 
+             SELECT
+                COUNT(ID) RECORDS,
+                TYPE,
+                'Accumulation.data' SOURCE 
+             FROM
+                ACCUMULATION 
+             WHERE
+                CONTAINS(DATA, @P1) 
+             GROUP BY
+                TYPE 
+             UNION
+             SELECT
+                COUNT(ID) RECORDS,
+                TYPE,
+                'Accumulation.document' SOURCE 
+             FROM
+                ACCUMULATION 
+             WHERE
+                DOCUMENT = @P1 
+             GROUP BY
+                TYPE 
+             UNION
+             SELECT
+                COUNT(ID) RECORDS,
+                TYPE,
+                'Register.Info.data' SOURCE 
+             FROM
+                [REGISTER.INFO] 
+             WHERE
+                CONTAINS(DATA, @P1) 
+             GROUP BY
+                TYPE 
+             UNION
+             SELECT
+                COUNT(ID) RECORDS,
+                TYPE,
+                'Register.Info.document' SOURCE 
+             FROM
+                [REGISTER.INFO] 
+             WHERE
+                DOCUMENT = @P1 
+             GROUP BY
+                TYPE 
+       END`;
 
     const searchRes = await sdbq.manyOrNone<{ Records: number, Type: string, Source: string }>(query, [this.OldValue]);
     this.SearchResult = [];
