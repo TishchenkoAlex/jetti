@@ -142,7 +142,7 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     await sdbq.tx(async tx => {
       await lib.util.adminMode(true, tx);
       try {
-        this.ReplaceInTx(tx);
+        await this.ReplaceInTx(tx);
       } catch (ex) { throw new Error(ex); }
       finally { await lib.util.adminMode(false, tx); }
     })
