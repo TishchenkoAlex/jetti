@@ -20,7 +20,7 @@ export class CatalogDepartmentCompany extends DocumentBase {
   parent: Ref = null;
 
 
-  @Props({ type: 'boolean', hidden: false, hiddenInList: true, order: 6 })
+  @Props({ type: 'boolean', hidden: false, hiddenInList: true, order: 6, isIndexed: true })
   isfolder = false;
 
   @Props({ type: 'enum', value: ['COMPANY', 'DEPARTMENT', 'BRANCH', 'COMAND', 'SALEPOINT'], useIn: 'all' })
@@ -31,6 +31,9 @@ export class CatalogDepartmentCompany extends DocumentBase {
     , label: 'Short name (max 30 symbols)', order: 4, validators: [{ key: 'maxLength', value: 30 }]
   })
   ShortName = '';
+
+  @Props({type: 'string', required: false, hiddenInList: false, label: 'Security group', order: 4, useIn: 'all'  })
+  SecurityGroup = '';
 
   @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all', order: 5 })
   StaffingPositionManager: Ref = null;
