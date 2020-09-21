@@ -39,22 +39,13 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.inn
         ]);
- 
-    const DateStart = taxCheck.operationTime
-    const DateEnd = taxCheck.operationTime
-
-    DateStart.setDate(DateStart.getDate() - 1);
-    DateEnd.setDate(DateEnd.getDate() + 1);
-    console.log(  taxCheck.clientInn,
-        taxCheck.inn,
-        taxCheck.totalAmount)
     const queryText = `
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
     WHERE clientInn = @p1
         and inn = @p2
         and totalAmount = cast(@p3 as money)
-        ${ taxCheck.operationId ? 'and [document] = @p4' : ''}`;
+        ${taxCheck.operationId ? 'and [document] = @p4' : ''}`;
 
     return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
         [
@@ -119,18 +110,21 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
     const tx = new MSSQL(JETTI_POOL);
     const result: IUpdateOperationTaxCheckResponse = { status: 'created', operationId: null, info: null };
     const tc = await findTaxCheckInRegisterInfo(taxCheck, tx);
+
+
     const OperationCounterTax: any = await tx.oneOrNone<RegisterInfoTaxCheck>(countTextTax,
         [
             taxCheck.inn
         ]);
-
     let counter;
-    if (OperationCounterTax['']) {
-        if (OperationCounterTax[''] === 0) {
-            counter = 'У вас нет задолжностей по чекам.';
-        } else {
-            counter = `Количество не отправленных чеков: ${OperationCounterTax['']}`;
-        }
+    const counterValue = OperationCounterTax[''];
+    const computedValue =  counterValue - 1
+
+    if (computedValue  <= 0) {
+        counter = 'У вас нет задолжностей по чекам.';
+    }
+    else {
+        counter = `Количество не отправленных чеков: ${computedValue}`;
     }
     if (!tc) {
         result.status = 'error';
@@ -192,6 +186,3 @@ function getTaxCheckURL(taxCheck: ITaxCheck, urlType = 'print' || 'json'): strin
     if (taxCheck.URL) return taxCheck.URL;
     return `${AttachmentType_apiHost}/${taxCheck.inn}/${taxCheck.receiptId}/${urlType}`;
 }
-
-
-
