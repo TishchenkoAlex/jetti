@@ -4,6 +4,7 @@ import { Response, response } from 'express';
 import {
 	GetExchangeCatalogID,
 	GetExchangeDocumentID,
+	GetExchangeID,
 } from './iiko-to-jetti-connection';
 import {
 	SetExchangeCatalogID,
@@ -55,11 +56,11 @@ export async function GetCatalog(
 	tx: SQLClient,
 ): Promise<INoSqlDocument | null> {
 	// получить из базы элемент справочника
-	const id: Ref = await GetExchangeCatalogID(
-		project,
+	const id: Ref = await GetExchangeID(
 		exchangeCode,
 		exchangeBase,
 		exchangeType,
+		tx
 	);
 	const a: { [x: string]: any } = {};
 	if (!id) return null;
