@@ -1,5 +1,5 @@
 export function scrollIntoViewIfNeeded(type, style, direction = false) {
-  let target;
+  let target;  
   let highlight = document.getElementsByClassName(`scrollTo-${type} ${style}`);
   if (highlight.length) target = highlight[highlight.length - 1];
   else {
