@@ -28,8 +28,8 @@
                 [disabled]="(lds.busy$ | async)"></button>
             </div>
             <div class="p-toolbar-group-right">
-              <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async"
-                styleClass="p-button-secondary" label="base on">
+              <p-splitButton *ngIf="(copyTo$ | async)?.length" [model]="copyTo$ | async" styleClass="p-button-secondary"
+                label="base on">
               </p-splitButton>
               <p-splitButton *ngIf="!(isNew$ | async)" [model]="navigateCommands" styleClass="p-button-secondary"
                 label="navigate">
@@ -77,7 +77,7 @@
               <br *ngIf="tables.length">
               <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
                 <div *ngFor="let c of tables; let i = index">
-                  <p-tabPanel [header]="c.label">
+                  <p-tabPanel [header]="c.label" [selected]="i === 0">
                     <j-control [control]="c" [form]="form"></j-control>
                   </p-tabPanel>
                 </div>
@@ -116,8 +116,8 @@
 
           <br *ngIf="panel.tables.length > 0">
           <p-tabView *ngIf="panel.tables.length" class="tabViewClassInForm">
-            <div *ngFor="let table of panel.tables">
-              <p-tabPanel [header]="table.label">
+            <div *ngFor="let table of panel.tables; let i = index">
+              <p-tabPanel [header]="table.label" [selected]="i === 0">
                 <j-control [control]="table" [form]="form"></j-control>
               </p-tabPanel>
             </div>

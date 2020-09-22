@@ -29,14 +29,32 @@
             [control]="v[i+2]" [form]="form"></j-control>
         </div>
       </div>
+      <!-- 
+      <p-tabView>
+        <p-tabPanel [header]="v[0].label" [selected]="true">
+          <j-control [control]="v[0]" [form]="form"></j-control>
+        </p-tabPanel>
+        <j-control [control]="v[0]" [form]="form"></j-control>
+    </p-tabView> -->
 
-      <br *ngIf="tables.length">
-      <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-        <div *ngFor="let control of tables; let i = index">
-          <p-tabPanel [header]="control.label">
-            <j-control [control]="control" [form]="form"></j-control>
-          </p-tabPanel>
-        </div>
+      <!-- <br *ngIf="tables.length"> -->
+      <!-- class="tabViewClassInForm" -->
+      <p-tabView>
+        <p-tabPanel [header]="control.label" *ngFor="let control of tables; let i = index" [selected]="i === 0">
+          <j-control [control]="control" [form]="form"></j-control>
+        </p-tabPanel>
+      </p-tabView>
+
+      <p-accordion [multiple]="true" *ngFor="let control of tables; let i = index">
+        <p-accordionTab [header]="control.label" [selected]="i === 0">
+          <j-control [control]="control" [form]="form"></j-control>
+        </p-accordionTab>
+      </p-accordion>
+
+      <p-tabView>
+        <p-tabPanel [header]="control.label" *ngFor="let control of tables; let i = index" [selected]="i === 0">
+          <j-control [control]="control" [form]="form"></j-control>
+        </p-tabPanel>
       </p-tabView>
 
     </div>

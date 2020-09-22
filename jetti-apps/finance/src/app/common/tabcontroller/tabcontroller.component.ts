@@ -47,7 +47,7 @@ export class TabControllerComponent {
           index = tabStore.selectedIndex;
         }
         setTimeout(() => this.tabStore.selectedIndex = index);
-        setTimeout(() => scrollIntoViewIfNeeded(params.type, 'p-state-highlight'));
+        // setTimeout(() => scrollIntoViewIfNeeded(params.type, 'p-state-highlight'));
       });
 
     merge(...[this.ds.save$, this.ds.delete$]).pipe(filter(doc => doc.id === this.route.snapshot.params.id))

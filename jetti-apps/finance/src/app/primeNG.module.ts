@@ -89,7 +89,7 @@ import { TableModule } from 'primeng/table'; // ' ./common/datatable/table';
     DataViewModule,
     FileUploadModule,
     ListboxModule,
-    CovalentCodeEditorModule
+    CovalentCodeEditorModule,
   ],
   providers: [ConfirmationService, MessageService]
 })

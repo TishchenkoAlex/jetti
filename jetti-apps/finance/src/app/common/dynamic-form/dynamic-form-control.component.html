@@ -41,10 +41,17 @@
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'p-float-label' : control.showLabel}">
-    <p-spinner [required]="control.required" [formControlName]="control.key" [readonly]="control.readOnly"
-      (onFocus)="$event.target.select()" [id]="control.key" size="30" [step]="0.01" [formatInput]="true" precision=2>
-    </p-spinner>
-    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+    <div class="p-inputgroup" style="display: flex" [ngClass]="{'p-float-label' : control.showLabel}">
+      <input pInputText [formControlName]="control.key" [required]="control.required" type="number"
+        [readonly]="control.readOnly" autocomplete="off" (focus)="$event.target.select()">
+      <button pButton type="button" icon="pi pi-times" class="p-button-secondary" (click)="handleReset($event)"
+        pTooltip="Clear" tooltipPosition="top" showDelay="2000" [tabindex]=-1></button>
+      <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+    </div>
+    <!-- <j-autocomplete-png [required]="control.required" [formControlName]="control.key" [storageType]="control.storageType"
+      (onFocus)="$event.target.select()" [id]="control.key"> 
+    </j-autocomplete-png>
+    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label> -->
   </div>
 
   <j-autocomplete-png #pc *ngSwitchCase="'autocomplete'" [required]="control.required" [formControlName]="control.key"
@@ -55,7 +62,7 @@
 
   <div *ngSwitchCase="'date'" [ngClass]="{'p-float-label' : control.showLabel}">
     <input pInputText class="calendar" [value]="dateTimeValue | date: 'yyyy-MM-dd'" [required]="control.required"
-      [readonly]="control.readOnly" autocomplete="off" (input)="parseDate($event.target.value)"
+      [readOnly]="control.readOnly" autocomplete="off" (input)="parseDate($event.target.value)"
       (focus)="$event.target.select()" spellcheck="false" type="date"
       [ngClass]="{'ng-dirty ng-invalid': formControl?.invalid }" [disabled]="this.formControl?.disabled">
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
@@ -79,6 +86,14 @@
       <j-table-part-png [formGroup]="form.controls[control.key]" [control]="control"></j-table-part-png>
     </div>
   </div>
+
+  <!-- <div *ngSwitchCase="'script'">
+    <label *ngIf="control.showLabel" [for]="control.key">{{ control.label }}:</label>
+    <ngx-monaco-editor  style="height: 200px" flex [ngStyle]="control.style"
+      [formControlName]="control.key">
+    </ngx-monaco-editor>
+  </div> -->
+
 
   <div *ngSwitchCase="'script'">
     <label *ngIf="control.showLabel" [for]="control.key">{{ control.label }}:</label>

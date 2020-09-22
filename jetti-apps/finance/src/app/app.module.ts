@@ -48,7 +48,7 @@ export function getJwtToken(): string {
     UserFormsModule,
     RoutingModule,
     MsalModule.forRoot(MsalConfiguration, MsalAngularConfig),
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'ru-RU' },
