@@ -84,6 +84,8 @@ export class DocumentCashRequest extends DocumentBase {
       'Выдача ДС подотчетнику',
       'Оплата по кредитам и займам полученным',
       'Прочий расход ДС',
+      'Перемещение ДС',
+      'Внутренний займ',
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
       'Выплата заработной платы',
@@ -256,6 +258,9 @@ export class DocumentCashRequest extends DocumentBase {
     ]
   })
   SalaryAnalitics: Ref = null;
+
+  @Props({ type: 'Catalog.Product', label: 'ЛОТ/Услуга' })
+  SKU: Ref = null;
 
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;

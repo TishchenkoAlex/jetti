@@ -15,7 +15,7 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Contract', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true, order: 1, isProtected: true })
+  @Props({ type: 'Catalog.Counterpartie', required: true, order: 1, isProtected: true, isIndexed: true })
   owner: Ref = null;
 
   @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' }, isProtected: true, onChangeServer: true })

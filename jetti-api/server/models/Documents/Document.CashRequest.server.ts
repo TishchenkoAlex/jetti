@@ -1,4 +1,4 @@
-import { portal1CApiConfig } from './../../env/environment';
+import { REGISTER_ACCUMULATION_SOURCE } from './../../env/environment';
 import { CatalogCounterpartieBankAccount } from './../Catalogs/Catalog.Counterpartie.BankAccount';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
@@ -20,7 +20,6 @@ import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
 import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
-import { getUser } from '../../routes/auth';
 import { x100 } from '../../x100.lib';
 import { getPersonContract } from '../Catalogs/Catalog.Person.Contract.server';
 
@@ -144,13 +143,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async isSuperuser(tx: MSSQL) {
-    const user = await getUser(tx.user.email);
-    return user && await lib.util.isRoleAvailable('Cash request admin', user);
+    return lib.util.isRoleAvailable('Cash request admin', tx.user);
   }
 
   async doCheckTaxCheck(tx: MSSQL) {
-    const user = await getUser(tx.user.email);
-    return user && !(await lib.util.isRoleAvailable('Dont check tax check', user));
+    return lib.util.isRoleAvailable('Dont check tax check', tx.user);
   }
 
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
@@ -163,7 +160,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       this['Department'] = dep.id;
       this['company'] = dep.company;
     }
-    this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx);
+    this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx) as string;
     this['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP ? body.KPP : '', tx);
     this['Amount'] = body.Amount;
     this['TaxRate'] = '7CFE6E50-35EA-11EA-A185-21EAFAF35D68'; // Без НДС
@@ -409,7 +406,7 @@ ORDER BY
       receiptId
     from [dbo].[Register.Info.TaxCheck] where document in (
       select top 1 document from
-        [x100-DATA].[dbo].[Register.Accumulation.Bank]
+        ${REGISTER_ACCUMULATION_SOURCE}[dbo].[Register.Accumulation.Bank]
       where company = @p1
         and Analytics = @p2
         and CashFlow = @p3
@@ -418,7 +415,7 @@ ORDER BY
     const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
     if (!qRes || qRes.receiptId) return '';
     const cr = await lib.doc.byId(qRes.document, tx);
-    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr?.description}`;
+    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr!.description}`;
   }
 
   async onPost(tx: MSSQL) {
@@ -636,6 +633,12 @@ ORDER BY
       case 'Выдача ДС подотчетнику':
         await this.FillOperationВыдачаДСПодотчетнику(docOperation, tx, params);
         break;
+      case 'Перемещение ДС':
+        await this.FillOperationПеремещениеДС(docOperation, tx, params);
+        break;
+      case 'Внутренний займ':
+        await this.FillOperationВнутреннийЗайм(docOperation, tx, params);
+        break;
       case 'Выдача займа контрагенту':
         await this.FillOperationВыдачаЗаймаКонтрагенту(docOperation, tx, params);
         break;
@@ -757,7 +760,7 @@ ORDER BY
         if (ba) {
           const owner = await lib.doc.byId(ba.owner, tx);
           const prefix = ba.code.trim().startsWith('408208') ? '{VO70060}' : '';
-          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner?.description}. Без налога(НДС)`;
+          docOperation.info = `${prefix} Перечисление заработной платы на лицевой счет ${ba.code} на имя ${owner!.description}. Без налога(НДС)`;
         }
       }
     }
@@ -788,7 +791,7 @@ ORDER BY
         docOperation.Operation = '8C3B61A0-6512-11EA-A8B2-95688F3F3592'; // Из кассы - Выдача/Возврат кредитов и займов (Физ.лицо) (МУЛЬТИВАЛЮТНЫЙ)
         docOperation['CurrencyLoan'] = await lib.util.getObjectPropertyById(this.Loan as any, 'currency', tx);
         if (docOperation['CurrencyLoan']) {
-          const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx);
+          const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx) as string;
           const ExchangeRateDoc = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation.currency, tx);
           const ExchangeRateLoan = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation['CurrencyLoan'], tx);
           docOperation['AmountLoan'] = (docOperation.Amount / ExchangeRateDoc) * ExchangeRateLoan;
@@ -903,6 +906,71 @@ ORDER BY
       docOperation.f2 = docOperation['Person'];
       docOperation.f3 = docOperation['Department'];
     }
+  }
+
+  async FillOperationПеремещениеДС(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
+    const CashOrBankIn = (await lib.doc.byId(this.CashOrBankIn, tx));
+    if (!CashOrBankIn) throw new Error(`Приемник оплат не заполнен в ${this.description} `);
+
+    if (CashOrBank.type === 'Catalog.CashRegister' && CashOrBankIn.type === 'Catalog.BankAccount') {
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // 4.2 - Расходный кассовый ордер
+      docOperation.Operation = 'A6D6678C-BBA3-11E7-8E9F-1B4E8C03A1F5'; // Из кассы - на расчетный счет (в путь)
+      docOperation['CashRegister'] = this.CashOrBank;
+      docOperation['BankAccount'] = this.CashOrBankIn;
+      docOperation.f1 = docOperation['CashRegister'];
+      docOperation.f2 = docOperation['BankAccount'];
+    } else if (CashOrBank.type === 'Catalog.CashRegister' && CashOrBankIn.type === 'Catalog.CashRegister') {
+      docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // 4.2 - Расходный кассовый ордер
+      docOperation.Operation = '1B411A80-DBF6-11E9-9DD5-EB2F495F92A0'; // Из кассы - в другую кассу (в путь)
+      docOperation['CashRegisterOUT'] = this.CashOrBank;
+      docOperation['CashRegisterIN'] = this.CashOrBankIn;
+      docOperation.f1 = docOperation['CashRegisterOUT'];
+      docOperation.f2 = docOperation['CashRegisterIN'];
+    } else if (CashOrBank.type === 'Catalog.BankAccount' && CashOrBankIn.type === 'Catalog.CashRegister') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      docOperation.Operation = '369E2910-36CA-11EA-A774-7FBAF34E4AFA'; // С р/с - в кассу (в путь)
+      docOperation['BankAccountOut'] = this.CashOrBank;
+      docOperation['CashRegisterIn'] = this.CashOrBankIn;
+      docOperation.f1 = docOperation['BankAccountOut'];
+      docOperation.f2 = docOperation['CashRegisterIn'];
+    } else if (CashOrBank.type === 'Catalog.BankAccount' && CashOrBankIn.type === 'Catalog.BankAccount') {
+      docOperation.Group = '269BBFE8-BE7A-11E7-9326-472896644AE4'; // 4.1 - Списание безналичных ДС
+      docOperation.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
+      docOperation['BankAccountOut'] = this.CashOrBank;
+      docOperation['BankAccountTransit'] = this.CashOrBankIn;
+      docOperation['CashFlow'] = this.CashFlow;
+      docOperation.f1 = docOperation['BankAccountOut'];
+      docOperation.f2 = docOperation['BankAccountTransit'];
+    }
+  }
+
+  async FillOperationВнутреннийЗайм(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = (await lib.doc.byId(this.CashOrBank, tx));
+    if (!CashOrBank) throw new Error(`Источник оплат не заполнен в ${this.description} `);
+    const CashOrBankIn = (await lib.doc.byId(this.CashOrBankIn, tx));
+    if (!CashOrBankIn) throw new Error(`Приемник оплат не заполнен в ${this.description} `);
+
+    if (CashOrBank.type !== 'Catalog.CashRegister') throw new Error('Источником оплат может быть только касса!');
+    if (CashOrBankIn.type !== 'Catalog.CashRegister') throw new Error('Приемником оплат может быть только касса!');
+
+    docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // 4.2 - Расходный кассовый ордер
+    docOperation.Operation = 'C6BE0180-E64E-11EA-BB25-5F90F237D3BA'; // Из кассы - в другую кассу ИНТЕРКОМПАНИ (CRUD vs X100)
+    docOperation.date = this.date;
+    docOperation['CashRegisterOUT'] = this.CashOrBank;
+    docOperation['CashRegisterIN'] = this.CashOrBankIn;
+    docOperation['CashFlow'] = this.CashFlow;
+    docOperation['IntercompanyOUT'] = this.company;
+    docOperation['SKU'] = this.SKU;
+    docOperation['CurrencyVia'] = this.сurrency;
+    docOperation['AmountVia'] = this.Amount;
+    docOperation.f1 = docOperation['CashRegisterOUT'];
+    docOperation.f2 = docOperation['CashRegisterIN'];
+    docOperation.f2 = docOperation['SKU'];
+
   }
 
   async FillOperationВыдачаЗаймаКонтрагенту(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {

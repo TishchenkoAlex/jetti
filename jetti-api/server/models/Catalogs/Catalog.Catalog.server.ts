@@ -4,7 +4,7 @@ import { IServerDocument } from './../documents.factory.server';
 import { MSSQL } from '../../mssql';
 import { PropOptions, DocumentBase, DocumentOptions } from '../document';
 import { lib } from '../../std.lib';
-import { riseUpdateMetadataEvent, IDynamicMetadata } from '../Dynamic/dynamic.common';
+import { riseUpdateMetadataEvent, IDynamicProps } from '../Dynamic/dynamic.common';
 
 
 export class CatalogCatalogServer extends CatalogCatalog implements IServerDocument {
@@ -24,7 +24,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
 
   async beforeDelete(tx: MSSQL) { return this; }
 
-  async getDynamicMetadata(): Promise<IDynamicMetadata> {
+  async getDynamicMetadata(): Promise<IDynamicProps> {
     return { type: this.typeString, Prop: await this.getProp(), Props: await this.getProps() };
   }
 

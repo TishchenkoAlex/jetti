@@ -22,6 +22,7 @@ import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
 import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,8 +48,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
   pageSize$: Observable<number>;
   @ViewChild('tbl', { static: false }) tbl: Table;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
   get id() { return this.selection && this.selection[0] && this.selection[0].id; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; }
 
@@ -78,12 +79,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
 
-    if (!this.data && this.type) {
-      const DocMeta = await this.ds.api.getDocMetaByType(this.type);
-      this.data = { schema: DocMeta.Props, metadata: DocMeta.Prop as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
-    }
+    await this.prepareColumns();
 
-    this.columns = buildColumnDef(this.data.schema, this.settings);
     if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
 
     this.showTree = this.data.metadata.hierarchy === 'folders';
@@ -91,7 +88,6 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.showTreeButton = this.showTree;
 
     if (this.showTree) this.settings.filter.push({ left: 'isfolder', center: '=', right: false });
-    this.columns = [...this.columns.filter(c => !c.hidden)];
 
     const scrollHeight = () => window.innerHeight - 270;
 
@@ -112,7 +108,9 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
 
     this._docSubscription$ = merge(...[
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
-        filter(doc => doc && doc.type === this.type))
+        filter(doc => doc
+          && doc.type === this.type
+          && !!(!this.group || !doc['Group'] || this.group === doc['Group']['id'])))
       .subscribe(doc => {
         const exist = (this.dataSource.renderedData as DocumentBase[]).find(d => d.id === doc.id);
         if (exist) {
@@ -135,8 +133,20 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       });
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
-      .subscribe(event => this._update(event.col, event.event, event.center));
+      .subscribe(async event => await this._update(event.col, event.event, event.center));
     this.readonly = this.auth.isRoleAvailableReadonly();
+  }
+
+  private async prepareColumns() {
+
+    if (!this.data && this.type) {
+      const DocMeta = await this.ds.api.getDocMetaByType(this.type);
+      this.data = { schema: DocMeta.Props, metadata: DocMeta.Prop as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
+    }
+
+    this.columns = buildColumnDef(this.data.schema, this.settings);
+    this.columns = [...this.columns.filter(c => !c.hidden)];
+
   }
 
   private setFilters() {
@@ -155,15 +165,28 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _update(col: ColumnDef | undefined, event, center, id = null) {
+  private async _update(col: ColumnDef | undefined, event, center, id = null) {
     if (!col) return;
     if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
     this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+
+    if (col.field === 'Operation' && (Type.isOperation(this.type) || this.type === 'Document.Operation')) {
+      let type = 'Document.Operation';
+      if (event && event.id) type = await this.ds.api.getIndexedOperationType(event.id);
+      if (this.type !== type) {
+        this.type = type as DocTypes;
+        this.dataSource.type = this.type;
+        this.data = undefined;
+        await this.prepareColumns();
+      }
+    }
+
     this.id = id;
     this.prepareDataSource(this.multiSortMeta);
     if (this.id) this.goto(this.id);
     else this.last();
   }
+
   update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
       if (typeof event !== 'boolean') event = null;
@@ -199,7 +222,7 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Quick filter', icon: 'pi pi-search',
-        command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null, this.id)
+        command: async (event) => await this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null, this.id)
       },
       ...(this.data.metadata.copyTo || []).map(el => {
         const { label, icon } = el;
@@ -235,8 +258,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     this.router.navigate([this.selection[0].type, this.selection[0].id]);
   }
 
-  delete() {
-    this.selection.forEach(el => this.ds.delete(el.id));
+  async delete() {
+    for (const doc of this.selection) { await this.ds.delete(doc.id); }
   }
 
   async post(mode = 'post') {

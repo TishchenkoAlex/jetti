@@ -4,8 +4,8 @@ import { NextFunction, Request, Response } from 'express';
 import { DocumentBase, DocumentOptions, Ref } from '../../server/models/document';
 import { dateReviverUTC } from '../fuctions/dateReviver';
 import { SQLGenegator } from '../fuctions/SQLGenerator.MSSQL';
-import { DocListRequestBody, IViewModel, PatchValue, RefValue, Type } from '../models/common-types';
-import { createDocument, IFlatDocument, INoSqlDocument } from '../models/documents.factory';
+import { DocListRequestBody, IViewModel, RefValue } from '../models/common-types';
+import { createDocument, IFlatDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
 import { DocTypes } from '../models/documents.types';
 import { DocumentOperation } from '../models/Documents/Document.Operation';
@@ -19,6 +19,9 @@ import { SDB } from './middleware/db-sessions';
 import { User } from './user.settings';
 import { DocumentWorkFlowServer } from '../models/Documents/Document.WorkFlow.server';
 import { ColumnDef } from '../models/column';
+import { getIndexedOperationType } from '../models/indexedOperation';
+import { Global } from '../models/global';
+import { Type } from '../models/type';
 
 export const router = express.Router();
 
@@ -41,18 +44,16 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
     const params: { [key: string]: any } = req.body;
-    const email = User(req).email;
     const id: string | undefined = params.id;
     const type: DocTypes = params.type;
-    const Operation: string | undefined = req.query.Operation as string || undefined;
+    const Operation: string | undefined = req.query.Operation as string || params.operation as string || undefined;
     const isFolder: boolean = req.query.isfolder === 'true';
+    const Group = params.group ? params.group : Operation ? (await lib.util.getObjectPropertyById(Operation, 'Group', sdb)).id : null;
 
     let doc: IFlatDocument | DocumentOperation | null = null;
     if (id) doc = await lib.doc.byId(id, sdb);
     if (!doc) {
-      doc = Operation ?
-        { ...createDocument(type), Operation } :
-        createDocument(type);
+      doc = { ...createDocument(type), Operation, Group };
       doc!.isfolder = isFolder;
     }
     const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, sdb);
@@ -61,7 +62,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     let model = {};
     const settings = new FormListSettings();
-    const userID = await lib.doc.byCode('Catalog.User', email, sdb);
+    const userID = sdb.user.env.id;
 
     if (id) {
 
@@ -115,9 +116,10 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     const columnsDef = buildColumnDef(ServerDoc.Props(), settings);
     const metadata = ServerDoc.Prop() as DocumentOptions;
-    if (params.group) {
+    if (params.operation)
+      metadata['Operation'] = await lib.doc.formControlRef(params.operation, sdb);
+    else if (params.group)
       metadata['Group'] = await lib.doc.formControlRef(params.group, sdb);
-    }
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }
@@ -195,6 +197,10 @@ router.post('/save', async (req: Request, res: Response, next: NextFunction) => 
         const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
         if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
+        if (doc.ExchangeBase) {
+          serverDoc['ExchangeBase'] = doc.ExchangeBase;
+          serverDoc['ExchangeCode'] = doc.ExchangeCode;
+        }
         if (serverDoc.timestamp) {
           await updateDocument(serverDoc, tx);
           if (serverDoc.posted && serverDoc.isDoc) {
@@ -301,18 +307,31 @@ router.get('/getObjectPropertyById/:id/:valuePath', async (req: Request, res: Re
 
 router.get('/getDocMetaByType/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const doc = createDocument(req.params.type as any);
-    res.json({ Prop: doc.Prop(), Props: doc.Props() });
+    const doc = Global.configSchema().get(req.params.type as any)!.doc;
+    res.json({ Prop: doc!.Prop(), Props: doc!.Props() });
+  } catch (err) { next(err); }
+});
+
+router.get('/getIndexedOperationType/:operationId', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const indexedType = getIndexedOperationType(req.params.operationId);
+    res.json(indexedType || 'Document.Operation');
   } catch (err) { next(err); }
 });
 
 router.post('/getDocPropValuesByType', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { type, propNames } = req.body;
-    const prop = createDocument(type).Prop();
-    const propValues = propNames
-      .filter(propName => Object.keys(prop).find(existProp => existProp === propName))
-      .map(key => ({ propName: key, propValue: prop[key] }));
+    let propValues = [];
+    if (type) {
+      const cs = Global.configSchema().get(type as any);
+      if (cs && cs.Prop) {
+        const prop = cs.Prop;
+        propValues = propNames
+          .filter(propName => Object.keys(prop).find(existProp => existProp === propName))
+          .map(key => ({ propName: key, propValue: prop[key] }));
+      }
+    }
     res.json(propValues);
   } catch (err) { next(err); }
 });
@@ -488,7 +507,7 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
     const sdb = SDB(req);
     await sdb.tx(async tx => {
       const ob = await lib.doc.byId(req.params.id, tx);
-      const isCatalog = Type.isCatalog(ob?.type as any);
+      const isCatalog = Type.isCatalog(ob!.type as any);
       const firstLimit = isCatalog ? 20 : 0;
 
       const getQueryText = (DocSelectText: string) => `

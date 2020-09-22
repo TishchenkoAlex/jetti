@@ -1,13 +1,14 @@
 import { DocTypes } from './../models/documents.types';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { ISuggest, Type } from '../models/common-types';
+import { ISuggest } from '../models/common-types';
 import { SDB } from './middleware/db-sessions';
 import { FormListFilter } from '../models/user.settings';
 import { filterBuilder } from '../fuctions/filterBuilder';
 import { createTypes, allTypes } from '../models/Types/Types.factory';
 import { createDocument } from '../models/documents.factory';
 import { DocumentOptions } from '../models/document';
+import { Type } from '../models/type';
 
 export const router = express.Router();
 
