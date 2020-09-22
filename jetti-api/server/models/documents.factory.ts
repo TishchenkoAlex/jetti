@@ -109,8 +109,8 @@ export interface INoSqlDocument {
   parent: Ref;
   info: string;
   timestamp: Date;
-  ExchangeCode: string;
-  ExchangeBase: string;
+  ExchangeCode?: string;
+  ExchangeBase?: string;
   doc: { [x: string]: any };
   docByKeys?: { key: string, value: any }[];
 }
@@ -129,8 +129,8 @@ export interface IFlatDocument {
   parent: Ref;
   info: string;
   timestamp: Date | null;
-  ExchangeCode: string;
-  ExchangeBase: string;
+  ExchangeCode?: string;
+  ExchangeBase?: string;
 }
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {

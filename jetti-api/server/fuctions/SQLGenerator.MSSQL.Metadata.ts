@@ -285,7 +285,7 @@ export class SQLGenegatorMetadata {
     DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
     ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
     for (const catalog of RegisteredDocument().filter(d => d.type.includes('Document.'))) {
@@ -293,7 +293,7 @@ export class SQLGenegatorMetadata {
     DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
     ON [dbo].[Documents]([date],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
     return select;

@@ -86,7 +86,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.info, d.timestamp,
-      d.ExchangeCode, d.ExchangeBase,
+      
       "company".id "company.id",
       "company".description "company.value",
       "company".code "company.code",
@@ -206,7 +206,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.info, d.timestamp,
-      d.ExchangeCode, d.ExchangeBase,
+      
 
       "company".id "company.id",
       "company".description "company.value",
@@ -289,7 +289,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT
-        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp, d.ExchangeCode, d.ExchangeBase
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
@@ -333,7 +333,7 @@ export class SQLGenegator {
 
     let query = `
       SELECT
-        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp, d.ExchangeCode, d.ExchangeBase
+        d.id, d.type, d.date, d.code, d.description, d.posted, d.deleted, d.isfolder, d.timestamp
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"`;
