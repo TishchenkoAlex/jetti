@@ -3,17 +3,17 @@ import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './mo
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
-import { RefValue, Type } from './models/common-types';
+import { RefValue } from './models/common-types';
 import { configSchema } from './models/config';
 import { DocumentBase, Ref } from './models/document';
 import { createDocument, IFlatDocument, INoSqlDocument } from './models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { DocTypes, CatalogTypes, AllDocTypes } from './models/documents.types';
+import { DocTypes, AllDocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
 import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -26,6 +26,7 @@ import * as xml2js from 'xml2js';
 import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
+import { Type } from './models/type';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -48,14 +49,14 @@ export interface JTL {
     historyById: (id: Ref, tx: MSSQL) => Promise<IFlatDocument | null>;
     findDocumentByKey: (searchKey: { key: string, value?: any }[], tx: MSSQL) => Promise<IFlatDocument[] | null>
     findDocumentByProps: <T>(
-      type: CatalogTypes,
-      propsFilter: { propKey: string, propValue: any }[],
+      type: AllDocTypes,
+      propsFilter: { [key: string]: any },
       tx: MSSQL,
       options?: {
         matching?: 'OR' | 'AND',
-        selectedFields?: string[],
+        selectedFields?: string,
         first?: number,
-        order?: string[],
+        order?: string,
         excludeDeleted?: boolean
       }
     ) => Promise<T[]>;
@@ -69,7 +70,12 @@ export interface JTL {
     createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
     createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
     createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
-    saveDoc: (servDoc: DocumentBaseServer, tx: MSSQL, queuePostFlow?: Number) => Promise<DocumentBaseServer>
+    saveDoc: (
+      servDoc: DocumentBaseServer,
+      tx: MSSQL,
+      queuePostFlow?: number,
+      opts?: IUpdateInsertDocumentOptions
+    ) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
@@ -80,8 +86,28 @@ export interface JTL {
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
+  accum: {
+    balance: <T>(
+      registerName: string,
+      date: Date,
+      fields: string,
+      groupBy: string,
+      filter: { [key: string]: any },
+      topRows?: number
+    ) => Promise<T[] | null>,
+    turnover: <T>(
+      registerName: string,
+      period: { begin: Date, end: Date },
+      fields: string,
+      groupBy: string,
+      filter: { [key: string]: any },
+      topRows?: number
+    ) => Promise<T[] | null>,
+
+  };
   meta: {
     updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
+    updateSQLViewsByOperationId: (id: string) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     getTX: () => MSSQL
   };
@@ -97,8 +123,9 @@ export interface JTL {
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
+    // currentUser: () => Promise<void>,
     getUserRoles: (user: CatalogUser) => Promise<string[]>,
-    isRoleAvailable: (role: string, user: CatalogUser) => Promise<boolean>,
+    isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
     closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
     GUID: () => Promise<string>,
     getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
@@ -159,12 +186,17 @@ export const lib: JTL = {
   },
   meta: {
     updateSQLViewsByType,
+    updateSQLViewsByOperationId,
     riseUpdateMetadataEvent,
     getTX
   },
   info: {
     sliceLast,
     exchangeRate
+  },
+  accum: {
+    balance: accumBalance,
+    turnover
   },
   util: {
     formatDate,
@@ -271,49 +303,41 @@ async function findDocumentByKey(searchKey: { key: string, value?: any }[], tx: 
 }
 
 async function findDocumentByProps<T>(
-  type: CatalogTypes,
-  propsFilter: { propKey: string, propValue: any }[],
+  type: AllDocTypes,
+  propsFilter: { [key: string]: any },
   tx: MSSQL,
-  options: {
+  options?: {
     matching?: 'OR' | 'AND',
-    selectedFields?: string[],
+    selectedFields?: string,
     first?: number,
-    order?: string[],
+    order?: string,
     excludeDeleted?: boolean
   }): Promise<T[]> {
 
-  if (!propsFilter.length) return [];
+  if (!Object.keys(propsFilter).length) return [];
 
   const {
     matching = 'AND',
-    selectedFields = ['id, description'],
+    selectedFields = 'id, description',
     first = 0,
-    order = ['description'],
+    order = 'description',
     excludeDeleted = false
-  } = options;
+  } = options || {};
 
-  const fieldsQ = selectedFields
-    .map(e => `${e.trim()}`)
-    .join(`, \n`);
-
-  const filterQ = propsFilter
-    .map(e => `${e.propKey} = @p${propsFilter.indexOf(e) + 1} `)
+  const filterQ = Object.keys(propsFilter)
+    .map((key, index) => `${key} = @p${++index} `)
     .join(` ${matching} \n`);
-
-  const orderQ = order
-    .map(e => `${e} `)
-    .join(`, \n`);
 
   const query = `
   SELECT DISTINCT ${first ? 'TOP ' + first : ''}
-  ${fieldsQ}
-  FROM[dbo].[${ type}.v]
+  ${selectedFields}
+  FROM [dbo].[${type}.v]
   WHERE 1 = 1 AND
   ${excludeDeleted ? 'deleted = 0 AND' : ''}
   (${filterQ})
-  ORDER BY ${ orderQ} `;
+  ORDER BY ${order} `;
 
-  return await tx.manyOrNone<T>(query, propsFilter.map(e => e.propValue));
+  return await tx.manyOrNone<T>(query, Object.values(propsFilter));
 
 }
 
@@ -415,10 +439,11 @@ export function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {
 }
 
 async function docPrefix(type: DocTypes, tx: MSSQL): Promise<string> {
-  const metadata = configSchema().get(type);
+  const sqType = Type.isOperation(type) ? 'Document.Operation' : type;
+  const metadata = configSchema().get(sqType);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
-    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${type}"), '0000000000') result `;
+    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${sqType}"), '0000000000') result `;
     const result = await tx.oneOrNone<{ result: string }>(queryText);
     return result ? result.result : '';
   }
@@ -515,6 +540,68 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   return result;
 }
 
+async function accumBalance<T>(
+  registerName: string,
+  date: Date,
+  fields: string,
+  groupBy: string,
+  filter: { [key: string]: any },
+  topRows?: number
+): Promise<T[] | null> {
+
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 2}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
+  const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
+  const params = Object.values(filter);
+
+  const queryText = `
+    SELECT TOP ${topRows || 1000}
+    ${groupBy},
+    ${select}
+    FROM [Register.Accumulation.${registerName}]
+    WHERE
+      date <= @p1
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+    HAVING ${having}`;
+
+  const tx = x100.util.x100DataDB();
+  const result = await tx.manyOrNone<T>(queryText, [date, ...params]);
+  return result;
+
+}
+
+async function turnover<T>(
+  registerName: string,
+  period: { begin: Date, end: Date },
+  fields: string,
+  groupBy: string,
+  filter: { [key: string]: any },
+  topRows?: number
+): Promise<T[] | null> {
+
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 3}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
+  const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
+  const params = Object.values(filter);
+
+  const queryText = `
+    SELECT TOP ${topRows || 1000}
+      ${groupBy},
+      ${select}
+    FROM [Register.Accumulation.${registerName}]
+    WHERE
+      date BETWEEN @p1 AND @p2
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+      HAVING ${having}`;
+
+  const tx = x100.util.x100DataDB();
+  const result = await tx.manyOrNone<T>(queryText, [period.begin, period.end, ...params]);
+  return result;
+
+}
+
 export async function postById(id: Ref, tx: MSSQL) {
   await lib.util.adminMode(true, tx);
   try {
@@ -570,6 +657,21 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
     ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+  ];
+  // console.log(queries);
+  for (const querText of queries) {
+    try {
+      await tx.none(`execute sp_executesql @p1`, [querText]);
+    } catch (error) {
+      if (queries.indexOf(querText)) throw new Error(error);
+    }
+  }
+}
+async function updateSQLViewsByOperationId(id: string): Promise<void> {
+  const tx = getTX();
+  const queries = [
+    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true),
+    ...await SQLGenegatorMetadata.CreateViewOperations([id], true)
   ];
   // console.log(queries);
   for (const querText of queries) {
@@ -678,16 +780,16 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
   const keys = Object.keys(new CatalogAttachment);
   const result: any[] = [];
   let userId = '';
-  const getCurrentUserIdByMail = async () => {
-    return await byCode('Catalog.User', tx.user.email, tx);
-  };
+  // const getCurrentUserIdByMail = async () => {
+  //   return await byCode('Catalog.User', tx.user.email, tx);
+  // };
   for (const attachment of attachments) {
     if (!attachment.owner) throw new Error('Attachment owner is empty!');
     let ob;
     if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
-      if (!userId) userId = await getCurrentUserIdByMail() as string;
+      if (!userId) userId = tx.user.env.id;
       ob.user = userId;
       ob.date = new Date;
       ob.company = (await byId(attachment.owner, tx))!.company;
@@ -827,8 +929,8 @@ async function getUserRoles(user: CatalogUser): Promise<string[]> {
   return (await getUserPermissions(user)).Roles;
 }
 
-async function isRoleAvailable(role: string, user: CatalogUser): Promise<boolean> {
-  return !!(await getUserPermissions(user)).Roles.filter(e => e === role).length;
+async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
+  return tx && tx.user && tx.user.roles && tx.user.roles && tx.user.roles.includes(role);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {

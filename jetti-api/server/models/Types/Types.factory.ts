@@ -16,6 +16,7 @@ import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpa
 import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
 import { RegisteredDocument, createDocument } from '../documents.factory';
 import { DocumentOptions } from '../document';
+import { Type } from '../type';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -23,10 +24,11 @@ export interface IRegisteredTypes {
 }
 
 export function allTypes(): { type: AllTypes, description: string }[] {
-  return [...documentsTypes(),
-  ...simpleTypes(),
-  ...RegisteredTypes
-    .map(el => ({ type: el.type, description: el.type }))];
+  return [
+    ...documentsTypes(),
+    ...simpleTypes(),
+    ...RegisteredTypes.map(e => ({ type: e.type as any, description: e.type as string }))
+  ];
 }
 
 export function documentsTypes(): { type: AllTypes, description: string }[] {
@@ -53,6 +55,12 @@ export function simpleTypes(): { type: AllTypes, description: string, defaultVal
   result.push({ type: 'URL', description: 'URL', defaultValue: '' });
 
   return result;
+}
+
+export function defaultTypeValue(type: any) {
+  if (Type.isRefType(type)) return null;
+  const simple = simpleTypes().find(e => e.type === type);
+  return simple ? simple.defaultValue : null;
 }
 
 export function createTypes(type: ComplexTypes): TypesBase {

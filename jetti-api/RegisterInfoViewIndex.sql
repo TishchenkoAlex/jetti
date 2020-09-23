@@ -1,4 +1,6 @@
 
+------------------------------ BEGIN Register.Info.Dynamic ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.Dynamic]
     WITH SCHEMABINDING
     AS
@@ -13,6 +15,10 @@
     )
     GO
     
+------------------------------ END Register.Info.Dynamic ------------------------------
+
+------------------------------ BEGIN Register.Info.Holiday ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.Holiday]
     WITH SCHEMABINDING
     AS
@@ -29,6 +35,10 @@
     )
     GO
     
+------------------------------ END Register.Info.Holiday ------------------------------
+
+------------------------------ BEGIN Register.Info.PriceList ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.PriceList]
     WITH SCHEMABINDING
     AS
@@ -54,6 +64,10 @@
     )
     GO
     
+------------------------------ END Register.Info.PriceList ------------------------------
+
+------------------------------ BEGIN Register.Info.SelfEmployed ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.SelfEmployed]
     WITH SCHEMABINDING
     AS
@@ -72,6 +86,10 @@
     )
     GO
     
+------------------------------ END Register.Info.SelfEmployed ------------------------------
+
+------------------------------ BEGIN Register.Info.ProductModifier ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.ProductModifier]
     WITH SCHEMABINDING
     AS
@@ -90,6 +108,10 @@
     )
     GO
     
+------------------------------ END Register.Info.ProductModifier ------------------------------
+
+------------------------------ BEGIN Register.Info.SettlementsReconciliation ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.SettlementsReconciliation]
     WITH SCHEMABINDING
     AS
@@ -117,6 +139,10 @@
     )
     GO
     
+------------------------------ END Register.Info.SettlementsReconciliation ------------------------------
+
+------------------------------ BEGIN Register.Info.ExchangeRates ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.ExchangeRates]
     WITH SCHEMABINDING
     AS
@@ -134,6 +160,10 @@
     )
     GO
     
+------------------------------ END Register.Info.ExchangeRates ------------------------------
+
+------------------------------ BEGIN Register.Info.ExchangeRates.National ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.ExchangeRates.National]
     WITH SCHEMABINDING
     AS
@@ -153,6 +183,10 @@
     )
     GO
     
+------------------------------ END Register.Info.ExchangeRates.National ------------------------------
+
+------------------------------ BEGIN Register.Info.ProductSpecificationByDepartment ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.ProductSpecificationByDepartment]
     WITH SCHEMABINDING
     AS
@@ -172,6 +206,10 @@
     )
     GO
     
+------------------------------ END Register.Info.ProductSpecificationByDepartment ------------------------------
+
+------------------------------ BEGIN Register.Info.Settings ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.Settings]
     WITH SCHEMABINDING
     AS
@@ -188,6 +226,10 @@
     )
     GO
     
+------------------------------ END Register.Info.Settings ------------------------------
+
+------------------------------ BEGIN Register.Info.Depreciation ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.Depreciation]
     WITH SCHEMABINDING
     AS
@@ -208,6 +250,10 @@
     )
     GO
     
+------------------------------ END Register.Info.Depreciation ------------------------------
+
+------------------------------ BEGIN Register.Info.RLS.Period ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.RLS.Period]
     WITH SCHEMABINDING
     AS
@@ -224,6 +270,10 @@
     )
     GO
     
+------------------------------ END Register.Info.RLS.Period ------------------------------
+
+------------------------------ BEGIN Register.Info.RLS ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.RLS]
     WITH SCHEMABINDING
     AS
@@ -239,6 +289,10 @@
     )
     GO
     
+------------------------------ END Register.Info.RLS ------------------------------
+
+------------------------------ BEGIN Register.Info.BudgetItemRule ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.BudgetItemRule]
     WITH SCHEMABINDING
     AS
@@ -256,6 +310,10 @@
     )
     GO
     
+------------------------------ END Register.Info.BudgetItemRule ------------------------------
+
+------------------------------ BEGIN Register.Info.IntercompanyHistory ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.IntercompanyHistory]
     WITH SCHEMABINDING
     AS
@@ -271,6 +329,10 @@
     )
     GO
     
+------------------------------ END Register.Info.IntercompanyHistory ------------------------------
+
+------------------------------ BEGIN Register.Info.DepartmentCompanyHistory ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.DepartmentCompanyHistory]
     WITH SCHEMABINDING
     AS
@@ -289,6 +351,10 @@
     )
     GO
     
+------------------------------ END Register.Info.DepartmentCompanyHistory ------------------------------
+
+------------------------------ BEGIN Register.Info.DepartmentStatus ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.DepartmentStatus]
     WITH SCHEMABINDING
     AS
@@ -308,6 +374,10 @@
     )
     GO
     
+------------------------------ END Register.Info.DepartmentStatus ------------------------------
+
+------------------------------ BEGIN Register.Info.CounterpartiePriceList ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.CounterpartiePriceList]
     WITH SCHEMABINDING
     AS
@@ -334,6 +404,10 @@
     )
     GO
     
+------------------------------ END Register.Info.CounterpartiePriceList ------------------------------
+
+------------------------------ BEGIN Register.Info.CompanyResponsiblePersons ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.CompanyResponsiblePersons]
     WITH SCHEMABINDING
     AS
@@ -353,6 +427,10 @@
     )
     GO
     
+------------------------------ END Register.Info.CompanyResponsiblePersons ------------------------------
+
+------------------------------ BEGIN Register.Info.IncomeDocumentRegistry ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.IncomeDocumentRegistry]
     WITH SCHEMABINDING
     AS
@@ -377,6 +455,10 @@
     )
     GO
     
+------------------------------ END Register.Info.IncomeDocumentRegistry ------------------------------
+
+------------------------------ BEGIN Register.Info.CompanyPrice ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.CompanyPrice]
     WITH SCHEMABINDING
     AS
@@ -393,6 +475,10 @@
     )
     GO
     
+------------------------------ END Register.Info.CompanyPrice ------------------------------
+
+------------------------------ BEGIN Register.Info.ShareEmission ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.ShareEmission]
     WITH SCHEMABINDING
     AS
@@ -410,6 +496,10 @@
     )
     GO
     
+------------------------------ END Register.Info.ShareEmission ------------------------------
+
+------------------------------ BEGIN Register.Info.LoanOwner ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.LoanOwner]
     WITH SCHEMABINDING
     AS
@@ -426,6 +516,10 @@
     )
     GO
     
+------------------------------ END Register.Info.LoanOwner ------------------------------
+
+------------------------------ BEGIN Register.Info.RoyaltySales ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
     WITH SCHEMABINDING
     AS
@@ -444,6 +538,10 @@
     )
     GO
     
+------------------------------ END Register.Info.RoyaltySales ------------------------------
+
+------------------------------ BEGIN Register.Info.EmployeeHistory ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.EmployeeHistory]
     WITH SCHEMABINDING
     AS
@@ -466,6 +564,10 @@
     )
     GO
     
+------------------------------ END Register.Info.EmployeeHistory ------------------------------
+
+------------------------------ BEGIN Register.Info.TaxCheck ------------------------------
+
     CREATE OR ALTER VIEW [Register.Info.TaxCheck]
     WITH SCHEMABINDING
     AS
@@ -486,3 +588,4 @@
     )
     GO
     
+------------------------------ END Register.Info.TaxCheck ------------------------------

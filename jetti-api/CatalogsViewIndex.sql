@@ -1,11 +1,14 @@
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Sample ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Sample.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Sample.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SampleField"')), '') [SampleField]
       FROM dbo.[Documents]
@@ -13,6 +16,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Sample.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Sample.v] ON [Catalog.Sample.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Sample.v.code.f] ON [Catalog.Sample.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Sample.v.description.f] ON [Catalog.Sample.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -25,21 +29,65 @@ GRANT SELECT ON dbo.[Catalog.Sample.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Sample.v];
+      
+------------------------------ END Catalog.Sample ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
+
+        BEGIN TRY
+        ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ResponsibilityCenter.v];
+        END TRY
+        BEGIN CATCH
+        END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
+      FROM dbo.[Documents]
+      WHERE [type] = 'Catalog.ResponsibilityCenter'
+    ;
+GO
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ResponsibilityCenter.v] ON [Catalog.ResponsibilityCenter.v](id);
+      
+      
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.code.f] ON [Catalog.ResponsibilityCenter.v](parent,isfolder,code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.description.f] ON [Catalog.ResponsibilityCenter.v](parent,isfolder,description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.description] ON [Catalog.ResponsibilityCenter.v](description,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.code] ON [Catalog.ResponsibilityCenter.v](code,id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.user] ON [Catalog.ResponsibilityCenter.v]([user],id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.company] ON [Catalog.ResponsibilityCenter.v](company,id) INCLUDE([date]);
+GO
+GRANT SELECT ON dbo.[Catalog.ResponsibilityCenter.v] TO jetti;
+GO
+ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ResponsibilityCenter.v];
+      
+------------------------------ END Catalog.ResponsibilityCenter ------------------------------
+
+GO
+
+------------------------------ BEGIN Catalog.Dynamic ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Dynamic.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Dynamic.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Dynamic'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Dynamic.v] ON [Catalog.Dynamic.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Dynamic.v.code.f] ON [Catalog.Dynamic.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Dynamic.v.description.f] ON [Catalog.Dynamic.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -52,15 +100,21 @@ GRANT SELECT ON dbo.[Catalog.Dynamic.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Dynamic.v];
+      
+------------------------------ END Catalog.Dynamic ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Attachment ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Attachment.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."AttachmentType"')) [AttachmentType]
@@ -75,6 +129,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.v] ON [Catalog.Attachment.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.code.f] ON [Catalog.Attachment.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.description.f] ON [Catalog.Attachment.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.description] ON [Catalog.Attachment.v](description,id) INCLUDE([company]);
@@ -86,15 +141,21 @@ GRANT SELECT ON dbo.[Catalog.Attachment.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.v];
+      
+------------------------------ END Catalog.Attachment ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Attachment.Type.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."AllDocuments"')), 0) [AllDocuments]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."AllCatalogs"')), 0) [AllCatalogs]
@@ -110,6 +171,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.Type.v] ON [Catalog.Attachment.Type.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.code.f] ON [Catalog.Attachment.Type.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.description.f] ON [Catalog.Attachment.Type.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.description] ON [Catalog.Attachment.Type.v](description,id) INCLUDE([company]);
@@ -121,15 +183,21 @@ GRANT SELECT ON dbo.[Catalog.Attachment.Type.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.Type.v];
+      
+------------------------------ END Catalog.Attachment.Type ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AllUnic.Lot.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.SalesStartDate'),127) [SalesStartDate]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Cost"')), 0) [Cost]
@@ -140,6 +208,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.AllUnic.Lot.v] ON [Catalog.AllUnic.Lot.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.code.f] ON [Catalog.AllUnic.Lot.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.description.f] ON [Catalog.AllUnic.Lot.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -152,15 +221,21 @@ GRANT SELECT ON dbo.[Catalog.AllUnic.Lot.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AllUnic.Lot.v];
+      
+------------------------------ END Catalog.AllUnic.Lot ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Account ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Account.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isForex"')), 0) [isForex]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
@@ -170,6 +245,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Account.v] ON [Catalog.Account.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code.f] ON [Catalog.Account.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.description.f] ON [Catalog.Account.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -182,15 +258,21 @@ GRANT SELECT ON dbo.[Catalog.Account.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Account.v];
+      
+------------------------------ END Catalog.Account ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Balance ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Balance.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isPassive"')), 0) [isPassive]
@@ -199,6 +281,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.v] ON [Catalog.Balance.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.code.f] ON [Catalog.Balance.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.description.f] ON [Catalog.Balance.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -211,21 +294,28 @@ GRANT SELECT ON dbo.[Catalog.Balance.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.v];
+      
+------------------------------ END Catalog.Balance ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Balance.Analytics.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Balance.Analytics'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.Analytics.v] ON [Catalog.Balance.Analytics.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.code.f] ON [Catalog.Balance.Analytics.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.description.f] ON [Catalog.Balance.Analytics.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -238,15 +328,21 @@ GRANT SELECT ON dbo.[Catalog.Balance.Analytics.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.Analytics.v];
+      
+------------------------------ END Catalog.Balance.Analytics ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.BankAccount ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BankAccount.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
@@ -257,6 +353,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BankAccount.v] ON [Catalog.BankAccount.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.code.f] ON [Catalog.BankAccount.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.description.f] ON [Catalog.BankAccount.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -269,21 +366,28 @@ GRANT SELECT ON dbo.[Catalog.BankAccount.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BankAccount.v];
+      
+------------------------------ END Catalog.BankAccount ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.CashFlow ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.CashFlow.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashFlow.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.CashFlow'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.CashFlow.v] ON [Catalog.CashFlow.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.code.f] ON [Catalog.CashFlow.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.description.f] ON [Catalog.CashFlow.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -296,15 +400,21 @@ GRANT SELECT ON dbo.[Catalog.CashFlow.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashFlow.v];
+      
+------------------------------ END Catalog.CashFlow ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.CashRegister ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.CashRegister.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
@@ -314,6 +424,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.CashRegister.v] ON [Catalog.CashRegister.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.code.f] ON [Catalog.CashRegister.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.description.f] ON [Catalog.CashRegister.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -326,15 +437,21 @@ GRANT SELECT ON dbo.[Catalog.CashRegister.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashRegister.v];
+      
+------------------------------ END Catalog.CashRegister ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Currency ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Currency.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
       FROM dbo.[Documents]
@@ -342,6 +459,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Currency.v] ON [Catalog.Currency.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.code.f] ON [Catalog.Currency.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.description.f] ON [Catalog.Currency.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -354,15 +472,21 @@ GRANT SELECT ON dbo.[Catalog.Currency.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Currency.v];
+      
+------------------------------ END Catalog.Currency ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Company ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Company.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
@@ -371,6 +495,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Intercompany"')) [Intercompany]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressShipping"')), '') [AddressShipping]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressBilling"')), '') [AddressBilling]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
@@ -387,6 +512,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.v] ON [Catalog.Company.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.code.f] ON [Catalog.Company.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.description.f] ON [Catalog.Company.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.description] ON [Catalog.Company.v](description,id) INCLUDE([company]);
@@ -398,15 +524,21 @@ GRANT SELECT ON dbo.[Catalog.Company.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.v];
+      
+------------------------------ END Catalog.Company ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Company.Group ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Company.Group.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
       FROM dbo.[Documents]
@@ -414,6 +546,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.Group.v] ON [Catalog.Company.Group.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.Group.v.code.f] ON [Catalog.Company.Group.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.Group.v.description.f] ON [Catalog.Company.Group.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -426,15 +559,21 @@ GRANT SELECT ON dbo.[Catalog.Company.Group.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.Group.v];
+      
+------------------------------ END Catalog.Company.Group ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Country ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Country.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
       FROM dbo.[Documents]
@@ -442,6 +581,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Country.v] ON [Catalog.Country.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Country.v.code.f] ON [Catalog.Country.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Country.v.description.f] ON [Catalog.Country.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -454,15 +594,21 @@ GRANT SELECT ON dbo.[Catalog.Country.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Country.v];
+      
+------------------------------ END Catalog.Country ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Counterpartie ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Counterpartie.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
@@ -484,6 +630,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.v] ON [Catalog.Counterpartie.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code.f] ON [Catalog.Counterpartie.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description.f] ON [Catalog.Counterpartie.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description] ON [Catalog.Counterpartie.v](description,id) INCLUDE([company]);
@@ -495,15 +642,21 @@ GRANT SELECT ON dbo.[Catalog.Counterpartie.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.v];
+      
+------------------------------ END Catalog.Counterpartie ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Counterpartie.BankAccount.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
@@ -516,6 +669,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDIN
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v] ON [Catalog.Counterpartie.BankAccount.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.code.f] ON [Catalog.Counterpartie.BankAccount.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.description.f] ON [Catalog.Counterpartie.BankAccount.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.description] ON [Catalog.Counterpartie.BankAccount.v](description,id) INCLUDE([company]);
@@ -527,15 +681,21 @@ GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.BankAccount.v];
+      
+------------------------------ END Catalog.Counterpartie.BankAccount ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Contract ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Contract.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
@@ -564,6 +724,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.v] ON [Catalog.Contract.v](id);
+      CREATE        NONCLUSTERED INDEX[Catalog.Contract.v.owner] ON [Catalog.Contract.v]([owner]) INCLUDE([company]);
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.code.f] ON [Catalog.Contract.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.description.f] ON [Catalog.Contract.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -576,15 +737,21 @@ GRANT SELECT ON dbo.[Catalog.Contract.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.v];
+      
+------------------------------ END Catalog.Contract ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Contract.Intercompany.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."KorrCompany"')) [KorrCompany]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
@@ -601,6 +768,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.Intercompany.v] ON [Catalog.Contract.Intercompany.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.code.f] ON [Catalog.Contract.Intercompany.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.description.f] ON [Catalog.Contract.Intercompany.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.description] ON [Catalog.Contract.Intercompany.v](description,id) INCLUDE([company]);
@@ -612,21 +780,28 @@ GRANT SELECT ON dbo.[Catalog.Contract.Intercompany.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.Intercompany.v];
+      
+------------------------------ END Catalog.Contract.Intercompany ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BusinessDirection.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.BusinessDirection'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessDirection.v] ON [Catalog.BusinessDirection.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.code.f] ON [Catalog.BusinessDirection.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.description.f] ON [Catalog.BusinessDirection.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -639,15 +814,21 @@ GRANT SELECT ON dbo.[Catalog.BusinessDirection.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessDirection.v];
+      
+------------------------------ END Catalog.BusinessDirection ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Salary.Analytics.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SalaryKind"')), '') [SalaryKind]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
@@ -656,6 +837,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Salary.Analytics.v] ON [Catalog.Salary.Analytics.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Salary.Analytics.v.code.f] ON [Catalog.Salary.Analytics.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Salary.Analytics.v.description.f] ON [Catalog.Salary.Analytics.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -668,18 +850,25 @@ GRANT SELECT ON dbo.[Catalog.Salary.Analytics.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Salary.Analytics.v];
+      
+------------------------------ END Catalog.Salary.Analytics ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Department ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessRegion"')) [BusinessRegion]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDate'),127) [OpeningDate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ClosingDate'),127) [ClosingDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
@@ -687,7 +876,10 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PriceType"')) [PriceType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."kind"')) [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Mail"')), '') [Mail]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressLegal"')), '') [AddressLegal]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Longitude"')), '') [Longitude]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Latitude"')), '') [Latitude]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."IntegrationType"')), '') [IntegrationType]
@@ -696,6 +888,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.v] ON [Catalog.Department.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.code.f] ON [Catalog.Department.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.description.f] ON [Catalog.Department.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -708,21 +901,28 @@ GRANT SELECT ON dbo.[Catalog.Department.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.v];
+      
+------------------------------ END Catalog.Department ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Department.Kind ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.Kind.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Department.Kind'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Kind.v] ON [Catalog.Department.Kind.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Kind.v.code.f] ON [Catalog.Department.Kind.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Kind.v.description.f] ON [Catalog.Department.Kind.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -735,23 +935,32 @@ GRANT SELECT ON dbo.[Catalog.Department.Kind.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Kind.v];
+      
+------------------------------ END Catalog.Department.Kind ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Department.Company ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.Company.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SecurityGroup"')), '') [SecurityGroup]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."StaffingPositionManager"')) [StaffingPositionManager]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Department.Company'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Company.v] ON [Catalog.Department.Company.v](id);
+      CREATE        NONCLUSTERED INDEX[Catalog.Department.Company.v.isfolder] ON [Catalog.Department.Company.v]([isfolder]) INCLUDE([company]);
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code.f] ON [Catalog.Department.Company.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.description.f] ON [Catalog.Department.Company.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -764,21 +973,28 @@ GRANT SELECT ON dbo.[Catalog.Department.Company.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Company.v];
+      
+------------------------------ END Catalog.Department.Company ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.StatusReason.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Department.StatusReason'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.StatusReason.v] ON [Catalog.Department.StatusReason.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.StatusReason.v.code.f] ON [Catalog.Department.StatusReason.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.StatusReason.v.description.f] ON [Catalog.Department.StatusReason.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -791,15 +1007,21 @@ GRANT SELECT ON dbo.[Catalog.Department.StatusReason.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.StatusReason.v];
+      
+------------------------------ END Catalog.Department.StatusReason ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Expense ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Expense.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
@@ -809,6 +1031,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.v] ON [Catalog.Expense.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.code.f] ON [Catalog.Expense.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.description.f] ON [Catalog.Expense.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -821,15 +1044,21 @@ GRANT SELECT ON dbo.[Catalog.Expense.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.v];
+      
+------------------------------ END Catalog.Expense ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Expense.Analytics.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
       FROM dbo.[Documents]
@@ -837,6 +1066,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.Analytics.v] ON [Catalog.Expense.Analytics.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.code.f] ON [Catalog.Expense.Analytics.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.description.f] ON [Catalog.Expense.Analytics.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -849,15 +1079,21 @@ GRANT SELECT ON dbo.[Catalog.Expense.Analytics.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.Analytics.v];
+      
+------------------------------ END Catalog.Expense.Analytics ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Income ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Income.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
@@ -867,6 +1103,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Income.v] ON [Catalog.Income.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.code.f] ON [Catalog.Income.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.description.f] ON [Catalog.Income.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -879,15 +1116,21 @@ GRANT SELECT ON dbo.[Catalog.Income.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Income.v];
+      
+------------------------------ END Catalog.Income ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Loan ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Loan.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDay'),127) [PayDay]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CloseDay'),127) [CloseDay]
@@ -911,6 +1154,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Loan.v] ON [Catalog.Loan.v](id);
+      CREATE        NONCLUSTERED INDEX[Catalog.Loan.v.owner] ON [Catalog.Loan.v]([owner]) INCLUDE([company]);
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.code.f] ON [Catalog.Loan.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.description.f] ON [Catalog.Loan.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -923,21 +1167,28 @@ GRANT SELECT ON dbo.[Catalog.Loan.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Loan.v];
+      
+------------------------------ END Catalog.Loan ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.LoanRepaymentProcedure.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.LoanRepaymentProcedure'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v] ON [Catalog.LoanRepaymentProcedure.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v.code.f] ON [Catalog.LoanRepaymentProcedure.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v.description.f] ON [Catalog.LoanRepaymentProcedure.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -950,15 +1201,21 @@ GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanRepaymentProcedure.v];
+      
+------------------------------ END Catalog.LoanRepaymentProcedure ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.LoanTypes ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.LoanTypes.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Balance"')) [Balance]
       FROM dbo.[Documents]
@@ -966,6 +1223,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanTypes.v] ON [Catalog.LoanTypes.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.code.f] ON [Catalog.LoanTypes.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.description.f] ON [Catalog.LoanTypes.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -978,15 +1236,21 @@ GRANT SELECT ON dbo.[Catalog.LoanTypes.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanTypes.v];
+      
+------------------------------ END Catalog.LoanTypes ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Manager ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Manager.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."Gender"')), 0) [Gender]
@@ -996,6 +1260,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Manager.v] ON [Catalog.Manager.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.code.f] ON [Catalog.Manager.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.description.f] ON [Catalog.Manager.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1008,15 +1273,21 @@ GRANT SELECT ON dbo.[Catalog.Manager.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Manager.v];
+      
+------------------------------ END Catalog.Manager ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Person ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Gender"')), '') [Gender]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
@@ -1037,12 +1308,14 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.DocumentDate'),127) [DocumentDate]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DocumentAuthority"')), '') [DocumentAuthority]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AccountAD"')), '') [AccountAD]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Pincode"')), '') [Pincode]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."Fired"')), 0) [Fired]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Person'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.v] ON [Catalog.Person.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.code.f] ON [Catalog.Person.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.description.f] ON [Catalog.Person.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1055,23 +1328,31 @@ GRANT SELECT ON dbo.[Catalog.Person.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.v];
+      
+------------------------------ END Catalog.Person ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.PriceType ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PriceType.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PriceType.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TaxInclude"')), 0) [TaxInclude]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.PriceType'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PriceType.v] ON [Catalog.PriceType.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.code.f] ON [Catalog.PriceType.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.description.f] ON [Catalog.PriceType.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1084,15 +1365,21 @@ GRANT SELECT ON dbo.[Catalog.PriceType.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PriceType.v];
+      
+------------------------------ END Catalog.PriceType ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Product ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ProductKind"')) [ProductKind]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ProductCategory"')) [ProductCategory]
@@ -1116,6 +1403,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.v] ON [Catalog.Product.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.code.f] ON [Catalog.Product.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.description.f] ON [Catalog.Product.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.description] ON [Catalog.Product.v](description,id) INCLUDE([company]);
@@ -1127,21 +1415,28 @@ GRANT SELECT ON dbo.[Catalog.Product.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.v];
+      
+------------------------------ END Catalog.Product ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PlanningScenario.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.PlanningScenario'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PlanningScenario.v] ON [Catalog.PlanningScenario.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.code.f] ON [Catalog.PlanningScenario.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.description.f] ON [Catalog.PlanningScenario.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1154,21 +1449,28 @@ GRANT SELECT ON dbo.[Catalog.PlanningScenario.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PlanningScenario.v];
+      
+------------------------------ END Catalog.PlanningScenario ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ProductCategory ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ProductCategory.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.ProductCategory'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductCategory.v] ON [Catalog.ProductCategory.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.code.f] ON [Catalog.ProductCategory.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.description.f] ON [Catalog.ProductCategory.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1181,15 +1483,21 @@ GRANT SELECT ON dbo.[Catalog.ProductCategory.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductCategory.v];
+      
+------------------------------ END Catalog.ProductCategory ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ProductKind ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ProductKind.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ProductType"')), '') [ProductType]
       FROM dbo.[Documents]
@@ -1197,6 +1505,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductKind.v] ON [Catalog.ProductKind.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.code.f] ON [Catalog.ProductKind.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.description.f] ON [Catalog.ProductKind.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1209,15 +1518,21 @@ GRANT SELECT ON dbo.[Catalog.ProductKind.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductKind.v];
+      
+------------------------------ END Catalog.ProductKind ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Product.Report ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Report.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
@@ -1226,6 +1541,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Report.v] ON [Catalog.Product.Report.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Report.v.code.f] ON [Catalog.Product.Report.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Report.v.description.f] ON [Catalog.Product.Report.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1238,15 +1554,21 @@ GRANT SELECT ON dbo.[Catalog.Product.Report.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Report.v];
+      
+------------------------------ END Catalog.Product.Report ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Storehouse ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Storehouse.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       FROM dbo.[Documents]
@@ -1254,6 +1576,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Storehouse.v] ON [Catalog.Storehouse.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.code.f] ON [Catalog.Storehouse.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.description.f] ON [Catalog.Storehouse.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1266,17 +1589,24 @@ GRANT SELECT ON dbo.[Catalog.Storehouse.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Storehouse.v];
+      
+------------------------------ END Catalog.Storehouse ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Operation ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."shortName"')), '') [shortName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."script"')), '') [script]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."module"')), '') [module]
       FROM dbo.[Documents]
@@ -1284,6 +1614,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.v] ON [Catalog.Operation.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.code.f] ON [Catalog.Operation.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.description.f] ON [Catalog.Operation.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1296,15 +1627,21 @@ GRANT SELECT ON dbo.[Catalog.Operation.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.v];
+      
+------------------------------ END Catalog.Operation ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Operation.Group ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.Group.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Prefix"')), '') [Prefix]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."menu"')), '') [menu]
@@ -1314,6 +1651,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Group.v] ON [Catalog.Operation.Group.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.code.f] ON [Catalog.Operation.Group.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.description.f] ON [Catalog.Operation.Group.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1326,21 +1664,28 @@ GRANT SELECT ON dbo.[Catalog.Operation.Group.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Group.v];
+      
+------------------------------ END Catalog.Operation.Group ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Operation.Type ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.Type.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Operation.Type'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Type.v] ON [Catalog.Operation.Type.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.code.f] ON [Catalog.Operation.Type.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.description.f] ON [Catalog.Operation.Type.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1353,21 +1698,28 @@ GRANT SELECT ON dbo.[Catalog.Operation.Type.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Type.v];
+      
+------------------------------ END Catalog.Operation.Type ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.OrderSource ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.OrderSource.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.OrderSource'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description.f] ON [Catalog.OrderSource.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1380,15 +1732,21 @@ GRANT SELECT ON dbo.[Catalog.OrderSource.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
+      
+------------------------------ END Catalog.OrderSource ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Unit ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Unit.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BaseUnit"')) [BaseUnit]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
@@ -1398,6 +1756,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Unit.v] ON [Catalog.Unit.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.code.f] ON [Catalog.Unit.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.description.f] ON [Catalog.Unit.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1410,15 +1769,21 @@ GRANT SELECT ON dbo.[Catalog.Unit.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Unit.v];
+      
+------------------------------ END Catalog.Unit ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.User ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.User.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isAdmin"')), 0) [isAdmin]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDisabled"')), 0) [isDisabled]
@@ -1429,6 +1794,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.User.v] ON [Catalog.User.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.code.f] ON [Catalog.User.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.description.f] ON [Catalog.User.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1441,21 +1807,28 @@ GRANT SELECT ON dbo.[Catalog.User.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.User.v];
+      
+------------------------------ END Catalog.User ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.UsersGroup ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.UsersGroup.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.UsersGroup'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.UsersGroup.v] ON [Catalog.UsersGroup.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.code.f] ON [Catalog.UsersGroup.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.description.f] ON [Catalog.UsersGroup.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1468,21 +1841,28 @@ GRANT SELECT ON dbo.[Catalog.UsersGroup.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.UsersGroup.v];
+      
+------------------------------ END Catalog.UsersGroup ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Role ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Role.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Role.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Role'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Role.v] ON [Catalog.Role.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.code.f] ON [Catalog.Role.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.description.f] ON [Catalog.Role.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1495,15 +1875,21 @@ GRANT SELECT ON dbo.[Catalog.Role.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Role.v];
+      
+------------------------------ END Catalog.Role ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.SubSystem ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.SubSystem.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."icon"')), '') [icon]
       FROM dbo.[Documents]
@@ -1511,6 +1897,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.SubSystem.v] ON [Catalog.SubSystem.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.code.f] ON [Catalog.SubSystem.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.description.f] ON [Catalog.SubSystem.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1523,15 +1910,21 @@ GRANT SELECT ON dbo.[Catalog.SubSystem.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SubSystem.v];
+      
+------------------------------ END Catalog.SubSystem ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.JobTitle ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.JobTitle.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Category"')) [Category]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TO"')), 0) [TO]
@@ -1541,6 +1934,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.v] ON [Catalog.JobTitle.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code.f] ON [Catalog.JobTitle.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.description.f] ON [Catalog.JobTitle.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1553,21 +1947,28 @@ GRANT SELECT ON dbo.[Catalog.JobTitle.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.v];
+      
+------------------------------ END Catalog.JobTitle ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.JobTitle.Category.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.JobTitle.Category'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.Category.v] ON [Catalog.JobTitle.Category.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Category.v.code.f] ON [Catalog.JobTitle.Category.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Category.v.description.f] ON [Catalog.JobTitle.Category.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1580,21 +1981,28 @@ GRANT SELECT ON dbo.[Catalog.JobTitle.Category.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.Category.v];
+      
+------------------------------ END Catalog.JobTitle.Category ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PersonIdentity.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.PersonIdentity'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PersonIdentity.v] ON [Catalog.PersonIdentity.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.code.f] ON [Catalog.PersonIdentity.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.description.f] ON [Catalog.PersonIdentity.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1607,21 +2015,28 @@ GRANT SELECT ON dbo.[Catalog.PersonIdentity.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PersonIdentity.v];
+      
+------------------------------ END Catalog.PersonIdentity ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ReasonTypes.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.ReasonTypes'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ReasonTypes.v] ON [Catalog.ReasonTypes.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReasonTypes.v.code.f] ON [Catalog.ReasonTypes.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReasonTypes.v.description.f] ON [Catalog.ReasonTypes.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1634,15 +2049,21 @@ GRANT SELECT ON dbo.[Catalog.ReasonTypes.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ReasonTypes.v];
+      
+------------------------------ END Catalog.ReasonTypes ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Product.Package ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Package.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Product"')) [Product]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Qty"')), 0) [Qty]
@@ -1653,6 +2074,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Package.v] ON [Catalog.Product.Package.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Package.v.code.f] ON [Catalog.Product.Package.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Package.v.description.f] ON [Catalog.Product.Package.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1665,15 +2087,21 @@ GRANT SELECT ON dbo.[Catalog.Product.Package.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Package.v];
+      
+------------------------------ END Catalog.Product.Package ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Analytic.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Note"')), '') [Note]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
@@ -1683,6 +2111,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Analytic.v] ON [Catalog.Product.Analytic.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Analytic.v.code.f] ON [Catalog.Product.Analytic.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Analytic.v.description.f] ON [Catalog.Product.Analytic.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1695,15 +2124,21 @@ GRANT SELECT ON dbo.[Catalog.Product.Analytic.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Analytic.v];
+      
+------------------------------ END Catalog.Product.Analytic ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.StaffingTable ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.StaffingTable.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."JobTitle"')) [JobTitle]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
@@ -1719,6 +2154,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.StaffingTable.v] ON [Catalog.StaffingTable.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.code.f] ON [Catalog.StaffingTable.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.description.f] ON [Catalog.StaffingTable.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.description] ON [Catalog.StaffingTable.v](description,id) INCLUDE([company]);
@@ -1730,21 +2166,28 @@ GRANT SELECT ON dbo.[Catalog.StaffingTable.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.StaffingTable.v];
+      
+------------------------------ END Catalog.StaffingTable ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Brand ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Brand.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Brand.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.Brand'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Brand.v] ON [Catalog.Brand.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.code.f] ON [Catalog.Brand.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.description.f] ON [Catalog.Brand.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1757,15 +2200,21 @@ GRANT SELECT ON dbo.[Catalog.Brand.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Brand.v];
+      
+------------------------------ END Catalog.Brand ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.GroupObjectsExploitation.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Method"')), '') [Method]
       FROM dbo.[Documents]
@@ -1773,6 +2222,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.GroupObjectsExploitation.v] ON [Catalog.GroupObjectsExploitation.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.code.f] ON [Catalog.GroupObjectsExploitation.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.description.f] ON [Catalog.GroupObjectsExploitation.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1785,15 +2235,21 @@ GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.GroupObjectsExploitation.v];
+      
+------------------------------ END Catalog.GroupObjectsExploitation ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ObjectsExploitation.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."InventoryNumber"')), '') [InventoryNumber]
@@ -1802,6 +2258,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ObjectsExploitation.v] ON [Catalog.ObjectsExploitation.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.code.f] ON [Catalog.ObjectsExploitation.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.description.f] ON [Catalog.ObjectsExploitation.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1814,15 +2271,21 @@ GRANT SELECT ON dbo.[Catalog.ObjectsExploitation.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ObjectsExploitation.v];
+      
+------------------------------ END Catalog.ObjectsExploitation ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Catalog ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Catalog.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."typeString"')), '') [typeString]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."prefix"')), '') [prefix]
@@ -1837,6 +2300,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Catalog.v] ON [Catalog.Catalog.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.code.f] ON [Catalog.Catalog.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.description.f] ON [Catalog.Catalog.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.description] ON [Catalog.Catalog.v](description,id) INCLUDE([company]);
@@ -1848,15 +2312,21 @@ GRANT SELECT ON dbo.[Catalog.Catalog.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Catalog.v];
+      
+------------------------------ END Catalog.Catalog ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.BudgetItem ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BudgetItem.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."parent2"')) [parent2]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."UnaryOperator"')), '') [UnaryOperator]
@@ -1865,6 +2335,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BudgetItem.v] ON [Catalog.BudgetItem.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.code.f] ON [Catalog.BudgetItem.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.description.f] ON [Catalog.BudgetItem.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1877,15 +2348,21 @@ GRANT SELECT ON dbo.[Catalog.BudgetItem.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BudgetItem.v];
+      
+------------------------------ END Catalog.BudgetItem ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Scenario ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Scenario.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       FROM dbo.[Documents]
@@ -1893,6 +2370,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Scenario.v] ON [Catalog.Scenario.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.code.f] ON [Catalog.Scenario.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.description.f] ON [Catalog.Scenario.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1905,21 +2383,28 @@ GRANT SELECT ON dbo.[Catalog.Scenario.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Scenario.v];
+      
+------------------------------ END Catalog.Scenario ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ManufactureLocation.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.ManufactureLocation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ManufactureLocation.v] ON [Catalog.ManufactureLocation.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.code.f] ON [Catalog.ManufactureLocation.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.description.f] ON [Catalog.ManufactureLocation.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1932,15 +2417,21 @@ GRANT SELECT ON dbo.[Catalog.ManufactureLocation.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ManufactureLocation.v];
+      
+------------------------------ END Catalog.ManufactureLocation ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AcquiringTerminal.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Counterpartie"')) [Counterpartie]
@@ -1953,6 +2444,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.AcquiringTerminal.v] ON [Catalog.AcquiringTerminal.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description] ON [Catalog.AcquiringTerminal.v](description,id) INCLUDE([company]);
@@ -1964,15 +2456,21 @@ GRANT SELECT ON dbo.[Catalog.AcquiringTerminal.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v];
+      
+------------------------------ END Catalog.AcquiringTerminal ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Bank ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Bank.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
@@ -1985,6 +2483,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Bank.v] ON [Catalog.Bank.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.code.f] ON [Catalog.Bank.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.description.f] ON [Catalog.Bank.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.description] ON [Catalog.Bank.v](description,id) INCLUDE([company]);
@@ -1996,15 +2495,21 @@ GRANT SELECT ON dbo.[Catalog.Bank.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v];
+      
+------------------------------ END Catalog.Bank ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.BankAccount.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
@@ -2015,6 +2520,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.BankAccount.v] ON [Catalog.Person.BankAccount.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.code.f] ON [Catalog.Person.BankAccount.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.description.f] ON [Catalog.Person.BankAccount.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2027,15 +2533,21 @@ GRANT SELECT ON dbo.[Catalog.Person.BankAccount.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.BankAccount.v];
+      
+------------------------------ END Catalog.Person.BankAccount ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Person.Contract ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.Contract.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
@@ -2049,6 +2561,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.Contract.v] ON [Catalog.Person.Contract.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.code.f] ON [Catalog.Person.Contract.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.description.f] ON [Catalog.Person.Contract.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.description] ON [Catalog.Person.Contract.v](description,id) INCLUDE([company]);
@@ -2060,21 +2573,28 @@ GRANT SELECT ON dbo.[Catalog.Person.Contract.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.Contract.v];
+      
+------------------------------ END Catalog.Person.Contract ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BusinessRegion.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.BusinessRegion'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessRegion.v] ON [Catalog.BusinessRegion.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code.f] ON [Catalog.BusinessRegion.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description.f] ON [Catalog.BusinessRegion.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2087,15 +2607,21 @@ GRANT SELECT ON dbo.[Catalog.BusinessRegion.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v];
+      
+------------------------------ END Catalog.BusinessRegion ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxRate ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxRate.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
       FROM dbo.[Documents]
@@ -2103,6 +2629,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxRate.v] ON [Catalog.TaxRate.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.code.f] ON [Catalog.TaxRate.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.description.f] ON [Catalog.TaxRate.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2115,15 +2642,21 @@ GRANT SELECT ON dbo.[Catalog.TaxRate.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v];
+      
+------------------------------ END Catalog.TaxRate ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxAssignmentCode.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       FROM dbo.[Documents]
@@ -2131,6 +2664,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxAssignmentCode.v] ON [Catalog.TaxAssignmentCode.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxAssignmentCode.v.code.f] ON [Catalog.TaxAssignmentCode.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxAssignmentCode.v.description.f] ON [Catalog.TaxAssignmentCode.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2143,15 +2677,21 @@ GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxAssignmentCode.v];
+      
+------------------------------ END Catalog.TaxAssignmentCode ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPaymentCode.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
@@ -2160,6 +2700,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentCode.v] ON [Catalog.TaxPaymentCode.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.code.f] ON [Catalog.TaxPaymentCode.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.description.f] ON [Catalog.TaxPaymentCode.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2172,21 +2713,28 @@ GRANT SELECT ON dbo.[Catalog.TaxPaymentCode.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentCode.v];
+      
+------------------------------ END Catalog.TaxPaymentCode ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxBasisPayment.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.TaxBasisPayment'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxBasisPayment.v] ON [Catalog.TaxBasisPayment.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.code.f] ON [Catalog.TaxBasisPayment.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.description.f] ON [Catalog.TaxBasisPayment.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2199,21 +2747,28 @@ GRANT SELECT ON dbo.[Catalog.TaxBasisPayment.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxBasisPayment.v];
+      
+------------------------------ END Catalog.TaxBasisPayment ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPaymentPeriod.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.TaxPaymentPeriod'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentPeriod.v] ON [Catalog.TaxPaymentPeriod.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentPeriod.v.code.f] ON [Catalog.TaxPaymentPeriod.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentPeriod.v.description.f] ON [Catalog.TaxPaymentPeriod.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2226,15 +2781,21 @@ GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentPeriod.v];
+      
+------------------------------ END Catalog.TaxPaymentPeriod ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPayerStatus.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       FROM dbo.[Documents]
@@ -2242,6 +2803,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPayerStatus.v] ON [Catalog.TaxPayerStatus.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPayerStatus.v.code.f] ON [Catalog.TaxPayerStatus.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPayerStatus.v.description.f] ON [Catalog.TaxPayerStatus.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2254,15 +2816,21 @@ GRANT SELECT ON dbo.[Catalog.TaxPayerStatus.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPayerStatus.v];
+      
+------------------------------ END Catalog.TaxPayerStatus ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.TaxOffice ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxOffice.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
@@ -2273,6 +2841,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxOffice.v] ON [Catalog.TaxOffice.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxOffice.v.code.f] ON [Catalog.TaxOffice.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxOffice.v.description.f] ON [Catalog.TaxOffice.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2285,19 +2854,26 @@ GRANT SELECT ON dbo.[Catalog.TaxOffice.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxOffice.v];
+      
+------------------------------ END Catalog.TaxOffice ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.RetailClient ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.RetailClient.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Gender"')), '') [Gender]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CreateDate'),127) [CreateDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."LastName"')), '') [LastName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
@@ -2310,6 +2886,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailClient.v] ON [Catalog.RetailClient.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.code.f] ON [Catalog.RetailClient.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.description.f] ON [Catalog.RetailClient.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.description] ON [Catalog.RetailClient.v](description,id) INCLUDE([company]);
@@ -2321,15 +2898,21 @@ GRANT SELECT ON dbo.[Catalog.RetailClient.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailClient.v];
+      
+------------------------------ END Catalog.RetailClient ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.SalaryProject ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.SalaryProject.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."bank"')) [bank]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
@@ -2343,6 +2926,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.SalaryProject.v] ON [Catalog.SalaryProject.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.code.f] ON [Catalog.SalaryProject.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.description.f] ON [Catalog.SalaryProject.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.description] ON [Catalog.SalaryProject.v](description,id) INCLUDE([company]);
@@ -2354,15 +2938,21 @@ GRANT SELECT ON dbo.[Catalog.SalaryProject.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SalaryProject.v];
+      
+------------------------------ END Catalog.SalaryProject ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Specification ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Specification.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
@@ -2375,6 +2965,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Specification.v] ON [Catalog.Specification.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code.f] ON [Catalog.Specification.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description.f] ON [Catalog.Specification.v](parent,isfolder,description,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description] ON [Catalog.Specification.v](description,id) INCLUDE([company]);
@@ -2386,21 +2977,28 @@ GRANT SELECT ON dbo.[Catalog.Specification.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Specification.v];
+      
+------------------------------ END Catalog.Specification ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.InvestorGroup.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Catalog.InvestorGroup'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.InvestorGroup.v] ON [Catalog.InvestorGroup.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.InvestorGroup.v.code.f] ON [Catalog.InvestorGroup.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.InvestorGroup.v.description.f] ON [Catalog.InvestorGroup.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2413,15 +3011,21 @@ GRANT SELECT ON dbo.[Catalog.InvestorGroup.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.InvestorGroup.v];
+      
+------------------------------ END Catalog.InvestorGroup ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Catalog.Employee ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Employee.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
       FROM dbo.[Documents]
@@ -2429,6 +3033,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Employee.v] ON [Catalog.Employee.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code.f] ON [Catalog.Employee.v](parent,isfolder,code,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.description.f] ON [Catalog.Employee.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -2441,21 +3046,28 @@ GRANT SELECT ON dbo.[Catalog.Employee.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Employee.v];
+      
+------------------------------ END Catalog.Employee ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.ExchangeRates ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.ExchangeRates.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = 'Document.ExchangeRates'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.ExchangeRates.v] ON [Document.ExchangeRates.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.date] ON [Document.ExchangeRates.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.parent] ON [Document.ExchangeRates.v](parent,id) INCLUDE([company]);
@@ -2467,15 +3079,21 @@ GRANT SELECT ON dbo.[Document.ExchangeRates.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v];
+      
+------------------------------ END Document.ExchangeRates ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.Invoice ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Invoice.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Storehouse"')) [Storehouse]
@@ -2492,6 +3110,7 @@ CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Invoice.v] ON [Document.Invoice.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.date] ON [Document.Invoice.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.parent] ON [Document.Invoice.v](parent,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.code] ON [Document.Invoice.v](code,id) INCLUDE([company]);
@@ -2502,15 +3121,21 @@ GRANT SELECT ON dbo.[Document.Invoice.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v];
+      
+------------------------------ END Document.Invoice ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.Operation ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Operation.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
@@ -2525,6 +3150,7 @@ CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Operation.v] ON [Document.Operation.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.date] ON [Document.Operation.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.parent] ON [Document.Operation.v](parent,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.code] ON [Document.Operation.v](code,id) INCLUDE([company]);
@@ -2535,15 +3161,21 @@ GRANT SELECT ON dbo.[Document.Operation.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v];
+      
+------------------------------ END Document.Operation ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.PriceList ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.PriceList.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PriceType"')) [PriceType]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TaxInclude"')), 0) [TaxInclude]
@@ -2552,6 +3184,7 @@ CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.PriceList.v] ON [Document.PriceList.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.date] ON [Document.PriceList.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.parent] ON [Document.PriceList.v](parent,id) INCLUDE([company]);
@@ -2563,15 +3196,21 @@ GRANT SELECT ON dbo.[Document.PriceList.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.PriceList.v];
+      
+------------------------------ END Document.PriceList ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.Settings ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Settings.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."balanceCurrency"')) [balanceCurrency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."accountingCurrency"')) [accountingCurrency]
@@ -2580,6 +3219,7 @@ CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Settings.v] ON [Document.Settings.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.date] ON [Document.Settings.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.parent] ON [Document.Settings.v](parent,id) INCLUDE([company]);
@@ -2591,15 +3231,21 @@ GRANT SELECT ON dbo.[Document.Settings.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Settings.v];
+      
+------------------------------ END Document.Settings ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.UserSettings ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.UserSettings.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."UserOrGroup"')) [UserOrGroup]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."COMP"')), 0) [COMP]
@@ -2614,6 +3260,7 @@ CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.UserSettings.v] ON [Document.UserSettings.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.date] ON [Document.UserSettings.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.parent] ON [Document.UserSettings.v](parent,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.code] ON [Document.UserSettings.v](code,id) INCLUDE([company]);
@@ -2624,15 +3271,21 @@ GRANT SELECT ON dbo.[Document.UserSettings.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.UserSettings.v];
+      
+------------------------------ END Document.UserSettings ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.WorkFlow ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.WorkFlow.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Document"')) [Document]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
@@ -2641,6 +3294,7 @@ CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.WorkFlow.v] ON [Document.WorkFlow.v](id);
+      
       
       CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.date] ON [Document.WorkFlow.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.parent] ON [Document.WorkFlow.v](parent,id) INCLUDE([company]);
@@ -2652,15 +3306,21 @@ GRANT SELECT ON dbo.[Document.WorkFlow.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.WorkFlow.v];
+      
+------------------------------ END Document.WorkFlow ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.CashRequest ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.CashRequest.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Operation"')), '') [Operation]
@@ -2685,6 +3345,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExpenseOrBalance"')) [ExpenseOrBalance]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExpenseAnalytics"')) [ExpenseAnalytics]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryAnalitics"')) [SalaryAnalitics]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SKU"')) [SKU]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxRate"')) [TaxRate]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."TaxKPP"')), '') [TaxKPP]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxPaymentCode"')) [TaxPaymentCode]
@@ -2708,6 +3369,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.CashRequest.v] ON [Document.CashRequest.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.date] ON [Document.CashRequest.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.parent] ON [Document.CashRequest.v](parent,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.code] ON [Document.CashRequest.v](code,id) INCLUDE([company]);
@@ -2718,15 +3380,21 @@ GRANT SELECT ON dbo.[Document.CashRequest.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequest.v];
+      
+------------------------------ END Document.CashRequest ------------------------------
+
 GO
-BEGIN TRY
+
+------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
+
+        BEGIN TRY
         ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.CashRequestRegistry.v];
         END TRY
         BEGIN CATCH
         END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user]
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Operation"')), '') [Operation]
@@ -2742,6 +3410,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.CashRequestRegistry.v] ON [Document.CashRequestRegistry.v](id);
       
+      
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.date] ON [Document.CashRequestRegistry.v](date,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.parent] ON [Document.CashRequestRegistry.v](parent,id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.code] ON [Document.CashRequestRegistry.v](code,id) INCLUDE([company]);
@@ -2752,6 +3421,9 @@ GRANT SELECT ON dbo.[Document.CashRequestRegistry.v] TO jetti;
 GO
 ALTER SECURITY POLICY [rls].[companyAccessPolicy]
       ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequestRegistry.v];
+      
+------------------------------ END Document.CashRequestRegistry ------------------------------
+
 GO
 
       CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);

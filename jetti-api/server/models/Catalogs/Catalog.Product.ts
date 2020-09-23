@@ -7,11 +7,12 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   menu: 'Номенклатура',
   prefix: 'SKU-',
   hierarchy: 'folders',
+  relations: [{ name: 'Specification by department', type: 'Register.Info.ProductSpecificationByDepartment', field: 'Product.id' }],
   dimensions: [
     { Unit: 'Catalog.Unit' },
     { Kind: 'Catalog.ProductKind' }
   ],
-  commands: [{method: 'SavePropsValuesInChilds', icon: 'pi pi-plus', order: 1, label: 'Save in child elements'}]
+  commands: [{ method: 'SavePropsValuesInChilds', icon: 'pi pi-plus', order: 1, label: 'Save in child elements' }]
 })
 export class CatalogProduct extends DocumentBase {
 
@@ -21,7 +22,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'boolean', hidden: false, hiddenInList: true, isAdditional: true })
   isfolder = false;
 
-  @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 5, onChangeServer:  true, useIn: 'all' })
+  @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 5, onChangeServer: true, useIn: 'all' })
   ProductKind: Ref = null;
 
   @Props({ type: 'Catalog.ProductCategory', label: 'Сategory', order: 666, useIn: 'all' })

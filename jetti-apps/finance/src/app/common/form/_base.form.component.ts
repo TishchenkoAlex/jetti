@@ -17,6 +17,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { FormBase } from '../../../../../../jetti-api/server/models/Forms/form';
 import { MenuItem } from 'primeng/api/public_api';
+import { Type } from '../../../../../../jetti-api/server/models/type';
 
 export declare interface IFormEventsModel {
   onOpen(): void;
@@ -29,7 +30,7 @@ export declare interface IFormEventsModel {
 }
 
 @Directive()
-// tslint:disable-next-line: class-name
+// tslint:disable-next-line: directive-class-suffix
 export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsModel {
 
   @Input() id: string;
@@ -37,9 +38,10 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   @Input() data: FormGroup;
   @ViewChildren(CdkTrapFocus) cdkTrapFocus: QueryList<CdkTrapFocus>;
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isForm() { return this.type.startsWith('Form.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isForm() { return Type.isForm(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
+
   isCopy: boolean;
   isHistory: boolean;
   readonly: boolean;

@@ -1,13 +1,15 @@
-import { CatalogOperation } from './Catalog.Operation';
+import { CatalogOperation, Parameter } from './Catalog.Operation';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
+import { lib } from '../../std.lib';
+import { DocTypes } from '../documents.types';
+import { riseUpdateMetadataEvent, IDynamicProps } from '../Dynamic/dynamic.common';
 
 export class CatalogOperationServer extends CatalogOperation implements IServerDocument {
 
-  async onCreate(tx: MSSQL) {
-      if (this.script) return this;
-    this.script = `/*
-
+    async onCreate(tx: MSSQL) {
+        if (!this.script)
+            this.script = `/*
 // Account
 Registers.Account.push({
     debit: { account: lib.account.byCode('50.01'), subcounts: [$.CashRegister, lib.doc.byCode('Catalog.CashFlow', 'IN.CUSTOMER', tx)] },
@@ -47,142 +49,44 @@ Registers.Accumulation.push({
         PL: $.Expense,
         Analytics: $.Analytics,
         Amount: $.Amount,
+    }`;
+        return this;
     }
-});
 
-// Register.Accumulation.AR
-Registers.Accumulation.push({
-    kind: false,
-    type: 'Register.Accumulation.AR',
-    data: {
-        AO: $.Invoice,
-        Department: $.Department,
-        Customer: $.Customer,
-        AR: $.Amount,
-        PayDay: doc.date,
-        currency: $.currency,
-        AmountInBalance
+    async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+        this[command](args, tx);
+        return this;
+      }
+
+    async updateSQLViews() {
+        await lib.meta.updateSQLViewsByOperationId(this.id as any);
     }
-});
 
-// Register.Accumulation.AP
-Registers.Accumulation.push({
-    kind: false,
-    type: 'Register.Accumulation.AP',
-    data: {
-        AO: $.Invoice,
-        Department: $.Department,
-        Customer: $.Customer,
-        Amount: $.Amount,
-        PayDay: doc.date,
-        currency: $.currency,
-        AmountInBalance
+    async riseUpdateMetadataEvent() {
+        await riseUpdateMetadataEvent();
     }
-});
 
-// Register.Accumulation.Cash
-Registers.Accumulation.push({
-    kind: true,
-    type: "Register.Accumulation.Cash",
-    data: {
-        Department: $.Department,
-        CashRegister: $.CashRegister,
-        CashFlow: $.CashFlow,
-        Amount: $.Amount,
-        AmountInBalance
+    async getDynamicMetadata(tx: MSSQL): Promise<IDynamicProps> {
+        return { type: this.getType(), Prop: await this.getPropFunc(tx), Props: await this.getPropsFunc(tx) };
     }
-});
 
-// Register.Accumulation.Bank
-Registers.Accumulation.push({
-    kind: true,
-    type: "Register.Accumulation.Bank",
-    data: {
-        Department: $.Department,
-        BankAccount: $.BankAccount,
-        CashFlow: $.CashFlow,
-        Amount: $.Amount,
-        AmountInBalance
+    getType(): string { return `Operation.${this.shortName}`; }
+
+    async createDocServer(tx: MSSQL) {
+        const type = 'Document.Operation';
+        return await lib.doc.createDocServer(type, { id: this.id, Operation: this.id } as any, tx);
     }
-});
 
-// Cash Transit
-Registers.Accumulation.push({
-    kind: false,
-    type: "Register.Accumulation.Cash.Transit",
-    data: {
-        Department: null,
-        CashFlow: $.CashFlow,
-        Sender: $.Sender,
-        Recipient: $.Recipient,
-        Amount: $.Amount,
-        currency: $.currency,
-        AmountInBalance
+    async getPropsFunc(tx: MSSQL): Promise<Function> {
+        const doc = await this.createDocServer(tx);
+        const props = { ...doc.Props() };
+        props.type = { type: 'string', hidden: true, hiddenInList: true };
+        props.Operation.value = this.id;
+        return () => props;
     }
-});
 
-// AccountablePersons
-Registers.Accumulation.push({
-    kind: false,
-    type: "Register.Accumulation.AccountablePersons",
-    data: {
-        Department: $.Department,
-        CashFlow: CashFlowRef,
-        Employee: $.Employee,
-        Amount: $.Amount / exchangeRate,
-        currency: $.currency,
-        AmountInBalance
+    async getPropFunc(tx: MSSQL): Promise<Function> {
+        const doc = await this.createDocServer(tx);
+        return () => ({ ...doc.Prop(), type: this.getType() as DocTypes });
     }
-});
-
-// LOAN
-Registers.Accumulation.push({
-    kind: false,
-    type: "Register.Accumulation.Loan",
-    data: {
-        Department: $.Department,
-        Loan: $.Loan,
-        CashFlow: lib.doc.byCode('Catalog.CashFlow', 'IN.LOAN', tx),
-        Counterpartie: $.Counterpartie,
-        Amount: $.Amount,
-        AmountInBalance
-    }
-});
-
-// GOODS
-// const avgSumma = lib.register.avgCost(doc.date, { company: doc.company, SKU: row.SKU, Storehouse: $.Storehouse }, tx) * row.Qty;
-Registers.Accumulation.push({
-  kind: true,
-  type: "Register.Accumulation.Sales",
-  data: {
-      AO: $.id,
-      Department: $.Department,
-      Customer: $.Customer,
-      Product: $.Product,
-      Manager: $.Manager,
-      Storehouse: $.Storehouse,
-      Qty: $.Qty,
-      Amount: $.Amount,
-      Cost: avgSumma,
-      Discount: 0,
-      Tax: $.Tax,
-      currency: $.currency
-  }
-});
-
-Registers.Accumulation.push({
-    kind: false,
-    type: "Register.Accumulation.Inventory",
-    data: {
-        Storehouse: $.Storehouse,
-        Expense: $.Expense,
-        SKU: row.SKU,
-        Cost: avgSumma,
-        Qty: row.Qty
-    }
-});
-
-*/`;
-    return this;
-  }
 }

@@ -31,7 +31,8 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
     {
       method: 'FillSalaryBalanceByPersonsWithCurrentMonth'
       , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)', order: 5
-    }
+    },
+    { method: 'onCommandcheckTaxCheck', icon: 'pi pi-plus', label: 'Проверить возможность согласования', order: 6 }
   ],
   module: `
       {
@@ -83,6 +84,8 @@ export class DocumentCashRequest extends DocumentBase {
       'Выдача ДС подотчетнику',
       'Оплата по кредитам и займам полученным',
       'Прочий расход ДС',
+      'Перемещение ДС',
+      'Внутренний займ',
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
       'Выплата заработной платы',
@@ -255,6 +258,9 @@ export class DocumentCashRequest extends DocumentBase {
     ]
   })
   SalaryAnalitics: Ref = null;
+
+  @Props({ type: 'Catalog.Product', label: 'ЛОТ/Услуга' })
+  SKU: Ref = null;
 
   @Props({ type: 'Catalog.TaxRate', label: 'Ставка НДС', hiddenInList: true })
   TaxRate: Ref = null;

@@ -18,6 +18,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class DocumentCashRequestComponent extends _baseDocFormComponent implements OnInit, OnDestroy, IFormEventsModel {
   get readonlyMode() { return !this.isSuperUser && !this.isNew && ['PREPARED', 'MODIFY'].indexOf(this.form.get('Status').value) === -1; }
   get Operation(): string { return this.form.get('Operation').value || ''; }
+  get CashKind(): string { return this.form.get('CashKind').value || 'ANY'; }
   // tslint:disable-next-line: max-line-length
   get useItemsTable(): boolean { return ['Оплата поставщику', 'Оплата ДС в другую организацию', 'Прочий расход ДС'].includes(this.Operation); }
 
@@ -158,7 +159,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if ((!CashFlow || !CashFlow.value)) this.throwError('Ошибка', 'Не указана статья ДДС');
     const oper = this.getValue('Operation');
     const CashRecipient = this.getValue('CashRecipient');
-    if ((!CashRecipient || !CashRecipient.value) && `Оплата поставщику
+    if ((!CashRecipient || !CashRecipient.value) && 
+    `Оплата поставщику
     Перечисление налогов и взносов
     Оплата ДС в другую организацию
     Выдача ДС подотчетнику
@@ -250,6 +252,10 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
   }
 
   handleBpApiResponse(response: any, isModifyEvent = false) {
+    if (response.error) {
+      this.ds.openSnackBar('error', 'Ошибка', response.message);
+      return;
+    }
     switch (response) {
       case 'APPROVED':
         this.setValue('workflowID', '');

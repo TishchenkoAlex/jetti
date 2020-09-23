@@ -1,9 +1,10 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { dateReviverUTC } from '../fuctions/dateReviver';
-import { IFlatDocument, INoSqlDocument } from '../models/documents.factory';
+import { INoSqlDocument } from '../models/documents.factory';
 import { createDocumentServer, DocumentBaseServer } from '../models/documents.factory.server';
-import { lib } from './../std.lib'; import { MSSQL } from '../mssql';
+import { lib } from './../std.lib';
+import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { JETTI_POOL } from '../sql.pool.jetti';
 
@@ -29,7 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     const flatDoc = await lib.doc.byId(req.params.id, tx);
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
-      delete noSqlDoc?.doc['serverModule'];
+      delete noSqlDoc!.doc['serverModule'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));
@@ -251,13 +252,12 @@ router.post('/executeOperation', async (req: Request, res: Response, next: NextF
       await lib.util.adminMode(true, tx);
       try {
         let err = '';
-        const { operationId, args } = JSON.parse(req.body);
+        const { operationId, method, args } = JSON.parse(req.body);
         let oper: DocumentBaseServer | null = null;
         if (!operationId) err = 'Empty arg "operationId"';
         else oper = await lib.doc.createDocServerById(operationId as any, tx);
         if (!oper) err = `Operation with id ${operationId} does not exist`;
         else {
-          const method = args.method || 'RESTMethod';
           let result = {};
           const docModule: (args: { [key: string]: any }) => Promise<any> = oper['serverModule'][method];
           if (typeof docModule === 'function') result = await docModule(args);

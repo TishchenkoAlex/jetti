@@ -1,5 +1,7 @@
 
     
+------------------------------ BEGIN Register.Accumulation.AccountablePersons ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.AccountablePersons]
     AS
       SELECT
@@ -29,6 +31,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.AccountablePersons ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PaymentBatch ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.PaymentBatch]
     AS
       SELECT
@@ -60,6 +66,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
     AS
       SELECT
@@ -91,6 +101,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.OrderPayment] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.OrderPayment ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AP ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.AP]
     AS
       SELECT
@@ -122,6 +136,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.AP ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AR ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.AR]
     AS
       SELECT
@@ -153,6 +171,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.AR ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Bank ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Bank]
     AS
       SELECT
@@ -179,6 +201,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Bank ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Balance]
     AS
       SELECT
@@ -201,6 +227,41 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Balance ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.RC ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.Balance.RC]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, ResponsibilityCenter, Department, Balance, Analytics, Analytics2, Currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Balance.RC';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.Balance.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.Report ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report]
     AS
       SELECT
@@ -228,6 +289,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Balance.Report ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Cash]
     AS
       SELECT
@@ -254,6 +319,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Cash ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash.Transit ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Cash.Transit]
     AS
       SELECT
@@ -281,6 +350,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory]
     AS
       SELECT
@@ -314,6 +387,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Inventory ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Loan ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Loan]
     AS
       SELECT
@@ -345,6 +422,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Loan ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.PL]
     AS
       SELECT
@@ -368,6 +449,41 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.PL ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL.RC ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.PL.RC]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, ResponsibilityCenter, Department, PL, Analytics, Analytics2, Currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PL.RC';
+    GO
+
+    GRANT SELECT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.PL.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Sales ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Sales]
     AS
       SELECT
@@ -416,6 +532,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Sales ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Salary ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Salary]
     AS
       SELECT
@@ -449,6 +569,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Salary ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Depreciation ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Depreciation]
     AS
       SELECT
@@ -475,6 +599,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Depreciation ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.CashToPay ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay]
     AS
       SELECT
@@ -507,6 +635,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.CashToPay ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.BudgetItemTurnover]
     AS
       SELECT
@@ -542,6 +674,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.BudgetItemTurnover ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Intercompany ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Intercompany]
     AS
       SELECT
@@ -571,6 +707,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Intercompany ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Acquiring ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.Acquiring]
     AS
       SELECT
@@ -606,6 +746,10 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.Acquiring] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.Acquiring ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
+
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable]
     AS
       SELECT
@@ -633,4 +777,6 @@
     GRANT SELECT,DELETE ON [Register.Accumulation.StaffingTable] TO JETTI;
     GO
     
+------------------------------ END Register.Accumulation.StaffingTable ------------------------------
+
     

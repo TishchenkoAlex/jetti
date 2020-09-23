@@ -3,6 +3,8 @@
     CREATE UNIQUE NONCLUSTERED INDEX [Documents.parent] ON [dbo].[Documents]([parent], [id]);
 
     
+------------------------------ BEGIN Register.Accumulation.AccountablePersons ------------------------------
+
     RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -36,7 +38,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -73,6 +76,10 @@
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AccountablePersons ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PaymentBatch ------------------------------
+
     RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -108,7 +115,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.PaymentBatch]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -147,6 +155,10 @@
     RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
+
     RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -182,7 +194,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.OrderPayment]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -221,6 +234,10 @@
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.OrderPayment ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AP ------------------------------
+
     RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -256,7 +273,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.AP]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -295,6 +313,10 @@
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AP ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.AR ------------------------------
+
     RAISERROR('Register.Accumulation.AR start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -330,7 +352,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.AR]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -369,6 +392,10 @@
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.AR ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Bank ------------------------------
+
     RAISERROR('Register.Accumulation.Bank start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -399,7 +426,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -433,6 +461,10 @@
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Bank ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance ------------------------------
+
     RAISERROR('Register.Accumulation.Balance start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -459,7 +491,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -489,6 +522,81 @@
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Balance ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.RC ------------------------------
+
+    RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.Balance.RC];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+    INTO [Register.Accumulation.Balance.RC]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Balance.RC';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
+      INSERT INTO [Register.Accumulation.Balance.RC]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [Balance] CHAR(36) N'$.Balance'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Balance.RC';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
+    ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.Balance.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Balance.Report ------------------------------
+
     RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -520,7 +628,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Balance.Report]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -555,6 +664,10 @@
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Balance.Report ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash ------------------------------
+
     RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -585,7 +698,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -619,6 +733,10 @@
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Cash ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Cash.Transit ------------------------------
+
     RAISERROR('Register.Accumulation.Cash.Transit start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -650,7 +768,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -685,6 +804,10 @@
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
+
     RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -722,7 +845,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -763,6 +887,10 @@
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Inventory ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Loan ------------------------------
+
     RAISERROR('Register.Accumulation.Loan start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -798,7 +926,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -837,6 +966,10 @@
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Loan ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL ------------------------------
+
     RAISERROR('Register.Accumulation.PL start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -864,7 +997,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.PL]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -895,6 +1029,81 @@
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.PL ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PL.RC ------------------------------
+
+    RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
+    GO
+
+    DROP TABLE IF EXISTS [Register.Accumulation.PL.RC];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      d.exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+    INTO [Register.Accumulation.PL.RC]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.PL.RC';
+    GO
+
+    CREATE OR ALTER TRIGGER [Register.Accumulation.PL.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
+      INSERT INTO [Register.Accumulation.PL.RC]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
+        , [Department] CHAR(36) N'$.Department'
+        , [PL] CHAR(36) N'$.PL'
+        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Currency] CHAR(36) N'$.Currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountRC] MONEY N'$.AmountRC'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PL.RC';
+    END
+    GO
+
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
+    GO
+
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC] (
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
+    ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+
+    RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.PL.RC ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Sales ------------------------------
+
     RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -947,7 +1156,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1003,6 +1213,10 @@
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Sales ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Salary ------------------------------
+
     RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1040,7 +1254,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Salary]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1081,6 +1296,10 @@
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Salary ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Depreciation ------------------------------
+
     RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1111,7 +1330,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1145,6 +1365,10 @@
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Depreciation ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.CashToPay ------------------------------
+
     RAISERROR('Register.Accumulation.CashToPay start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1181,7 +1405,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1221,6 +1446,10 @@
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.CashToPay ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
+
     RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1260,7 +1489,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1303,6 +1533,10 @@
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.BudgetItemTurnover ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Intercompany ------------------------------
+
     RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1336,7 +1570,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Intercompany]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1373,6 +1608,10 @@
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Intercompany ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.Acquiring ------------------------------
+
     RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1412,7 +1651,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.Acquiring]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1455,6 +1695,10 @@
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.Acquiring ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
+
     RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
     GO
 
@@ -1486,7 +1730,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
       INSERT INTO [Register.Accumulation.StaffingTable]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1521,4 +1766,6 @@
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO
     
+------------------------------ END Register.Accumulation.StaffingTable ------------------------------
+
     

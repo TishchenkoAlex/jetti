@@ -3,7 +3,7 @@ import { FormListOrder } from './../user.settings';
 import { DocumentBaseServer } from './../documents.factory.server';
 import { DocTypes } from './../documents.types';
 import { DocumentBase, DocumentOptions, StorageType } from './../document';
-import { Type } from './../common-types';
+import { Type } from './../type';
 import { IServerForm } from './form.factory.server';
 import { FormObjectsGroupModify, ColumnMatching, errorKind } from './Form.ObjectsGroupModify';
 import { MSSQL } from '../../mssql';

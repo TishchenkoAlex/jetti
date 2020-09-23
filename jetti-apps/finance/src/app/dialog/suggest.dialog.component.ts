@@ -16,6 +16,7 @@ import { DocService } from '../common/doc.service';
 import { LoadingService } from '../common/loading.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v1 } from 'uuid';
+import { Type } from '../../../../../jetti-api/server/models/type';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,8 +49,9 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
     this.selection = [{ id: value.id, type: this.type }];
   }
 
-  get isDoc() { return this.type.startsWith('Document.'); }
-  get isCatalog() { return this.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.type); }
+  get isCatalog() { return Type.isCatalog(this.type); }
+
   showTree = false;
   showTreeButton = false;
   dataSource: ApiDataSource;
@@ -66,9 +68,9 @@ export class SuggestDialogComponent implements OnInit, OnDestroy {
 
     const columns: ColumnDef[] = [];
     const data: { [x: string]: AllTypes }[] = [{ description: 'string' }, { code: 'string' }, { id: 'string' }];
-    if (this.type.startsWith('Document.')) data.push({ date: 'datetime' });
+    if (Type.isDocument(this.type)) data.push({ date: 'datetime' });
     if (this.type) {
-      if (!this.type.startsWith('Types.')) this.doc = await this.api.getDocMetaByType(this.type);
+      if (!Type.isType(this.type)) this.doc = await this.api.getDocMetaByType(this.type);
       this.dataSource = new ApiDataSource(this.api, this.type, this.pageSize, true);
     }
     const schema = this.doc ? this.doc.Props : {};

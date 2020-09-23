@@ -11,6 +11,7 @@ export const JETTI_IS_HOST = process.env.JETTI_IS_HOST || 'http://localhost:3500
 export const JTW_KEY = process.env.JTW_KEY!;
 export const bpApiHost = 'https://bp.x100-group.com/JettiProcesses/hs';
 export const LOGIC_USECASHREQUESTAPPROVING = process.env.LOGIC_USECASHREQUESTAPPROVING || '0';
+export const REGISTER_ACCUMULATION_SOURCE = process.env.REGISTER_ACCUMULATION_SOURCE || '';
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
 

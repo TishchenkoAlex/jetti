@@ -9,8 +9,8 @@ export class CatalogPersonContractServer extends CatalogPersonContract implement
   beforeSave = async (tx: MSSQL): Promise<this> => {
     if (!this.owner || !this.StartDate || !this.EndDate || !this.currency) throw new Error('Заполнены не все обязательные реквизиты');
     const owner = await lib.doc.byIdT<CatalogPerson>(this.owner, tx);
-    if (!owner || !owner!.Code1) throw new Error(`Не указан ИНН у владельца ${owner?.description}`);
-    this.description = `Договор №${this.code} от ${lib.util.formatDate(this.StartDate as any)} (${owner!.Code1} - ${owner?.description})`;
+    if (!owner || !owner!.Code1) throw new Error(`Не указан ИНН у владельца ${owner!.description}`);
+    this.description = `Договор №${this.code} от ${lib.util.formatDate(this.StartDate as any)} (${owner!.Code1} - ${owner!.description})`;
     return this;
   }
 

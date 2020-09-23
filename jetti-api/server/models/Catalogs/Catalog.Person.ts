@@ -44,6 +44,12 @@ export class CatalogPerson extends DocumentBase {
   Address: Ref = null;
 
   @Props({ type: 'string' })
+  AddressResidence = '';
+
+  @Props({ type: 'string' })
+  City = '';
+
+  @Props({ type: 'string' })
   Phone: Ref = null;
 
   @Props({ type: 'string' })
@@ -57,6 +63,9 @@ export class CatalogPerson extends DocumentBase {
 
   @Props({ type: 'Catalog.JobTitle' })
   JobTitle: Ref = null;
+
+  @Props({ type: 'Catalog.Country' })
+  Country: Ref = null;
 
   @Props({ type: 'string' })
   Profile: Ref = null;
@@ -78,6 +87,9 @@ export class CatalogPerson extends DocumentBase {
 
   @Props({ type: 'string', isAdditional: true })
   AccountAD = '';
+
+  @Props({ type: 'string', label: 'Pincode', validators: [{ key: 'maxLength', value: 4 }] })
+  Pincode = '';
 
   @Props({ type: 'boolean', hiddenInList: false, isAdditional: true })
   Fired = false;

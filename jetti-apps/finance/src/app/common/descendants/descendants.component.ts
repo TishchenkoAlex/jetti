@@ -6,6 +6,8 @@ import { DocumentBase } from '../../../../../../jetti-api/server/models/document
 import { Router } from '@angular/router';
 import { DocService } from '../doc.service';
 import { LoadingService } from '../loading.service';
+import { Type } from '../../../../../../jetti-api/server/models/type';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,9 +18,9 @@ export class DescendantsComponent implements OnInit, OnDestroy {
 
   @Input() doc: DocumentBase;
 
-  get isDoc() { return this.doc.type.startsWith('Document.'); }
-  get isForm() { return this.doc.type.startsWith('Form.'); }
-  get isCatalog() { return this.doc.type.startsWith('Catalog.'); }
+  get isDoc() { return Type.isDocument(this.doc.type); }
+  get isForm() { return Type.isForm(this.doc.type); }
+  get isCatalog() { return Type.isCatalog(this.doc.type); }
 
   selection: any;
   private _subscription$: Subscription = Subscription.EMPTY;

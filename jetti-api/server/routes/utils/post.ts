@@ -1,11 +1,13 @@
-import { CatalogTypes, AllTypes } from './../../models/documents.types';
+import { AllTypes, AllDocTypes } from './../../models/documents.types';
 import { Ref } from '../../models/document';
 import { INoSqlDocument } from '../../models/documents.factory';
 import { lib } from '../../std.lib';
 import { InsertRegistersIntoDB } from './InsertRegistersIntoDB';
 import { MSSQL } from '../../mssql';
 import { DocumentBaseServer, createDocumentServer } from '../../models/documents.factory.server';
-import { Type } from '../../models/common-types';
+import { Type } from '../../models/type';
+
+export interface IUpdateInsertDocumentOptions { withExchangeInfo: boolean; }
 
 export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
@@ -36,24 +38,23 @@ export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   `, [serverDoc.id, serverDoc.date]);
 }
 
-export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, opts?: IUpdateInsertDocumentOptions) {
 
   await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
-  const updateExchangeInfo = serverDoc.ExchangeBase || serverDoc.ExchangeCode;
-
+  const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
   let response: INoSqlDocument;
 
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
     INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
-      [parent], [isfolder], [company], [user], [info], [doc] ${updateExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
+      [parent], [isfolder], [company], [user], [info], [doc] ${withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
     SELECT
       [id], [type], [date], [code], [description], [posted], [deleted],
       [parent], [isfolder], [company], [user], [info], [doc]
-      ${updateExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
+      ${withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
     FROM OPENJSON(@p1) WITH (
       [id] UNIQUEIDENTIFIER,
       [date] DATETIME,
@@ -68,7 +69,7 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
       [user] UNIQUEIDENTIFIER,
       [info] NVARCHAR(max),
       [doc] NVARCHAR(max) N'$.doc' AS JSON
-      ${updateExchangeInfo ? `
+      ${withExchangeInfo ? `
       ,[ExchangeCode] NVARCHAR(50),
       [ExchangeBase] NVARCHAR(50)` : ''}
     );
@@ -80,13 +81,13 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
 }
 
-export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, opts?: IUpdateInsertDocumentOptions) {
 
   await beforeSaveDocument(serverDoc, tx);
 
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
-  const updateExchangeInfo = serverDoc.ExchangeBase || serverDoc.ExchangeCode;
+  const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
 
   let response: INoSqlDocument;
   response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
@@ -96,7 +97,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
         date = i.date, code = i.code, description = i.description,
         posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
         "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(),
-        ${updateExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
+        ${withExchangeInfo ? 'ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase,' : ''} doc = i.doc
       FROM (
         SELECT *
         FROM OPENJSON(@p1) WITH (
@@ -112,7 +113,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
           [user] UNIQUEIDENTIFIER,
           [info] NVARCHAR(max),
           [parent] UNIQUEIDENTIFIER,
-          ${updateExchangeInfo ? `
+          ${withExchangeInfo ? `
           [ExchangeCode] NVARCHAR(50),
           [ExchangeBase] NVARCHAR(50),` : ''}
           [doc] NVARCHAR(max) N'$.doc' AS JSON
@@ -164,18 +165,21 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const propsKeys = Object.keys(uniqueProps);
   if (!propsKeys.length) return;
 
+  const propFilter = {};
+  propsKeys.forEach(e => propFilter[e] = serverDoc[e]);
+
   const cat = await lib.doc.findDocumentByProps<any>(
-    serverDoc.type as CatalogTypes,
-    propsKeys.map(e => ({ propKey: e, propValue: serverDoc[e] })),
+    serverDoc.type as AllDocTypes,
+    propFilter,
     tx,
-    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'] });
+    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'].join(',') });
   const exist = cat.filter(e => e.id !== serverDoc.id);
   if (!exist.length) return;
 
   const getValueDescription = async (type: AllTypes, value: any) => {
     if (!value) return `<empty>`;
     if (!Type.isRefType(type)) return value;
-    return (await lib.doc.byId(value, tx))?.description;
+    return (await lib.doc.byId(value, tx))!.description;
   };
 
   const existErrors: string[] = [];
