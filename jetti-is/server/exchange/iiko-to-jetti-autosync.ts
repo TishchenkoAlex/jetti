@@ -20,6 +20,9 @@ import { ImportPurchaseRetToJetti } from './iiko-to-jetti-purchase-ret';
 import { ImportTransferIntToJetti } from './iiko-to-jetti-doc-transfer-int';
 import { ImportLeftRoverToJetti } from './iiko-to-jetti-leftovers';
 import { ImportModificationToJetti } from './iiko-to-jetti-modifications';
+import { ImportProdNoModiToJetti } from './iiko-to-jetti-production/production-nomodificators';
+import { ImportProductionForRelocation } from './iiko-to-jetti-production/production_for_relocation';
+
 ///////////////////////////////////////////////////////////
 // Автосинхронизация IIKO - Jetti СМ с помощью sql-процедуры в базе x100-data
 export async function AutosyncSMSQL(params: any) {
@@ -183,6 +186,13 @@ if ((syncParams.execFlag & 64) === 64)
 // tslint:disable-next-line: no-bitwise
 if ((syncParams.execFlag & 128) === 128)
 	syncFunc.push(ImportLeftRoverToJetti(syncParams));
+// tslint:disable-next-line: no-bitwise
+if((syncParams.execFlag & 1024) === 1024){
+		syncFunc.push(ImportProdNoModiToJetti(syncParams))
+}
+if((syncParams.execFlag && 2048) === 2048){
+	syncFunc.push(ImportProductionForRelocation(syncParams))
+}
 // tslint:disable-next-line: no-bitwise
 if 	((syncParams.execFlag & 512) === 512)
 	syncFunc.push(ImportModificationToJetti(syncParams));

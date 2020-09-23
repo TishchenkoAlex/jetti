@@ -14,7 +14,7 @@ export class CatalogJobTitle extends DocumentBase {
   @Props({ type: 'Catalog.JobTitle', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.JobTitle.Category', label: 'Категория' })
+  @Props({ type: 'Catalog.JobTitle.Category', label: 'Категория', required: true })
   Category: Ref = null;
 
   @Props({ type: 'boolean', label: 'ТТ' })

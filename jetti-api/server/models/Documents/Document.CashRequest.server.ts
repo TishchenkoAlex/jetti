@@ -1,4 +1,4 @@
-import { portal1CApiConfig } from './../../env/environment';
+import { REGISTER_ACCUMULATION_SOURCE } from './../../env/environment';
 import { CatalogCounterpartieBankAccount } from './../Catalogs/Catalog.Counterpartie.BankAccount';
 import { DocumentOperationServer } from './Document.Operation.server';
 import { CatalogPersonBankAccount } from './../Catalogs/Catalog.Person.BankAccount';
@@ -20,7 +20,6 @@ import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
 import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
-import { getUser } from '../../routes/auth';
 import { x100 } from '../../x100.lib';
 import { getPersonContract } from '../Catalogs/Catalog.Person.Contract.server';
 
@@ -161,7 +160,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       this['Department'] = dep.id;
       this['company'] = dep.company;
     }
-    this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx);
+    this['CashFlow'] = await lib.doc.byCode('Catalog.CashFlow', body.CashFlowCode, tx) as string;
     this['CashRecipient'] = await x100.catalog.counterpartieByINNAndKPP(body.INN, body.KPP ? body.KPP : '', tx);
     this['Amount'] = body.Amount;
     this['TaxRate'] = '7CFE6E50-35EA-11EA-A185-21EAFAF35D68'; // Без НДС
@@ -407,7 +406,7 @@ ORDER BY
       receiptId
     from [dbo].[Register.Info.TaxCheck] where document in (
       select top 1 document from
-        [x100-DATA].[dbo].[Register.Accumulation.Bank]
+        ${REGISTER_ACCUMULATION_SOURCE}[dbo].[Register.Accumulation.Bank]
       where company = @p1
         and Analytics = @p2
         and CashFlow = @p3
@@ -792,7 +791,7 @@ ORDER BY
         docOperation.Operation = '8C3B61A0-6512-11EA-A8B2-95688F3F3592'; // Из кассы - Выдача/Возврат кредитов и займов (Физ.лицо) (МУЛЬТИВАЛЮТНЫЙ)
         docOperation['CurrencyLoan'] = await lib.util.getObjectPropertyById(this.Loan as any, 'currency', tx);
         if (docOperation['CurrencyLoan']) {
-          const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx);
+          const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx) as string;
           const ExchangeRateDoc = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation.currency, tx);
           const ExchangeRateLoan = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation['CurrencyLoan'], tx);
           docOperation['AmountLoan'] = (docOperation.Amount / ExchangeRateDoc) * ExchangeRateLoan;

@@ -178,6 +178,27 @@ export async function GetMySqlConfig(
 }
 ///////////////////////////////////////////////////////////
 // получить ID элемента справочника в базе приемнике
+export async function GetExchangeID(
+	exchangeCode: string,
+	exchangeBase: string,
+	exchangeType: string,
+	dsql:SQLClient
+): Promise<Ref> {
+	const ct: any = await dsql.oneOrNone(
+		`
+    SELECT id FROM documents where  exchangeCode = @p1 and exchangeBase = @p2`,
+		[exchangeCode, exchangeBase],
+	);
+	// TODO: !!112!!1!1!11
+	// TODO: 
+	// TODO: 
+	if (ct === null) return null;
+	else return ct.id;
+}
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+// получить ID элемента справочника в базе приемнике
 export async function GetExchangeCatalogID(
 	project: string,
 	exchangeCode: string,
