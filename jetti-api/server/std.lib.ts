@@ -358,14 +358,15 @@ async function createDocServerById<T extends DocumentBaseServer>(id: string, tx:
 async function saveDoc(
   servDoc: DocumentBaseServer
   , tx: MSSQL
-  , queuePostFlow?: number): Promise<DocumentBaseServer> {
+  , queuePostFlow?: number
+  , opts?: IUpdateInsertDocumentOptions): Promise<DocumentBaseServer> {
   const savedVersion = await byId(servDoc.id, tx);
   const isPostedBefore = Type.isDocument(servDoc.type) && savedVersion && savedVersion.posted;
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
   if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
-  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx);
-  else servDoc = await updateDocument(servDoc, tx);
+  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx, opts);
+  else servDoc = await updateDocument(servDoc, tx, opts);
   if (isPostedAfter) {
     if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
     else await postDocument(servDoc, tx);
@@ -376,6 +377,8 @@ async function saveDoc(
 async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
   return await updateDocument(servDoc, tx);
 }
+
+
 
 async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
   return (await isDocumentUsedInAccumulationWithPropValueByIdInTable(docId, 'Accumulation', tx) ||
@@ -422,13 +425,9 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
 
 function noSqlDocument(flatDoc: INoSqlDocument | DocumentBaseServer): INoSqlDocument | null {
   if (!flatDoc) throw new Error(`lib.noSqlDocument: source is null!`);
-  const { id, date, type, code, description, company, user, posted, deleted,
-    isfolder, parent, info, timestamp, ExchangeCode, ExchangeBase, ...doc } = flatDoc;
+  const { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ...doc } = flatDoc;
   return <INoSqlDocument>
-    {
-      id, date, type, code, description, company, user, posted, deleted,
-      isfolder, parent, info, timestamp, ExchangeCode, ExchangeBase, doc
-    };
+    { id, date, type, code, description, company, user, posted, deleted, isfolder, parent, info, timestamp, ExchangeCode: flatDoc['ExchangeCode'], ExchangeBase: flatDoc['ExchangeBase'], doc };
 }
 
 export function flatDocument(noSqldoc: INoSqlDocument): IFlatDocument {

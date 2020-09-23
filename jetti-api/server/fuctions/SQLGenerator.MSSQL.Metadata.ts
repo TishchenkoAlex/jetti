@@ -290,8 +290,6 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static separator = (type: string, begin: boolean, length = 30) => `\n${'-'.repeat(length)} ${begin ? 'BEGIN' : 'END'} ${type} ${'-'.repeat(length)}\n`;
-
   static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
     const allTypes = types || RegisteredDocument().filter(e => !Type.isOperation(e.type));
@@ -357,7 +355,7 @@ export class SQLGenegatorMetadata {
     DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
     ON [dbo].[Documents]([description],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[type],[company])
+    INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
     for (const catalog of RegisteredDocument().filter(d => d.type.includes('Document.'))) {
@@ -365,7 +363,7 @@ export class SQLGenegatorMetadata {
     DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
     CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
     ON [dbo].[Documents]([date],[id],[parent])
-    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[type],[company])
+    INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
     return select;

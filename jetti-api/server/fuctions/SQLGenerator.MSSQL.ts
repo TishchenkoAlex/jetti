@@ -252,8 +252,6 @@ export class SQLGenegator {
           [company] UNIQUEIDENTIFIER,
           [user] UNIQUEIDENTIFIER,
           [parent] UNIQUEIDENTIFIER,
-          [ExchangeCode] NVARCHAR(50),
-          [ExchangeBase] NVARCHAR(50),
           [doc] NVARCHAR(max) N'$.doc' AS JSON
         )
       ) d

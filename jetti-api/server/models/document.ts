@@ -118,12 +118,6 @@ export class DocumentBase {
   @Props({ type: 'Document.WorkFlow', hiddenInList: true, order: -1, hidden: true })
   workflow: Ref = null;
 
-  @Props({ type: 'string', hiddenInList: true, isAdditional: true, readOnly: true })
-  ExchangeCode = '';
-
-  @Props({ type: 'string', hiddenInList: true, isAdditional: true, readOnly: true })
-  ExchangeBase = '';
-
   private targetProp(target: Object, propertyKey: string): PropOptions {
     const result = Reflect.getMetadata(symbolProps, target, propertyKey);
     return result;

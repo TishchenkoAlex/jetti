@@ -37,10 +37,7 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         [
             taxCheck.inn
         ]);
-<<<<<<< HEAD
-=======
 
->>>>>>> 857bcbba4e24834303377b7fdb0c4f1ce7b72260
     const queryText = `
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
@@ -120,9 +117,9 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
         ]);
     let counter;
     const counterValue = OperationCounterTax[''];
-    const computedValue =  counterValue - 1
+    const computedValue = counterValue - 1
 
-    if (computedValue  <= 0) {
+    if (computedValue <= 0) {
         counter = 'У вас нет задолжностей по чекам.';
     }
     else {
