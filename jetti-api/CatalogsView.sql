@@ -48,13 +48,13 @@ GRANT SELECT ON dbo.[Catalog.Sample] TO jetti;
 
 GO
 
------------------------------- BEGIN Operation.CURR_CB_RUS ------------------------------
+------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
 
 
-      CREATE OR ALTER VIEW dbo.[Operation.CURR_CB_RUS] AS
+      CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment] AS
         
       SELECT
-        d.id, d.type, d.date, d.code, d.description "CURR_CB_RUS", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        d.id, d.type, d.date, d.code, d.description "LotModelsVsDepartment", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
         , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
@@ -66,21 +66,22 @@ GO
         , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
         , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
         , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
-        , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
-        , d.[StartDate] [StartDate]
-        , d.[EndDate] [EndDate]
+        , d.[Lot] [Lot]
+        , d.[isProfitability] [isProfitability]
+        , d.[Lot_BonusManager] [Lot_BonusManager]
+        , d.[Lot_CommisionAllUnic] [Lot_CommisionAllUnic]
       
-        , ISNULL(l5.description, d.description) [CURR_CB_RUS.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CURR_CB_RUS.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CURR_CB_RUS.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [CURR_CB_RUS.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [CURR_CB_RUS.Level1]
-      FROM [Operation.CURR_CB_RUS.v] d WITH (NOEXPAND)
-        LEFT JOIN [Operation.CURR_CB_RUS.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Operation.CURR_CB_RUS.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Operation.CURR_CB_RUS.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Operation.CURR_CB_RUS.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Operation.CURR_CB_RUS.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+        , ISNULL(l5.description, d.description) [LotModelsVsDepartment.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LotModelsVsDepartment.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [LotModelsVsDepartment.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [LotModelsVsDepartment.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [LotModelsVsDepartment.Level1]
+      FROM [Operation.LotModelsVsDepartment.v] d WITH (NOEXPAND)
+        LEFT JOIN [Operation.LotModelsVsDepartment.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Operation.LotModelsVsDepartment.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Operation.LotModelsVsDepartment.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Operation.LotModelsVsDepartment.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Operation.LotModelsVsDepartment.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -92,11 +93,10 @@ GO
         LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
         LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
         LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
-        LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
     ;
 GO
-GRANT SELECT ON dbo.[Operation.CURR_CB_RUS] TO jetti;
------------------------------- END Operation.CURR_CB_RUS ------------------------------
+GRANT SELECT ON dbo.[Operation.LotModelsVsDepartment] TO jetti;
+------------------------------ END Operation.LotModelsVsDepartment ------------------------------
 
 GO
 
@@ -1082,6 +1082,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[kind] [kind]
         , d.[ShortName] [ShortName]
+        , d.[SecurityGroup] [SecurityGroup]
         , ISNULL([StaffingPositionManager.v].description, '') [StaffingPositionManager.value], d.[StaffingPositionManager] [StaffingPositionManager.id], [StaffingPositionManager.v].type [StaffingPositionManager.type]
       
         , ISNULL(l5.description, d.description) [DepartmentCompany.Level5]
@@ -1460,6 +1461,7 @@ GO
         , d.[DocumentDate] [DocumentDate]
         , d.[DocumentAuthority] [DocumentAuthority]
         , d.[AccountAD] [AccountAD]
+        , d.[Pincode] [Pincode]
         , d.[Fired] [Fired]
       
         , ISNULL(l5.description, d.description) [Person.Level5]
