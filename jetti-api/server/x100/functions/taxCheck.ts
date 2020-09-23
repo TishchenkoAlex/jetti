@@ -116,12 +116,11 @@ export async function updateOperationTaxCheck(taxCheck: ITaxCheck): Promise<IUpd
         ]);
     let counter;
     const counterValue = OperationCounterTax[''];
-    const computedValue = counterValue - 1
+    const computedValue = counterValue - 1;
 
     if (computedValue <= 0) {
         counter = 'У вас нет задолжностей по чекам.';
-    }
-    else {
+    } else {
         counter = `Количество не отправленных чеков: ${computedValue}`;
     }
     if (!tc) {

@@ -106,31 +106,34 @@ export class SQLGenegatorMetadata {
   static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') {
-        return `
+      switch (type) {
+        case 'boolean':
+          return `
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
-      }
-      if (type === 'number') {
-        return `
+        case 'number':
+          return `
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
-      }
-      if (type === 'date') {
-        return `
+        case 'date':
+          return `
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
-      }
-      if (type === 'datetime') {
-        return `
+        case 'datetime':
+          return `
         , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
-      }
-      return `
+        case 'string':
+          return `
+        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
+        default:
+          return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
+      }
     };
 
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
-    for (const prop in excludeRegisterAccumulatioProps(doc)) {
+    const Props = excludeRegisterAccumulatioProps(doc);
+    for (const prop in Props) {
       fields += `[${prop}],`;
       const type: string = doc[prop].type || 'string';
       insert += `
@@ -157,12 +160,12 @@ export class SQLGenegatorMetadata {
       FROM dbo.[Register.Info] WHERE type = N'${type}';
     GO
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
-    GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](
-      company,date,id
-    )
-    GO
-    `;
+    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}]([company], [date], [id])
+    ${Object.keys(Props)
+        .filter(key => Props[key].isIndexed)
+        .map(key => `CREATE NONCLUSTERED INDEX[${type}.${key}] ON [${type}]([${key}]);`)
+        .join('\n    ')}
+    GO`;
     return query;
   }
 
@@ -214,7 +217,7 @@ export class SQLGenegatorMetadata {
         .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
       subQueries.push(`${this.typeSpliter(operation.type, true)}
       BEGIN TRY
-      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${ type}.v];
+      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
       END TRY
       BEGIN CATCH
       END CATCH`);
@@ -301,26 +304,26 @@ export class SQLGenegatorMetadata {
       const Props = doc.Props();
       const select = SQLGenegator.QueryListRaw(Props, doc.type);
       subQueries.push(`${this.typeSpliter(catalog.type, true)}
-        BEGIN TRY
-        ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
-        END TRY
-        BEGIN CATCH
-        END CATCH`);
+BEGIN TRY
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
+END TRY
+BEGIN CATCH
+END CATCH`);
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
       subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
       ${Object.keys(Props)
           .filter(key => Props[key].isIndexed)
-          .map(key => `CREATE        NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+          .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
           .join('\n')}
       ${Type.isDocument(doc.type) ? `
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id) INCLUDE([company]);`}
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code] ON [${catalog.type}.v](code,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.user] ON [${catalog.type}.v]([user],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id) INCLUDE([date]);`);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id) INCLUDE([company]);` : `
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id) INCLUDE([company]);`}
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code] ON [${catalog.type}.v](code,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.user] ON [${catalog.type}.v]([user],id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id) INCLUDE([date]);`);
 
       subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;`);
 
@@ -333,14 +336,14 @@ export class SQLGenegatorMetadata {
 
     if (!types) {
       subQueries.push(`
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [Document.Operation.v]([Group],id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
-      `);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [Document.Operation.v]([Group],id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
+`);
     }
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
@@ -507,8 +510,8 @@ export class SQLGenegatorMetadata {
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns}) WITH (MAXDOP=4);
-    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate${columns});
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO

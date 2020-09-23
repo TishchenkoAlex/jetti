@@ -7,16 +7,16 @@ import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 })
 export class RegisterInfoTaxCheck extends RegisterInfo {
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', isIndexed: true })
   clientInn = '';
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', isIndexed: true })
   inn = '';
 
   @Props({ type: 'number' })
   totalAmount = 0;
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', isIndexed: true })
   receiptId = '';
 
   @Props({ type: 'datetime' })

@@ -70,8 +70,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.AccountablePersons] ADD CONSTRAINT [PK_Register.Accumulation.AccountablePersons] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    ALTER TABLE [Register.Accumulation.AccountablePersons] ADD CONSTRAINT [PK_Register.Accumulation.AccountablePersons] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
@@ -149,8 +149,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Price], [Amount], [AmountInBalance], [batch]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.PaymentBatch] ADD CONSTRAINT [PK_Register.Accumulation.PaymentBatch] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Price], [Amount], [AmountInBalance], [batch]);
+    ALTER TABLE [Register.Accumulation.PaymentBatch] ADD CONSTRAINT [PK_Register.Accumulation.PaymentBatch] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
     GO
@@ -228,8 +228,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department], [CashShift], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.OrderPayment] ADD CONSTRAINT [PK_Register.Accumulation.OrderPayment] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department], [CashShift], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.OrderPayment] ADD CONSTRAINT [PK_Register.Accumulation.OrderPayment] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
@@ -307,8 +307,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.AP] ADD CONSTRAINT [PK_Register.Accumulation.AP] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    ALTER TABLE [Register.Accumulation.AP] ADD CONSTRAINT [PK_Register.Accumulation.AP] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
@@ -386,8 +386,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.AR] ADD CONSTRAINT [PK_Register.Accumulation.AR] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    ALTER TABLE [Register.Accumulation.AR] ADD CONSTRAINT [PK_Register.Accumulation.AR] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
@@ -455,8 +455,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Bank] ADD CONSTRAINT [PK_Register.Accumulation.Bank] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Bank] ADD CONSTRAINT [PK_Register.Accumulation.Bank] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
@@ -516,8 +516,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount], [Info]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Balance] ADD CONSTRAINT [PK_Register.Accumulation.Balance] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount], [Info]);
+    ALTER TABLE [Register.Accumulation.Balance] ADD CONSTRAINT [PK_Register.Accumulation.Balance] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
@@ -587,8 +587,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]);
+    ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
     GO
@@ -658,8 +658,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting], [Info]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Balance.Report] ADD CONSTRAINT [PK_Register.Accumulation.Balance.Report] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting], [Info]);
+    ALTER TABLE [Register.Accumulation.Balance.Report] ADD CONSTRAINT [PK_Register.Accumulation.Balance.Report] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
@@ -727,8 +727,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Cash] ADD CONSTRAINT [PK_Register.Accumulation.Cash] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Cash] ADD CONSTRAINT [PK_Register.Accumulation.Cash] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
@@ -798,8 +798,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Cash.Transit] ADD CONSTRAINT [PK_Register.Accumulation.Cash.Transit] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Cash.Transit] ADD CONSTRAINT [PK_Register.Accumulation.Cash.Transit] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
@@ -881,8 +881,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Inventory] ADD CONSTRAINT [PK_Register.Accumulation.Inventory] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]);
+    ALTER TABLE [Register.Accumulation.Inventory] ADD CONSTRAINT [PK_Register.Accumulation.Inventory] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
@@ -960,8 +960,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Loan] ADD CONSTRAINT [PK_Register.Accumulation.Loan] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    ALTER TABLE [Register.Accumulation.Loan] ADD CONSTRAINT [PK_Register.Accumulation.Loan] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1023,8 +1023,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]);
+    ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1094,8 +1094,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]);
+    ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1207,8 +1207,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Sales] ADD CONSTRAINT [PK_Register.Accumulation.Sales] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]);
+    ALTER TABLE [Register.Accumulation.Sales] ADD CONSTRAINT [PK_Register.Accumulation.Sales] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1290,8 +1290,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Salary] ADD CONSTRAINT [PK_Register.Accumulation.Salary] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Salary] ADD CONSTRAINT [PK_Register.Accumulation.Salary] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1359,8 +1359,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Depreciation] ADD CONSTRAINT [PK_Register.Accumulation.Depreciation] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [currency], [Department], [OE], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Depreciation] ADD CONSTRAINT [PK_Register.Accumulation.Depreciation] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1440,8 +1440,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.CashToPay] ADD CONSTRAINT [PK_Register.Accumulation.CashToPay] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]);
+    ALTER TABLE [Register.Accumulation.CashToPay] ADD CONSTRAINT [PK_Register.Accumulation.CashToPay] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1527,8 +1527,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.BudgetItemTurnover] ADD CONSTRAINT [PK_Register.Accumulation.BudgetItemTurnover] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]);
+    ALTER TABLE [Register.Accumulation.BudgetItemTurnover] ADD CONSTRAINT [PK_Register.Accumulation.BudgetItemTurnover] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1602,8 +1602,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency], [Amount], [AmountInBalance], [AmountInAccounting]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Intercompany] ADD CONSTRAINT [PK_Register.Accumulation.Intercompany] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency], [Amount], [AmountInBalance], [AmountInAccounting]);
+    ALTER TABLE [Register.Accumulation.Intercompany] ADD CONSTRAINT [PK_Register.Accumulation.Intercompany] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1689,8 +1689,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AmountOperation], [AmountPaid], [DateOperation], [DatePaid], [AuthorizationCode]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.Acquiring] ADD CONSTRAINT [PK_Register.Accumulation.Acquiring] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AmountOperation], [AmountPaid], [DateOperation], [DatePaid], [AuthorizationCode]);
+    ALTER TABLE [Register.Accumulation.Acquiring] ADD CONSTRAINT [PK_Register.Accumulation.Acquiring] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1760,8 +1760,8 @@
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]) WITH (MAXDOP=4);
-    ALTER TABLE [Register.Accumulation.StaffingTable] ADD CONSTRAINT [PK_Register.Accumulation.StaffingTable] PRIMARY KEY NONCLUSTERED (id) WITH (MAXDOP=4);
+      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]);
+    ALTER TABLE [Register.Accumulation.StaffingTable] ADD CONSTRAINT [PK_Register.Accumulation.StaffingTable] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO
