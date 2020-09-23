@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { FormArray, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
 import { merge, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -27,6 +27,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   @Input() formGroup: FormArray;
   @Input() control: TableDynamicControl;
   @ViewChildren(EditableColumn) editableColumns: QueryList<EditableColumn>;
+  @Output() deleteRequest = new EventEmitter();
 
   dataSource: any[];
   columns: ColumnDef[] = [];
@@ -64,7 +65,6 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   }
 
   getControlValue(index: number, field: string, type: string) {
-
     const control = this.getControl(index).get(field);
     if (!control) return null;
     const value = control.value;
@@ -81,7 +81,7 @@ export class TablePartsComponent implements OnInit, OnDestroy {
     this.selection = [newFormGroup.getRawValue()];
     this.formGroup.markAsDirty();
   }
-
+  
   add() {
     const newFormGroup = cloneFormGroup(this.formGroup['sample']);
     Object.values(newFormGroup.controls).forEach(c => { if (c.validator) { c.setValidators(TablePartValidator); } });
@@ -173,11 +173,9 @@ export class TablePartsComponent implements OnInit, OnDestroy {
   calcTotals(field: string): number {
     return (this.formGroup.value as any[]).map(v => v[field]).reduce((a, b) => a + b, 0);
   }
-
   isDate(value) {
     return value instanceof Date;
   }
-
   ngOnDestroy() {
     this._subscription$.unsubscribe();
     this._valueChanges$.unsubscribe();

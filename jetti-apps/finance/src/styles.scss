@@ -161,7 +161,9 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 .p-dropdown .p-dropdown-clear-icon {
   right: 3.5em;
 }
-
+.p-panel.p-panel-toggleable .p-panel-header{
+  padding: 3px 9px;
+}
 // // buttons
 // .p-button-icon-only .fa {
 //   margin-top: -.45em !important;
@@ -173,18 +175,36 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 //   width: 28px;
 //   height: 28px;
 // }
-
+.p-fluid .p-inputgroup .p-button.p-button-icon-only{
+  width: 26px;
+    height: 26px;
+}
 .p-button-icon-only .p-button-icon-left {
   margin-top: -.43em;
 }
-
-
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link{
+  height: 33px;
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  border: solid #dee2e6;
+  border-width: 0 0 2px 0;
+  border-color: transparent transparent #dee2e6 transparent;
+  background: #ffffff;
+  color: #6c757d;
+  padding: 1rem;
+  font-weight: 600;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  transition: box-shadow 0.2s;
+  height: 33px;
+}
 .p-button-text-icon-left .fa {
   margin-top: -.41em !important;
 }
 
 .p-button-icon-only .pi {
   // font-size: 16px;
+  display: contents;
   margin-top: -.48em !important;
   margin-left: -.48em !important;
 }
@@ -233,7 +253,11 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   background-color: #ffffff;
   border-color: #cccccc;
 }
+.p-inputtext:enabled:focus{
+  box-shadow: 0 0 0 1.1px #a6d5fa;
+  border-color: #2196F3;
 
+}
 .p-button-text-icon-left .pi {
   font-size: 16px;
   margin-top: -.48em !important;
@@ -245,11 +269,22 @@ p-table .p-button-icon-only .pi {
 
 .p-toolbar .p-button {
   margin-right: 1px;
+  width: max-content;
+    height: 26px;
+}
+.p-button.p-button-warning, .p-buttonset.p-button-warning > .p-button, .p-splitbutton.p-button-warning > .p-button {
+  color: #ffffff;
+}
+.p-button.p-button-icon-only {
+  width: 26px;
+  height: 26px;
+  padding: 0.5rem 0;
 }
 
 .p-toolbar .p-button.p-button-icon-only {
   margin-right: 1px;
-  width: 28px;
+  width: 26px;
+  height: 26px;
 }
 
 p-autocomplete {
@@ -406,7 +441,13 @@ body .p-treetable .p-treetable-thead > tr > th, body .p-treetable .p-treetable-t
 .p-state-highlight {
   outline: 0px;
 }
-
+.p-fluid .p-dropdown .p-dropdown-label{
+  height: 26px;
+  font-size: inherit;
+}
+.p-inputgroup .p-inputtext, .p-fluid .p-inputgroup .p-inputtext{
+  height: 26px;
+}
 .p-table .p-sortable-column.p-state-highlight {
   background-color: inherit !important;
   border-top-color: #dddddd !important;
@@ -415,11 +456,17 @@ body .p-treetable .p-treetable-thead > tr > th, body .p-treetable .p-treetable-t
   font-weight: bolder !important
 }
 
-
+.p-datatable .p-datatable-tbody > tr.p-highlight{
+  // FIXME:
+  background-color: #0b7ad1;
+}
 
 .p-sortable-column-icon {
   color: inherit !important;
   font-weight: normal !important;
+}
+.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td{
+  padding: .343em;
 }
 
 body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
@@ -444,3 +491,5 @@ body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
   border-width: 1px 1px 1px 1px;
   padding: 0.1rem 0.1rem;
 }
+// <td style="width: 50px; text-align: right;"> 1 </td>
+// <td style="width: 50px; text-align: right;"> 3 </td>

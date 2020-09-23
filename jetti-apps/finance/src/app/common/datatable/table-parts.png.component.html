@@ -48,11 +48,12 @@
       <td *ngFor="let col of columns" [ngStyle]="col.style" pEditableColumn [pEditableColumnField]="col.field"
         class="p-resizable-column">
         <p-cellEditor>
-          <ng-template pTemplate="input">
+          <ng-template   pTemplate="input">
             <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
           </ng-template>
-          <ng-template pTemplate="output">
-            <span [ngSwitch]="col.type">
+          <!-- (click)="OnOpen($event)" -->
+          <ng-template  pTemplate="output">
+            <span  [ngSwitch]="col.type">
               <span
                 *ngSwitchCase="'date'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy' }}</span>
               <span
@@ -63,7 +64,7 @@
                 <i
                   [class]="getControl(rowData.index).get(col.field)?.value ? 'far fa-check-square' : 'far fa-square'"></i>
               </span>
-              <span *ngSwitchDefault>{{ getControlValue(rowData.index, col.field, col.type) }}
+              <span   *ngSwitchDefault > {{ getControlValue(rowData.index, col.field, col.type) }}
               </span>
             </span>
           </ng-template>
