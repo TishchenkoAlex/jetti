@@ -266,7 +266,9 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 p-table .p-button-icon-only .pi {
   font-size: 12px;
 }
-
+td{ 
+  height: 35px;
+}
 .p-toolbar .p-button {
   margin-right: 1px;
   width: max-content;
@@ -466,7 +468,8 @@ body .p-treetable .p-treetable-thead > tr > th, body .p-treetable .p-treetable-t
   font-weight: normal !important;
 }
 .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td{
-  padding: .343em;
+  height: 25px;
+  padding: 0px;
 }
 
 body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
@@ -482,7 +485,7 @@ body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
 }
 
 .p-treetable.p-treetable-sm .p-treetable-tbody > tr > td {
-  padding: 0.1rem 0.1rem;
+  padding: 0px;
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
@@ -491,5 +494,21 @@ body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
   border-width: 1px 1px 1px 1px;
   padding: 0.1rem 0.1rem;
 }
-// <td style="width: 50px; text-align: right;"> 1 </td>
-// <td style="width: 50px; text-align: right;"> 3 </td>
+#p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > div > input {
+  width: 100%;
+height: 23px;  
+}
+#p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > div > button{
+  height: 23px;
+}
+.p-inputgroup-addon:first-child, .p-inputgroup button:first-child, .p-inputgroup input:first-child{
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px; 
+}
+#p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
+  height: 23px;  
+
+}
+#p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete{
+  padding: 1px;
+}

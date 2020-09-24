@@ -51,10 +51,9 @@
           <ng-template   pTemplate="input">
             <j-control [control]="col.control" [form]="getControl(rowData.index)"></j-control>
           </ng-template>
-          <!-- (click)="OnOpen($event)" -->
           <ng-template  pTemplate="output">
             <span  [ngSwitch]="col.type">
-              <span
+              <span 
                 *ngSwitchCase="'date'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy' }}</span>
               <span
                 *ngSwitchCase="'datetime'">{{ getControlValue(rowData.index, col.field, col.type) | date:'dd.MM.yyyy HH:mm:ss' }}</span>

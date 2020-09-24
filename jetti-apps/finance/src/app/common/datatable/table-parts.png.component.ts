@@ -10,6 +10,7 @@ import { ApiService } from '../../services/api.service';
 import { DocService } from '../doc.service';
 import { SortEvent } from 'primeng/api';
 import { EditableColumn } from 'primeng/table';
+import { calcPossibleSecurityContexts } from '@angular/compiler/src/template_parser/binding_parser';
 
 
 const TablePartValidator: ValidatorFn = (c: AbstractControl) => {
@@ -135,9 +136,15 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
   }
 
-  onEditComplete(event) { }
-  onEditInit(event) { }
-  onEditCancel(event) { }
+  onEditComplete(event) {
+    console.log(200)
+   }
+  onEditInit(event) {
+    console.log(300)
+   }
+  onEditCancel(event) { 
+    console.log(400)
+  }
 
   customSort(event: SortEvent) {
     event.data = this.formGroup.getRawValue();
