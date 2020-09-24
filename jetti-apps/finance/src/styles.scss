@@ -462,7 +462,9 @@ body .p-treetable .p-treetable-thead > tr > th, body .p-treetable .p-treetable-t
   // FIXME:
   background-color: #0b7ad1;
 }
-
+.p-dialog .p-dialog-header{
+  padding: 10px;
+}
 .p-sortable-column-icon {
   color: inherit !important;
   font-weight: normal !important;
@@ -511,4 +513,13 @@ height: 23px;
 }
 #p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete{
   padding: 1px;
+}
+#description{
+  display: flex;
+    align-items: center;
+}
+#description > span > i {
+  height: 100%;
+    position: relative;
+    top: 3px;
 }
