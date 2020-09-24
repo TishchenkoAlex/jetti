@@ -136,15 +136,9 @@ export class TablePartsComponent implements OnInit, OnDestroy {
 
   }
 
-  onEditComplete(event) {
-    console.log(200)
-   }
-  onEditInit(event) {
-    console.log(300)
-   }
-  onEditCancel(event) { 
-    console.log(400)
-  }
+  onEditComplete(event) {}
+  onEditInit(event) {}
+  onEditCancel(event) {}
 
   customSort(event: SortEvent) {
     event.data = this.formGroup.getRawValue();
