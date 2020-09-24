@@ -33,7 +33,8 @@ import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { DataViewModule } from 'primeng/dataview';
 import {FileUploadModule} from 'primeng/fileupload';
 import {ListboxModule} from 'primeng/listbox';
-import { TableModule } from 'primeng/table'; // ' ./common/datatable/table';
+import { TableModule } from '../app/common/datatable/jetti_tabel'; // ' ./common/datatable/table';
+
 
 @NgModule({
   exports: [
