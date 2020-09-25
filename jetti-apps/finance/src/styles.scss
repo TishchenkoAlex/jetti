@@ -507,7 +507,7 @@ height: 23px;
 }
  
 #p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
-  height: 23px;  
+  height: 25px;  
 
 }
 #p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete{
@@ -672,10 +672,6 @@ height: 23px;
   border-top-right-radius: 0px; 
   border-bottom-right-radius: 0px; 
 }
-
-.p-toolbar, .p-toolbar-group-left, .p-toolbar-group-right{
-  margin-left: auto;
-}
 table > thead > tr > th > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
   height: 21px !important;
   width: 21px !important;
@@ -693,6 +689,35 @@ table > thead > tr > th> div > j-autocomplete-png > form > div > div > button {
 
 // }
 
-table > tbody > tr:nth-child(1) > td:nth-child(1){
+#p-tabpanel-4 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing{
+  padding: 0px;
+}
+#Document\.Operation > div > p-toolbar:nth-child(3) > div > div{
+  margin-left: auto;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.scrollTo-Document\.Operation.p-selectable-row.ng-star-inserted.p-highlight.p-highlight-contextmenu > td:nth-child {
+  font-size: 12.8px;
+}
+table > tbody > tr > td{
+  font-size: 12.8px;
+}
+
+
+
+.p-fluid .p-inputtext{
+  font-size:12.8px;
+  font-stretch:100%;
+  font-style:normal;
+  font-variant-caps:normal;
+  font-variant-east-asian:normal;
+  font-variant-ligatures:normal;
+  font-variant-numeric:normal;
+  font-weight:400;
+}
+j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing{
+  height: 20px;
   padding: 0px !important;
 }
+// #p-tabpanel-6 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing{
+//   padding: 0px;
+// }
