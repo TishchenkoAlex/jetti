@@ -118,7 +118,7 @@
   background-color: #f0f0f0;
   color: #222222;
 }
-.p-inputgroup .p-inputgroup-addon:first-child {
+/* .p-inputgroup .p-inputgroup-addon:first-child {
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
 }
@@ -133,7 +133,7 @@
 .p-inputgroup .p-button:last-child {
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
-}
+} */
 
 .p-float-label input.ng-dirty.ng-invalid ~ label {
   color: #cd0a0a;

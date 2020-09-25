@@ -184,6 +184,7 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 }
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link{
   height: 33px;
+  margin-left: 4px;
 }
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   border: solid #dee2e6;
@@ -471,7 +472,8 @@ body .p-treetable .p-treetable-thead > tr > th, body .p-treetable .p-treetable-t
 }
 .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td{
   height: 25px;
-  padding: 0px;
+  padding: 6px;
+
 }
 
 body .p-table .p-table-thead > tr > th, body .p-table .p-table-tfoot > tr > td {
@@ -503,10 +505,7 @@ height: 23px;
 #p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr.p-selectable-row.ng-star-inserted.p-highlight > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > div > button{
   height: 23px;
 }
-.p-inputgroup-addon:first-child, .p-inputgroup button:first-child, .p-inputgroup input:first-child{
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px; 
-}
+ 
 #p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr > td.p-resizable-column.p-editable-column.ng-star-inserted.p-cell-editing > p-celleditor > j-control > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
   height: 23px;  
 
@@ -522,4 +521,178 @@ height: 23px;
   height: 100%;
     position: relative;
     top: 3px;
+}
+.p-panel .p-panel-header .p-panel-title{
+  font-weight: 900;
+}
+.p-panel .p-panel-content{
+  background-color: #f5f5f5;
+  border-color: #dddddd;
+  border: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    background: linear-gradient(to bottom,#f6f7f9 0,#ebedf0 100%);
+}
+.p-toolbar{
+  background-color: #f5f5f5;
+  border-color: #dddddd;
+  border: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    background: linear-gradient(to bottom,#f6f7f9 0,#ebedf0 100%);
+}
+.p-panel.p-panel-toggleable .p-panel-header{
+ background: linear-gradient(to bottom,#f6f7f9 0,#ebedf0 100%);
+}
+.p-datatable .p-datatable-thead > tr > th{
+  background: linear-gradient(to bottom,#f6f7f9 0,#ebedf0 100%);
+}
+ 
+#p-tabpanel-2 > j-control > div > div > div > j-table-part-png > p-toolbar > div > div.p-toolbar-group-right {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+ .pi-minus:before{
+  position: relative;
+  top: -2px;
+ }
+ #p-panel-0-content > div{
+   background: #ffffff;
+ }
+ .p-datatable-resizable .p-datatable-thead > tr > th, .p-datatable-resizable .p-datatable-tfoot > tr > td, .p-datatable-resizable .p-datatable-tbody > tr > td{
+
+  border: 1px solid #d9d9d9;
+ }
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
+  padding-bottom:3.087px;
+  padding-left:3.087px;
+  padding-right:3.087px;
+  padding-top:3.087px;
+  // height: 19px;
+ }
+ .p-datatable .p-datatable-thead > tr > th{
+  padding: 3px !important;
+ }
+ .p-fluid .p-calendar .p-inputtext{
+  // height: 10px;
+ }
+ .p-inputgroup .p-inputtext, .p-fluid .p-inputgroup .p-inputtext{
+  height: 26px;
+ }
+
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(2) > div > p-calendar > span > input{
+   height: 21px;
+ }
+
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(3) > div > input{
+   height: 21px;
+ }
+
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+   height: 21px;
+   width: 21px;
+ }
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+  height: 21px;
+  width: 21px;
+ }
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > button:nth-child(4){
+  height: 21px;
+  width: 21px;
+ }
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(5) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+   height: 21px;
+   width: 21px;
+ }
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(5) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+   height: 21px;
+   width: 21px;
+ }
+
+ #Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(5) > div > j-autocomplete-png > form > div > div > button:nth-child(4){
+   height: 21px;
+   width: 21px;
+ }
+#Document\.UserSettings > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(6) > div > p-tristatecheckbox > div > div.p-checkbox-box {
+  height: 21px;
+  width: 22px;
+}
+
+
+.p-datatable-resizable .p-datatable-thead > tr > th, .p-datatable-resizable .p-datatable-tfoot > tr > td, .p-datatable-resizable .p-datatable-tbody > tr > td{
+  height: 25px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+  height: 21px;
+  width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(4) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+   height: 21px;
+   width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(5) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+   height: 21px;
+   width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(5) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+   height: 21px;
+   width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(2) > div > p-calendar > span > input{
+   height: 21px;
+   width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(3) > div > input{
+   height: 21px;
+   width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(6) > div > input{
+  height: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(7) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+  height: 21px;
+  width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(7) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+  height: 21px;
+  width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(8) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+  height: 21px;
+  width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(8) > div > j-autocomplete-png > form > div > div > button:nth-child(3){
+  height: 21px;
+  width: 21px;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(9) > div > j-autocomplete-png > form > div > div > button:nth-child(2){
+  height: 21px;
+  width: 21px;
+}
+.p-inputgroup-addon:last-child, .p-inputgroup button:last-child, .p-inputgroup input:last-child{
+  border-top-right-radius: 0px; 
+  border-bottom-right-radius: 0px; 
+}
+
+.p-toolbar, .p-toolbar-group-left, .p-toolbar-group-right{
+  margin-left: auto;
+}
+table > thead > tr > th > div > j-autocomplete-png > form > div > div > p-autocomplete > span > input{
+  height: 21px !important;
+  width: 21px !important;
+}
+table > thead > tr > th > div > input{
+  height: 21px !important;
+ 
+}
+table > thead > tr > th> div > j-autocomplete-png > form > div > div > button {
+  height: 21px !important;
+  width: 21px !important;
+}
+// table > tbody > tr.scrollTo-Document\.Operation.p-selectable-row.ng-star-inserted.p-highlight.p-highlight-contextmenu > td{
+//   padding: 4px;
+
+// }
+
+table > tbody > tr:nth-child(1) > td:nth-child(1){
+  padding: 0px !important;
 }

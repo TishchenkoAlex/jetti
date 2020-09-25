@@ -9,7 +9,7 @@
   <div class="p-toolbar-group-right">
     <div class="p-inputgroup">
     <input #searchKeyword type="text" placeholder="Keyword"
-      style="width:auto">
+      style="border:1px black" > 
       <button pButton type="button" icon="pi pi-search" class="p-button-success" (click)="search(searchKeyword.value)"></button>
       <button pButton type="button" icon="pi pi-ban" class="p-button-danger" (click)="searchKeyword.value = ''; search(searchKeyword.value)"></button>
   </div>
