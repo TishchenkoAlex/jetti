@@ -799,14 +799,14 @@ export class BankStatementUnloader {
     const query = `
     SELECT
         IIF(@p2=1,N'2.00',N'1.02') as N'ВерсияФормата'
-        , IIF(@p2=1,'UTF8','UTF-8') as N'Кодировка'
+        , IIF(@p2=1,'Windows','UTF-8') as N'Кодировка'
         , IIF(@p2=1,N'Бухгалтерия для Казахстана, редакция 3.0',N'1С:ERP Управление предприятием 2')  as N'Отправитель'
         , '' as N'Получатель'
         , FORMAT (GETDATE(), 'dd.MM.yyyy') as N'ДатаСоздания'
         , FORMAT (GETDATE(), 'HH:mm:ss') as N'ВремяСоздания'
         , FORMAT (MIN(docs.[date]), 'dd.MM.yyyy') as N'ДатаНачала'
         , FORMAT (MAX(docs.[date]), 'dd.MM.yyyy') as N'ДатаКонца'
-      , N'Платежное поручение' as N'Документ'
+      , IIF(@p2=1,N'ПлатежноеПоручение',N'Платежное поручение') as N'Документ'
     FROM [dbo].[Documents] as docs
     WHERE docs.[id] in (@p1)`;
     const result = await this.executeQuery(query, [null, this.isKAZAKHSTAN() ? 1 : 0]);

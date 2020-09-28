@@ -376,6 +376,7 @@ ORDER BY
 
   async beforeSave(tx: MSSQL): Promise<this> {
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
+    if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
     return this;
   }
 
