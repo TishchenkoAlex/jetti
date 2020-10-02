@@ -90,6 +90,12 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.Country', order: 777 })
   Country: Ref = null;
 
+  @Props({ type: 'Catalog.Product', order: 777, label: 'Lot/Service' })
+  Lot: Ref = null;
+
+  @Props({ type: 'number', order: 777, label: 'Lot/Service (quantity)' })
+  LotQty = 0;
+
   @Props({ type: 'Catalog.LoanRepaymentProcedure', order: 777 })
   LoanRepaymentProcedure: Ref = null;
 

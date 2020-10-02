@@ -37,6 +37,7 @@ import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationGroup } from './Catalogs/Catalog.Operation.Group';
 import { CatalogPerson } from './Catalogs/Catalog.Person';
 import { CatalogPriceType } from './Catalogs/Catalog.PriceType';
+import { CatalogPromotionChannel } from './Catalogs/Catalog.PromotionChannel';
 import { CatalogProduct } from './Catalogs/Catalog.Product';
 import { CatalogProductCategory } from './Catalogs/Catalog.ProductCategory';
 import { CatalogProductKind } from './Catalogs/Catalog.ProductKind';
@@ -216,6 +217,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategory },
   { type: 'Catalog.ProductKind', Class: CatalogProductKind },
   { type: 'Catalog.Product.Report', Class: CatalogProductReport },
+  { type: 'Catalog.PromotionChannel', Class: CatalogPromotionChannel },
   { type: 'Catalog.Storehouse', Class: CatalogStorehouse },
   { type: 'Catalog.Operation', Class: CatalogOperation },
   { type: 'Catalog.Operation.Group', Class: CatalogOperationGroup },

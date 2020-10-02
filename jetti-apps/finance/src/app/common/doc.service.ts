@@ -58,7 +58,7 @@ export class DocService {
 
   async post(doc: DocumentBase, close = false) {
     const postedDoc = await this.api.savePostDoc(doc).toPromise();
-    this.openSnackBar('success', postedDoc.description, postedDoc.posted ? 'posted' : 'unposted');
+    this.showOnPostDocMessage(postedDoc);
     const subject$ = close ? this._saveClose$ : this._post$;
     subject$.next(postedDoc);
   }
@@ -99,6 +99,10 @@ export class DocService {
 
   openSnackBar(severity: string, summary: string, detail: string) {
     this.messageService.add({ severity, summary, detail, key: '1' });
+  }
+
+  showOnPostDocMessage(doc: DocumentBase) {
+    this.openSnackBar('success', doc.description, doc.posted ? 'posted' : 'unposted');
   }
 
   showDialog(uuid: string, doc: DocumentBase) {

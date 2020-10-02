@@ -267,17 +267,17 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
     for (const s of this.selection) {
       if (s.deleted) continue;
       this.lds.counter = Math.round(100 - ((i--) / tasksCount * 100));
-      if (mode === 'post') {
-        try {
-          await this.ds.posById(s.id);
-          s.posted = true;
-        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
-      } else {
-        try {
-          await this.ds.unpostById(s.id);
-          s.posted = false;
-        } catch (err) { this.ds.openSnackBar('error', s.description, err); }
+
+      try {
+        if (mode === 'post') await this.ds.posById(s.id);
+        else await this.ds.unpostById(s.id);
+        s.posted = mode === 'post';
+        const row = this.dataSource.renderedData.find(e => s.id === e.id);
+        this.ds.showOnPostDocMessage({ ...row, ...s });
+      } catch (err) {
+        this.ds.openSnackBar('error', s.description, err);
       }
+
       this.selection = [s];
       setTimeout(() => scrollIntoViewIfNeeded(this.type, 'ui-state-highlight'));
     }

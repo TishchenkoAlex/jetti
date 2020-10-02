@@ -285,12 +285,12 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   }
 
   onOpen() { this.executeDocumentModuleMethod('onOpen'); }
-  beforeSave() { this.executeDocumentModuleMethod('beforeSave'); }
+  beforeSave() { this.executeDocumentModuleMethod('beforeSaveOnClient'); }
   beforeClose() { this.executeDocumentModuleMethod('beforeClose'); }
-  beforeDelete() { this.executeDocumentModuleMethod('beforeDelete'); }
-  beforePost() { this.executeDocumentModuleMethod('beforePost'); }
+  beforeDelete() { this.executeDocumentModuleMethod('beforeDeleteOnClient'); }
+  beforePost() { this.executeDocumentModuleMethod('beforePostOnClient'); }
   beforeCopy() { this.executeDocumentModuleMethod('beforeCopy'); }
-  beforeUnPost() { this.executeDocumentModuleMethod('beforeUnPost'); }
+  beforeUnPost() { this.executeDocumentModuleMethod('beforeUnPostOnClient'); }
 
   private executeDocumentModuleMethod(methodName: string, params?: [{ key: string, value: any }]) {
     const func = new Function('', this.metadata.module).bind(this)();
