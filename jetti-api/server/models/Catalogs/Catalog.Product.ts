@@ -22,7 +22,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'boolean', hidden: false, hiddenInList: true, isAdditional: true })
   isfolder = false;
 
-  @Props({ type: 'Catalog.ProductKind', label: 'Kind', required: true, order: 5, onChangeServer: true, useIn: 'all' })
+  @Props({ type: 'Catalog.ProductKind', label: 'Kind', order: 5, onChangeServer: true, useIn: 'all' })
   ProductKind: Ref = null;
 
   @Props({ type: 'Catalog.ProductCategory', label: 'Сategory', order: 666, useIn: 'all' })
