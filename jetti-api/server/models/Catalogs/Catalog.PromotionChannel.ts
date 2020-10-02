@@ -2,7 +2,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
   type: 'Catalog.PromotionChannel',
-  description: 'Каналы рекламы',
+  description: 'Канал рекламы',
   icon: 'fa fa-list',
   menu: 'Каналы рекламы',
 })
