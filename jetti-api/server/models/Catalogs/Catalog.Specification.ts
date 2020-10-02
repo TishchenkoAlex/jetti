@@ -14,6 +14,9 @@ export class CatalogSpecification extends DocumentBase {
   @Props({ type: 'Catalog.Company', hiddenInList: true })
   company: Ref = null;
 
+  @Props({ type: 'Catalog.Brand' })
+  Brand: Ref = null;
+
   @Props({ type: 'enum', value: ['DEVELOPING', 'ACTIVE', 'CLOSED'], label: 'Статус' })
   Status = 'DEVELOPING';
 

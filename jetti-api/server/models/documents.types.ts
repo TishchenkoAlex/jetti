@@ -19,6 +19,7 @@ export type CatalogTypes =
   'Catalog.Department.Company' |
   'Catalog.Department.Kind' |
   'Catalog.Department.StatusReason' |
+  'Catalog.PromotionChannel' |
   'Catalog.PersonIdentity' |
   'Catalog.Expense' |
   'Catalog.Expense.Analytics' |

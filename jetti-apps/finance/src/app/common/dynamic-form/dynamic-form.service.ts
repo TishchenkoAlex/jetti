@@ -14,7 +14,8 @@ export function cloneFormGroup(formGroup: FormGroup): FormGroup {
   const newFormGroup = new FormGroup({});
   Object.keys(formGroup.controls).forEach(key => {
     const sourceFormControl = formGroup.controls[key] as FormControl;
-    const cloneValue = typeof sourceFormControl.value === 'object' ?
+    const cloneValue = typeof sourceFormControl.value === 'object'
+      && !(sourceFormControl.value instanceof Date) ?
       { ...sourceFormControl.value } : sourceFormControl.value;
     const cloneFormControl = sourceFormControl.validator ?
       new FormControl(cloneValue, { validators: sourceFormControl.validator }) :

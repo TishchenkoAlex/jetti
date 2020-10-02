@@ -294,6 +294,13 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
     const treeNodesVisibleBefore = this.treeNodesVisible;
     this.treeNodesVisible = this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
     this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
+    if (!this.treeNodesVisible && this.storageType !== 'all') {
+      let isFolderFilter = this.formListSettings.filter.find(e => e.left === 'isFolder');
+      if (!isFolderFilter) {
+        isFolderFilter = { left: 'isFolder', center: '=', right: this.storageType === 'folders' };
+        this.formListSettings.filter.push(isFolderFilter);
+      }
+    }
     if (treeNodesVisibleBefore !== this.treeNodesVisible) {
       if (this.treeNodesVisible && this.selectedRow) { this.id = this.selectedRow.id; this.initNodes = true; }
       // tslint:disable-next-line: one-line

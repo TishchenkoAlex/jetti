@@ -678,6 +678,7 @@ export class BankStatementUnloader {
     }
     let result = '';
     const naznMaxLength = 210;
+    const rowSpliter = this.isKAZAKHSTAN() ? '\r\n' : '\n';
     for (const row of bankStatementData) {
 
       for (const prop of Object.keys(row)) {
@@ -702,9 +703,9 @@ export class BankStatementUnloader {
               }
               const comNazn = `${naznStrings[0]} ${naznStrings[1]}`;
               if (comNazn.length > naznMaxLength) throw new Error(`Превышена максимально допустимая длина назначения платежа в документе №${row['Номер']} на ${comNazn.length - naznMaxLength} символов`);
-              result += `\nНазначениеПлатежа=${comNazn}`;
-              result += `\nНазначениеПлатежа1=${naznStrings[0]}`;
-              result += `\nНазначениеПлатежа2=${naznStrings[1]}`;
+              result += `${rowSpliter}НазначениеПлатежа=${comNazn}`;
+              result += `${rowSpliter}НазначениеПлатежа1=${naznStrings[0]}`;
+              result += `${rowSpliter}НазначениеПлатежа2=${naznStrings[1]}`;
               continue;
             case 'ПолучательИНН':
             case 'ПолучательБИН_ИИН':
@@ -713,10 +714,10 @@ export class BankStatementUnloader {
               }
               break;
           }
-          result += `\n${prop}=${val}`;
+          result += `${rowSpliter}${prop}=${val}`;
         }
       }
-      result += '\nКонецДокумента';
+      result += `${rowSpliter}КонецДокумента`;
     }
 
     return result.trim();

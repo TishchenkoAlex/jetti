@@ -13,4 +13,7 @@ export class CatalogOrderSource extends DocumentBase {
   @Props({ type: 'Catalog.OrderSource', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'enum', value: ['ONLINE', 'OFFINE'] })
+  Kind = false;
+
 }
