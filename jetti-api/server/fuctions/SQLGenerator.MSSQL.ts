@@ -1,4 +1,5 @@
-import { AllTypes } from '../models/documents.types';
+import { PropOptions } from '../models/document';
+import { AllTypes, PrimitiveTypes } from '../models/documents.types';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
@@ -6,28 +7,28 @@ import { AllTypes } from '../models/documents.types';
 
 export class SQLGenegator {
 
-  static QueryObject(doc: { [x: string]: any }, type: string) {
+  static QueryObject(doc: { [x: string]: PropOptions }, type: string) {
 
-    const simleProperty = (prop: string, type: string) => {
+    const simleProperty = (prop: string, type: PrimitiveTypes) => {
       if (type === 'boolean') return `, ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"\n`;
       if (type === 'number') return `, CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS MONEY) "${prop}"\n`;
       if (type === 'javascript') return `, (SELECT "${prop}" FROM OPENJSON(d.doc) WITH ("${prop}" NVARCHAR(MAX) '$."${prop}"')) "${prop}"\n`;
       return `, JSON_VALUE(d.doc, N'$."${prop}"') "${prop}"\n`;
     };
 
-    const complexProperty = (prop: string, type: string) =>
+    const complexProperty = (prop: string, type: AllTypes) =>
       type.startsWith('Types.') ?
         `,  JSON_QUERY(CASE WHEN "${prop}".id IS NULL THEN JSON_QUERY(d.doc, N'$.${prop}')
               ELSE (SELECT "${prop}".id "id", "${prop}".description "value",
                 ISNULL("${prop}".type, '${type}') "type", "${prop}".code "code" FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END, '$') "${prop}"\n` :
         `, "${prop}".id "${prop}.id", "${prop}".description "${prop}.value", '${type}' "${prop}.type", "${prop}".code "${prop}.code"\n`;
 
-    const addLeftJoin = (prop: string, type: string) =>
+    const addLeftJoin = (prop: string, type: AllTypes) =>
       ` LEFT JOIN "Documents" "${prop}" ON "${prop}".id = CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS UNIQUEIDENTIFIER)\n`;
 
     const tableProperty = (prop: string, value: any) => {
 
-      const simleProperty = (prop: string, type: string) => {
+      const simleProperty = (prop: string, type: PrimitiveTypes) => {
         if (type === 'boolean') return `, ISNULL(x."${prop}", 0) "${prop}"\n`;
         if (type === 'number') return `, ISNULL(x."${prop}", 0)  "${prop}"\n`;
         return `, x."${prop}"\n`;
@@ -65,7 +66,7 @@ export class SQLGenegator {
           LeftJoin += addLeftJoin(prop, type);
           xTable += `, "${prop}" ${checkComlexType(type) ? 'VARCHAR(36)' : 'UNIQUEIDENTIFIER'}\n`;
         } else {
-          query += simleProperty(prop, type);
+          query += simleProperty(prop, type as PrimitiveTypes);
           xTable += xTableLine(prop, type);
         }
       }
@@ -105,14 +106,14 @@ export class SQLGenegator {
     let LeftJoin = '';
 
     for (const prop in excludeProps(doc)) {
-      const type: string = doc[prop].type || 'string';
+      const type: AllTypes = doc[prop].type as AllTypes || 'string';
       if (type.includes('.')) {
         query += complexProperty(prop, type);
         LeftJoin += addLeftJoin(prop, type);
       } else if (type === 'table') {
         query += tableProperty(prop, (<any>doc[prop])[prop]);
       } else {
-        query += simleProperty(prop, type);
+        query += simleProperty(prop, type as PrimitiveTypes);
       }
     }
 

@@ -48,7 +48,7 @@ export class RegisterInfo {
   }
 
   Props() {
-    const result: { [x: string]: any } = {};
+    const result: { [x: string]: PropOptions } = {};
     for (const prop of Object.keys(this)) {
       const Prop = this.targetProp(this, prop);
       if (!Prop) { continue; }

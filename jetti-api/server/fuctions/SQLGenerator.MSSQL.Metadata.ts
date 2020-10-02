@@ -1,7 +1,7 @@
 import { Global } from './../models/global';
 import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
-import { DocTypes } from './../models/documents.types';
-import { DocumentOptions } from '../models/document';
+import { DocTypes, PrimitiveTypes } from './../models/documents.types';
+import { DocumentOptions, PropOptions } from '../models/document';
 import { createDocument, RegisteredDocument } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
@@ -103,9 +103,9 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
-  static QueryRegisterIntoView(doc: { [x: string]: any }, type: string) {
+  static QueryRegisterIntoView(doc: { [x: string]: PropOptions }, type: string) {
 
-    const simleProperty = (prop: string, type: string) => {
+    const simleProperty = (prop: string, type: PrimitiveTypes) => {
       switch (type) {
         case 'boolean':
           return `
@@ -116,26 +116,29 @@ export class SQLGenegatorMetadata {
         case 'date':
           return `
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        case 'time':
+          return `
+        , TRY_CONVERT(TIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
         case 'datetime':
           return `
         , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
-        case 'string':
+        case 'string': case 'enum':
           return `
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
         default:
           return `
         , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
       }
     };
 
-    const complexProperty = (prop: string, type: string) => `
+    const complexProperty = (prop: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
 
     let insert = ''; let select = ''; let fields = '';
     const Props = excludeRegisterAccumulatioProps(doc);
     for (const prop in Props) {
       fields += `[${prop}],`;
-      const type: string = doc[prop].type || 'string';
+      const type = doc[prop].type || 'string';
       insert += `
         , "${prop}"`;
       if (type === 'number') {
@@ -144,10 +147,10 @@ export class SQLGenegatorMetadata {
         , "${prop}.Out"`;
       }
 
-      if (type.includes('.')) {
-        select += complexProperty(prop, type);
+      if (type.toLocaleString().includes('.')) {
+        select += complexProperty(prop);
       } else {
-        select += simleProperty(prop, type);
+        select += simleProperty(prop, type as PrimitiveTypes);
       }
     }
 
@@ -241,7 +244,6 @@ export class SQLGenegatorMetadata {
 
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
-
 
   static CreateViewCatalogs(types?: { type: DocTypes }[], asArrayOfQueries = false) {
 
