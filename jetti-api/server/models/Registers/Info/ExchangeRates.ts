@@ -7,7 +7,7 @@ import { JRegisterInfo, RegisterInfo } from './RegisterInfo';
 })
 export class RegisterInfoExchangeRates extends RegisterInfo {
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, isIndexed: true })
   currency: Ref = null;
 
   @Props({ type: 'number', required: true })

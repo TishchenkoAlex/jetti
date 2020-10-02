@@ -20,6 +20,8 @@
         , d.[isProfitability] [isProfitability]
         , d.[Lot_BonusManager] [Lot_BonusManager]
         , d.[Lot_CommisionAllUnic] [Lot_CommisionAllUnic]
+        , d.[Lot_ShareDistribution] [Lot_ShareDistribution]
+        , d.[Lot_ShareInvestor] [Lot_ShareInvestor]
       FROM [Operation.LotModelsVsDepartment.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]

@@ -21,6 +21,8 @@ CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment.v] WITH SCHEMABINDING 
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isProfitability"')), 0) [isProfitability]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_BonusManager"')), 0) [Lot_BonusManager]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_CommisionAllUnic"')), 0) [Lot_CommisionAllUnic]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_ShareDistribution"')), 0) [Lot_ShareDistribution]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_ShareInvestor"')), 0) [Lot_ShareInvestor]
       FROM dbo.[Documents]
       WHERE JSON_VALUE(doc, N'$."Operation"') = '69FB36A0-F735-11EA-B8BB-29476D5253E2'
     ; 

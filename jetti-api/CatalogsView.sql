@@ -70,6 +70,8 @@ GO
         , d.[isProfitability] [isProfitability]
         , d.[Lot_BonusManager] [Lot_BonusManager]
         , d.[Lot_CommisionAllUnic] [Lot_CommisionAllUnic]
+        , d.[Lot_ShareDistribution] [Lot_ShareDistribution]
+        , d.[Lot_ShareInvestor] [Lot_ShareInvestor]
       
         , ISNULL(l5.description, d.description) [LotModelsVsDepartment.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LotModelsVsDepartment.Level4]

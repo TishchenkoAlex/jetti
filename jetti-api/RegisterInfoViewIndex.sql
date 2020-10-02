@@ -22,7 +22,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) "Country"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.Info')) "Info"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Info')) "Info"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Holiday';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Holiday] TO JETTI;
@@ -41,7 +41,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , ISNULL(JSON_VALUE(data, '$.Role'), '') "Role"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Role')) "Role"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')) "Unit"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
@@ -104,14 +104,14 @@
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) "Customer"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
-        , ISNULL(JSON_VALUE(data, '$.Status'), '') "Status"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Status')) "Status"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.Period'),127) "Period"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Operation"')) "Operation"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.OperationDescription')) "OperationDescription"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.OperationInDocNumber')) "OperationInDocNumber"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.OperationDescription')) "OperationDescription"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.OperationInDocNumber')) "OperationInDocNumber"
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.OperationInDocDate'),127) "OperationInDocDate"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.Comment')) "Comment"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Comment')) "Comment"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) "Amount"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountPaid')) "AmountPaid"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountBalance')) "AmountBalance"
@@ -137,7 +137,7 @@
     GO
     GRANT SELECT,DELETE ON [Register.Info.ExchangeRates] TO JETTI;
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.ExchangeRates] ON [dbo].[Register.Info.ExchangeRates]([company], [date], [id])
-    
+    CREATE NONCLUSTERED INDEX[Register.Info.ExchangeRates.currency] ON [Register.Info.ExchangeRates]([currency]);
     GO
 ------------------------------ END Register.Info.ExchangeRates ------------------------------
 
@@ -210,7 +210,7 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Period')) "Period"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.StartCost')) "StartCost"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.EndCost')) "EndCost"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.Method')) "Method"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Method')) "Method"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Depreciation';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Depreciation] TO JETTI;
@@ -226,8 +226,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.user')) "user"
-        , ISNULL(JSON_VALUE(data, '$.partition'), '') "partition"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.user')) "user"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.partition')) "partition"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS.Period';
     GO
     GRANT SELECT,DELETE ON [Register.Info.RLS.Period] TO JETTI;
@@ -243,7 +243,7 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.user')) "user"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.user')) "user"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS';
     GO
     GRANT SELECT,DELETE ON [Register.Info.RLS] TO JETTI;
@@ -296,7 +296,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) "company2"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) "InvestorGroup"
-        , ISNULL(JSON_VALUE(data, '$.TypeFranchise'), '') "TypeFranchise"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.TypeFranchise')) "TypeFranchise"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.DepartmentCompanyHistory] TO JETTI;
@@ -315,7 +315,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.BeginDate'),127) "BeginDate"
         , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.EndDate'),127) "EndDate"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.Info')) "Info"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Info')) "Info"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StatusReason"')) "StatusReason"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentStatus';
     GO
@@ -332,10 +332,10 @@
     AS
     SELECT
       id, date, document, company
-        , ISNULL(JSON_VALUE(data, '$.Scenario'), '') "Scenario"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Scenario')) "Scenario"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
         , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.DocDate'),127) "DocDate"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
@@ -379,12 +379,12 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.StatusRegistry')) "StatusRegistry"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.StatusRegistry')) "StatusRegistry"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) "Currency"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DocJETTI"')) "DocJETTI"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountIncome')) "AmountIncome"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountJETTI')) "AmountJETTI"
@@ -498,10 +498,10 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.clientInn')) "clientInn"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.inn')) "inn"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.clientInn')) "clientInn"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.inn')) "inn"
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.totalAmount')) "totalAmount"
-        , TRY_CONVERT(NVARCHAR(150),JSON_VALUE(data, N'$.receiptId')) "receiptId"
+        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.receiptId')) "receiptId"
         , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.operationTime'),127) "operationTime"
         , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.modifyDate'),127) "modifyDate"
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.TaxCheck';
