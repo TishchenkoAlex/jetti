@@ -205,11 +205,16 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   border-bottom-style: solid;
   border-bottom-width: 1px;
 }
-.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:hover{
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:hover {
   // color: white;
   // background-color: white;
 }
-.p-tabview .p-tabview-nav li .p-tabview-nav-link{
+.p-button.p-button-success,
+.p-buttonset.p-button-success > .p-button,
+.p-splitbutton.p-button-success > .p-button {
+  background-color: rgb(92, 184, 92);
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
   height: 33px;
   margin-left: 2px;
   background-color: rgb(245, 245, 245);
@@ -234,6 +239,11 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   border-bottom-right-radius: 0px;
   border-bottom-style: solid;
   border-bottom-width: 1px;
+}
+.p-tabview .p-tabview-nav {
+  background: #ffffff;
+  /* border: 1px solid #dee2e6; */
+  border-width: 0 0 0 0 !important;
 }
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   border: solid #dee2e6;
@@ -340,7 +350,7 @@ td {
 
 .p-toolbar .p-button.p-button-icon-only {
   margin-right: 1px;
-  width: 26px;
+  width: 26px !important;
   height: 26px;
 }
 
@@ -519,7 +529,12 @@ body .p-treetable .p-treetable-tfoot > tr > td {
   background-color: #0b7ad1;
 }
 .p-dialog .p-dialog-header {
-  padding: 10px;
+  color: rgb(41, 43, 44);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12.8px;
+  font-weight: 700;
+  padding: 2px;
+  padding-left: 18px !important;
 }
 .p-sortable-column-icon {
   color: inherit !important;
@@ -658,10 +673,14 @@ body .p-table .p-table-tfoot > tr > td {
 #description > span > i {
   height: 100%;
   position: relative;
-  top: 3px;
+  top: -1px;
+}
+.p-panel.p-panel-toggleable .p-panel-header{
+  color:rgb(41, 43, 44);
 }
 .p-panel .p-panel-header .p-panel-title {
   font-weight: 900;
+  color: #495057 !important;
 }
 .p-panel .p-panel-content {
   background-color: #f5f5f5;
@@ -737,7 +756,12 @@ body .p-table .p-table-tfoot > tr > td {
   // height: 19px;
 }
 .p-datatable .p-datatable-thead > tr > th {
-  padding: 3px !important;
+  padding: 2px !important;
+}
+.p-datatable .p-sortable-column.p-highlight {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12.8px;
+  font-weight: 900;
 }
 .p-fluid .p-calendar .p-inputtext {
   // height: 10px;
@@ -1283,8 +1307,8 @@ j-control
   font-size: 14.6304px;
   color: black;
 }
-// TODO:
-#p-panel-0-content
+s
+  #p-panel-0-content
   > div
   > div.ng-star-inserted
   > div:nth-child
@@ -1332,4 +1356,116 @@ p-tabview > div > div > div:nth-child(1) > p-tabpanel {
 #p-panel-0-content > div > div.ng-star-inserted > span > p-tabview > div > ul {
   position: relative;
   top: 24px;
+}
+td {
+  height: 25px;
+  // text-align: center;
+  vertical-align: middle;
+  border: 0.1px #8080802b solid !important;
+  padding-right: 1px !important;
+  // text-align-last: center;
+}
+#description {
+  display: flex;
+  align-items: center;
+  height: 17.125px;
+}
+.p-treetable.p-treetable-sm .p-treetable-thead > tr > th {
+  padding-bottom: 1px;
+  padding-left: 0px;
+  padding-right: 1px;
+  padding-top: 1px;
+  position: relative;
+  text-align: center;
+  user-select: none;
+  vertical-align: middle;
+  text-align-last: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12.8px;
+  font-weight: 700;
+  height: 17.125px;
+  border: 0.1px #8080802b solid !important;
+}
+#Catalog\.Counterpartie > div > p-toolbar:nth-child(3) > div > div {
+  margin-left: auto;
+}
+
+#p-tabpanel-1
+  > div
+  > dynamic-component
+  > j-form
+  > div
+  > div
+  > div
+  > form
+  > p-panel.ng-tns-c84-23.ng-star-inserted {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12.8px;
+  font-weight: 700;
+  height: 36px;
+}
+
+#p-panel-0-content
+  > div
+  > div.ng-star-inserted
+  > div:nth-child(35)
+  > p-tabview
+  > div
+  > ul {
+  position: relative;
+  top: 26px;
+}
+#p-panel-7-content
+  > div
+  > div.ng-star-inserted
+  > div:nth-child(40)
+  > p-tabview
+  > div
+  > ul {
+  position: relative;
+  top: 26px;
+}
+#p-panel-0-content
+  > div
+  > div.ng-star-inserted
+  > div:nth-child(40)
+  > p-tabview
+  > div
+  > ul {
+  position: relative;
+  top: 26px;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -ms-overflow-style: none;
+  margin: 0;
+  font-size: 0.8em !important;
+}
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 14px !important;
+  color: #212529 !important;
+  -webkit-font-smoothing: antialiased !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 100% !important;
+  background-color: #eef2f6 !important;
+}
+#p-panel-0-content > div > div.ng-star-inserted > div:nth-child(5) {
+  display: none !important;
+}
+#p-panel-0-content > div > div.ng-star-inserted > div:nth-child(4) {
+  display: none !important;
+}
+#Catalog\.Operation\.Group
+  > div
+  > div
+  > p-table
+  > div
+  > div.p-datatable-scrollable-wrapper.ng-star-inserted
+  > div
+  > div.p-datatable-scrollable-header
+  > div {
+  padding-right: 0px !important;
 }
