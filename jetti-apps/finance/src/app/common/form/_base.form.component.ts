@@ -143,7 +143,6 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     public cd: ChangeDetectorRef) { }
 
   ngOnInit() {
-
     this.isCopy = !!this.route.snapshot.queryParams.copy;
     this.isHistory = !!this.route.snapshot.queryParams.history;
     this.readonly = !this.isHistory && this.auth.isRoleAvailableReadonly();

@@ -74,14 +74,20 @@
             </div>
 
             <div *ngIf="tables$ | async as tables">
+               <!-- FIXME: -->
               <br *ngIf="tables.length">
-              <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
-                <div *ngFor="let c of tables; let i = index">
-                  <p-tabPanel [header]="c.label" [selected]="i === 0">
+              <!-- <p-tabView *ngIf="tables.length" class="tabViewClassInForm">
+                <div  *ngFor="let c of tables; let i = index">
+                  <p-tabPanel class="TESTINGS" header="c.label" [selected]="i === 0">
                     <j-control [control]="c" [form]="form"></j-control>
                   </p-tabPanel>
                 </div>
-              </p-tabView>
+              </p-tabView> -->
+              <p-tabView>
+                <p-tabPanel [header]="item.label" *ngFor="let item of tables; let i = index" [selected]="i == 0">
+                    {{item.value}}
+                </p-tabPanel>
+            </p-tabView>
             </div>
 
             <j-control *ngIf="vk.info" [control]="vk.info" [form]="form"></j-control>
