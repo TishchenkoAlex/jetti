@@ -2352,6 +2352,7 @@ export class ScrollableView implements AfterViewInit,OnDestroy {
             }
 
             let scrollBarWidth = DomHandler.calculateScrollbarWidth();
+             // sudo say: Очень странная конструкция но с ней пропадает паддинг который делает эта констукция, и не пропадает возможность листать элемент.
             this.scrollHeaderBoxViewChild.nativeElement.style.paddingRight = scrollBarWidth - scrollBarWidth + 'px';
 
             if (this.scrollFooterBoxViewChild && this.scrollFooterBoxViewChild.nativeElement) {
@@ -2436,6 +2437,7 @@ export class ScrollableView implements AfterViewInit,OnDestroy {
             this.preventBodyScrollPropagation = false;
             return;
         }
+       
         if (this.scrollHeaderViewChild && this.scrollHeaderViewChild.nativeElement) {
             this.scrollHeaderBoxViewChild.nativeElement.style.marginLeft = -1 * event.target.scrollLeft + 'px';
         }
