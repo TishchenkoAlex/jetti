@@ -406,6 +406,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     constructor(public el: ElementRef, public zone: NgZone, public tableService: TableService, public cd: ChangeDetectorRef) {}
 
     ngOnInit() {
+        console.log(this)
         if (this.lazy && this.lazyLoadOnInit) {
             if (!this.virtualScroll) {
                 this.onLazyLoad.emit(this.createLazyLoadMetadata());
@@ -2337,6 +2338,7 @@ export class ScrollableView implements AfterViewInit,OnDestroy {
 
     ngAfterViewInit() {
         if (!this.frozen) {
+            console.log(this)
             if (this.dt.frozenColumns || this.dt.frozenBodyTemplate) {
                 DomHandler.addClass(this.el.nativeElement, 'p-datatable-unfrozen-view');
             }
@@ -2350,10 +2352,10 @@ export class ScrollableView implements AfterViewInit,OnDestroy {
             }
 
             let scrollBarWidth = DomHandler.calculateScrollbarWidth();
-            this.scrollHeaderBoxViewChild.nativeElement.style.paddingRight = scrollBarWidth + 'px';
+            this.scrollHeaderBoxViewChild.nativeElement.style.paddingRight = scrollBarWidth - scrollBarWidth + 'px';
 
             if (this.scrollFooterBoxViewChild && this.scrollFooterBoxViewChild.nativeElement) {
-                this.scrollFooterBoxViewChild.nativeElement.style.paddingRight = scrollBarWidth + 'px';
+                this.scrollFooterBoxViewChild.nativeElement.style.paddingRight = scrollBarWidth - scrollBarWidth + 'px';
             }
         }
         else {
@@ -2434,7 +2436,6 @@ export class ScrollableView implements AfterViewInit,OnDestroy {
             this.preventBodyScrollPropagation = false;
             return;
         }
-
         if (this.scrollHeaderViewChild && this.scrollHeaderViewChild.nativeElement) {
             this.scrollHeaderBoxViewChild.nativeElement.style.marginLeft = -1 * event.target.scrollLeft + 'px';
         }

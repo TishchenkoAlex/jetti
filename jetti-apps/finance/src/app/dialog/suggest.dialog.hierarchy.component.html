@@ -26,8 +26,8 @@
       <p-treeTable #treeTable [value]="treeNodes" selectionMode="single" dataKey="id" [(selection)]="selectedNode"
         (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)" [multiSortMeta]="multiSortMeta"
         [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
-        [scrollable]="true" [scrollHeight]="scrollHeight +'px'" class="noselect" [multiSortMeta]="multiSortMeta"
-        (onLazyLoad)="onLazyLoad($event)" sortMode="multiple" [lazy]="true">
+        [scrollable]="true" [scrollHeight]="scrollHeight +'px'" class="noselect TESTINGS123123123" [multiSortMeta]="multiSortMeta"
+        (onLazyLoad)="onLazyLoad($event)" sortMode="multiple" [lazy]="true"   >
 
         <ng-template pTemplate="colgroup" let-columns>
           <colgroup>
