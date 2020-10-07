@@ -134,7 +134,7 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 }
 .p-tabview-nav li.p-state-active {
   background-color: white !important;
-  outline: 0px; 
+  outline: 0px;
 }
 
 .p-tabview-nav li.p-state-active .p-tabview-title {
@@ -513,7 +513,7 @@ body .p-table .p-table-tfoot > tr > td {
 
 .p-treetable.p-treetable-sm .p-treetable-tbody > tr > td {
   padding: 0px;
-  block-size:1px !important;
+  block-size: 1px !important;
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
@@ -710,6 +710,22 @@ body .p-table .p-table-tfoot > tr > td {
 }
 .p-datatable .p-datatable-thead > tr > th {
   padding: 3px !important;
+  font-weight: 400 !important;
+  color: #292b2c;
+  flood-color: rgb(0, 0, 0);
+  flood-opacity: 1;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-feature-settings: normal;
+  font-kerning: auto;
+  font-optical-sizing: auto;
+  font-size: 12.8px;
+  font-stretch: 100%;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-variant-east-asian: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variation-settings: normal;
 }
 
 .p-inputgroup .p-inputtext,
@@ -1492,14 +1508,99 @@ td {
   align-items: center;
   text-align: center;
 }
-.p-dropdown{
-  height: 22px
+.p-dropdown {
+  height: 22px;
 }
-div > div > p-treetable > div > div.p-treetable-scrollable-wrapper.ng-star-inserted > div > div.p-treetable-scrollable-body.ng-star-inserted > table > tbody > tr:nth-child > td:nth-child{
-    padding-left: 0px !important; 
+div
+  > div
+  > p-treetable
+  > div
+  > div.p-treetable-scrollable-wrapper.ng-star-inserted
+  > div
+  > div.p-treetable-scrollable-body.ng-star-inserted
+  > table
+  > tbody
+  > tr:nth-child
+  > td:nth-child {
+  padding-left: 0px !important;
 }
 
-.p-fluid .p-calendar .p-inputtext{
+.p-fluid .p-calendar .p-inputtext {
   height: 22px;
 }
 
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -ms-overflow-style: none;
+  margin: 0;
+  font-size: 0.8em !important;
+}
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+
+  color: #000000 !important;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  margin: 0;
+  min-height: 100%;
+  background-color: #eef2f6;
+  font-feature-settings: normal;
+  font-kerning: auto;
+  font-optical-sizing: auto;
+  font-stretch: 100%;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-variant-east-asian: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variation-settings: normal;
+  font-weight: 400;
+}
+td {
+  border: 0.1px #8080802b solid !important;
+
+  font-stretch: 100%;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-variant-east-asian: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variation-settings: normal;
+  font-weight: 400;
+
+  background-size: auto;
+
+  caret-color: rgb(34, 34, 34);
+
+  color: rgb(34, 34, 34);
+
+  fill: rgb(0, 0, 0);
+  fill-opacity: 1;
+  fill-rule: nonzero;
+  filter: none;
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-feature-settings: normal;
+  font-kerning: auto;
+  font-optical-sizing: auto;
+  font-size: 12.8px;
+  font-stretch: 100%;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-variant-east-asian: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variation-settings: normal;
+  font-weight: 400;
+
+
+
+  -webkit-print-color-adjust: economy;
+  -webkit-rtl-ordering: logical;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.18);
+  -webkit-text-combine: none;
+  -webkit-text-decorations-in-effect: none;
+
+}
