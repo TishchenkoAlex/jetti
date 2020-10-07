@@ -84,8 +84,9 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   handleOpenURL = (event?: Event) => window.open(this.formControl.value, '_blank');
 
   marginTop() {
+    console.log(this.control.type)
     if (!this.control.showLabel) return;
-    if (this.control.type === 'datetime' || this.control.type === 'date') return '24px'; else return '24px';
+    if (this.control.type === 'datetime' || this.control.type === 'date') return '24px'; else if (this.control.type === 'table') { return } else { return '24px' };
   }
 
   ngOnDestroy() {

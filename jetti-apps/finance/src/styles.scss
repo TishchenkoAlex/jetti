@@ -337,7 +337,7 @@ td {
 
 .p-toolbar .p-button.p-button-icon-only {
   margin-right: 1px;
-  width: 26px;
+  width: 26px !important;
   height: 26px;
 }
 
@@ -430,6 +430,12 @@ body .p-treetable .p-treetable-thead > tr > th,
 body .p-treetable .p-treetable-tbody > tr > td,
 body .p-treetable .p-treetable-tfoot > tr > td {
   padding: 5px;
+}
+.p-treetable .p-treetable-tbody > tr > td {
+  height: 20px !important;
+  padding: 0px !important;
+  font-size: 12.8px;
+  padding-left: 7px !important;
 }
 
 @keyframes p-progress-spinner-color {
@@ -1491,4 +1497,13 @@ td {
 // }
 #Catalog\.Currency > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr:nth-child  > td.p-resizable-column{
   display: none;
+}
+// position: relative;
+// top: 25px;
+.tabViewEd{
+  top: 23px;
+    position: relative;
+}
+#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(3) > div > input{
+  width: 100%;
 }

@@ -74,11 +74,11 @@
             </div>
 
             <div *ngIf="tables$ | async as tables">
-               <!-- FIXME: -->
-               <p-tabView >
-                <p-tabPanel class="tabViewEd"  [header]="item.label" *ngFor="let item of tables; let i = index" [selected]="i == 0">
+               <!-- FIXME: class="tabViewEd" -->
+               <p-tabView class="tabViewEd" >
+                <p-tabPanel   [header]="item.label" *ngFor="let item of tables; let i = index" [selected]="i == 0">
                    
-                    <j-control [control]="item" [form]="form"></j-control>
+                    <j-control  [control]="item" [form]="form"></j-control>
                  </p-tabPanel>
             </p-tabView>
 
