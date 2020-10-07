@@ -20,17 +20,13 @@ body {
 .p-table .p-table-tbody > tr > td {
   height: 27px;
   white-space: nowrap;
-  /* Отменяем перенос текста */
   overflow: hidden;
-  /* Обрезаем содержимое */
   text-overflow: ellipsis;
 }
 
 .p-treetable .p-treetable-tbody > tr > td {
   white-space: nowrap;
-  /* Отменяем перенос текста */
   overflow: hidden;
-  /* Обрезаем содержимое */
   text-overflow: ellipsis;
 }
 
@@ -136,14 +132,9 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 .p-tabview-nav {
   background: 0 !important;
 }
-/* .p-tabview-panels {
-  height: 100%;
-  overflow-y: visible !important;
-} */
-
 .p-tabview-nav li.p-state-active {
   background-color: white !important;
-  outline: 0px; /* Отменяем голубой ареол вокруг */
+  outline: 0px; 
 }
 
 .p-tabview-nav li.p-state-active .p-tabview-title {
@@ -161,17 +152,6 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 .p-panel.p-panel-toggleable .p-panel-header {
   padding: 3px 9px;
 }
-// // buttons
-// .p-button-icon-only .fa {
-//   margin-top: -.45em !important;
-//   margin-left: -.48em !important;
-// }
-
-// .p-toolbar .p-button.p-button-icon-only {
-//   margin-right: 1px;
-//   width: 28px;
-//   height: 28px;
-// }
 .p-fluid .p-inputgroup .p-button.p-button-icon-only {
   width: 26px;
   height: 26px;
@@ -206,7 +186,7 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   border-bottom-width: 1px;
 }
 
-.p-tabview .p-tabview-nav li .p-tabview-nav-link{
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
   height: 33px;
   margin-left: 2px;
   background-color: rgb(245, 245, 245);
@@ -251,7 +231,6 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 }
 
 .p-button-icon-only .pi {
-  // font-size: 16px;
   display: contents;
   margin-top: -0.48em !important;
   margin-left: -0.48em !important;
@@ -266,12 +245,6 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   padding: 0rem !important;
 }
 
-// .p-inputtext {
-//   // padding: 0.343em 0.343em !important;
-//   // font-size: 0.8em !important;
-//   // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-// }
-
 .p-datatable .p-datatable-thead > tr > th {
   text-align: center;
 }
@@ -279,7 +252,6 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
 .p-tabview-nav,
 .p-datatable-sm,
 .p-checkbox.p-component {
-  // font-size: 0.8em !important;
   font-weight: normal;
 }
 
@@ -292,11 +264,6 @@ body .p-tabview.p-tabview-right .p-tabview-nav li {
   display: block;
   box-sizing: border-box;
 }
-
-// .p-button.p-button-secondary {
-//   margin-top: -.48em !important;
-//   margin-left: -.48em !important;
-// }
 
 .p-button.p-button-secondary,
 .p-splitbutton.p-button-secondary > .p-button {
@@ -360,7 +327,6 @@ j-autocomplete-png {
   }
 }
 
-/*  */
 .p-datepicker.p-widget .p-datepicker-calendar td a {
   padding: 4px !important;
 }
@@ -435,7 +401,6 @@ body .p-treetable .p-treetable-tfoot > tr > td {
   height: 20px !important;
   padding: 0px !important;
   font-size: 12.8px;
-  padding-left: 7px !important;
 }
 
 @keyframes p-progress-spinner-color {
@@ -548,6 +513,7 @@ body .p-table .p-table-tfoot > tr > td {
 
 .p-treetable.p-treetable-sm .p-treetable-tbody > tr > td {
   padding: 0px;
+  block-size:1px !important;
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
@@ -1281,13 +1247,6 @@ j-control
   height: 20px;
   padding: 0px !important;
 }
-
-#p-panel-7_header {
-  font-weight: 700;
-  font-size: 14.6304px;
-  color: black;
-}
-// TODO:
 #p-panel-0-content
   > div
   > div.ng-star-inserted
@@ -1324,10 +1283,8 @@ p-tabview > div > div > div:nth-child(1) > p-tabpanel {
   width: 9px;
 }
 .ng-star-inserted {
-  // font-weight: 700 !important;
   cursor: pointer !important;
   vertical-align: middle;
-
   box-sizing: border-box;
 }
 #p-panel-0-content > div > div.ng-star-inserted > span > p-tabview > div > ul {
@@ -1336,12 +1293,11 @@ p-tabview > div > div > div:nth-child(1) > p-tabpanel {
 }
 td {
   height: 25px;
-  // text-align: center;
   vertical-align: middle;
   border: 0.1px #8080802b solid !important;
   padding-right: 1px !important;
-  // text-align-last: center;
 }
+// TODO: ------------------------------------------------------------------------------>
 // #description {
 //   display: flex;
 //   align-items: center;
@@ -1381,7 +1337,6 @@ td {
 //   font-weight: 700;
 //   height: 36px;
 // }
-
 
 // #p-panel-0-content > div > div.ng-star-inserted > div:nth-child(5) {
 //   display: none !important;
@@ -1490,20 +1445,61 @@ td {
 // }
 
 // #p-panel-0-content > div > div.ng-star-inserted > div:nth-child(40) > p-tabview > div > ul{
-//        margin-bottom: 0px !important;  
+//        margin-bottom: 0px !important;
 // }
 // #Document\.Settings > div > p-toolbar:nth-child(3) > div{
 //   margin-left: auto;
 // }
-#Catalog\.Currency > div > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-body.ng-star-inserted > table > tbody > tr:nth-child  > td.p-resizable-column{
+#Catalog\.Currency
+  > div
+  > div
+  > p-table
+  > div
+  > div.p-datatable-scrollable-wrapper.ng-star-inserted
+  > div
+  > div.p-datatable-scrollable-body.ng-star-inserted
+  > table
+  > tbody
+  > tr:nth-child
+  > td.p-resizable-column {
   display: none;
 }
-// position: relative;
-// top: 25px;
-.tabViewEd{
+.tabViewEd {
   top: 23px;
-    position: relative;
+  position: relative;
 }
-#Document\.Operation > div > p-table > div > div.p-datatable-scrollable-wrapper.ng-star-inserted > div > div.p-datatable-scrollable-header > div > table > thead > tr:nth-child(2) > th:nth-child(3) > div > input{
+#Document\.Operation
+  > div
+  > p-table
+  > div
+  > div.p-datatable-scrollable-wrapper.ng-star-inserted
+  > div
+  > div.p-datatable-scrollable-header
+  > div
+  > table
+  > thead
+  > tr:nth-child(2)
+  > th:nth-child(3)
+  > div
+  > input {
   width: 100%;
 }
+.p-treetable.p-treetable-sm .p-treetable-thead > tr > th {
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  align-items: center;
+  text-align: center;
+}
+.p-dropdown{
+  height: 22px
+}
+div > div > p-treetable > div > div.p-treetable-scrollable-wrapper.ng-star-inserted > div > div.p-treetable-scrollable-body.ng-star-inserted > table > tbody > tr:nth-child > td:nth-child{
+    padding-left: 0px !important; 
+}
+
+.p-fluid .p-calendar .p-inputtext{
+  height: 22px;
+}
+

@@ -408,13 +408,6 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     constructor(public el: ElementRef, public zone: NgZone, public tableService: TableService, public cd: ChangeDetectorRef) { }
 
     ngOnInit() {
-        
-        console.log(this);
-       
-        // console.log(/p-datatable-sm p-datatable p-component p-datatable-hoverable-rows p-datatable-resizable p-datatable-scrollable/i.test( JSON.stringify(this.el.nativeElement)))  // true
-
-
-
         if (this.lazy && this.lazyLoadOnInit) {
             if (!this.virtualScroll) {
                 this.onLazyLoad.emit(this.createLazyLoadMetadata());
