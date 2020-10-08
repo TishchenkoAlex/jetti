@@ -33,11 +33,15 @@
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
 
-  <div *ngSwitchCase="'textarea'" [ngClass]="{'p-float-label' : control.showLabel}">
+  <div *ngSwitchCase="'textarea'" >
+    <!-- TODO:[ngClass]="{'p-float-label':control.showLabel }" -->
+   
     <textarea [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
-      (focus)="$event.target.select()" spellcheck="false" [ngStyle]="control.style">
+      (focus)="$event.target.select()" spellcheck="true" [ngStyle]="control.style">
     </textarea>
-    <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
+    <!-- FIXME: -->
+    <label  [for]="control.key">{{control.label}}</label>
+
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'p-float-label' : control.showLabel}">

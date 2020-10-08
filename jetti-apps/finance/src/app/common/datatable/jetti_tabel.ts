@@ -897,6 +897,8 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     }
 
     handleRowClick(event) {
+
+        // FIXME:
         let target = (<HTMLElement>event.originalEvent.target);
         let targetNode = target.nodeName;
         let parentNode = target.parentElement && target.parentElement.nodeName;
@@ -905,7 +907,6 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
             (DomHandler.hasClass(event.originalEvent.target, 'p-clickable'))) {
             return;
         }
-
         if (this.selectionMode) {
             this.preventSelectionSetterPropagation = true;
             if (this.isMultipleSelectionMode() && event.originalEvent.shiftKey && this.anchorRowIndex != null) {
@@ -1030,7 +1031,8 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     handleRowRightClick(event) {
         if (this.contextMenu) {
             const rowData = event.rowData;
-
+            console.log(rowData);
+            
             if (this.contextMenuSelectionMode === 'separate') {
                 this.contextMenuSelection = rowData;
                 this.contextMenuSelectionChange.emit(rowData);
@@ -1096,7 +1098,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
                 this.onRowSelect.emit({ originalEvent: event, data: rangeRowData, type: 'row' });
             }
         }
-
+        console.log(this.selection);
         this.selectionChange.emit(this.selection);
     }
 
