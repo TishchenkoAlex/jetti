@@ -35,7 +35,7 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   constructor(public api: ApiService, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
-
+    console.log(this)
     this.dateTimeValue = this.formControl.value;
 
     this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {

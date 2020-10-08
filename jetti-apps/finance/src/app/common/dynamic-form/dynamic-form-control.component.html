@@ -32,16 +32,14 @@
       [readonly]="control.readOnly" [required]="control.required" appendTo="body"></p-dropdown>
     <label *ngIf="control.showLabel" [for]="control.key">{{control.label}}</label>
   </div>
-
-  <div *ngSwitchCase="'textarea'" >
-    <!-- TODO:[ngClass]="{'p-float-label':control.showLabel }" -->
-   
-    <textarea [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
+  <div class="txt-area-top-m" *ngSwitchCase="'textarea'" [ngClass]="{'p-float-label':control.showLabel }">
+    <!-- FIXME: SUDO SAY ? BUGS PRIMENG FLOAT-INPUT DONT WORK TO NEW VERSION BY TEXTAREA -->
+    <div>{{control.label}}</div>
+    <textarea   [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
       (focus)="$event.target.select()" spellcheck="true" [ngStyle]="control.style">
     </textarea>
-    <!-- FIXME: -->
-    <label  [for]="control.key">{{control.label}}</label>
 
+    <!-- <label>{{control.label }}</label> -->
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'p-float-label' : control.showLabel}">
