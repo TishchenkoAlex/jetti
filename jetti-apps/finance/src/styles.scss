@@ -645,7 +645,7 @@ body .p-table .p-table-tfoot > tr > td {
   border-color: #dddddd;
   border: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
-  background: linear-gradient(to bottom, #f6f7f9 0, #ebedf0 100%);
+  // background: linear-gradient(to bottom, #f6f7f9 0, #ebedf0 100%);
 }
 .p-toolbar {
   background-color: #f5f5f5;
@@ -1513,9 +1513,7 @@ td {
   align-items: center;
   text-align: center;
 }
-.p-dropdown {
-  height: 22px;
-}
+ 
 div
   > div
   > p-treetable
@@ -1610,7 +1608,7 @@ td {
   padding-left: 5px !important;
 }
 .p-dropdown {
-  height: 22px !important;
+  height: 26px !important;
 }
 
 .p-inputtext {

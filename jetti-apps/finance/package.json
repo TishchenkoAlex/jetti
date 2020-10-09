@@ -31,7 +31,7 @@
     "jwt-decode": "^2.2.0",
     "msal": "^1.4.0",
     "primeicons": "^2.0.0",
-    "primeng": "^10.0.0",
+    "primeng": "^10.0.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "save": "^2.4.0",
