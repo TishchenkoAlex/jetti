@@ -91,12 +91,10 @@ export class FormControlInfo {
     this.panel = options.panel;
     this.fieldset = options.fieldset;
     this.validators = options.validators;
-    console.log(this.label)
     if (this.change && !this.onChange) {
       this.onChange = new Function('doc', 'value', 'api', this.change) as any;
     }
   }
- 
 }
 
 export class TextboxFormControl extends FormControlInfo {

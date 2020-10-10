@@ -35,7 +35,6 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
   constructor(public api: ApiService, private cd: ChangeDetectorRef, private ds: DocService) { }
 
   ngOnInit() {
-    console.log(this)
     this.dateTimeValue = this.formControl.value;
 
     this.valueChanges$ = this.formControl.valueChanges.subscribe(async value => {
@@ -88,13 +87,13 @@ export class DynamicFormControlComponent implements OnInit, OnDestroy {
 
     if (!this.control.showLabel) return;
     if (this.control.type === 'datetime' || this.control.type === 'date') {
-      return '24px'
+      return '24px';
     } else if (this.control.type === 'table') {
       // влияет на марджин
-      return
+      return;
     } else {
-      return '24px'
-    };
+      return '24px';
+    }
   }
 
   ngOnDestroy() {

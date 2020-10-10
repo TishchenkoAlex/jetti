@@ -1031,7 +1031,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     handleRowRightClick(event) {
         if (this.contextMenu) {
             const rowData = event.rowData;
-            console.log(rowData);
+            // console.log(rowData);
             
             if (this.contextMenuSelectionMode === 'separate') {
                 this.contextMenuSelection = rowData;
@@ -1098,7 +1098,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
                 this.onRowSelect.emit({ originalEvent: event, data: rangeRowData, type: 'row' });
             }
         }
-        console.log(this.selection);
+        // console.log(this.selection);
         this.selectionChange.emit(this.selection);
     }
 

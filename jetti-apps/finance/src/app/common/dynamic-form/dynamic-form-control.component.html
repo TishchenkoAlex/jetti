@@ -35,10 +35,10 @@
   <div class="txt-area-top-m" *ngSwitchCase="'textarea'" [ngClass]="{'p-float-label':control.showLabel }">
     <!-- FIXME: SUDO SAY ? BUGS PRIMENG FLOAT-INPUT DONT WORK TO NEW VERSION BY TEXTAREA -->
     <div class="new_label_txt">{{control.label}}</div>
-    <textarea   [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
+    <textarea [required]="control.required" pInputTextarea [formControlName]="control.key" [readonly]="control.readOnly"
       (focus)="$event.target.select()" spellcheck="true" [ngStyle]="control.style">
     </textarea>
-     <!-- <label>{{control.label }}</label> -->
+    <!-- <label>{{control.label }}</label> -->
   </div>
 
   <div *ngSwitchCase="'number'" [ngClass]="{'p-float-label' : control.showLabel}">
@@ -87,10 +87,10 @@
       <j-table-part-png [formGroup]="form.controls[control.key]" [control]="control"></j-table-part-png>
     </div>
   </div>
-
-  <!-- <div *ngSwitchCase="'script'">
+<!-- 
+  <div *ngSwitchCase="'script'">
     <label *ngIf="control.showLabel" [for]="control.key">{{ control.label }}:</label>
-    <ngx-monaco-editor  style="height: 200px" flex [ngStyle]="control.style"
+    <ngx-monaco-editor style="height: 200px" flex [ngStyle]="control.style" [options]="{language: 'javascript'}"
       [formControlName]="control.key">
     </ngx-monaco-editor>
   </div> -->
