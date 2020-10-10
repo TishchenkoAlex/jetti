@@ -1652,3 +1652,24 @@ td {
 .p-panel.p-panel-toggleable .p-panel-header{
   font-size:1em
 }
+.p-inputgroup-addon:last-child, .p-inputgroup button:last-child, .p-inputgroup input:last-child{
+  padding-top: 1px !important;
+    padding-bottom: 1px !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+
+  background-color: white !important;
+}
+.p-autocomplete .p-autocomplete-input{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
