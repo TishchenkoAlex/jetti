@@ -449,6 +449,7 @@ body .p-treetable .p-treetable-tfoot > tr > td {
 .p-float-label > .p-inputwrapper-filled ~ label {
   top: -0.75em;
   font-size: 12px;
+  text-overflow: ellipsis;
 }
 
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-list-item {
