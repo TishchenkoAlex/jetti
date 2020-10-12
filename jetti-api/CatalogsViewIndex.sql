@@ -1,8 +1,9 @@
 
 ------------------------------ BEGIN Catalog.Sample ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Sample.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Sample.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -12,7 +13,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Sample.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SampleField"')), '') [SampleField]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Sample'
+      WHERE [type] = N'Catalog.Sample'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Sample.v] ON [Catalog.Sample.v](id);
@@ -36,8 +37,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ResponsibilityCenter.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ResponsibilityCenter.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -49,7 +51,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ResponsibilityCenter'
+      WHERE [type] = N'Catalog.ResponsibilityCenter'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ResponsibilityCenter.v] ON [Catalog.ResponsibilityCenter.v](id);
@@ -73,8 +75,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Dynamic ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Dynamic.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Dynamic.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -83,7 +86,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Dynamic.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Dynamic'
+      WHERE [type] = N'Catalog.Dynamic'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Dynamic.v] ON [Catalog.Dynamic.v](id);
@@ -107,8 +110,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Attachment.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -124,7 +128,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FileName"')), '') [FileName]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."MIMEType"')), '') [MIMEType]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Attachment'
+      WHERE [type] = N'Catalog.Attachment'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.v] ON [Catalog.Attachment.v](id);
@@ -148,8 +152,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Attachment.Type.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.Type.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -166,7 +171,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Tags"')), '') [Tags]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."LoadDataOnInit"')), 0) [LoadDataOnInit]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Attachment.Type'
+      WHERE [type] = N'Catalog.Attachment.Type'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.Type.v] ON [Catalog.Attachment.Type.v](id);
@@ -190,8 +195,9 @@ GO
 
 ------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AllUnic.Lot.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AllUnic.Lot.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -204,7 +210,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Product"')) [Product]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.AllUnic.Lot'
+      WHERE [type] = N'Catalog.AllUnic.Lot'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.AllUnic.Lot.v] ON [Catalog.AllUnic.Lot.v](id);
@@ -228,8 +234,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Account ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Account.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Account.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -241,7 +248,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isPassive"')), 0) [isPassive]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Account'
+      WHERE [type] = N'Catalog.Account'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Account.v] ON [Catalog.Account.v](id);
@@ -265,8 +272,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Balance ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Balance.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -276,8 +284,9 @@ CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isPassive"')), 0) [isPassive]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Balance'
+      WHERE [type] = N'Catalog.Balance'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.v] ON [Catalog.Balance.v](id);
@@ -301,8 +310,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Balance.Analytics.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.Analytics.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -310,8 +320,9 @@ GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Balance.Analytics'
+      WHERE [type] = N'Catalog.Balance.Analytics'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.Analytics.v] ON [Catalog.Balance.Analytics.v](id);
@@ -335,8 +346,9 @@ GO
 
 ------------------------------ BEGIN Catalog.BankAccount ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BankAccount.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BankAccount.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -349,7 +361,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDefault"')), 0) [isDefault]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.BankAccount'
+      WHERE [type] = N'Catalog.BankAccount'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BankAccount.v] ON [Catalog.BankAccount.v](id);
@@ -373,8 +385,9 @@ GO
 
 ------------------------------ BEGIN Catalog.CashFlow ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.CashFlow.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashFlow.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -382,8 +395,9 @@ GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashFlow.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.CashFlow'
+      WHERE [type] = N'Catalog.CashFlow'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.CashFlow.v] ON [Catalog.CashFlow.v](id);
@@ -407,8 +421,9 @@ GO
 
 ------------------------------ BEGIN Catalog.CashRegister ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.CashRegister.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashRegister.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -420,7 +435,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isAccounting"')), 0) [isAccounting]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.CashRegister'
+      WHERE [type] = N'Catalog.CashRegister'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.CashRegister.v] ON [Catalog.CashRegister.v](id);
@@ -444,8 +459,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Currency ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Currency.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Currency.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -455,7 +471,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Currency'
+      WHERE [type] = N'Catalog.Currency'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Currency.v] ON [Catalog.Currency.v](id);
@@ -479,8 +495,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Company ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Company.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -507,7 +524,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Company'
+      WHERE [type] = N'Catalog.Company'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.v] ON [Catalog.Company.v](id);
@@ -531,8 +548,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Company.Group ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Company.Group.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.Group.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -542,7 +560,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Company.Group'
+      WHERE [type] = N'Catalog.Company.Group'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.Group.v] ON [Catalog.Company.Group.v](id);
@@ -566,8 +584,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Country ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Country.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Country.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -577,7 +596,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Country'
+      WHERE [type] = N'Catalog.Country'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Country.v] ON [Catalog.Country.v](id);
@@ -601,8 +620,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Counterpartie.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -625,7 +645,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BC"')), '') [BC]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Counterpartie'
+      WHERE [type] = N'Catalog.Counterpartie'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.v] ON [Catalog.Counterpartie.v](id);
@@ -649,8 +669,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Counterpartie.BankAccount.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.BankAccount.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -664,7 +685,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDIN
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDefault"')), 0) [isDefault]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Counterpartie.BankAccount'
+      WHERE [type] = N'Catalog.Counterpartie.BankAccount'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v] ON [Catalog.Counterpartie.BankAccount.v](id);
@@ -688,8 +709,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Contract ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Contract.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -720,7 +742,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."PaymentKRO"')), '') [PaymentKRO]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."OtherServices"')), '') [OtherServices]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Contract'
+      WHERE [type] = N'Catalog.Contract'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.v] ON [Catalog.Contract.v](id);
@@ -744,8 +766,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Contract.Intercompany.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.Intercompany.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -763,7 +786,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDefault"')), 0) [isDefault]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."notAccounting"')), 0) [notAccounting]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Contract.Intercompany'
+      WHERE [type] = N'Catalog.Contract.Intercompany'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.Intercompany.v] ON [Catalog.Contract.Intercompany.v](id);
@@ -787,8 +810,9 @@ GO
 
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BusinessDirection.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessDirection.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -797,7 +821,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.BusinessDirection'
+      WHERE [type] = N'Catalog.BusinessDirection'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessDirection.v] ON [Catalog.BusinessDirection.v](id);
@@ -821,8 +845,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Salary.Analytics.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Salary.Analytics.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -833,7 +858,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SalaryKind"')), '') [SalaryKind]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Salary.Analytics'
+      WHERE [type] = N'Catalog.Salary.Analytics'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Salary.Analytics.v] ON [Catalog.Salary.Analytics.v](id);
@@ -857,8 +882,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Department ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -884,7 +910,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Latitude"')), '') [Latitude]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."IntegrationType"')), '') [IntegrationType]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Department'
+      WHERE [type] = N'Catalog.Department'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.v] ON [Catalog.Department.v](id);
@@ -908,8 +934,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Department.Kind ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.Kind.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Kind.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -918,7 +945,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Department.Kind'
+      WHERE [type] = N'Catalog.Department.Kind'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Kind.v] ON [Catalog.Department.Kind.v](id);
@@ -942,8 +969,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Department.Company ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.Company.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Company.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -956,7 +984,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SecurityGroup"')), '') [SecurityGroup]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."StaffingPositionManager"')) [StaffingPositionManager]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Department.Company'
+      WHERE [type] = N'Catalog.Department.Company'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Company.v] ON [Catalog.Department.Company.v](id);
@@ -980,8 +1008,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Department.StatusReason.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.StatusReason.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -990,7 +1019,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason.v] WITH SCHEMABINDING 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Department.StatusReason'
+      WHERE [type] = N'Catalog.Department.StatusReason'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.StatusReason.v] ON [Catalog.Department.StatusReason.v](id);
@@ -1014,8 +1043,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Expense ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Expense.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1026,8 +1056,9 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Assign"')), '') [Assign]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Expense'
+      WHERE [type] = N'Catalog.Expense'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.v] ON [Catalog.Expense.v](id);
@@ -1051,8 +1082,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Expense.Analytics.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.Analytics.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1061,8 +1093,9 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Expense.Analytics'
+      WHERE [type] = N'Catalog.Expense.Analytics'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.Analytics.v] ON [Catalog.Expense.Analytics.v](id);
@@ -1086,8 +1119,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Income ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Income.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Income.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1098,8 +1132,9 @@ CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Assign"')), '') [Assign]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Income'
+      WHERE [type] = N'Catalog.Income'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Income.v] ON [Catalog.Income.v](id);
@@ -1123,8 +1158,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Loan ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Loan.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Loan.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1152,7 +1188,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."LoanRepaymentProcedure"')) [LoanRepaymentProcedure]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDeadline'),127) [PayDeadline]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Loan'
+      WHERE [type] = N'Catalog.Loan'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Loan.v] ON [Catalog.Loan.v](id);
@@ -1176,8 +1212,9 @@ GO
 
 ------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.LoanRepaymentProcedure.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanRepaymentProcedure.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1186,7 +1223,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure.v] WITH SCHEMABINDING A
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.LoanRepaymentProcedure'
+      WHERE [type] = N'Catalog.LoanRepaymentProcedure'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v] ON [Catalog.LoanRepaymentProcedure.v](id);
@@ -1210,8 +1247,9 @@ GO
 
 ------------------------------ BEGIN Catalog.LoanTypes ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.LoanTypes.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanTypes.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1221,7 +1259,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Balance"')) [Balance]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.LoanTypes'
+      WHERE [type] = N'Catalog.LoanTypes'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanTypes.v] ON [Catalog.LoanTypes.v](id);
@@ -1245,8 +1283,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Manager ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Manager.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Manager.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1258,7 +1297,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."Gender"')), 0) [Gender]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Manager'
+      WHERE [type] = N'Catalog.Manager'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Manager.v] ON [Catalog.Manager.v](id);
@@ -1282,8 +1321,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Person ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1316,11 +1356,12 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Pincode"')), '') [Pincode]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."Fired"')), 0) [Fired]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Person'
+      WHERE [type] = N'Catalog.Person'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.v] ON [Catalog.Person.v](id);
-      
+      CREATE NONCLUSTERED INDEX[Catalog.Person.v.Code1] ON [Catalog.Person.v]([Code1]) INCLUDE([company]);
+CREATE NONCLUSTERED INDEX[Catalog.Person.v.Profile] ON [Catalog.Person.v]([Profile]) INCLUDE([company]);
       
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.code.f] ON [Catalog.Person.v](parent,isfolder,code,id) INCLUDE([company]);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.description.f] ON [Catalog.Person.v](parent,isfolder,description,id) INCLUDE([company]);
@@ -1340,8 +1381,9 @@ GO
 
 ------------------------------ BEGIN Catalog.PriceType ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PriceType.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PriceType.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1353,7 +1395,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PriceType.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TaxInclude"')), 0) [TaxInclude]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.PriceType'
+      WHERE [type] = N'Catalog.PriceType'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PriceType.v] ON [Catalog.PriceType.v](id);
@@ -1377,8 +1419,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Product ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1403,7 +1446,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Volume"')), 0) [Volume]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."CookingPlace"')), '') [CookingPlace]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Product'
+      WHERE [type] = N'Catalog.Product'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.v] ON [Catalog.Product.v](id);
@@ -1427,8 +1470,9 @@ GO
 
 ------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PlanningScenario.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PlanningScenario.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1437,7 +1481,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.PlanningScenario'
+      WHERE [type] = N'Catalog.PlanningScenario'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PlanningScenario.v] ON [Catalog.PlanningScenario.v](id);
@@ -1461,8 +1505,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ProductCategory ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ProductCategory.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductCategory.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1471,7 +1516,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ProductCategory'
+      WHERE [type] = N'Catalog.ProductCategory'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductCategory.v] ON [Catalog.ProductCategory.v](id);
@@ -1495,8 +1540,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ProductKind ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ProductKind.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductKind.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1506,7 +1552,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ProductType"')), '') [ProductType]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ProductKind'
+      WHERE [type] = N'Catalog.ProductKind'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductKind.v] ON [Catalog.ProductKind.v](id);
@@ -1530,8 +1576,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Product.Report ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Report.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Report.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1542,7 +1589,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Product.Report'
+      WHERE [type] = N'Catalog.Product.Report'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Report.v] ON [Catalog.Product.Report.v](id);
@@ -1566,8 +1613,9 @@ GO
 
 ------------------------------ BEGIN Catalog.PromotionChannel ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PromotionChannel.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PromotionChannel.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1576,7 +1624,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PromotionChannel.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.PromotionChannel'
+      WHERE [type] = N'Catalog.PromotionChannel'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PromotionChannel.v] ON [Catalog.PromotionChannel.v](id);
@@ -1600,8 +1648,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Storehouse ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Storehouse.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Storehouse.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1611,7 +1660,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Storehouse'
+      WHERE [type] = N'Catalog.Storehouse'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Storehouse.v] ON [Catalog.Storehouse.v](id);
@@ -1635,8 +1684,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Operation ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1649,7 +1699,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."script"')), '') [script]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."module"')), '') [module]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Operation'
+      WHERE [type] = N'Catalog.Operation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.v] ON [Catalog.Operation.v](id);
@@ -1673,8 +1723,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Operation.Group ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.Group.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Group.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1686,7 +1737,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."menu"')), '') [menu]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."icon"')), '') [icon]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Operation.Group'
+      WHERE [type] = N'Catalog.Operation.Group'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Group.v] ON [Catalog.Operation.Group.v](id);
@@ -1710,8 +1761,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Operation.Type ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Operation.Type.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Type.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1720,7 +1772,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Operation.Type'
+      WHERE [type] = N'Catalog.Operation.Type'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Type.v] ON [Catalog.Operation.Type.v](id);
@@ -1744,8 +1796,9 @@ GO
 
 ------------------------------ BEGIN Catalog.OrderSource ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.OrderSource.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1755,7 +1808,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Kind"')), '') [Kind]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.OrderSource'
+      WHERE [type] = N'Catalog.OrderSource'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
@@ -1779,8 +1832,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Unit ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Unit.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Unit.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1792,7 +1846,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."kind"')), '') [kind]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Unit'
+      WHERE [type] = N'Catalog.Unit'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Unit.v] ON [Catalog.Unit.v](id);
@@ -1816,8 +1870,9 @@ GO
 
 ------------------------------ BEGIN Catalog.User ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.User.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.User.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1830,7 +1885,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.User'
+      WHERE [type] = N'Catalog.User'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.User.v] ON [Catalog.User.v](id);
@@ -1854,8 +1909,9 @@ GO
 
 ------------------------------ BEGIN Catalog.UsersGroup ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.UsersGroup.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.UsersGroup.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1864,7 +1920,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.UsersGroup'
+      WHERE [type] = N'Catalog.UsersGroup'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.UsersGroup.v] ON [Catalog.UsersGroup.v](id);
@@ -1888,8 +1944,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Role ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Role.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Role.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1898,7 +1955,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Role.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Role'
+      WHERE [type] = N'Catalog.Role'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Role.v] ON [Catalog.Role.v](id);
@@ -1922,8 +1979,9 @@ GO
 
 ------------------------------ BEGIN Catalog.SubSystem ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.SubSystem.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SubSystem.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1933,7 +1991,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."icon"')), '') [icon]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.SubSystem'
+      WHERE [type] = N'Catalog.SubSystem'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.SubSystem.v] ON [Catalog.SubSystem.v](id);
@@ -1957,8 +2015,9 @@ GO
 
 ------------------------------ BEGIN Catalog.JobTitle ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.JobTitle.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -1970,7 +2029,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TO"')), 0) [TO]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."CO"')), 0) [CO]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.JobTitle'
+      WHERE [type] = N'Catalog.JobTitle'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.v] ON [Catalog.JobTitle.v](id);
@@ -1994,8 +2053,9 @@ GO
 
 ------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.JobTitle.Category.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.Category.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2004,7 +2064,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.JobTitle.Category'
+      WHERE [type] = N'Catalog.JobTitle.Category'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.Category.v] ON [Catalog.JobTitle.Category.v](id);
@@ -2028,8 +2088,9 @@ GO
 
 ------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.PersonIdentity.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PersonIdentity.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2038,7 +2099,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.PersonIdentity'
+      WHERE [type] = N'Catalog.PersonIdentity'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.PersonIdentity.v] ON [Catalog.PersonIdentity.v](id);
@@ -2062,8 +2123,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ReasonTypes.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ReasonTypes.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2072,7 +2134,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ReasonTypes'
+      WHERE [type] = N'Catalog.ReasonTypes'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ReasonTypes.v] ON [Catalog.ReasonTypes.v](id);
@@ -2096,8 +2158,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Product.Package ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Package.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Package.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2110,7 +2173,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Label"')), '') [Label]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Product.Package'
+      WHERE [type] = N'Catalog.Product.Package'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Package.v] ON [Catalog.Product.Package.v](id);
@@ -2134,8 +2197,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Product.Analytic.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Analytic.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2147,7 +2211,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."SortOrder"')), 0) [SortOrder]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Product.Analytic'
+      WHERE [type] = N'Catalog.Product.Analytic'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Analytic.v] ON [Catalog.Product.Analytic.v](id);
@@ -2171,8 +2235,9 @@ GO
 
 ------------------------------ BEGIN Catalog.StaffingTable ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.StaffingTable.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.StaffingTable.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2189,7 +2254,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Qty"')), 0) [Qty]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Cost"')), 0) [Cost]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.StaffingTable'
+      WHERE [type] = N'Catalog.StaffingTable'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.StaffingTable.v] ON [Catalog.StaffingTable.v](id);
@@ -2213,8 +2278,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Brand ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Brand.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Brand.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2223,7 +2289,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Brand.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Brand'
+      WHERE [type] = N'Catalog.Brand'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Brand.v] ON [Catalog.Brand.v](id);
@@ -2247,8 +2313,9 @@ GO
 
 ------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.GroupObjectsExploitation.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.GroupObjectsExploitation.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2258,7 +2325,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Method"')), '') [Method]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.GroupObjectsExploitation'
+      WHERE [type] = N'Catalog.GroupObjectsExploitation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.GroupObjectsExploitation.v] ON [Catalog.GroupObjectsExploitation.v](id);
@@ -2282,8 +2349,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ObjectsExploitation.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ObjectsExploitation.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2294,7 +2362,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."InventoryNumber"')), '') [InventoryNumber]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ObjectsExploitation'
+      WHERE [type] = N'Catalog.ObjectsExploitation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ObjectsExploitation.v] ON [Catalog.ObjectsExploitation.v](id);
@@ -2318,8 +2386,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Catalog ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Catalog.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Catalog.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2335,7 +2404,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."hierarchy"')), '') [hierarchy]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."module"')), '') [module]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Catalog'
+      WHERE [type] = N'Catalog.Catalog'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Catalog.v] ON [Catalog.Catalog.v](id);
@@ -2359,8 +2428,9 @@ GO
 
 ------------------------------ BEGIN Catalog.BudgetItem ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BudgetItem.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BudgetItem.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2370,8 +2440,9 @@ CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."parent2"')) [parent2]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."UnaryOperator"')), '') [UnaryOperator]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.BudgetItem'
+      WHERE [type] = N'Catalog.BudgetItem'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BudgetItem.v] ON [Catalog.BudgetItem.v](id);
@@ -2395,8 +2466,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Scenario ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Scenario.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Scenario.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2406,7 +2478,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Scenario'
+      WHERE [type] = N'Catalog.Scenario'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Scenario.v] ON [Catalog.Scenario.v](id);
@@ -2430,8 +2502,9 @@ GO
 
 ------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.ManufactureLocation.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ManufactureLocation.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2440,7 +2513,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.ManufactureLocation'
+      WHERE [type] = N'Catalog.ManufactureLocation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.ManufactureLocation.v] ON [Catalog.ManufactureLocation.v](id);
@@ -2464,8 +2537,9 @@ GO
 
 ------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.AcquiringTerminal.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AcquiringTerminal.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2479,7 +2553,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDefault"')), 0) [isDefault]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.AcquiringTerminal'
+      WHERE [type] = N'Catalog.AcquiringTerminal'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.AcquiringTerminal.v] ON [Catalog.AcquiringTerminal.v](id);
@@ -2503,8 +2577,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Bank ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Bank.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Bank.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2516,9 +2591,10 @@ CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."KorrAccount"')), '') [KorrAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExportRule"')) [ExportRule]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isActive"')), 0) [isActive]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Bank'
+      WHERE [type] = N'Catalog.Bank'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Bank.v] ON [Catalog.Bank.v](id);
@@ -2542,8 +2618,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.BankAccount.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.BankAccount.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2556,7 +2633,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryProject"')) [SalaryProject]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpenDate'),127) [OpenDate]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Person.BankAccount'
+      WHERE [type] = N'Catalog.Person.BankAccount'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.BankAccount.v] ON [Catalog.Person.BankAccount.v](id);
@@ -2580,8 +2657,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Person.Contract ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Person.Contract.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.Contract.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2596,7 +2674,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Person.Contract'
+      WHERE [type] = N'Catalog.Person.Contract'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.Contract.v] ON [Catalog.Person.Contract.v](id);
@@ -2620,8 +2698,9 @@ GO
 
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.BusinessRegion.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessRegion.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2630,7 +2709,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.BusinessRegion'
+      WHERE [type] = N'Catalog.BusinessRegion'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessRegion.v] ON [Catalog.BusinessRegion.v](id);
@@ -2654,8 +2733,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxRate ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxRate.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxRate.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2665,7 +2745,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Rate"')), 0) [Rate]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxRate'
+      WHERE [type] = N'Catalog.TaxRate'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxRate.v] ON [Catalog.TaxRate.v](id);
@@ -2689,8 +2769,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxAssignmentCode.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxAssignmentCode.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2700,7 +2781,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxAssignmentCode'
+      WHERE [type] = N'Catalog.TaxAssignmentCode'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxAssignmentCode.v] ON [Catalog.TaxAssignmentCode.v](id);
@@ -2724,8 +2805,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPaymentCode.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentCode.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2736,7 +2818,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxPaymentCode'
+      WHERE [type] = N'Catalog.TaxPaymentCode'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentCode.v] ON [Catalog.TaxPaymentCode.v](id);
@@ -2760,8 +2842,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxBasisPayment.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxBasisPayment.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2770,7 +2853,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxBasisPayment'
+      WHERE [type] = N'Catalog.TaxBasisPayment'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxBasisPayment.v] ON [Catalog.TaxBasisPayment.v](id);
@@ -2794,8 +2877,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPaymentPeriod.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentPeriod.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2804,7 +2888,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxPaymentPeriod'
+      WHERE [type] = N'Catalog.TaxPaymentPeriod'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentPeriod.v] ON [Catalog.TaxPaymentPeriod.v](id);
@@ -2828,8 +2912,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxPayerStatus.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPayerStatus.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2839,7 +2924,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxPayerStatus'
+      WHERE [type] = N'Catalog.TaxPayerStatus'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPayerStatus.v] ON [Catalog.TaxPayerStatus.v](id);
@@ -2863,8 +2948,9 @@ GO
 
 ------------------------------ BEGIN Catalog.TaxOffice ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.TaxOffice.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxOffice.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2877,7 +2963,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.TaxOffice'
+      WHERE [type] = N'Catalog.TaxOffice'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxOffice.v] ON [Catalog.TaxOffice.v](id);
@@ -2901,8 +2987,9 @@ GO
 
 ------------------------------ BEGIN Catalog.RetailClient ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.RetailClient.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.RetailClient.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2921,7 +3008,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Address"')), '') [Address]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Email"')), '') [Email]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.RetailClient'
+      WHERE [type] = N'Catalog.RetailClient'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailClient.v] ON [Catalog.RetailClient.v](id);
@@ -2945,8 +3032,9 @@ GO
 
 ------------------------------ BEGIN Catalog.SalaryProject ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.SalaryProject.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SalaryProject.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -2961,7 +3049,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BankBranchOffice"')), '') [BankBranchOffice]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BankAccount"')), '') [BankAccount]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.SalaryProject'
+      WHERE [type] = N'Catalog.SalaryProject'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.SalaryProject.v] ON [Catalog.SalaryProject.v](id);
@@ -2985,8 +3073,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Specification ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Specification.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Specification.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3001,7 +3090,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Specification'
+      WHERE [type] = N'Catalog.Specification'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Specification.v] ON [Catalog.Specification.v](id);
@@ -3025,8 +3114,9 @@ GO
 
 ------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.InvestorGroup.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.InvestorGroup.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3035,7 +3125,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.InvestorGroup'
+      WHERE [type] = N'Catalog.InvestorGroup'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.InvestorGroup.v] ON [Catalog.InvestorGroup.v](id);
@@ -3059,8 +3149,9 @@ GO
 
 ------------------------------ BEGIN Catalog.Employee ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Catalog.Employee.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Employee.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3070,7 +3161,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
       FROM dbo.[Documents]
-      WHERE [type] = 'Catalog.Employee'
+      WHERE [type] = N'Catalog.Employee'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Employee.v] ON [Catalog.Employee.v](id);
@@ -3094,8 +3185,9 @@ GO
 
 ------------------------------ BEGIN Document.ExchangeRates ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.ExchangeRates.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.ExchangeRates.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3104,7 +3196,7 @@ CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.ExchangeRates'
+      WHERE [type] = N'Document.ExchangeRates'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.ExchangeRates.v] ON [Document.ExchangeRates.v](id);
@@ -3127,8 +3219,9 @@ GO
 
 ------------------------------ BEGIN Document.Invoice ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Invoice.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Invoice.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3146,7 +3239,7 @@ CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Tax"')), 0) [Tax]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.Invoice'
+      WHERE [type] = N'Document.Invoice'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Invoice.v] ON [Document.Invoice.v](id);
@@ -3169,8 +3262,9 @@ GO
 
 ------------------------------ BEGIN Document.Operation ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Operation.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Operation.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3186,7 +3280,7 @@ CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f2"')) [f2]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.Operation'
+      WHERE [type] = N'Document.Operation'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Operation.v] ON [Document.Operation.v](id);
@@ -3209,8 +3303,9 @@ GO
 
 ------------------------------ BEGIN Document.PriceList ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.PriceList.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.PriceList.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3221,7 +3316,7 @@ CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PriceType"')) [PriceType]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."TaxInclude"')), 0) [TaxInclude]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.PriceList'
+      WHERE [type] = N'Document.PriceList'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.PriceList.v] ON [Document.PriceList.v](id);
@@ -3244,8 +3339,9 @@ GO
 
 ------------------------------ BEGIN Document.Settings ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.Settings.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Settings.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3256,7 +3352,7 @@ CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."balanceCurrency"')) [balanceCurrency]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."accountingCurrency"')) [accountingCurrency]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.Settings'
+      WHERE [type] = N'Document.Settings'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.Settings.v] ON [Document.Settings.v](id);
@@ -3279,8 +3375,9 @@ GO
 
 ------------------------------ BEGIN Document.UserSettings ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.UserSettings.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.UserSettings.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3296,7 +3393,7 @@ CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."BANK"')), 0) [BANK]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."GROUP"')), 0) [GROUP]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.UserSettings'
+      WHERE [type] = N'Document.UserSettings'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.UserSettings.v] ON [Document.UserSettings.v](id);
@@ -3319,8 +3416,9 @@ GO
 
 ------------------------------ BEGIN Document.WorkFlow ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.WorkFlow.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.WorkFlow.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3331,7 +3429,7 @@ CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Document"')) [Document]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.WorkFlow'
+      WHERE [type] = N'Document.WorkFlow'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.WorkFlow.v] ON [Document.WorkFlow.v](id);
@@ -3354,8 +3452,9 @@ GO
 
 ------------------------------ BEGIN Document.CashRequest ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.CashRequest.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequest.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3405,7 +3504,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."tempCompanyParent"')) [tempCompanyParent]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."tempSalaryKind"')), '') [tempSalaryKind]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.CashRequest'
+      WHERE [type] = N'Document.CashRequest'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.CashRequest.v] ON [Document.CashRequest.v](id);
@@ -3428,8 +3527,9 @@ GO
 
 ------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
 
+        
 BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[Document.CashRequestRegistry.v];
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequestRegistry.v];
 END TRY
 BEGIN CATCH
 END CATCH
@@ -3439,6 +3539,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Status"')), '') [Status]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Operation"')), '') [Operation]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."CashKind"')), '') [CashKind]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessDirection"')) [BusinessDirection]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Amount"')), 0) [Amount]
@@ -3446,7 +3547,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.BankUploadDate'),127) [BankUploadDate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.DocumentsCreationDate'),127) [DocumentsCreationDate]
       FROM dbo.[Documents]
-      WHERE [type] = 'Document.CashRequestRegistry'
+      WHERE [type] = N'Document.CashRequestRegistry'
     ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Document.CashRequestRegistry.v] ON [Document.CashRequestRegistry.v](id);

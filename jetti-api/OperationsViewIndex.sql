@@ -2,7 +2,7 @@
 ------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
 
       BEGIN TRY
-      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LotModelsVsDepartment.v];
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LotModelsVsDepartment.v];
       END TRY
       BEGIN CATCH
       END CATCH
@@ -24,7 +24,7 @@ CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment.v] WITH SCHEMABINDING 
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_ShareDistribution"')), 0) [Lot_ShareDistribution]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Lot_ShareInvestor"')), 0) [Lot_ShareInvestor]
       FROM dbo.[Documents]
-      WHERE JSON_VALUE(doc, N'$."Operation"') = '69FB36A0-F735-11EA-B8BB-29476D5253E2'
+      WHERE [type] = N'Operation.LotModelsVsDepartment'
     ; 
 GO
 CREATE UNIQUE CLUSTERED INDEX[Operation.LotModelsVsDepartment.v] ON[Operation.LotModelsVsDepartment.v](id);

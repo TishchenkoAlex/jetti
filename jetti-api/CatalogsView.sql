@@ -356,6 +356,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[isActive] [isActive]
         , d.[isPassive] [isPassive]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [Balance.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Balance.Level4]
@@ -391,6 +392,7 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [BalanceAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BalanceAnalytics.Level4]
@@ -468,6 +470,7 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [CashFlow.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashFlow.Level4]
@@ -1160,6 +1163,7 @@ GO
         , ISNULL([Account.v].description, '') [Account.value], d.[Account] [Account.id], [Account.v].type [Account.type]
         , ISNULL([BudgetItem.v].description, '') [BudgetItem.value], d.[BudgetItem] [BudgetItem.id], [BudgetItem.v].type [BudgetItem.type]
         , d.[Assign] [Assign]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [Expense.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Expense.Level4]
@@ -1198,6 +1202,7 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([BudgetItem.v].description, '') [BudgetItem.value], d.[BudgetItem] [BudgetItem.id], [BudgetItem.v].type [BudgetItem.type]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [ExpenseAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ExpenseAnalytics.Level4]
@@ -1237,6 +1242,7 @@ GO
         , ISNULL([Account.v].description, '') [Account.value], d.[Account] [Account.id], [Account.v].type [Account.type]
         , ISNULL([BudgetItem.v].description, '') [BudgetItem.value], d.[BudgetItem] [BudgetItem.id], [BudgetItem.v].type [BudgetItem.type]
         , d.[Assign] [Assign]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [Income.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Income.Level4]
@@ -2584,6 +2590,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([parent2.v].description, '') [parent2.value], d.[parent2] [parent2.id], [parent2.v].type [parent2.type]
         , d.[UnaryOperator] [UnaryOperator]
+        , d.[DescriptionENG] [DescriptionENG]
       
         , ISNULL(l5.description, d.description) [BudgetItem.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BudgetItem.Level4]
@@ -2739,6 +2746,7 @@ GO
         , d.[Code2] [Code2]
         , d.[Address] [Address]
         , d.[KorrAccount] [KorrAccount]
+        , ISNULL([ExportRule.v].description, '') [ExportRule.value], d.[ExportRule] [ExportRule.id], [ExportRule.v].type [ExportRule.type]
         , d.[isActive] [isActive]
       
         , ISNULL(l5.description, d.description) [Bank.Level5]
@@ -2757,6 +2765,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Document.Operation.v] [ExportRule.v] WITH (NOEXPAND) ON [ExportRule.v].id = d.[ExportRule]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Bank] TO jetti;
@@ -3745,6 +3754,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Status] [Status]
         , d.[Operation] [Operation]
+        , d.[CashKind] [CashKind]
         , ISNULL([CashFlow.v].description, '') [CashFlow.value], d.[CashFlow] [CashFlow.id], [CashFlow.v].type [CashFlow.type]
         , ISNULL([BusinessDirection.v].description, '') [BusinessDirection.value], d.[BusinessDirection] [BusinessDirection.id], [BusinessDirection.v].type [BusinessDirection.type]
         , d.[Amount] [Amount]

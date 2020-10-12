@@ -25,28 +25,28 @@ export class SQLGenegatorMetadata {
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') {
         return `
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}') "${prop}"`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}') [${prop}]`;
       }
       if (type === 'number') {
         return `
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) "${prop}"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1,  null) "${prop}.In"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, null,  1) "${prop}.Out"`;
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) [${prop}]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1,  null) [${prop}.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
       }
       if (type === 'date') {
         return `
-        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$.${prop}'),127) [${prop}]`;
       }
       if (type === 'datetime') {
         return `
-        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$.${prop}'),127) [${prop}]`;
       }
       return `
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.${prop}')) "${prop}" \n`;
+        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.${prop}')) [${prop}] \n`;
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
     let insert = ''; let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -70,19 +70,18 @@ export class SQLGenegatorMetadata {
     const query = `
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
-    CREATE OR ALTER VIEW [${type}]
-    WITH SCHEMABINDING
-    AS
-    SELECT
-      id, parent, CAST(date AS DATE) date, document, company, kind, calculated
-        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) exchangeRate${select}
-      FROM dbo.[Accumulation] WHERE type = N'${type}';
+    CREATE OR ALTER VIEW [${type}.v] WITH SCHEMABINDING AS
+    SELECT [id], [parent], CAST(date AS DATE) [date], [document], [company], [kind], [calculated]
+        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) [exchangeRate]${select}
+      FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
-      CREATE UNIQUE INDEX [${type}.id] ON [dbo].[${type}](id);
-      CREATE UNIQUE CLUSTERED INDEX [${type}] ON [dbo].[${type}](company,date,calculated,id);
-      GO
+    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [${type}.v]([date], [company], [calculated], [id]);
+    CREATE UNIQUE INDEX [${type}.id] ON [${type}.v]([id]);
+    GO
+    CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
+    GO
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
     `;
@@ -218,8 +217,9 @@ export class SQLGenegatorMetadata {
       const Props = (await doc.getPropsFunc(tx))();
       const select = SQLGenegator.QueryListRaw(Props, type)
         .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
-      subQueries.push(`${this.typeSpliter(operation.type, true)}${withSecurityPolicy ? `BEGIN TRY
-      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
+      subQueries.push(`${this.typeSpliter(operation.type, true)}${withSecurityPolicy ? `
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
       END TRY
       BEGIN CATCH
       END CATCH` : ''}`);
@@ -307,11 +307,11 @@ export class SQLGenegatorMetadata {
 
       subQueries.push(`${this.typeSpliter(catalog.type, true)}
         ${withSecurityPolicy ? `
-      BEGIN TRY
-      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${catalog.type}.v];
-        END TRY
-        BEGIN CATCH
-        END CATCH` : ''}`);
+BEGIN TRY
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${catalog.type}.v];
+END TRY
+BEGIN CATCH
+END CATCH` : ''}`);
 
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
       subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
@@ -525,7 +525,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns}) WITH (DROP_EXISTING = ON);
+      id, parent, date, document, company, kind, calculated, exchangeRate${columns});
     ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;

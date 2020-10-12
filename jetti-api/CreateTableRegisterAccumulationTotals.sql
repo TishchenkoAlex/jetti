@@ -716,6 +716,7 @@
         , CAST(JSON_VALUE(data, N'$.OperationType') AS UNIQUEIDENTIFIER) AS [OperationType]
         , CAST(JSON_VALUE(data, N'$.currency') AS UNIQUEIDENTIFIER) AS [currency]
         , CAST(JSON_VALUE(data, N'$.Department') AS UNIQUEIDENTIFIER) AS [Department]
+        , CAST(JSON_VALUE(data, N'$.ResponsiblePerson') AS UNIQUEIDENTIFIER) AS [ResponsiblePerson]
         , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, -1), 0)) [Amount]
         , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.Amount') AS MONEY) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
@@ -733,6 +734,7 @@
         , CAST(JSON_VALUE(data, N'$.OperationType') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.currency') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.Department') AS UNIQUEIDENTIFIER)
+        , CAST(JSON_VALUE(data, N'$.ResponsiblePerson') AS UNIQUEIDENTIFIER)
       GO
       CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.TO] ON [dbo].[Register.Accumulation.Depreciation.TO] (
           [date]
@@ -740,6 +742,7 @@
         , [OperationType]
         , [currency]
         , [Department]
+        , [ResponsiblePerson]
       )
       GO
       GRANT SELECT ON [dbo].[Register.Accumulation.Depreciation.TO] TO jetti;

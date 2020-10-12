@@ -104,7 +104,7 @@ Global.init().then(e => {
     SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
 
 
-    script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(undefined, undefined, true) as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 
     script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
@@ -124,6 +124,9 @@ Global.init().then(e => {
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
     fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
+    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
   }
 });
 
