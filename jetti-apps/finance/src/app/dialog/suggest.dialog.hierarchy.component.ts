@@ -272,7 +272,11 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
   onNodeDblclick(node: { node: TreeNode }) {
     const Node = node.node;
-    if (Node.leaf) { this.select(node); return; }
+    if (Node.leaf) {
+      this.selectedNode = Node;
+      this.select(node);
+      return;
+    }
     Node.expanded = !Node.expanded;
     this.onNodeExpand(node);
   }
@@ -312,7 +316,6 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   }
 
   select(row) {
-    this.selectedNode = row.node ? row.node : row;
     if (!this.isSelectEnabled) return;
     const sel = this.selectionData;
     const selection: ISuggest = { id: sel.id, type: sel.type, code: sel.code, value: sel.description, deleted: sel.deleted };

@@ -4,7 +4,7 @@ import { TypesCompanyOrCompanyGroup } from './Types.CompanyOrCompanyGroup';
 import { ComplexTypes } from '../documents.types';
 import { TypesCatalog } from './Types.Catalog';
 import { TypesDocument } from './Types.Document';
-import { TypesExpenseOrBalance } from './Types.ExpenseOrBalance';
+import { TypesExpenseOrBalanceOrIncome } from './Types.ExpenseOrBalanceOrIncome';
 import { TypesObject } from './Types.Object';
 import { TypesSubcount } from './Types.Subcount';
 import { TypesBase } from './TypesBase';
@@ -74,7 +74,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Catalog', Class: TypesCatalog },
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
-  { type: 'Types.ExpenseOrBalance', Class: TypesExpenseOrBalance },
+  { type: 'Types.ExpenseOrBalance', Class: TypesExpenseOrBalanceOrIncome },
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },

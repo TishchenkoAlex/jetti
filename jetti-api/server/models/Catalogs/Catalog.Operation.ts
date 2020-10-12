@@ -17,6 +17,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   hierarchy: 'folders',
   module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableOperationRulesDesigner()}; return {onOpen};}`,
   commands: [
+    { method: 'updateSQLViewsX100DATA', icon: 'pi pi-plus', label: 'Обновить SQL представления (X100-DATA)', order: 3 },
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 1 },
     { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 2 }
   ]

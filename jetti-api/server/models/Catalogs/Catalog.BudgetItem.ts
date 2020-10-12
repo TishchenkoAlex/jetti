@@ -32,4 +32,7 @@ export class CatalogBudgetItem extends DocumentBase {
   ]})
   UnaryOperator = '';
 
+  @Props({ type: 'string'})
+  DescriptionENG = '';
+
 }

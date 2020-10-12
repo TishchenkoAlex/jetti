@@ -24,4 +24,7 @@ export class CatalogExpense extends DocumentBase {
   @Props({ type: 'enum' , value: ['FINRES', 'INVEST', 'COST', 'NOTASSIGN']})
   Assign = 'FINRES';
 
+  @Props({ type: 'string'})
+  DescriptionENG = '';
+
 }

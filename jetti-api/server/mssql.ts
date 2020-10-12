@@ -213,6 +213,15 @@ export class MSSQL {
     else
       return value;
   }
+
+  isRoleAvailable(role: string): boolean {
+    return !this.user || !this.user.roles || this.user.roles.includes(role);
+  }
+
+  isRoleAvailableModifyProtected() {
+    return this.isRoleAvailable('Modify protected');
+  }
+
 }
 
 

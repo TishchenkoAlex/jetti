@@ -15,4 +15,7 @@ export class CatalogExpenseAnalytics extends DocumentBase {
   @Props({ type: 'Catalog.BudgetItem' })
   BudgetItem: Ref = null;
 
+  @Props({ type: 'string'})
+  DescriptionENG = '';
+
 }

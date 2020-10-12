@@ -12,4 +12,7 @@ export class CatalogBalanceAnalytics extends DocumentBase {
   @Props({ type: 'Catalog.Balance', hiddenInList: false, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'string'})
+  DescriptionENG = '';
+
 }

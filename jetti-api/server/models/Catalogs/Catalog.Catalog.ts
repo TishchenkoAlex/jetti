@@ -6,6 +6,7 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   icon: 'fa fa-list',
   menu: 'Catalog construcror',
   commands: [
+    { method: 'updateSQLViewsX100DATA', icon: 'pi pi-plus', label: 'Обновить SQL представления (X100-DATA)', order: 3 },
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 2 },
     { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 1 }
   ]

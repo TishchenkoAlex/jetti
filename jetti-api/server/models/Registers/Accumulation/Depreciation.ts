@@ -16,6 +16,9 @@ export class RegisterAccumulationDepreciation extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department', required: true, dimension: true })
   Department: Ref = null;
 
+  @Props({ type: 'Catalog.Person', required: true, dimension: true })
+  ResponsiblePerson: Ref = null;
+
   @Props({ type: 'Catalog.ObjectsExploitation', required: true })
   OE: Ref = null;
 

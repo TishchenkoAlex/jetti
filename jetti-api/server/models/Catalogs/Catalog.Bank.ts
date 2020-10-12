@@ -24,6 +24,9 @@ export class CatalogBank extends DocumentBase {
   @Props({ type: 'string'})
   KorrAccount = '';
 
+  @Props({ type: 'Document.Operation'})
+  ExportRule = null;
+
   @Props({ type: 'boolean'})
   isActive = true;
 

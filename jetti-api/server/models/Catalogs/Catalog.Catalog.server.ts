@@ -5,6 +5,7 @@ import { MSSQL } from '../../mssql';
 import { PropOptions, DocumentBase, DocumentOptions } from '../document';
 import { lib } from '../../std.lib';
 import { riseUpdateMetadataEvent, IDynamicProps } from '../Dynamic/dynamic.common';
+import { x100DATA_POOL } from '../../sql.pool.x100-DATA';
 
 
 export class CatalogCatalogServer extends CatalogCatalog implements IServerDocument {
@@ -16,6 +17,10 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
 
   async updateSQLViews() {
     await lib.meta.updateSQLViewsByType(this.typeString as any);
+  }
+
+  async updateSQLViewsX100DATA() {
+    await lib.meta.updateSQLViewsByType(this.typeString as any, new MSSQL(x100DATA_POOL), false);
   }
 
   async riseUpdateMetadataEvent() {

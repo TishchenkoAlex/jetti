@@ -311,7 +311,7 @@ HAVING SUM(Balance.[Amount]) > 0;
     FROM #CashRequestBalance AS CRT
       LEFT JOIN #SalaryAmount sa ON CRT.CashRequest = sa.CashRequest and CRT.CashRecipient = sa.CashRecipient and (CRT.BankAccountPerson = sa.BankAccountPerson or @p5 = 1)
       LEFT JOIN #SalaryAmountCashRequest sacr ON CRT.CashRequest = sacr.CashRequest and CRT.CashRecipient = sacr.CashRecipient and (CRT.BankAccountPerson = sacr.BankAccountPerson or @p5 = 1)
-      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and ((DocCR.[CashKind] = 'CASH' and @p5 = 1) or (DocCR.[CashKind] = 'BANK' and @p5 = 0))
+      INNER JOIN [dbo].[Document.CashRequest] AS DocCR ON DocCR.[id] = CRT.[CashRequest] and (DocCR.[CashKind] = @p6 or @p6 = 'ANY')
       LEFT JOIN dbo.[Catalog.Person.BankAccount.v] cpb ON
       (DocCR.[SalaryProject.id] = cpb.SalaryProject or (cpb.SalaryProject is NULL and DocCR.[SalaryProject.id] is NULL))
       and CRT.[CashRecipient] = cpb.owner and cpb.deleted = 0 and @p5 = 1
@@ -329,26 +329,8 @@ HAVING SUM(Balance.[Amount]) > 0;
         , this.сurrency
         , this.getDocumentCashRequestsOperationType()
         , isCashSalary ? 1 : 0
-        , this.salaryOperations()
-        , this.unsupportedOperations()]
+        , this.CashKind || 'ANY']
     );
-
-    // if (isCashSalary) {
-    //   const persons = [...new Set(CashRequests.map(x => x.CashRecipient))];
-    //   query = `
-    //   SELECT id, owner person
-    //     FROM dbo.[Catalog.Person.BankAccount.v]
-    //   WHERE
-    //   owner IN (${persons.map(el => '\'' + el + '\'').join()})
-    //   and SalaryProject = @p1
-    //   and deleted = 0`;
-    //   const BankAccounts = await tx.manyOrNone<{ id: string, person: string }>(query, [salaryProject]);
-    //   let BankAccountPerson: any;
-    //   for (const row of CashRequests) {
-    //     BankAccountPerson = BankAccounts.find(e => e.person === row.CashRecipient);
-    //     if (BankAccountPerson) row.BankAccountPerson = BankAccountPerson.id;
-    //   }
-    // }
 
     for (const row of CashRequests) {
       this.CashRequests.push({

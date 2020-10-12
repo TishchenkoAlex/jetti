@@ -199,7 +199,7 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
 async function checkProtectedPropsModify(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
-  if (!serverDoc.isCatalog || !serverDoc.timestamp) return;
+  if (!serverDoc.isCatalog || !serverDoc.timestamp || tx.isRoleAvailableModifyProtected()) return;
   const protectedProps = serverDoc.getPropsWithOption('isProtected', true);
 
   if (!Object.keys(protectedProps).length) return;

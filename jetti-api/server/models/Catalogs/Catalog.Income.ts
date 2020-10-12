@@ -9,7 +9,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
 })
 export class CatalogIncome extends DocumentBase {
 
-  @Props({ type: 'Catalog.Income', hiddenInList: true, order: -1, storageType: 'folders'})
+  @Props({ type: 'Catalog.Income', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Account' })
@@ -18,7 +18,10 @@ export class CatalogIncome extends DocumentBase {
   @Props({ type: 'Catalog.BudgetItem' })
   BudgetItem: Ref = null;
 
-  @Props({ type: 'enum' , value: ['FINRES', 'INVEST', 'NOTASSIGN']})
+  @Props({ type: 'enum', value: ['FINRES', 'INVEST', 'NOTASSIGN'] })
   Assign = 'FINRES';
+
+  @Props({ type: 'string' })
+  DescriptionENG = '';
 
 }
