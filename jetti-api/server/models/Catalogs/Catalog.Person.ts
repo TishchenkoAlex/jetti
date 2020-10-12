@@ -34,7 +34,7 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'string' })
   MiddleName: Ref = null;
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', isIndexed: true })
   Code1: Ref = null;
 
   @Props({ type: 'string' })
@@ -67,7 +67,7 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'Catalog.Country' })
   Country: Ref = null;
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', isIndexed: true })
   Profile: Ref = null;
 
   @Props({ type: 'Catalog.PersonIdentity' })

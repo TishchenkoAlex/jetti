@@ -21,6 +21,9 @@ export class CatalogBalance extends DocumentBase {
   @Props({ type: 'boolean'})
   isPassive = false;
 
+  @Props({ type: 'string'})
+  DescriptionENG = '';
+
   @Props({ type: 'table'})
   Subcounts: Subcounts[] = [new Subcounts()];
 }

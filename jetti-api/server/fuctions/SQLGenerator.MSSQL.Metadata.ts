@@ -205,7 +205,7 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static async CreateViewOperationsIndex(operationsId?: string[], asArrayOfQueries = false) {
+  static async CreateViewOperationsIndex(operationsId?: string[], asArrayOfQueries = false, withSecurityPolicy = true) {
 
     const tx = lib.util.jettiPoolTx();
 
@@ -218,12 +218,11 @@ export class SQLGenegatorMetadata {
       const Props = (await doc.getPropsFunc(tx))();
       const select = SQLGenegator.QueryListRaw(Props, type)
         .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
-      subQueries.push(`${this.typeSpliter(operation.type, true)}
-      BEGIN TRY
+      subQueries.push(`${this.typeSpliter(operation.type, true)}${withSecurityPolicy ? `BEGIN TRY
       ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
       END TRY
       BEGIN CATCH
-      END CATCH`);
+      END CATCH` : ''}`);
 
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
 
@@ -236,8 +235,8 @@ export class SQLGenegatorMetadata {
 
       subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti; `);
 
-      subQueries.push(`ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];
+      subQueries.push(`${withSecurityPolicy ? `ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];` : ''}
       ${this.typeSpliter(operation.type, false)}`);
 
     }
@@ -295,7 +294,7 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false) {
+  static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false, withSecurityPolicy = true) {
 
     const allTypes = types || RegisteredDocument().filter(e => !Type.isOperation(e.type));
     const subQueries: string[] = [];
@@ -305,12 +304,15 @@ export class SQLGenegatorMetadata {
       if (doc['QueryList']) continue;
       const Props = doc.Props();
       const select = SQLGenegator.QueryListRaw(Props, doc.type);
+
       subQueries.push(`${this.typeSpliter(catalog.type, true)}
-BEGIN TRY
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy] DROP FILTER PREDICATE ON [dbo].[${catalog.type}.v];
-END TRY
-BEGIN CATCH
-END CATCH`);
+        ${withSecurityPolicy ? `
+      BEGIN TRY
+      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${catalog.type}.v];
+        END TRY
+        BEGIN CATCH
+        END CATCH` : ''}`);
+
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
       subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
       ${Object.keys(Props)
@@ -329,8 +331,8 @@ CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}
 
       subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;`);
 
-      subQueries.push(`ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];
+      subQueries.push(`${withSecurityPolicy ? `ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];` : ''}
       ${this.typeSpliter(catalog.type, false)}`);
 
       // subQueries.push(`RAISERROR('${catalog.type} complete', 0 ,1) WITH NOWAIT;`);

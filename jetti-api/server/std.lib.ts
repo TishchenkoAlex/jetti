@@ -106,8 +106,8 @@ export interface JTL {
 
   };
   meta: {
-    updateSQLViewsByType: (type: AllDocTypes) => Promise<void>,
-    updateSQLViewsByOperationId: (id: string) => Promise<void>,
+    updateSQLViewsByType: (type: AllDocTypes, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
+    updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     getTX: () => MSSQL
   };
@@ -651,10 +651,10 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
   return await instance.get(opts.query);
 }
 
-async function updateSQLViewsByType(type: DocTypes): Promise<void> {
-  const tx = getTX();
+async function updateSQLViewsByType(type: DocTypes, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
+  if (!tx) tx = getTX();
   const queries = [
-    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true),
+    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true, withSecurityPolicy),
     ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
   ];
   // console.log(queries);
@@ -666,10 +666,10 @@ async function updateSQLViewsByType(type: DocTypes): Promise<void> {
     }
   }
 }
-async function updateSQLViewsByOperationId(id: string): Promise<void> {
-  const tx = getTX();
+async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
+  if (!tx) tx = getTX();
   const queries = [
-    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true),
+    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true, withSecurityPolicy),
     ...await SQLGenegatorMetadata.CreateViewOperations([id], true)
   ];
   // console.log(queries);

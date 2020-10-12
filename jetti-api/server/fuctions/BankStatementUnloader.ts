@@ -1,6 +1,7 @@
 import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
 import { Ref } from '../models/document';
+import { DocumentOperationServer } from '../models/Documents/Document.Operation.server';
 
 export class BankStatementUnloader {
 
@@ -12,6 +13,8 @@ export class BankStatementUnloader {
   static operation = '';
   static operationTypes: string[];
   static docsByTypes: { id: string, operation: string }[];
+  static exportRulesOperationId = 'D3EB3550-0C7B-11EB-A80F-8FEBE5355E8B';
+  static exportRules: DocumentOperationServer;
 
   private static isUKRAINE(): boolean {
     return this.country === 'E04BAF30-4D6A-11EA-9419-5B6F020710B8';
@@ -745,9 +748,24 @@ export class BankStatementUnloader {
     return this.operationTypes.length;
   }
 
+  static async getBankStatementAsStringWithRules(docsID: any[], tx: MSSQL): Promise<string> {
+    if (!docsID.length) return '';
+    const doc = await lib.doc.byId(docsID[0], tx);
+    if (!doc) return '';
+    const rules = await lib.doc.createDocServerById(this.exportRulesOperationId, tx);
+    if (!rules) return '';
+    const func = new Function('tx', rules['module']);
+    rules['serverModule'] = func.bind(rules, tx)() || {};
+    this.exportRules = await rules!['serverModule']['getRuleByDocumentOperation'](doc);
+    if (this.exportRules) return await this.exportRules['serverModule']['exportOperationsToString'](this.docsIdsString);
+    return '';
+  }
+
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
+    let result = await this.getBankStatementAsStringWithRules(docsID, tx);
+    if (result) return result;
     if (!await this.init(docsID, tx)) return '';
-    let result = await this.BankStatementDataAsSalaryProjectBankStatementString();
+    result = await this.BankStatementDataAsSalaryProjectBankStatementString();
     if (result) return result;
     result = await this.getHeaderText();
     for (const operationType of this.operationTypes) {

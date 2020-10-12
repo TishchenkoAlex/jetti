@@ -72,6 +72,16 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   })
   Operation = 'Оплата поставщику';
 
+  @Props({
+    type: 'enum', style: { width: '140px' }, required: true,
+    value: [
+      'BANK',
+      'CASH',
+      'ANY',
+    ]
+  })
+  CashKind = 'ANY';
+
   @Props({ type: 'Catalog.CashFlow', storageType: 'all' })
   CashFlow: Ref = null;
 

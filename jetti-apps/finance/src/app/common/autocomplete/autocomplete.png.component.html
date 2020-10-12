@@ -105,7 +105,7 @@
       <p-toolbar>
         <div class="ui-toolbar-group-left">
           <button pButton type="button" icon="fa fa-check-square-o" label="Select&Close" class="ui-button-warning"
-            [disabled]="!slh.isSelectEnabled" (click)="slh.select(slh.selectedNode)"></button>
+            [disabled]="!slh.isSelectEnabled" (click)="slh.select(slh.selectedNode || slh.selectedRow)"></button>
         </div>
         <div class="ui-toolbar-group-right">
           <button pButton type="button" icon="pi pi-fast-backward"
