@@ -31,19 +31,19 @@ export class RegisterAccumulationCashToPay extends RegisterAccumulation {
   @Props({ type: 'Catalog.Loan', dimension: true })
   Loan: Ref = null;
 
-  @Props({ type: 'Types.CashOrBank', dimension: true  })
+  @Props({ type: 'Types.CashOrBank', dimension: true })
   CashOrBank: Ref = null;
 
-  @Props({ type: 'Types.CashRecipient', dimension: true  })
+  @Props({ type: 'Types.CashRecipient', dimension: true })
   CashRecipient: Ref = null;
 
   @Props({ type: 'Types.ExpenseOrBalance', dimension: true })
   ExpenseOrBalance: Ref = null;
 
-  @Props({ type: 'Catalog.Expense.Analytics' })
+  @Props({ type: 'Catalog.Expense.Analytics', dimension: true })
   ExpenseAnalytics: Ref = null;
 
-  @Props({ type: 'Catalog.Balance.Analytics' })
+  @Props({ type: 'Catalog.Balance.Analytics', dimension: true })
   BalanceAnalytics: Ref = null;
 
   @Props({ type: 'date' })
@@ -52,7 +52,7 @@ export class RegisterAccumulationCashToPay extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
-  constructor (init: Partial<RegisterAccumulationCashToPay>) {
+  constructor(init: Partial<RegisterAccumulationCashToPay>) {
     super(init);
     Object.assign(this, init);
   }

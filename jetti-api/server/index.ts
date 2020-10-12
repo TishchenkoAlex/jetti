@@ -121,6 +121,9 @@ Global.init().then(e => {
 
     script = SQLGenegatorMetadata.RegisterAccumulationView();
     fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
+    fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => { });
   }
 });
 

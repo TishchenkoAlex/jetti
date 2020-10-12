@@ -374,49 +374,58 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     return select;
   }
 
-  static CreateTableRegisterAccumulationTotals() {
+  static CreateTableRegisterAccumulationTO() {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type.includes('.')) { return `, [${prop}]`; }
+      if (type.includes('.')) return `
+        , CAST(JSON_VALUE(data, N'$.${prop}') AS UNIQUEIDENTIFIER) AS [${prop}]`;
 
       if (type === 'number') {
         return `
-        , SUM([${prop}]) [${prop}]
-        , SUM([${prop}.In]) [${prop}.In]
-        , SUM([${prop}.Out]) [${prop}.Out]`;
+        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1), 0)) [${prop}]
+        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, null), 0)) [${prop}.In]
+        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
       }
 
-      if (type === 'string') { return `, [${prop}]`; }
+      if (type === 'string') return `
+        , CAST(JSON_VALUE(data, N'$.${prop}') AS NVARCHAR(150)) AS [${prop}]`;
     };
 
     let query = '';
     for (const register of RegisteredRegisterAccumulation) {
       const doc = createRegisterAccumulation({ type: register.type });
       const props = doc.Props();
-      let select = ''; let groupBy = '';
+      let select = ''; let groupBy = ''; let indexGroupBy = '';
       for (const prop in excludeRegisterAccumulatioProps(doc)) {
         const dimension = !!props[prop].dimension;
         const resource = !!props[prop].resource;
         const type = props[prop].type || 'string';
         const field = simleProperty(prop, type) || '';
-        if (dimension) groupBy += field;
-        else if (resource) select += field;
+        if (dimension) {
+          groupBy += field.slice(0, field.indexOf(' AS ['));
+          indexGroupBy += `
+        , [${prop}]`;
+        }
+        if (dimension || resource) select += field;
       }
 
       query += `\n
-      CREATE OR ALTER VIEW [dbo].[${register.type}.Totals]
-      WITH SCHEMABINDING
-      AS
-        SELECT [company], [date]${groupBy}
-        ${select}
-	      , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[${register.type}]
-      GROUP BY [company], [date]${groupBy}
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]${select}
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Accumulation] WHERE [type] = N'${register.type}'
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [ci${register.type}.Totals] ON [dbo].[${register.type}.Totals]
-      ([company], [date] ${groupBy})
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO] (
+          [date]
+        , [company]${indexGroupBy}
+      )
       GO
-      GRANT SELECT ON [dbo].[${register.type}.Totals] TO jetti;
+      GRANT SELECT ON [dbo].[${register.type}.TO] TO jetti;
       GO`;
     }
 
@@ -453,9 +462,11 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       const type: string = doc[prop].type || 'string';
       columns += `, [${prop}]`;
-      if (type === 'number') fields += `
+      if (type === 'number') {
+        columns += `, [${prop}.In], [${prop}.Out]`;
+        fields += `
       , d.[${prop}] * IIF(r.kind = 1, 1, -1) [${prop}], d.[${prop}] * IIF(r.kind = 1, 1, null) [${prop}.In], d.[${prop}] * IIF(r.kind = 1, null, 1) [${prop}.Out]`;
-      else fields += `, [${prop}]`;
+      } else fields += `, [${prop}]`;
 
       insert += `
         , "${prop}"`;
@@ -512,7 +523,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     GO
 
     CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns});
+      id, parent, date, document, company, kind, calculated, exchangeRate${columns}) WITH (DROP_EXISTING = ON);
     ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
