@@ -651,6 +651,7 @@
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay.v]([date], [company], [calculated], [id]);
     CREATE UNIQUE INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay.v]([id]);
+    CREATE INDEX [Register.Accumulation.CashToPay.CashRequest] ON [Register.Accumulation.CashToPay.v]([CashRequest]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay] AS SELECT * FROM [Register.Accumulation.CashToPay.v] WITH (NOEXPAND);
     GO

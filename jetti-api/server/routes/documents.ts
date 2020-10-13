@@ -421,61 +421,6 @@ router.get('/haveDescendants/:id/', async (req: Request, res: Response, next: Ne
   } catch (err) { next(err); }
 });
 
-// Get tree for document list
-router.get('/tree/:type', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      const query = `select id, description, parent from "Documents" where isfolder = 1 and type = @p1 order by description, parent`;
-      res.json(await tx.manyOrNone(query, [req.params.type]));
-    });
-  } catch (err) { next(err); }
-});
-
-// Get hierarchyList for document list
-router.get('/hierarchyList/:type/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const tx = SDB(req);
-    let result;
-    if (req.params.id === 'top') { // top level
-      const query = `
-      SELECT doc.id, doc.parent, doc.isfolder, doc.description, 0 level, doc.deleted
-      FROM Documents doc
-      WHERE doc.parent is NULL and type = @p1
-      order by doc.isfolder desc, description`;
-      result = await tx.manyOrNone(query, [req.params.type]);
-    } else {
-      const query = `
-      DROP TABLE IF EXISTS #Tree;
-
-      SELECT id, [parent.id], description, LevelUp
-      INTO #Tree
-      FROM dbo.[Ancestors](@p1);
-      SELECT res.id, res.parent, res.isfolder, res.description, MIN(res.LevelUp) level, doc.deleted
-      from (
-        SELECT doc.id id, doc.parent parent, doc.isfolder, doc.description, tree.LevelUp
-          FROM #Tree tree INNER JOIN Documents doc ON tree.[parent.id] = doc.parent and tree.id = @p1
-        UNION
-        SELECT tree.id id, tree.[parent.id] parent, 1, tree.description, tree.LevelUp
-          FROM #Tree tree
-          WHERE tree.id <> @p1
-        UNION
-        SELECT doc.id, doc.parent, doc.isfolder, doc.description, 9 LevelUp
-          FROM Documents doc
-          WHERE id = @p1
-        UNION
-        SELECT doc.id, doc.parent, doc.isfolder, doc.description, 10 LevelUp
-          FROM Documents doc
-          WHERE doc.parent = @p1) res LEFT JOIN Documents doc on doc.id = res.id
-      GROUP BY res.id, res.parent, res.isfolder, res.description, doc.deleted
-      order by MIN(LevelUp), res.isfolder desc, res.description`;
-      result = await tx.manyOrNone(query, [req.params.id]);
-    }
-
-    res.json(result);
-  } catch (err) { next(err); }
-});
-
 // Get history list by object id
 router.get('/getHistoryById/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

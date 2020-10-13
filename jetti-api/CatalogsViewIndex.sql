@@ -1,12 +1,9 @@
+RAISERROR('Catalog.Sample start', 0 ,1) WITH NOWAIT;
+GO
 
 ------------------------------ BEGIN Catalog.Sample ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Sample.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Sample.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -28,21 +25,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Sample.v.company] ON [Catalog.Sample.v
 GO
 GRANT SELECT ON dbo.[Catalog.Sample.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Sample.v];
+
       
 ------------------------------ END Catalog.Sample ------------------------------
 
+GO
+RAISERROR('Catalog.Sample complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ResponsibilityCenter start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ResponsibilityCenter.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -66,21 +61,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.company] ON [Ca
 GO
 GRANT SELECT ON dbo.[Catalog.ResponsibilityCenter.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ResponsibilityCenter.v];
+
       
 ------------------------------ END Catalog.ResponsibilityCenter ------------------------------
 
+GO
+RAISERROR('Catalog.ResponsibilityCenter complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Dynamic start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Dynamic ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Dynamic.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Dynamic.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -101,21 +94,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Dynamic.v.company] ON [Catalog.Dynamic
 GO
 GRANT SELECT ON dbo.[Catalog.Dynamic.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Dynamic.v];
+
       
 ------------------------------ END Catalog.Dynamic ------------------------------
 
+GO
+RAISERROR('Catalog.Dynamic complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Attachment start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -143,21 +134,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.company] ON [Catalog.Atta
 GO
 GRANT SELECT ON dbo.[Catalog.Attachment.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.v];
+
       
 ------------------------------ END Catalog.Attachment ------------------------------
 
+GO
+RAISERROR('Catalog.Attachment complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Attachment.Type start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.Type.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -186,21 +175,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Attachment.Type.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.Type.v];
+
       
 ------------------------------ END Catalog.Attachment.Type ------------------------------
 
+GO
+RAISERROR('Catalog.Attachment.Type complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.AllUnic.Lot start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AllUnic.Lot.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -225,21 +212,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.company] ON [Catalog.All
 GO
 GRANT SELECT ON dbo.[Catalog.AllUnic.Lot.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AllUnic.Lot.v];
+
       
 ------------------------------ END Catalog.AllUnic.Lot ------------------------------
 
+GO
+RAISERROR('Catalog.AllUnic.Lot complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Account start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Account ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Account.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -263,21 +248,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.company] ON [Catalog.Account
 GO
 GRANT SELECT ON dbo.[Catalog.Account.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Account.v];
+
       
 ------------------------------ END Catalog.Account ------------------------------
 
+GO
+RAISERROR('Catalog.Account complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Balance start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Balance ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -301,21 +284,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.company] ON [Catalog.Balance
 GO
 GRANT SELECT ON dbo.[Catalog.Balance.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.v];
+
       
 ------------------------------ END Catalog.Balance ------------------------------
 
+GO
+RAISERROR('Catalog.Balance complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Balance.Analytics start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.Analytics.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -337,21 +318,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.Balance.Analytics.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.Analytics.v];
+
       
 ------------------------------ END Catalog.Balance.Analytics ------------------------------
 
+GO
+RAISERROR('Catalog.Balance.Analytics complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.BankAccount start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.BankAccount ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BankAccount.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -376,21 +355,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.company] ON [Catalog.Ban
 GO
 GRANT SELECT ON dbo.[Catalog.BankAccount.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BankAccount.v];
+
       
 ------------------------------ END Catalog.BankAccount ------------------------------
 
+GO
+RAISERROR('Catalog.BankAccount complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.CashFlow start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.CashFlow ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashFlow.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashFlow.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -412,21 +389,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.company] ON [Catalog.CashFl
 GO
 GRANT SELECT ON dbo.[Catalog.CashFlow.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashFlow.v];
+
       
 ------------------------------ END Catalog.CashFlow ------------------------------
 
+GO
+RAISERROR('Catalog.CashFlow complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.CashRegister start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.CashRegister ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashRegister.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -450,21 +425,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.company] ON [Catalog.Ca
 GO
 GRANT SELECT ON dbo.[Catalog.CashRegister.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashRegister.v];
+
       
 ------------------------------ END Catalog.CashRegister ------------------------------
 
+GO
+RAISERROR('Catalog.CashRegister complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Currency start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Currency ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Currency.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -486,21 +459,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.company] ON [Catalog.Curren
 GO
 GRANT SELECT ON dbo.[Catalog.Currency.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Currency.v];
+
       
 ------------------------------ END Catalog.Currency ------------------------------
 
+GO
+RAISERROR('Catalog.Currency complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Company start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Company ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -539,21 +510,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.company] ON [Catalog.Company
 GO
 GRANT SELECT ON dbo.[Catalog.Company.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.v];
+
       
 ------------------------------ END Catalog.Company ------------------------------
 
+GO
+RAISERROR('Catalog.Company complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Company.Group start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Company.Group ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.Group.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -575,21 +544,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.Group.v.company] ON [Catalog.C
 GO
 GRANT SELECT ON dbo.[Catalog.Company.Group.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.Group.v];
+
       
 ------------------------------ END Catalog.Company.Group ------------------------------
 
+GO
+RAISERROR('Catalog.Company.Group complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Country start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Country ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Country.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -611,21 +578,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Country.v.company] ON [Catalog.Country
 GO
 GRANT SELECT ON dbo.[Catalog.Country.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Country.v];
+
       
 ------------------------------ END Catalog.Country ------------------------------
 
+GO
+RAISERROR('Catalog.Country complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -660,21 +625,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.company] ON [Catalog.C
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.v];
+
       
 ------------------------------ END Catalog.Counterpartie ------------------------------
 
+GO
+RAISERROR('Catalog.Counterpartie complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Counterpartie.BankAccount start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.BankAccount.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -700,21 +663,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.company] O
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.BankAccount.v];
+
       
 ------------------------------ END Catalog.Counterpartie.BankAccount ------------------------------
 
+GO
+RAISERROR('Catalog.Counterpartie.BankAccount complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Contract start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Contract ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -757,21 +718,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.company] ON [Catalog.Contra
 GO
 GRANT SELECT ON dbo.[Catalog.Contract.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.v];
+
       
 ------------------------------ END Catalog.Contract ------------------------------
 
+GO
+RAISERROR('Catalog.Contract complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Contract.Intercompany start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.Intercompany.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -801,21 +760,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.company] ON [C
 GO
 GRANT SELECT ON dbo.[Catalog.Contract.Intercompany.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.Intercompany.v];
+
       
 ------------------------------ END Catalog.Contract.Intercompany ------------------------------
 
+GO
+RAISERROR('Catalog.Contract.Intercompany complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.BusinessDirection start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessDirection.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -836,21 +793,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessDirection.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessDirection.v];
+
       
 ------------------------------ END Catalog.BusinessDirection ------------------------------
 
+GO
+RAISERROR('Catalog.BusinessDirection complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Salary.Analytics start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Salary.Analytics.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -873,21 +828,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Salary.Analytics.v.company] ON [Catalo
 GO
 GRANT SELECT ON dbo.[Catalog.Salary.Analytics.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Salary.Analytics.v];
+
       
 ------------------------------ END Catalog.Salary.Analytics ------------------------------
 
+GO
+RAISERROR('Catalog.Salary.Analytics complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Department start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -925,21 +878,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.company] ON [Catalog.Depa
 GO
 GRANT SELECT ON dbo.[Catalog.Department.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.v];
+
       
 ------------------------------ END Catalog.Department ------------------------------
 
+GO
+RAISERROR('Catalog.Department complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Department.Kind start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department.Kind ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Kind.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -960,21 +911,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Kind.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Kind.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Kind.v];
+
       
 ------------------------------ END Catalog.Department.Kind ------------------------------
 
+GO
+RAISERROR('Catalog.Department.Kind complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Department.Company start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department.Company ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Company.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -999,21 +948,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.company] ON [Cata
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Company.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Company.v];
+
       
 ------------------------------ END Catalog.Department.Company ------------------------------
 
+GO
+RAISERROR('Catalog.Department.Company complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Department.StatusReason start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.StatusReason.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1034,21 +981,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.StatusReason.v.company] ON 
 GO
 GRANT SELECT ON dbo.[Catalog.Department.StatusReason.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.StatusReason.v];
+
       
 ------------------------------ END Catalog.Department.StatusReason ------------------------------
 
+GO
+RAISERROR('Catalog.Department.StatusReason complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Expense start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Expense ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1073,21 +1018,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.company] ON [Catalog.Expense
 GO
 GRANT SELECT ON dbo.[Catalog.Expense.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.v];
+
       
 ------------------------------ END Catalog.Expense ------------------------------
 
+GO
+RAISERROR('Catalog.Expense complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Expense.Analytics start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.Analytics.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1110,21 +1053,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.Expense.Analytics.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.Analytics.v];
+
       
 ------------------------------ END Catalog.Expense.Analytics ------------------------------
 
+GO
+RAISERROR('Catalog.Expense.Analytics complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Income start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Income ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Income.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1149,21 +1090,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.company] ON [Catalog.Income.v
 GO
 GRANT SELECT ON dbo.[Catalog.Income.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Income.v];
+
       
 ------------------------------ END Catalog.Income ------------------------------
 
+GO
+RAISERROR('Catalog.Income complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Loan start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Loan ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Loan.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1203,21 +1142,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.company] ON [Catalog.Loan.v](co
 GO
 GRANT SELECT ON dbo.[Catalog.Loan.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Loan.v];
+
       
 ------------------------------ END Catalog.Loan ------------------------------
 
+GO
+RAISERROR('Catalog.Loan complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.LoanRepaymentProcedure start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanRepaymentProcedure.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1238,21 +1175,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v.company] ON [
 GO
 GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanRepaymentProcedure.v];
+
       
 ------------------------------ END Catalog.LoanRepaymentProcedure ------------------------------
 
+GO
+RAISERROR('Catalog.LoanRepaymentProcedure complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.LoanTypes start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.LoanTypes ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanTypes.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1274,21 +1209,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.company] ON [Catalog.LoanT
 GO
 GRANT SELECT ON dbo.[Catalog.LoanTypes.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanTypes.v];
+
       
 ------------------------------ END Catalog.LoanTypes ------------------------------
 
+GO
+RAISERROR('Catalog.LoanTypes complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Manager start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Manager ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Manager.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1312,21 +1245,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.company] ON [Catalog.Manager
 GO
 GRANT SELECT ON dbo.[Catalog.Manager.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Manager.v];
+
       
 ------------------------------ END Catalog.Manager ------------------------------
 
+GO
+RAISERROR('Catalog.Manager complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Person start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Person ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1372,21 +1303,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.company] ON [Catalog.Person.v
 GO
 GRANT SELECT ON dbo.[Catalog.Person.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.v];
+
       
 ------------------------------ END Catalog.Person ------------------------------
 
+GO
+RAISERROR('Catalog.Person complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.PriceType start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.PriceType ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PriceType.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PriceType.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1410,21 +1339,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.company] ON [Catalog.Price
 GO
 GRANT SELECT ON dbo.[Catalog.PriceType.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PriceType.v];
+
       
 ------------------------------ END Catalog.PriceType ------------------------------
 
+GO
+RAISERROR('Catalog.PriceType complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Product start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1461,21 +1388,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.company] ON [Catalog.Product
 GO
 GRANT SELECT ON dbo.[Catalog.Product.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.v];
+
       
 ------------------------------ END Catalog.Product ------------------------------
 
+GO
+RAISERROR('Catalog.Product complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.PlanningScenario start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PlanningScenario.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1496,21 +1421,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.company] ON [Catalo
 GO
 GRANT SELECT ON dbo.[Catalog.PlanningScenario.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PlanningScenario.v];
+
       
 ------------------------------ END Catalog.PlanningScenario ------------------------------
 
+GO
+RAISERROR('Catalog.PlanningScenario complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ProductCategory start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ProductCategory ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductCategory.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1531,21 +1454,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.ProductCategory.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductCategory.v];
+
       
 ------------------------------ END Catalog.ProductCategory ------------------------------
 
+GO
+RAISERROR('Catalog.ProductCategory complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ProductKind start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ProductKind ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductKind.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1567,21 +1488,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.company] ON [Catalog.Pro
 GO
 GRANT SELECT ON dbo.[Catalog.ProductKind.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductKind.v];
+
       
 ------------------------------ END Catalog.ProductKind ------------------------------
 
+GO
+RAISERROR('Catalog.ProductKind complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Product.Report start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product.Report ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Report.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1604,21 +1523,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Report.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Report.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Report.v];
+
       
 ------------------------------ END Catalog.Product.Report ------------------------------
 
+GO
+RAISERROR('Catalog.Product.Report complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.PromotionChannel start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.PromotionChannel ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PromotionChannel.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PromotionChannel.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1639,21 +1556,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PromotionChannel.v.company] ON [Catalo
 GO
 GRANT SELECT ON dbo.[Catalog.PromotionChannel.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PromotionChannel.v];
+
       
 ------------------------------ END Catalog.PromotionChannel ------------------------------
 
+GO
+RAISERROR('Catalog.PromotionChannel complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Storehouse start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Storehouse ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Storehouse.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1675,21 +1590,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.company] ON [Catalog.Stor
 GO
 GRANT SELECT ON dbo.[Catalog.Storehouse.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Storehouse.v];
+
       
 ------------------------------ END Catalog.Storehouse ------------------------------
 
+GO
+RAISERROR('Catalog.Storehouse complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Operation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Operation ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1714,21 +1627,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.company] ON [Catalog.Opera
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.v];
+
       
 ------------------------------ END Catalog.Operation ------------------------------
 
+GO
+RAISERROR('Catalog.Operation complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Operation.Group start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Operation.Group ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Group.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1752,21 +1663,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Group.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Group.v];
+
       
 ------------------------------ END Catalog.Operation.Group ------------------------------
 
+GO
+RAISERROR('Catalog.Operation.Group complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Operation.Type start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Operation.Type ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Type.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1787,21 +1696,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Type.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Type.v];
+
       
 ------------------------------ END Catalog.Operation.Type ------------------------------
 
+GO
+RAISERROR('Catalog.Operation.Type complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.OrderSource ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1823,21 +1730,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.company] ON [Catalog.Ord
 GO
 GRANT SELECT ON dbo.[Catalog.OrderSource.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
+
       
 ------------------------------ END Catalog.OrderSource ------------------------------
 
+GO
+RAISERROR('Catalog.OrderSource complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Unit start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Unit ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Unit.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1861,21 +1766,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.company] ON [Catalog.Unit.v](co
 GO
 GRANT SELECT ON dbo.[Catalog.Unit.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Unit.v];
+
       
 ------------------------------ END Catalog.Unit ------------------------------
 
+GO
+RAISERROR('Catalog.Unit complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.User start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.User ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.User.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1900,21 +1803,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.company] ON [Catalog.User.v](co
 GO
 GRANT SELECT ON dbo.[Catalog.User.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.User.v];
+
       
 ------------------------------ END Catalog.User ------------------------------
 
+GO
+RAISERROR('Catalog.User complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.UsersGroup start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.UsersGroup ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.UsersGroup.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1935,21 +1836,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.company] ON [Catalog.User
 GO
 GRANT SELECT ON dbo.[Catalog.UsersGroup.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.UsersGroup.v];
+
       
 ------------------------------ END Catalog.UsersGroup ------------------------------
 
+GO
+RAISERROR('Catalog.UsersGroup complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Role start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Role ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Role.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Role.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -1970,21 +1869,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.company] ON [Catalog.Role.v](co
 GO
 GRANT SELECT ON dbo.[Catalog.Role.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Role.v];
+
       
 ------------------------------ END Catalog.Role ------------------------------
 
+GO
+RAISERROR('Catalog.Role complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.SubSystem start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.SubSystem ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SubSystem.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2006,21 +1903,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.company] ON [Catalog.SubSy
 GO
 GRANT SELECT ON dbo.[Catalog.SubSystem.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SubSystem.v];
+
       
 ------------------------------ END Catalog.SubSystem ------------------------------
 
+GO
+RAISERROR('Catalog.SubSystem complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.JobTitle start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.JobTitle ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2044,21 +1939,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.company] ON [Catalog.JobTit
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.v];
+
       
 ------------------------------ END Catalog.JobTitle ------------------------------
 
+GO
+RAISERROR('Catalog.JobTitle complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.JobTitle.Category start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.Category.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2079,21 +1972,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Category.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle.Category.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.Category.v];
+
       
 ------------------------------ END Catalog.JobTitle.Category ------------------------------
 
+GO
+RAISERROR('Catalog.JobTitle.Category complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.PersonIdentity start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PersonIdentity.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2114,21 +2005,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.PersonIdentity.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PersonIdentity.v];
+
       
 ------------------------------ END Catalog.PersonIdentity ------------------------------
 
+GO
+RAISERROR('Catalog.PersonIdentity complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ReasonTypes start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ReasonTypes.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2149,21 +2038,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReasonTypes.v.company] ON [Catalog.Rea
 GO
 GRANT SELECT ON dbo.[Catalog.ReasonTypes.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ReasonTypes.v];
+
       
 ------------------------------ END Catalog.ReasonTypes ------------------------------
 
+GO
+RAISERROR('Catalog.ReasonTypes complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Product.Package start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product.Package ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Package.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2188,21 +2075,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Package.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Package.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Package.v];
+
       
 ------------------------------ END Catalog.Product.Package ------------------------------
 
+GO
+RAISERROR('Catalog.Product.Package complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Product.Analytic start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Analytic.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2226,21 +2111,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Analytic.v.company] ON [Catalo
 GO
 GRANT SELECT ON dbo.[Catalog.Product.Analytic.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Analytic.v];
+
       
 ------------------------------ END Catalog.Product.Analytic ------------------------------
 
+GO
+RAISERROR('Catalog.Product.Analytic complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.StaffingTable start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.StaffingTable ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.StaffingTable.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2269,21 +2152,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.company] ON [Catalog.S
 GO
 GRANT SELECT ON dbo.[Catalog.StaffingTable.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.StaffingTable.v];
+
       
 ------------------------------ END Catalog.StaffingTable ------------------------------
 
+GO
+RAISERROR('Catalog.StaffingTable complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Brand start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Brand ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Brand.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Brand.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2304,21 +2185,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.company] ON [Catalog.Brand.v](
 GO
 GRANT SELECT ON dbo.[Catalog.Brand.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Brand.v];
+
       
 ------------------------------ END Catalog.Brand ------------------------------
 
+GO
+RAISERROR('Catalog.Brand complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.GroupObjectsExploitation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.GroupObjectsExploitation.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2340,21 +2219,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.company] ON
 GO
 GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.GroupObjectsExploitation.v];
+
       
 ------------------------------ END Catalog.GroupObjectsExploitation ------------------------------
 
+GO
+RAISERROR('Catalog.GroupObjectsExploitation complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ObjectsExploitation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ObjectsExploitation.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2377,21 +2254,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.company] ON [Cat
 GO
 GRANT SELECT ON dbo.[Catalog.ObjectsExploitation.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ObjectsExploitation.v];
+
       
 ------------------------------ END Catalog.ObjectsExploitation ------------------------------
 
+GO
+RAISERROR('Catalog.ObjectsExploitation complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Catalog start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Catalog ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Catalog.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2419,21 +2294,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.company] ON [Catalog.Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Catalog.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Catalog.v];
+
       
 ------------------------------ END Catalog.Catalog ------------------------------
 
+GO
+RAISERROR('Catalog.Catalog complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.BudgetItem start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.BudgetItem ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BudgetItem.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2457,21 +2330,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.company] ON [Catalog.Budg
 GO
 GRANT SELECT ON dbo.[Catalog.BudgetItem.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BudgetItem.v];
+
       
 ------------------------------ END Catalog.BudgetItem ------------------------------
 
+GO
+RAISERROR('Catalog.BudgetItem complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Scenario start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Scenario ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Scenario.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2493,21 +2364,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.company] ON [Catalog.Scenar
 GO
 GRANT SELECT ON dbo.[Catalog.Scenario.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Scenario.v];
+
       
 ------------------------------ END Catalog.Scenario ------------------------------
 
+GO
+RAISERROR('Catalog.Scenario complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.ManufactureLocation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ManufactureLocation.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2528,21 +2397,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.company] ON [Cat
 GO
 GRANT SELECT ON dbo.[Catalog.ManufactureLocation.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ManufactureLocation.v];
+
       
 ------------------------------ END Catalog.ManufactureLocation ------------------------------
 
+GO
+RAISERROR('Catalog.ManufactureLocation complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.AcquiringTerminal start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AcquiringTerminal.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2568,21 +2435,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.AcquiringTerminal.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v];
+
       
 ------------------------------ END Catalog.AcquiringTerminal ------------------------------
 
+GO
+RAISERROR('Catalog.AcquiringTerminal complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Bank start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Bank ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Bank.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2609,21 +2474,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.company] ON [Catalog.Bank.v](co
 GO
 GRANT SELECT ON dbo.[Catalog.Bank.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v];
+
       
 ------------------------------ END Catalog.Bank ------------------------------
 
+GO
+RAISERROR('Catalog.Bank complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.BankAccount.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2648,21 +2511,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.company] ON [Cata
 GO
 GRANT SELECT ON dbo.[Catalog.Person.BankAccount.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.BankAccount.v];
+
       
 ------------------------------ END Catalog.Person.BankAccount ------------------------------
 
+GO
+RAISERROR('Catalog.Person.BankAccount complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Person.Contract start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Person.Contract ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.Contract.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2689,21 +2550,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.Person.Contract.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.Contract.v];
+
       
 ------------------------------ END Catalog.Person.Contract ------------------------------
 
+GO
+RAISERROR('Catalog.Person.Contract complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.BusinessRegion start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessRegion.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2724,21 +2583,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessRegion.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v];
+
       
 ------------------------------ END Catalog.BusinessRegion ------------------------------
 
+GO
+RAISERROR('Catalog.BusinessRegion complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxRate start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxRate ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxRate.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2760,21 +2617,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.company] ON [Catalog.TaxRate
 GO
 GRANT SELECT ON dbo.[Catalog.TaxRate.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v];
+
       
 ------------------------------ END Catalog.TaxRate ------------------------------
 
+GO
+RAISERROR('Catalog.TaxRate complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxAssignmentCode start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxAssignmentCode.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2796,21 +2651,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxAssignmentCode.v.company] ON [Catal
 GO
 GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxAssignmentCode.v];
+
       
 ------------------------------ END Catalog.TaxAssignmentCode ------------------------------
 
+GO
+RAISERROR('Catalog.TaxAssignmentCode complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxPaymentCode start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentCode.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2833,21 +2686,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPaymentCode.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentCode.v];
+
       
 ------------------------------ END Catalog.TaxPaymentCode ------------------------------
 
+GO
+RAISERROR('Catalog.TaxPaymentCode complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxBasisPayment start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxBasisPayment.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2868,21 +2719,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.company] ON [Catalog
 GO
 GRANT SELECT ON dbo.[Catalog.TaxBasisPayment.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxBasisPayment.v];
+
       
 ------------------------------ END Catalog.TaxBasisPayment ------------------------------
 
+GO
+RAISERROR('Catalog.TaxBasisPayment complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxPaymentPeriod start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentPeriod.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2903,21 +2752,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentPeriod.v.company] ON [Catalo
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentPeriod.v];
+
       
 ------------------------------ END Catalog.TaxPaymentPeriod ------------------------------
 
+GO
+RAISERROR('Catalog.TaxPaymentPeriod complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxPayerStatus start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPayerStatus.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2939,21 +2786,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPayerStatus.v.company] ON [Catalog.
 GO
 GRANT SELECT ON dbo.[Catalog.TaxPayerStatus.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPayerStatus.v];
+
       
 ------------------------------ END Catalog.TaxPayerStatus ------------------------------
 
+GO
+RAISERROR('Catalog.TaxPayerStatus complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.TaxOffice start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxOffice ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxOffice.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -2978,21 +2823,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxOffice.v.company] ON [Catalog.TaxOf
 GO
 GRANT SELECT ON dbo.[Catalog.TaxOffice.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxOffice.v];
+
       
 ------------------------------ END Catalog.TaxOffice ------------------------------
 
+GO
+RAISERROR('Catalog.TaxOffice complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.RetailClient start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.RetailClient ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.RetailClient.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3023,21 +2866,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.company] ON [Catalog.Re
 GO
 GRANT SELECT ON dbo.[Catalog.RetailClient.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailClient.v];
+
       
 ------------------------------ END Catalog.RetailClient ------------------------------
 
+GO
+RAISERROR('Catalog.RetailClient complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.SalaryProject start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.SalaryProject ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SalaryProject.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3064,21 +2905,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.company] ON [Catalog.S
 GO
 GRANT SELECT ON dbo.[Catalog.SalaryProject.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SalaryProject.v];
+
       
 ------------------------------ END Catalog.SalaryProject ------------------------------
 
+GO
+RAISERROR('Catalog.SalaryProject complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Specification start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Specification ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Specification.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3105,21 +2944,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.company] ON [Catalog.S
 GO
 GRANT SELECT ON dbo.[Catalog.Specification.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Specification.v];
+
       
 ------------------------------ END Catalog.Specification ------------------------------
 
+GO
+RAISERROR('Catalog.Specification complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.InvestorGroup start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.InvestorGroup.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3140,21 +2977,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.InvestorGroup.v.company] ON [Catalog.I
 GO
 GRANT SELECT ON dbo.[Catalog.InvestorGroup.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.InvestorGroup.v];
+
       
 ------------------------------ END Catalog.InvestorGroup ------------------------------
 
+GO
+RAISERROR('Catalog.InvestorGroup complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Catalog.Employee start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Employee ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Employee.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3176,21 +3011,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.company] ON [Catalog.Employ
 GO
 GRANT SELECT ON dbo.[Catalog.Employee.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Employee.v];
+
       
 ------------------------------ END Catalog.Employee ------------------------------
 
+GO
+RAISERROR('Catalog.Employee complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.ExchangeRates start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.ExchangeRates ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.ExchangeRates.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3210,21 +3043,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.company] ON [Document
 GO
 GRANT SELECT ON dbo.[Document.ExchangeRates.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v];
+
       
 ------------------------------ END Document.ExchangeRates ------------------------------
 
+GO
+RAISERROR('Document.ExchangeRates complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.Invoice start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.Invoice ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Invoice.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3253,21 +3084,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.company] ON [Document.Invoi
 GO
 GRANT SELECT ON dbo.[Document.Invoice.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v];
+
       
 ------------------------------ END Document.Invoice ------------------------------
 
+GO
+RAISERROR('Document.Invoice complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.Operation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.Operation ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Operation.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3294,21 +3123,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.company] ON [Document.Ope
 GO
 GRANT SELECT ON dbo.[Document.Operation.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v];
+
       
 ------------------------------ END Document.Operation ------------------------------
 
+GO
+RAISERROR('Document.Operation complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.PriceList start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.PriceList ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.PriceList.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3330,21 +3157,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.company] ON [Document.Pri
 GO
 GRANT SELECT ON dbo.[Document.PriceList.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.PriceList.v];
+
       
 ------------------------------ END Document.PriceList ------------------------------
 
+GO
+RAISERROR('Document.PriceList complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.Settings start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.Settings ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Settings.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3366,21 +3191,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.company] ON [Document.Sett
 GO
 GRANT SELECT ON dbo.[Document.Settings.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Settings.v];
+
       
 ------------------------------ END Document.Settings ------------------------------
 
+GO
+RAISERROR('Document.Settings complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.UserSettings start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.UserSettings ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.UserSettings.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3407,21 +3230,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.company] ON [Document.
 GO
 GRANT SELECT ON dbo.[Document.UserSettings.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.UserSettings.v];
+
       
 ------------------------------ END Document.UserSettings ------------------------------
 
+GO
+RAISERROR('Document.UserSettings complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.WorkFlow start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.WorkFlow ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.WorkFlow.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3443,21 +3264,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.company] ON [Document.Work
 GO
 GRANT SELECT ON dbo.[Document.WorkFlow.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.WorkFlow.v];
+
       
 ------------------------------ END Document.WorkFlow ------------------------------
 
+GO
+RAISERROR('Document.WorkFlow complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.CashRequest start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.CashRequest ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequest.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3518,21 +3337,19 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.company] ON [Document.C
 GO
 GRANT SELECT ON dbo.[Document.CashRequest.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequest.v];
+
       
 ------------------------------ END Document.CashRequest ------------------------------
 
+GO
+RAISERROR('Document.CashRequest complete', 0 ,1) WITH NOWAIT;
+GO
+RAISERROR('Document.CashRequestRegistry start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
 
         
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequestRegistry.v];
-END TRY
-BEGIN CATCH
-END CATCH
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -3561,11 +3378,12 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.company] ON [Do
 GO
 GRANT SELECT ON dbo.[Document.CashRequestRegistry.v] TO jetti;
 GO
-ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequestRegistry.v];
+
       
 ------------------------------ END Document.CashRequestRegistry ------------------------------
 
+GO
+RAISERROR('Document.CashRequestRegistry complete', 0 ,1) WITH NOWAIT;
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);
@@ -3575,3 +3393,4 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Op
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
+CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operation.v]([timestamp],[Operation]);
