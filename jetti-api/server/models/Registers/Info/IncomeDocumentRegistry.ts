@@ -25,7 +25,7 @@ export class RegisterInfoIncomeDocumentRegistry extends RegisterInfo {
   @Props({ type: 'string' })
   DocNumber = '';
 
-  @Props({ type: 'Document.Operation' })
+  @Props({ type: 'Document.Operation', isIndexed: true })
   DocJETTI: Ref = null;
 
   @Props({ type: 'number' })
