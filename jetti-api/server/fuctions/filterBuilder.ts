@@ -20,7 +20,7 @@ export const filterBuilder = (filter: FormListFilter[], quote = '"'): IQueryFilt
 
     const filterList = filter
         .filter(f => !(f.right === null || f.right === undefined))
-        .map(f => ({...f, leftQ: `${quote}${f.left}${quote}`}));
+        .map(f => ({ ...f, leftQ: `${quote}${f.left}${quote}` }));
     for (const f of filterList) {
         switch (f.center) {
             case '=':
@@ -52,6 +52,8 @@ export const filterBuilder = (filter: FormListFilter[], quote = '"'): IQueryFilt
                         where += ` AND ${f.leftQ} IS NULL `;
                     else {
                         if (f.left === 'parent.id') {
+                            where += ` AND ${f.leftQ} = '${f.right.id}'`;
+                        } else if ('Catalog.Operation.Group, Catalog.User'.includes(f.right.type)) {
                             where += ` AND ${f.leftQ} = '${f.right.id}'`;
                         } else {
                             if (tempTabe.indexOf(`[#${f.left}]`) < 0)
