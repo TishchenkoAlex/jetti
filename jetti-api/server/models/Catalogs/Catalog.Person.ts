@@ -58,7 +58,7 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'date' })
   EmploymentDate = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', isIndexed: true })
   Department: Ref = null;
 
   @Props({ type: 'Catalog.JobTitle' })

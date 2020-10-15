@@ -37,7 +37,7 @@ export class RegisterAccumulationCashToPay extends RegisterAccumulation {
   @Props({ type: 'Types.CashRecipient', dimension: true })
   CashRecipient: Ref = null;
 
-  @Props({ type: 'Types.ExpenseOrBalance', dimension: true })
+  @Props({ type: 'Types.ExpenseOrBalanceOrIncome', dimension: true })
   ExpenseOrBalance: Ref = null;
 
   @Props({ type: 'Catalog.Expense.Analytics', dimension: true })
