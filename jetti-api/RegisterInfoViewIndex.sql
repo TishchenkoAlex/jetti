@@ -393,7 +393,7 @@
     GO
     GRANT SELECT,DELETE ON [Register.Info.IncomeDocumentRegistry] TO JETTI;
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.IncomeDocumentRegistry] ON [dbo].[Register.Info.IncomeDocumentRegistry]([company], [date], [id])
-    
+    CREATE NONCLUSTERED INDEX[Register.Info.IncomeDocumentRegistry.DocJETTI] ON [Register.Info.IncomeDocumentRegistry]([DocJETTI]);
     GO
 ------------------------------ END Register.Info.IncomeDocumentRegistry ------------------------------
 

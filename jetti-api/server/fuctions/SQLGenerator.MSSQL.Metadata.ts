@@ -48,23 +48,25 @@ export class SQLGenegatorMetadata {
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
-    let insert = ''; let select = ''; let fields = '';
+    let insert = ''; let select = ''; let fields = ''; let isIndexed = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       fields += prop + ',';
-      const type: string = doc[prop].type || 'string';
+      const propType: string = doc[prop].type || 'string';
       insert += `
         , "${prop}"`;
-      if (type === 'number') {
+      if (propType === 'number') {
         insert += `
         , "${prop}.In"
         , "${prop}.Out"`;
       }
 
-      if (type.includes('.')) {
-        select += complexProperty(prop, type);
+      if (propType.includes('.')) {
+        select += complexProperty(prop, propType);
       } else {
-        select += simleProperty(prop, type);
+        select += simleProperty(prop, propType);
       }
+      if (doc[prop].isIndexed) isIndexed += `
+    CREATE INDEX [${type}.${prop}] ON [${type}.v]([${prop}]);`;
     }
 
     const query = `
@@ -78,7 +80,7 @@ export class SQLGenegatorMetadata {
     GRANT SELECT,DELETE ON [${type}] TO JETTI;
     GO
     CREATE UNIQUE CLUSTERED INDEX [${type}] ON [${type}.v]([date], [company], [calculated], [id]);
-    CREATE UNIQUE INDEX [${type}.id] ON [${type}.v]([id]);
+    CREATE UNIQUE INDEX [${type}.id] ON [${type}.v]([id]);${isIndexed}
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -304,7 +306,7 @@ export class SQLGenegatorMetadata {
       if (doc['QueryList']) continue;
       const Props = doc.Props();
       const select = SQLGenegator.QueryListRaw(Props, doc.type);
-
+      // subQueries.push(`RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;`);
       subQueries.push(`${this.typeSpliter(catalog.type, true)}
         ${withSecurityPolicy ? `
 BEGIN TRY
@@ -347,6 +349,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Op
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id) INCLUDE([company]);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id) INCLUDE([company]);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id) INCLUDE([company]);
+CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operation.v]([timestamp],[Operation]);
 `);
     }
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
@@ -390,7 +393,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
       }
 
       if (type === 'string') return `
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS NVARCHAR(150)) AS [${prop}]`;
+        , CAST(JSON_VALUE(data, N'$.${prop}') AS NVARCHAR(250)) AS [${prop}]`;
     };
 
     let query = '';
@@ -458,7 +461,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , [${prop}] CHAR(36) N'$.${prop}'`;
+        , [${prop}] UNIQUEIDENTIFIER N'$.${prop}'`;
 
     let insert = ''; let select = ''; let fields = ''; let columns = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -491,7 +494,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
 
     DROP TABLE IF EXISTS [${type}];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate${fields}
     INTO [${type}]
     FROM [Accumulation] r
@@ -524,9 +527,8 @@ CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operatio
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns});
     ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}];
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO

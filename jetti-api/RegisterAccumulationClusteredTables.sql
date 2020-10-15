@@ -10,7 +10,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AccountablePersons];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Employee], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -22,9 +22,9 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Employee] CHAR(36) N'$.Employee'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -53,9 +53,9 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Employee] CHAR(36) N'$.Employee'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -69,9 +69,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Employee], [CashFlow], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
     ALTER TABLE [Register.Accumulation.AccountablePersons] ADD CONSTRAINT [PK_Register.Accumulation.AccountablePersons] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons];
 
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
@@ -85,7 +84,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.PaymentBatch];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
       , d.[Price] * IIF(r.kind = 1, 1, -1) [Price], d.[Price] * IIF(r.kind = 1, 1, null) [Price.In], d.[Price] * IIF(r.kind = 1, null, 1) [Price.Out]
@@ -97,16 +96,16 @@
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [PaymentsKind] NVARCHAR(250) N'$.PaymentsKind'
-        , [Counterpartie] CHAR(36) N'$.Counterpartie'
-        , [ProductPackage] CHAR(36) N'$.ProductPackage'
-        , [Product] CHAR(36) N'$.Product'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
+        , [ProductPackage] UNIQUEIDENTIFIER N'$.ProductPackage'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [PayDay] DATE N'$.PayDay'
         , [Qty] MONEY N'$.Qty'
         , [Price] MONEY N'$.Price'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
-        , [batch] CHAR(36) N'$.batch'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
     ) AS d
     WHERE r.type = N'Register.Accumulation.PaymentBatch';
     GO
@@ -130,16 +129,16 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [PaymentsKind] NVARCHAR(250) N'$.PaymentsKind'
-        , [Counterpartie] CHAR(36) N'$.Counterpartie'
-        , [ProductPackage] CHAR(36) N'$.ProductPackage'
-        , [Product] CHAR(36) N'$.Product'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
+        , [ProductPackage] UNIQUEIDENTIFIER N'$.ProductPackage'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [PayDay] DATE N'$.PayDay'
         , [Qty] MONEY N'$.Qty'
         , [Price] MONEY N'$.Price'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
-        , [batch] CHAR(36) N'$.batch'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
         ) AS d
         WHERE r.type = N'Register.Accumulation.PaymentBatch';
     END
@@ -148,9 +147,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Qty.In], [Qty.Out], [Price], [Price.In], [Price.Out], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [batch]);
     ALTER TABLE [Register.Accumulation.PaymentBatch] ADD CONSTRAINT [PK_Register.Accumulation.PaymentBatch] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch];
 
     RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
     GO
@@ -164,7 +162,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.OrderPayment];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
@@ -176,12 +174,12 @@
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [PaymantKind] NVARCHAR(250) N'$.PaymantKind'
-        , [Customer] CHAR(36) N'$.Customer'
-        , [BankAccount] CHAR(36) N'$.BankAccount'
-        , [CashRegister] CHAR(36) N'$.CashRegister'
-        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
+        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [CashShift] MONEY N'$.CashShift'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -209,12 +207,12 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [PaymantKind] NVARCHAR(250) N'$.PaymantKind'
-        , [Customer] CHAR(36) N'$.Customer'
-        , [BankAccount] CHAR(36) N'$.BankAccount'
-        , [CashRegister] CHAR(36) N'$.CashRegister'
-        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
+        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [CashShift] MONEY N'$.CashShift'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -227,9 +225,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.OrderPayment] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department], [CashShift], [CashShift.In], [CashShift.Out], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.OrderPayment] ADD CONSTRAINT [PK_Register.Accumulation.OrderPayment] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment];
 
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
@@ -243,7 +240,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AP];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -255,10 +252,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [AO] CHAR(36) N'$.AO'
-        , [Supplier] CHAR(36) N'$.Supplier'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -288,10 +285,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [AO] CHAR(36) N'$.AO'
-        , [Supplier] CHAR(36) N'$.Supplier'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -306,9 +303,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
     ALTER TABLE [Register.Accumulation.AP] ADD CONSTRAINT [PK_Register.Accumulation.AP] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP];
 
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
@@ -322,7 +318,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.AR];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [AO], [Customer], [PayDay]
       , d.[AR] * IIF(r.kind = 1, 1, -1) [AR], d.[AR] * IIF(r.kind = 1, 1, null) [AR.In], d.[AR] * IIF(r.kind = 1, null, 1) [AR.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -334,10 +330,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [AO] CHAR(36) N'$.AO'
-        , [Customer] CHAR(36) N'$.Customer'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
         , [PayDay] DATE N'$.PayDay'
         , [AR] MONEY N'$.AR'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -367,10 +363,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [AO] CHAR(36) N'$.AO'
-        , [Customer] CHAR(36) N'$.Customer'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
         , [PayDay] DATE N'$.PayDay'
         , [AR] MONEY N'$.AR'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -385,9 +381,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [AO], [Customer], [PayDay], [AR], [AR.In], [AR.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
     ALTER TABLE [Register.Accumulation.AR] ADD CONSTRAINT [PK_Register.Accumulation.AR] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR];
 
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
@@ -401,7 +396,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Bank];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -411,10 +406,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [BankAccount] CHAR(36) N'$.BankAccount'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -439,10 +434,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [BankAccount] CHAR(36) N'$.BankAccount'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [BankAccount] UNIQUEIDENTIFIER N'$.BankAccount'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -454,9 +449,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Bank] ADD CONSTRAINT [PK_Register.Accumulation.Bank] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank];
 
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
@@ -470,7 +464,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Balance];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.Balance]
@@ -478,9 +472,9 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
@@ -502,9 +496,9 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -515,9 +509,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Balance], [Analytics], [Amount], [Amount.In], [Amount.Out], [Info]);
     ALTER TABLE [Register.Accumulation.Balance] ADD CONSTRAINT [PK_Register.Accumulation.Balance] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance];
 
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
@@ -531,7 +524,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Balance.RC];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
@@ -540,12 +533,12 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountRC] MONEY N'$.AmountRC'
         , [Info] NVARCHAR(250) N'$.Info'
@@ -569,12 +562,12 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountRC] MONEY N'$.AmountRC'
         , [Info] NVARCHAR(250) N'$.Info'
@@ -586,9 +579,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [Amount.In], [Amount.Out], [AmountRC], [AmountRC.In], [AmountRC.Out], [Info]);
     ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC];
 
     RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
     GO
@@ -602,7 +594,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Balance.Report];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [Balance], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -612,10 +604,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -641,10 +633,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [Balance] CHAR(36) N'$.Balance'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Balance] UNIQUEIDENTIFIER N'$.Balance'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -657,9 +649,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Balance], [Analytics], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
     ALTER TABLE [Register.Accumulation.Balance.Report] ADD CONSTRAINT [PK_Register.Accumulation.Balance.Report] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report];
 
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
@@ -673,7 +664,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Cash];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -683,10 +674,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [CashRegister] CHAR(36) N'$.CashRegister'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -711,10 +702,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [CashRegister] CHAR(36) N'$.CashRegister'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [Analytics] CHAR(36) N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [CashRegister] UNIQUEIDENTIFIER N'$.CashRegister'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -726,9 +717,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Cash] ADD CONSTRAINT [PK_Register.Accumulation.Cash] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash];
 
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
@@ -742,7 +732,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Cash.Transit];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -752,11 +742,11 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [CompanyRecipient] CHAR(36) N'$.CompanyRecipient'
-        , [currency] CHAR(36) N'$.currency'
-        , [Sender] CHAR(36) N'$.Sender'
-        , [Recipient] CHAR(36) N'$.Recipient'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Sender] UNIQUEIDENTIFIER N'$.Sender'
+        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -781,11 +771,11 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [CompanyRecipient] CHAR(36) N'$.CompanyRecipient'
-        , [currency] CHAR(36) N'$.currency'
-        , [Sender] CHAR(36) N'$.Sender'
-        , [Recipient] CHAR(36) N'$.Recipient'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [CompanyRecipient] UNIQUEIDENTIFIER N'$.CompanyRecipient'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Sender] UNIQUEIDENTIFIER N'$.Sender'
+        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -797,9 +787,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Cash.Transit] ADD CONSTRAINT [PK_Register.Accumulation.Cash.Transit] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit];
 
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
@@ -813,7 +802,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Inventory];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -822,19 +811,19 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Expense] CHAR(36) N'$.Expense'
-        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
-        , [Income] CHAR(36) N'$.Income'
-        , [IncomeAnalytics] CHAR(36) N'$.IncomeAnalytics'
-        , [BalanceIn] CHAR(36) N'$.BalanceIn'
-        , [BalanceInAnalytics] CHAR(36) N'$.BalanceInAnalytics'
-        , [BalanceOut] CHAR(36) N'$.BalanceOut'
-        , [BalanceOutAnalytics] CHAR(36) N'$.BalanceOutAnalytics'
-        , [Storehouse] CHAR(36) N'$.Storehouse'
-        , [SKU] CHAR(36) N'$.SKU'
-        , [batch] CHAR(36) N'$.batch'
-        , [Department] CHAR(36) N'$.Department'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Expense] UNIQUEIDENTIFIER N'$.Expense'
+        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [Income] UNIQUEIDENTIFIER N'$.Income'
+        , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
+        , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
+        , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
+        , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
+        , [BalanceOutAnalytics] UNIQUEIDENTIFIER N'$.BalanceOutAnalytics'
+        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [SKU] UNIQUEIDENTIFIER N'$.SKU'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
     ) AS d
@@ -857,19 +846,19 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Expense] CHAR(36) N'$.Expense'
-        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
-        , [Income] CHAR(36) N'$.Income'
-        , [IncomeAnalytics] CHAR(36) N'$.IncomeAnalytics'
-        , [BalanceIn] CHAR(36) N'$.BalanceIn'
-        , [BalanceInAnalytics] CHAR(36) N'$.BalanceInAnalytics'
-        , [BalanceOut] CHAR(36) N'$.BalanceOut'
-        , [BalanceOutAnalytics] CHAR(36) N'$.BalanceOutAnalytics'
-        , [Storehouse] CHAR(36) N'$.Storehouse'
-        , [SKU] CHAR(36) N'$.SKU'
-        , [batch] CHAR(36) N'$.batch'
-        , [Department] CHAR(36) N'$.Department'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Expense] UNIQUEIDENTIFIER N'$.Expense'
+        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [Income] UNIQUEIDENTIFIER N'$.Income'
+        , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
+        , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
+        , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
+        , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
+        , [BalanceOutAnalytics] UNIQUEIDENTIFIER N'$.BalanceOutAnalytics'
+        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [SKU] UNIQUEIDENTIFIER N'$.SKU'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Cost] MONEY N'$.Cost'
         , [Qty] MONEY N'$.Qty'
         ) AS d
@@ -880,9 +869,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out]);
     ALTER TABLE [Register.Accumulation.Inventory] ADD CONSTRAINT [PK_Register.Accumulation.Inventory] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory];
 
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
@@ -896,7 +884,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Loan];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -908,10 +896,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Loan] CHAR(36) N'$.Loan'
-        , [Counterpartie] CHAR(36) N'$.Counterpartie'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [currency] CHAR(36) N'$.currency'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [PaymentKind] NVARCHAR(250) N'$.PaymentKind'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -941,10 +929,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Loan] CHAR(36) N'$.Loan'
-        , [Counterpartie] CHAR(36) N'$.Counterpartie'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [currency] CHAR(36) N'$.currency'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [Counterpartie] UNIQUEIDENTIFIER N'$.Counterpartie'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [PaymentKind] NVARCHAR(250) N'$.PaymentKind'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
@@ -959,9 +947,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
     ALTER TABLE [Register.Accumulation.Loan] ADD CONSTRAINT [PK_Register.Accumulation.Loan] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan];
 
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
@@ -975,7 +962,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Department], [PL], [Analytics], [Analytics2]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], [Info]
     INTO [Register.Accumulation.PL]
@@ -983,10 +970,10 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [PL] CHAR(36) N'$.PL'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
     ) AS d
@@ -1008,10 +995,10 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [PL] CHAR(36) N'$.PL'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
         , [Amount] MONEY N'$.Amount'
         , [Info] NVARCHAR(250) N'$.Info'
         ) AS d
@@ -1022,9 +1009,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [PL], [Analytics], [Analytics2], [Amount], [Amount.In], [Amount.Out], [Info]);
     ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL];
 
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1038,7 +1024,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.PL.RC];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountRC] * IIF(r.kind = 1, 1, -1) [AmountRC], d.[AmountRC] * IIF(r.kind = 1, 1, null) [AmountRC.In], d.[AmountRC] * IIF(r.kind = 1, null, 1) [AmountRC.Out], [Info]
@@ -1047,12 +1033,12 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
-        , [Department] CHAR(36) N'$.Department'
-        , [PL] CHAR(36) N'$.PL'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountRC] MONEY N'$.AmountRC'
         , [Info] NVARCHAR(250) N'$.Info'
@@ -1076,12 +1062,12 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [ResponsibilityCenter] CHAR(36) N'$.ResponsibilityCenter'
-        , [Department] CHAR(36) N'$.Department'
-        , [PL] CHAR(36) N'$.PL'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [Analytics2] CHAR(36) N'$.Analytics2'
-        , [Currency] CHAR(36) N'$.Currency'
+        , [ResponsibilityCenter] UNIQUEIDENTIFIER N'$.ResponsibilityCenter'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Currency] UNIQUEIDENTIFIER N'$.Currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountRC] MONEY N'$.AmountRC'
         , [Info] NVARCHAR(250) N'$.Info'
@@ -1093,9 +1079,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [Amount.In], [Amount.Out], [AmountRC], [AmountRC.In], [AmountRC.Out], [Info]);
     ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC];
 
     RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1109,7 +1094,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
@@ -1124,17 +1109,17 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [Customer] CHAR(36) N'$.Customer'
-        , [Product] CHAR(36) N'$.Product'
-        , [Analytic] CHAR(36) N'$.Analytic'
-        , [Manager] CHAR(36) N'$.Manager'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Analytic] UNIQUEIDENTIFIER N'$.Analytic'
+        , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
-        , [RetailClient] CHAR(36) N'$.RetailClient'
-        , [AO] CHAR(36) N'$.AO'
-        , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
         , [OpenTime] DATETIME N'$.OpenTime'
         , [PrintTime] DATETIME N'$.PrintTime'
         , [DeliverTime] DATETIME N'$.DeliverTime'
@@ -1174,17 +1159,17 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [Customer] CHAR(36) N'$.Customer'
-        , [Product] CHAR(36) N'$.Product'
-        , [Analytic] CHAR(36) N'$.Analytic'
-        , [Manager] CHAR(36) N'$.Manager'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Analytic] UNIQUEIDENTIFIER N'$.Analytic'
+        , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
-        , [RetailClient] CHAR(36) N'$.RetailClient'
-        , [AO] CHAR(36) N'$.AO'
-        , [Storehouse] CHAR(36) N'$.Storehouse'
+        , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
+        , [AO] UNIQUEIDENTIFIER N'$.AO'
+        , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
         , [OpenTime] DATETIME N'$.OpenTime'
         , [PrintTime] DATETIME N'$.PrintTime'
         , [DeliverTime] DATETIME N'$.DeliverTime'
@@ -1206,9 +1191,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [CashShift.In], [CashShift.Out], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [Discount], [Discount.In], [Discount.Out], [Tax], [Tax.In], [Tax.Out], [AmountInDoc], [AmountInDoc.In], [AmountInDoc.Out], [AmountInAR], [AmountInAR.In], [AmountInAR.Out]);
     ALTER TABLE [Register.Accumulation.Sales] ADD CONSTRAINT [PK_Register.Accumulation.Sales] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales];
 
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1222,7 +1206,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Salary];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1232,15 +1216,15 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [KorrCompany] CHAR(36) N'$.KorrCompany'
-        , [Department] CHAR(36) N'$.Department'
-        , [Person] CHAR(36) N'$.Person'
-        , [Employee] CHAR(36) N'$.Employee'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [KorrCompany] UNIQUEIDENTIFIER N'$.KorrCompany'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [PL] CHAR(36) N'$.PL'
-        , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [PLAnalytics] UNIQUEIDENTIFIER N'$.PLAnalytics'
         , [Status] NVARCHAR(250) N'$.Status'
         , [IsPortal] BIT N'$.IsPortal'
         , [Amount] MONEY N'$.Amount'
@@ -1267,15 +1251,15 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [KorrCompany] CHAR(36) N'$.KorrCompany'
-        , [Department] CHAR(36) N'$.Department'
-        , [Person] CHAR(36) N'$.Person'
-        , [Employee] CHAR(36) N'$.Employee'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [KorrCompany] UNIQUEIDENTIFIER N'$.KorrCompany'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [SalaryKind] NVARCHAR(250) N'$.SalaryKind'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [PL] CHAR(36) N'$.PL'
-        , [PLAnalytics] CHAR(36) N'$.PLAnalytics'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [PL] UNIQUEIDENTIFIER N'$.PL'
+        , [PLAnalytics] UNIQUEIDENTIFIER N'$.PLAnalytics'
         , [Status] NVARCHAR(250) N'$.Status'
         , [IsPortal] BIT N'$.IsPortal'
         , [Amount] MONEY N'$.Amount'
@@ -1289,9 +1273,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Salary] ADD CONSTRAINT [PK_Register.Accumulation.Salary] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary];
 
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1305,7 +1288,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Depreciation];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [OperationType], [currency], [Department], [ResponsiblePerson], [OE]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1315,11 +1298,11 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [ResponsiblePerson] CHAR(36) N'$.ResponsiblePerson'
-        , [OE] CHAR(36) N'$.OE'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [ResponsiblePerson] UNIQUEIDENTIFIER N'$.ResponsiblePerson'
+        , [OE] UNIQUEIDENTIFIER N'$.OE'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1344,11 +1327,11 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [currency] CHAR(36) N'$.currency'
-        , [Department] CHAR(36) N'$.Department'
-        , [ResponsiblePerson] CHAR(36) N'$.ResponsiblePerson'
-        , [OE] CHAR(36) N'$.OE'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [ResponsiblePerson] UNIQUEIDENTIFIER N'$.ResponsiblePerson'
+        , [OE] UNIQUEIDENTIFIER N'$.OE'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1360,9 +1343,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [OperationType], [currency], [Department], [ResponsiblePerson], [OE], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Depreciation] ADD CONSTRAINT [PK_Register.Accumulation.Depreciation] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation];
 
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1376,7 +1358,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.CashToPay];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.CashToPay]
@@ -1384,19 +1366,19 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [CashRequest] CHAR(36) N'$.CashRequest'
-        , [Contract] CHAR(36) N'$.Contract'
-        , [BankAccountPerson] CHAR(36) N'$.BankAccountPerson'
-        , [Department] CHAR(36) N'$.Department'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
-        , [Loan] CHAR(36) N'$.Loan'
-        , [CashOrBank] CHAR(36) N'$.CashOrBank'
-        , [CashRecipient] CHAR(36) N'$.CashRecipient'
-        , [ExpenseOrBalance] CHAR(36) N'$.ExpenseOrBalance'
-        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
-        , [BalanceAnalytics] CHAR(36) N'$.BalanceAnalytics'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [CashOrBank] UNIQUEIDENTIFIER N'$.CashOrBank'
+        , [CashRecipient] UNIQUEIDENTIFIER N'$.CashRecipient'
+        , [ExpenseOrBalance] UNIQUEIDENTIFIER N'$.ExpenseOrBalance'
+        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [BalanceAnalytics] UNIQUEIDENTIFIER N'$.BalanceAnalytics'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
     ) AS d
@@ -1418,19 +1400,19 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [currency] CHAR(36) N'$.currency'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
-        , [CashRequest] CHAR(36) N'$.CashRequest'
-        , [Contract] CHAR(36) N'$.Contract'
-        , [BankAccountPerson] CHAR(36) N'$.BankAccountPerson'
-        , [Department] CHAR(36) N'$.Department'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [OperationType] NVARCHAR(250) N'$.OperationType'
-        , [Loan] CHAR(36) N'$.Loan'
-        , [CashOrBank] CHAR(36) N'$.CashOrBank'
-        , [CashRecipient] CHAR(36) N'$.CashRecipient'
-        , [ExpenseOrBalance] CHAR(36) N'$.ExpenseOrBalance'
-        , [ExpenseAnalytics] CHAR(36) N'$.ExpenseAnalytics'
-        , [BalanceAnalytics] CHAR(36) N'$.BalanceAnalytics'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [CashOrBank] UNIQUEIDENTIFIER N'$.CashOrBank'
+        , [CashRecipient] UNIQUEIDENTIFIER N'$.CashRecipient'
+        , [ExpenseOrBalance] UNIQUEIDENTIFIER N'$.ExpenseOrBalance'
+        , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [BalanceAnalytics] UNIQUEIDENTIFIER N'$.BalanceAnalytics'
         , [PayDay] DATE N'$.PayDay'
         , [Amount] MONEY N'$.Amount'
         ) AS d
@@ -1441,9 +1423,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount], [Amount.In], [Amount.Out]);
     ALTER TABLE [Register.Accumulation.CashToPay] ADD CONSTRAINT [PK_Register.Accumulation.CashToPay] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay];
 
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1457,7 +1438,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.BudgetItemTurnover];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInScenatio] * IIF(r.kind = 1, 1, -1) [AmountInScenatio], d.[AmountInScenatio] * IIF(r.kind = 1, 1, null) [AmountInScenatio.In], d.[AmountInScenatio] * IIF(r.kind = 1, null, 1) [AmountInScenatio.Out]
@@ -1469,15 +1450,15 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [Scenario] CHAR(36) N'$.Scenario'
-        , [BudgetItem] CHAR(36) N'$.BudgetItem'
-        , [Anatitic1] CHAR(36) N'$.Anatitic1'
-        , [Anatitic2] CHAR(36) N'$.Anatitic2'
-        , [Anatitic3] CHAR(36) N'$.Anatitic3'
-        , [Anatitic4] CHAR(36) N'$.Anatitic4'
-        , [Anatitic5] CHAR(36) N'$.Anatitic5'
-        , [currency] CHAR(36) N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Scenario] UNIQUEIDENTIFIER N'$.Scenario'
+        , [BudgetItem] UNIQUEIDENTIFIER N'$.BudgetItem'
+        , [Anatitic1] UNIQUEIDENTIFIER N'$.Anatitic1'
+        , [Anatitic2] UNIQUEIDENTIFIER N'$.Anatitic2'
+        , [Anatitic3] UNIQUEIDENTIFIER N'$.Anatitic3'
+        , [Anatitic4] UNIQUEIDENTIFIER N'$.Anatitic4'
+        , [Anatitic5] UNIQUEIDENTIFIER N'$.Anatitic5'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInScenatio] MONEY N'$.AmountInScenatio'
         , [AmountInCurrency] MONEY N'$.AmountInCurrency'
@@ -1506,15 +1487,15 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [Scenario] CHAR(36) N'$.Scenario'
-        , [BudgetItem] CHAR(36) N'$.BudgetItem'
-        , [Anatitic1] CHAR(36) N'$.Anatitic1'
-        , [Anatitic2] CHAR(36) N'$.Anatitic2'
-        , [Anatitic3] CHAR(36) N'$.Anatitic3'
-        , [Anatitic4] CHAR(36) N'$.Anatitic4'
-        , [Anatitic5] CHAR(36) N'$.Anatitic5'
-        , [currency] CHAR(36) N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [Scenario] UNIQUEIDENTIFIER N'$.Scenario'
+        , [BudgetItem] UNIQUEIDENTIFIER N'$.BudgetItem'
+        , [Anatitic1] UNIQUEIDENTIFIER N'$.Anatitic1'
+        , [Anatitic2] UNIQUEIDENTIFIER N'$.Anatitic2'
+        , [Anatitic3] UNIQUEIDENTIFIER N'$.Anatitic3'
+        , [Anatitic4] UNIQUEIDENTIFIER N'$.Anatitic4'
+        , [Anatitic5] UNIQUEIDENTIFIER N'$.Anatitic5'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInScenatio] MONEY N'$.AmountInScenatio'
         , [AmountInCurrency] MONEY N'$.AmountInCurrency'
@@ -1528,9 +1509,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInScenatio], [AmountInScenatio.In], [AmountInScenatio.Out], [AmountInCurrency], [AmountInCurrency.In], [AmountInCurrency.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Qty], [Qty.In], [Qty.Out]);
     ALTER TABLE [Register.Accumulation.BudgetItemTurnover] ADD CONSTRAINT [PK_Register.Accumulation.BudgetItemTurnover] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover];
 
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1544,7 +1524,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Intercompany];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1554,13 +1534,13 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Intercompany] CHAR(36) N'$.Intercompany'
-        , [LegalCompanySender] CHAR(36) N'$.LegalCompanySender'
-        , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
-        , [Contract] CHAR(36) N'$.Contract'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [currency] CHAR(36) N'$.currency'
+        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
+        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1585,13 +1565,13 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Intercompany] CHAR(36) N'$.Intercompany'
-        , [LegalCompanySender] CHAR(36) N'$.LegalCompanySender'
-        , [LegalCompanyRecipient] CHAR(36) N'$.LegalCompanyRecipient'
-        , [Contract] CHAR(36) N'$.Contract'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Analytics] CHAR(36) N'$.Analytics'
-        , [currency] CHAR(36) N'$.currency'
+        , [Intercompany] UNIQUEIDENTIFIER N'$.Intercompany'
+        , [LegalCompanySender] UNIQUEIDENTIFIER N'$.LegalCompanySender'
+        , [LegalCompanyRecipient] UNIQUEIDENTIFIER N'$.LegalCompanyRecipient'
+        , [Contract] UNIQUEIDENTIFIER N'$.Contract'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -1603,9 +1583,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
     ALTER TABLE [Register.Accumulation.Intercompany] ADD CONSTRAINT [PK_Register.Accumulation.Intercompany] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany];
 
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1619,7 +1598,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.Acquiring];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
@@ -1630,14 +1609,14 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
         , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Department] CHAR(36) N'$.Department'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
         , [PayDay] DATE N'$.PayDay'
-        , [currency] CHAR(36) N'$.currency'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountOperation] MONEY N'$.AmountOperation'
@@ -1667,14 +1646,14 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [AcquiringTerminal] CHAR(36) N'$.AcquiringTerminal'
+        , [AcquiringTerminal] UNIQUEIDENTIFIER N'$.AcquiringTerminal'
         , [AcquiringTerminalCode1] NVARCHAR(250) N'$.AcquiringTerminalCode1'
-        , [OperationType] CHAR(36) N'$.OperationType'
-        , [Department] CHAR(36) N'$.Department'
-        , [CashFlow] CHAR(36) N'$.CashFlow'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
         , [PaymantCard] NVARCHAR(250) N'$.PaymantCard'
         , [PayDay] DATE N'$.PayDay'
-        , [currency] CHAR(36) N'$.currency'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountOperation] MONEY N'$.AmountOperation'
@@ -1690,9 +1669,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Acquiring] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountOperation], [AmountOperation.In], [AmountOperation.Out], [AmountPaid], [AmountPaid.In], [AmountPaid.Out], [DateOperation], [DatePaid], [AuthorizationCode]);
     ALTER TABLE [Register.Accumulation.Acquiring] ADD CONSTRAINT [PK_Register.Accumulation.Acquiring] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring];
 
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
@@ -1706,7 +1684,7 @@
 
     DROP TABLE IF EXISTS [Register.Accumulation.StaffingTable];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person]
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
@@ -1715,14 +1693,14 @@
     CROSS APPLY OPENJSON (data, N'$')
     WITH (
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [DepartmentCompany] CHAR(36) N'$.DepartmentCompany'
-        , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
-        , [Employee] CHAR(36) N'$.Employee'
-        , [Person] CHAR(36) N'$.Person'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
+        , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [SalaryRate] MONEY N'$.SalaryRate'
-        , [SalaryAnalytic] CHAR(36) N'$.SalaryAnalytic'
-        , [currency] CHAR(36) N'$.currency'
+        , [SalaryAnalytic] UNIQUEIDENTIFIER N'$.SalaryAnalytic'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
     ) AS d
     WHERE r.type = N'Register.Accumulation.StaffingTable';
@@ -1744,14 +1722,14 @@
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
-        , [Department] CHAR(36) N'$.Department'
-        , [DepartmentCompany] CHAR(36) N'$.DepartmentCompany'
-        , [StaffingTablePosition] CHAR(36) N'$.StaffingTablePosition'
-        , [Employee] CHAR(36) N'$.Employee'
-        , [Person] CHAR(36) N'$.Person'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
+        , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [SalaryRate] MONEY N'$.SalaryRate'
-        , [SalaryAnalytic] CHAR(36) N'$.SalaryAnalytic'
-        , [currency] CHAR(36) N'$.currency'
+        , [SalaryAnalytic] UNIQUEIDENTIFIER N'$.SalaryAnalytic'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
         ) AS d
         WHERE r.type = N'Register.Accumulation.StaffingTable';
@@ -1761,9 +1739,8 @@
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.StaffingTable] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable] (
-      id, parent, date, document, company, kind, calculated, exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryRate.In], [SalaryRate.Out], [SalaryAnalytic], [currency], [Amount], [Amount.In], [Amount.Out]);
     ALTER TABLE [Register.Accumulation.StaffingTable] ADD CONSTRAINT [PK_Register.Accumulation.StaffingTable] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable];
 
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO

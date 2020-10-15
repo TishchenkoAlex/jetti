@@ -131,7 +131,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     else
       query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyAfter}`;
   }
-  // if (process.env.NODE_ENV !== 'production') console.log(query);
+  if (process.env.NODE_ENV !== 'production') console.log(query);
   const data = await tx.manyOrNone<any>(query);
 
   return listPostProcess(data, params);
