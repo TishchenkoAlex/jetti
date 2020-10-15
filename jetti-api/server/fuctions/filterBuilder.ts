@@ -5,7 +5,9 @@ export interface IQueryFilter {
     where: string;
 }
 
-export const filterBuilder = (filter: FormListFilter[], quote = '"'): IQueryFilter => {
+export const filterBuilder = (filter: FormListFilter[],
+    quote = '"',
+    exTypes = ['Catalog.Operation.Group', 'Catalog.User']): IQueryFilter => {
     let where = ' (1 = 1) ';
     let tempTabe = '';
 
@@ -53,7 +55,7 @@ export const filterBuilder = (filter: FormListFilter[], quote = '"'): IQueryFilt
                     else {
                         if (f.left === 'parent.id') {
                             where += ` AND ${f.leftQ} = '${f.right.id}'`;
-                        } else if ('Catalog.Operation.Group, Catalog.User'.includes(f.right.type)) {
+                        } else if (exTypes.includes(f.right.type)) {
                             where += ` AND ${f.leftQ} = '${f.right.id}'`;
                         } else {
                             if (tempTabe.indexOf(`[#${f.left}]`) < 0)
