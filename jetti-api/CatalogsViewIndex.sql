@@ -1,5 +1,3 @@
-RAISERROR('Catalog.Sample start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Sample ------------------------------
 
@@ -29,10 +27,6 @@ GO
       
 ------------------------------ END Catalog.Sample ------------------------------
 
-GO
-RAISERROR('Catalog.Sample complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ResponsibilityCenter start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
@@ -66,10 +60,6 @@ GO
 ------------------------------ END Catalog.ResponsibilityCenter ------------------------------
 
 GO
-RAISERROR('Catalog.ResponsibilityCenter complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Dynamic start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Dynamic ------------------------------
 
@@ -98,10 +88,6 @@ GO
       
 ------------------------------ END Catalog.Dynamic ------------------------------
 
-GO
-RAISERROR('Catalog.Dynamic complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Attachment start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
@@ -138,10 +124,6 @@ GO
       
 ------------------------------ END Catalog.Attachment ------------------------------
 
-GO
-RAISERROR('Catalog.Attachment complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Attachment.Type start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
@@ -180,10 +162,6 @@ GO
 ------------------------------ END Catalog.Attachment.Type ------------------------------
 
 GO
-RAISERROR('Catalog.Attachment.Type complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.AllUnic.Lot start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
 
@@ -217,10 +195,6 @@ GO
 ------------------------------ END Catalog.AllUnic.Lot ------------------------------
 
 GO
-RAISERROR('Catalog.AllUnic.Lot complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Account start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Account ------------------------------
 
@@ -252,10 +226,6 @@ GO
       
 ------------------------------ END Catalog.Account ------------------------------
 
-GO
-RAISERROR('Catalog.Account complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Balance start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Balance ------------------------------
@@ -289,10 +259,6 @@ GO
 ------------------------------ END Catalog.Balance ------------------------------
 
 GO
-RAISERROR('Catalog.Balance complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Balance.Analytics start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
 
@@ -322,10 +288,6 @@ GO
       
 ------------------------------ END Catalog.Balance.Analytics ------------------------------
 
-GO
-RAISERROR('Catalog.Balance.Analytics complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.BankAccount start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.BankAccount ------------------------------
@@ -360,10 +322,6 @@ GO
 ------------------------------ END Catalog.BankAccount ------------------------------
 
 GO
-RAISERROR('Catalog.BankAccount complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.CashFlow start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.CashFlow ------------------------------
 
@@ -393,10 +351,6 @@ GO
       
 ------------------------------ END Catalog.CashFlow ------------------------------
 
-GO
-RAISERROR('Catalog.CashFlow complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.CashRegister start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.CashRegister ------------------------------
@@ -430,10 +384,6 @@ GO
 ------------------------------ END Catalog.CashRegister ------------------------------
 
 GO
-RAISERROR('Catalog.CashRegister complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Currency start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Currency ------------------------------
 
@@ -463,10 +413,6 @@ GO
       
 ------------------------------ END Catalog.Currency ------------------------------
 
-GO
-RAISERROR('Catalog.Currency complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Company start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Company ------------------------------
@@ -515,10 +461,6 @@ GO
 ------------------------------ END Catalog.Company ------------------------------
 
 GO
-RAISERROR('Catalog.Company complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Company.Group start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Company.Group ------------------------------
 
@@ -549,10 +491,6 @@ GO
 ------------------------------ END Catalog.Company.Group ------------------------------
 
 GO
-RAISERROR('Catalog.Company.Group complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Country start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Country ------------------------------
 
@@ -582,10 +520,6 @@ GO
       
 ------------------------------ END Catalog.Country ------------------------------
 
-GO
-RAISERROR('Catalog.Country complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
@@ -630,10 +564,6 @@ GO
 ------------------------------ END Catalog.Counterpartie ------------------------------
 
 GO
-RAISERROR('Catalog.Counterpartie complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Counterpartie.BankAccount start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
 
@@ -667,10 +597,6 @@ GO
       
 ------------------------------ END Catalog.Counterpartie.BankAccount ------------------------------
 
-GO
-RAISERROR('Catalog.Counterpartie.BankAccount complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Contract start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Contract ------------------------------
@@ -723,10 +649,6 @@ GO
 ------------------------------ END Catalog.Contract ------------------------------
 
 GO
-RAISERROR('Catalog.Contract complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Contract.Intercompany start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
 
@@ -765,10 +687,6 @@ GO
 ------------------------------ END Catalog.Contract.Intercompany ------------------------------
 
 GO
-RAISERROR('Catalog.Contract.Intercompany complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.BusinessDirection start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
@@ -797,10 +715,6 @@ GO
       
 ------------------------------ END Catalog.BusinessDirection ------------------------------
 
-GO
-RAISERROR('Catalog.BusinessDirection complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Salary.Analytics start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
@@ -832,10 +746,6 @@ GO
       
 ------------------------------ END Catalog.Salary.Analytics ------------------------------
 
-GO
-RAISERROR('Catalog.Salary.Analytics complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Department start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department ------------------------------
@@ -883,10 +793,6 @@ GO
 ------------------------------ END Catalog.Department ------------------------------
 
 GO
-RAISERROR('Catalog.Department complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Department.Kind start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Department.Kind ------------------------------
 
@@ -915,10 +821,6 @@ GO
       
 ------------------------------ END Catalog.Department.Kind ------------------------------
 
-GO
-RAISERROR('Catalog.Department.Kind complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Department.Company start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Department.Company ------------------------------
@@ -953,10 +855,6 @@ GO
 ------------------------------ END Catalog.Department.Company ------------------------------
 
 GO
-RAISERROR('Catalog.Department.Company complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Department.StatusReason start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
 
@@ -985,10 +883,6 @@ GO
       
 ------------------------------ END Catalog.Department.StatusReason ------------------------------
 
-GO
-RAISERROR('Catalog.Department.StatusReason complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Expense start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Expense ------------------------------
@@ -1023,10 +917,6 @@ GO
 ------------------------------ END Catalog.Expense ------------------------------
 
 GO
-RAISERROR('Catalog.Expense complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Expense.Analytics start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
 
@@ -1057,10 +947,6 @@ GO
       
 ------------------------------ END Catalog.Expense.Analytics ------------------------------
 
-GO
-RAISERROR('Catalog.Expense.Analytics complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Income start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Income ------------------------------
@@ -1094,10 +980,6 @@ GO
       
 ------------------------------ END Catalog.Income ------------------------------
 
-GO
-RAISERROR('Catalog.Income complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Loan start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Loan ------------------------------
@@ -1147,10 +1029,6 @@ GO
 ------------------------------ END Catalog.Loan ------------------------------
 
 GO
-RAISERROR('Catalog.Loan complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.LoanRepaymentProcedure start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
 
@@ -1179,10 +1057,6 @@ GO
       
 ------------------------------ END Catalog.LoanRepaymentProcedure ------------------------------
 
-GO
-RAISERROR('Catalog.LoanRepaymentProcedure complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.LoanTypes start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.LoanTypes ------------------------------
@@ -1213,10 +1087,6 @@ GO
       
 ------------------------------ END Catalog.LoanTypes ------------------------------
 
-GO
-RAISERROR('Catalog.LoanTypes complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Manager start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Manager ------------------------------
@@ -1249,10 +1119,6 @@ GO
       
 ------------------------------ END Catalog.Manager ------------------------------
 
-GO
-RAISERROR('Catalog.Manager complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Person start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Person ------------------------------
@@ -1308,10 +1174,6 @@ GO
 ------------------------------ END Catalog.Person ------------------------------
 
 GO
-RAISERROR('Catalog.Person complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.PriceType start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.PriceType ------------------------------
 
@@ -1343,10 +1205,6 @@ GO
       
 ------------------------------ END Catalog.PriceType ------------------------------
 
-GO
-RAISERROR('Catalog.PriceType complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Product start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product ------------------------------
@@ -1393,10 +1251,6 @@ GO
 ------------------------------ END Catalog.Product ------------------------------
 
 GO
-RAISERROR('Catalog.Product complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.PlanningScenario start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
 
@@ -1425,10 +1279,6 @@ GO
       
 ------------------------------ END Catalog.PlanningScenario ------------------------------
 
-GO
-RAISERROR('Catalog.PlanningScenario complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ProductCategory start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.ProductCategory ------------------------------
@@ -1459,10 +1309,6 @@ GO
 ------------------------------ END Catalog.ProductCategory ------------------------------
 
 GO
-RAISERROR('Catalog.ProductCategory complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ProductKind start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.ProductKind ------------------------------
 
@@ -1492,10 +1338,6 @@ GO
       
 ------------------------------ END Catalog.ProductKind ------------------------------
 
-GO
-RAISERROR('Catalog.ProductKind complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Product.Report start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product.Report ------------------------------
@@ -1528,10 +1370,6 @@ GO
 ------------------------------ END Catalog.Product.Report ------------------------------
 
 GO
-RAISERROR('Catalog.Product.Report complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.PromotionChannel start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.PromotionChannel ------------------------------
 
@@ -1560,10 +1398,6 @@ GO
       
 ------------------------------ END Catalog.PromotionChannel ------------------------------
 
-GO
-RAISERROR('Catalog.PromotionChannel complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Storehouse start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Storehouse ------------------------------
@@ -1594,10 +1428,6 @@ GO
       
 ------------------------------ END Catalog.Storehouse ------------------------------
 
-GO
-RAISERROR('Catalog.Storehouse complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Operation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Operation ------------------------------
@@ -1632,10 +1462,6 @@ GO
 ------------------------------ END Catalog.Operation ------------------------------
 
 GO
-RAISERROR('Catalog.Operation complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Operation.Group start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Operation.Group ------------------------------
 
@@ -1668,10 +1494,6 @@ GO
 ------------------------------ END Catalog.Operation.Group ------------------------------
 
 GO
-RAISERROR('Catalog.Operation.Group complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Operation.Type start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Operation.Type ------------------------------
 
@@ -1700,10 +1522,6 @@ GO
       
 ------------------------------ END Catalog.Operation.Type ------------------------------
 
-GO
-RAISERROR('Catalog.Operation.Type complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.OrderSource ------------------------------
@@ -1734,10 +1552,6 @@ GO
       
 ------------------------------ END Catalog.OrderSource ------------------------------
 
-GO
-RAISERROR('Catalog.OrderSource complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Unit start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Unit ------------------------------
@@ -1770,10 +1584,6 @@ GO
       
 ------------------------------ END Catalog.Unit ------------------------------
 
-GO
-RAISERROR('Catalog.Unit complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.User start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.User ------------------------------
@@ -1808,10 +1618,6 @@ GO
 ------------------------------ END Catalog.User ------------------------------
 
 GO
-RAISERROR('Catalog.User complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.UsersGroup start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.UsersGroup ------------------------------
 
@@ -1840,10 +1646,6 @@ GO
       
 ------------------------------ END Catalog.UsersGroup ------------------------------
 
-GO
-RAISERROR('Catalog.UsersGroup complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Role start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Role ------------------------------
@@ -1874,10 +1676,6 @@ GO
 ------------------------------ END Catalog.Role ------------------------------
 
 GO
-RAISERROR('Catalog.Role complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.SubSystem start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.SubSystem ------------------------------
 
@@ -1907,10 +1705,6 @@ GO
       
 ------------------------------ END Catalog.SubSystem ------------------------------
 
-GO
-RAISERROR('Catalog.SubSystem complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.JobTitle start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.JobTitle ------------------------------
@@ -1944,10 +1738,6 @@ GO
 ------------------------------ END Catalog.JobTitle ------------------------------
 
 GO
-RAISERROR('Catalog.JobTitle complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.JobTitle.Category start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
 
@@ -1976,10 +1766,6 @@ GO
       
 ------------------------------ END Catalog.JobTitle.Category ------------------------------
 
-GO
-RAISERROR('Catalog.JobTitle.Category complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.PersonIdentity start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
@@ -2010,10 +1796,6 @@ GO
 ------------------------------ END Catalog.PersonIdentity ------------------------------
 
 GO
-RAISERROR('Catalog.PersonIdentity complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ReasonTypes start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
 
@@ -2042,10 +1824,6 @@ GO
       
 ------------------------------ END Catalog.ReasonTypes ------------------------------
 
-GO
-RAISERROR('Catalog.ReasonTypes complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Product.Package start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Product.Package ------------------------------
@@ -2080,10 +1858,6 @@ GO
 ------------------------------ END Catalog.Product.Package ------------------------------
 
 GO
-RAISERROR('Catalog.Product.Package complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Product.Analytic start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
 
@@ -2115,10 +1889,6 @@ GO
       
 ------------------------------ END Catalog.Product.Analytic ------------------------------
 
-GO
-RAISERROR('Catalog.Product.Analytic complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.StaffingTable start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.StaffingTable ------------------------------
@@ -2157,10 +1927,6 @@ GO
 ------------------------------ END Catalog.StaffingTable ------------------------------
 
 GO
-RAISERROR('Catalog.StaffingTable complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Brand start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Brand ------------------------------
 
@@ -2189,10 +1955,6 @@ GO
       
 ------------------------------ END Catalog.Brand ------------------------------
 
-GO
-RAISERROR('Catalog.Brand complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.GroupObjectsExploitation start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
@@ -2224,10 +1986,6 @@ GO
 ------------------------------ END Catalog.GroupObjectsExploitation ------------------------------
 
 GO
-RAISERROR('Catalog.GroupObjectsExploitation complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ObjectsExploitation start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
@@ -2258,10 +2016,6 @@ GO
       
 ------------------------------ END Catalog.ObjectsExploitation ------------------------------
 
-GO
-RAISERROR('Catalog.ObjectsExploitation complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Catalog start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Catalog ------------------------------
@@ -2299,10 +2053,6 @@ GO
 ------------------------------ END Catalog.Catalog ------------------------------
 
 GO
-RAISERROR('Catalog.Catalog complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.BudgetItem start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.BudgetItem ------------------------------
 
@@ -2335,10 +2085,6 @@ GO
 ------------------------------ END Catalog.BudgetItem ------------------------------
 
 GO
-RAISERROR('Catalog.BudgetItem complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Scenario start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Scenario ------------------------------
 
@@ -2369,10 +2115,6 @@ GO
 ------------------------------ END Catalog.Scenario ------------------------------
 
 GO
-RAISERROR('Catalog.Scenario complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.ManufactureLocation start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
 
@@ -2401,10 +2143,6 @@ GO
       
 ------------------------------ END Catalog.ManufactureLocation ------------------------------
 
-GO
-RAISERROR('Catalog.ManufactureLocation complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.AcquiringTerminal start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
@@ -2439,10 +2177,6 @@ GO
       
 ------------------------------ END Catalog.AcquiringTerminal ------------------------------
 
-GO
-RAISERROR('Catalog.AcquiringTerminal complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Bank start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Bank ------------------------------
@@ -2479,10 +2213,6 @@ GO
 ------------------------------ END Catalog.Bank ------------------------------
 
 GO
-RAISERROR('Catalog.Bank complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
@@ -2515,10 +2245,6 @@ GO
       
 ------------------------------ END Catalog.Person.BankAccount ------------------------------
 
-GO
-RAISERROR('Catalog.Person.BankAccount complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Person.Contract start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Person.Contract ------------------------------
@@ -2555,10 +2281,6 @@ GO
 ------------------------------ END Catalog.Person.Contract ------------------------------
 
 GO
-RAISERROR('Catalog.Person.Contract complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.BusinessRegion start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
@@ -2587,10 +2309,6 @@ GO
       
 ------------------------------ END Catalog.BusinessRegion ------------------------------
 
-GO
-RAISERROR('Catalog.BusinessRegion complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxRate start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxRate ------------------------------
@@ -2622,10 +2340,6 @@ GO
 ------------------------------ END Catalog.TaxRate ------------------------------
 
 GO
-RAISERROR('Catalog.TaxRate complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxAssignmentCode start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
 
@@ -2655,10 +2369,6 @@ GO
       
 ------------------------------ END Catalog.TaxAssignmentCode ------------------------------
 
-GO
-RAISERROR('Catalog.TaxAssignmentCode complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxPaymentCode start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
@@ -2691,10 +2401,6 @@ GO
 ------------------------------ END Catalog.TaxPaymentCode ------------------------------
 
 GO
-RAISERROR('Catalog.TaxPaymentCode complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxBasisPayment start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
 
@@ -2723,10 +2429,6 @@ GO
       
 ------------------------------ END Catalog.TaxBasisPayment ------------------------------
 
-GO
-RAISERROR('Catalog.TaxBasisPayment complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxPaymentPeriod start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
@@ -2757,10 +2459,6 @@ GO
 ------------------------------ END Catalog.TaxPaymentPeriod ------------------------------
 
 GO
-RAISERROR('Catalog.TaxPaymentPeriod complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxPayerStatus start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
 
@@ -2790,10 +2488,6 @@ GO
       
 ------------------------------ END Catalog.TaxPayerStatus ------------------------------
 
-GO
-RAISERROR('Catalog.TaxPayerStatus complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.TaxOffice start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.TaxOffice ------------------------------
@@ -2827,10 +2521,6 @@ GO
       
 ------------------------------ END Catalog.TaxOffice ------------------------------
 
-GO
-RAISERROR('Catalog.TaxOffice complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.RetailClient start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.RetailClient ------------------------------
@@ -2871,10 +2561,6 @@ GO
 ------------------------------ END Catalog.RetailClient ------------------------------
 
 GO
-RAISERROR('Catalog.RetailClient complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.SalaryProject start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.SalaryProject ------------------------------
 
@@ -2909,10 +2595,6 @@ GO
       
 ------------------------------ END Catalog.SalaryProject ------------------------------
 
-GO
-RAISERROR('Catalog.SalaryProject complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Specification start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Specification ------------------------------
@@ -2949,10 +2631,6 @@ GO
 ------------------------------ END Catalog.Specification ------------------------------
 
 GO
-RAISERROR('Catalog.Specification complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.InvestorGroup start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
 
@@ -2981,10 +2659,6 @@ GO
       
 ------------------------------ END Catalog.InvestorGroup ------------------------------
 
-GO
-RAISERROR('Catalog.InvestorGroup complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Catalog.Employee start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Catalog.Employee ------------------------------
@@ -3016,10 +2690,6 @@ GO
 ------------------------------ END Catalog.Employee ------------------------------
 
 GO
-RAISERROR('Catalog.Employee complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.ExchangeRates start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.ExchangeRates ------------------------------
 
@@ -3047,10 +2717,6 @@ GO
       
 ------------------------------ END Document.ExchangeRates ------------------------------
 
-GO
-RAISERROR('Document.ExchangeRates complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.Invoice start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.Invoice ------------------------------
@@ -3089,10 +2755,6 @@ GO
 ------------------------------ END Document.Invoice ------------------------------
 
 GO
-RAISERROR('Document.Invoice complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.Operation start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.Operation ------------------------------
 
@@ -3128,10 +2790,6 @@ GO
 ------------------------------ END Document.Operation ------------------------------
 
 GO
-RAISERROR('Document.Operation complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.PriceList start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.PriceList ------------------------------
 
@@ -3162,10 +2820,6 @@ GO
 ------------------------------ END Document.PriceList ------------------------------
 
 GO
-RAISERROR('Document.PriceList complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.Settings start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.Settings ------------------------------
 
@@ -3195,10 +2849,6 @@ GO
       
 ------------------------------ END Document.Settings ------------------------------
 
-GO
-RAISERROR('Document.Settings complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.UserSettings start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.UserSettings ------------------------------
@@ -3235,10 +2885,6 @@ GO
 ------------------------------ END Document.UserSettings ------------------------------
 
 GO
-RAISERROR('Document.UserSettings complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.WorkFlow start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.WorkFlow ------------------------------
 
@@ -3268,10 +2914,6 @@ GO
       
 ------------------------------ END Document.WorkFlow ------------------------------
 
-GO
-RAISERROR('Document.WorkFlow complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.CashRequest start', 0 ,1) WITH NOWAIT;
 GO
 
 ------------------------------ BEGIN Document.CashRequest ------------------------------
@@ -3342,10 +2984,6 @@ GO
 ------------------------------ END Document.CashRequest ------------------------------
 
 GO
-RAISERROR('Document.CashRequest complete', 0 ,1) WITH NOWAIT;
-GO
-RAISERROR('Document.CashRequestRegistry start', 0 ,1) WITH NOWAIT;
-GO
 
 ------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
 
@@ -3382,8 +3020,6 @@ GO
       
 ------------------------------ END Document.CashRequestRegistry ------------------------------
 
-GO
-RAISERROR('Document.CashRequestRegistry complete', 0 ,1) WITH NOWAIT;
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id) INCLUDE([company]);

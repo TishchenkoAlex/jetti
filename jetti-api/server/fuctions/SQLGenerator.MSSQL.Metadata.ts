@@ -48,7 +48,7 @@ export class SQLGenegatorMetadata {
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
-    let insert = ''; let select = ''; let fields = ''; let isIndexed = ''
+    let insert = ''; let select = ''; let fields = ''; let isIndexed = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       fields += prop + ',';
       const propType: string = doc[prop].type || 'string';
@@ -461,7 +461,7 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
     };
 
     const complexProperty = (prop: string, type: string) => `
-        , [${prop}] CHAR(36) N'$.${prop}'`;
+        , [${prop}] UNIQUEIDENTIFIER N'$.${prop}'`;
 
     let insert = ''; let select = ''; let fields = ''; let columns = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
@@ -494,7 +494,7 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
 
     DROP TABLE IF EXISTS [${type}];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, CAST(r.document AS CHAR(36)) document, CAST(r.company AS CHAR(36)) company, r.kind, r.calculated,
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
       d.exchangeRate${fields}
     INTO [${type}]
     FROM [Accumulation] r
@@ -527,9 +527,8 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
 
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] (
-      id, parent, date, document, company, kind, calculated, exchangeRate${columns});
     ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}];
 
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO

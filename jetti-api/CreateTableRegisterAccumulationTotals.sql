@@ -92,7 +92,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
-        , CAST(JSON_VALUE(data, N'$.PaymantKind') AS NVARCHAR(150)) AS [PaymantKind]
+        , CAST(JSON_VALUE(data, N'$.PaymantKind') AS NVARCHAR(250)) AS [PaymantKind]
         , CAST(JSON_VALUE(data, N'$.Customer') AS UNIQUEIDENTIFIER) AS [Customer]
         , CAST(JSON_VALUE(data, N'$.BankAccount') AS UNIQUEIDENTIFIER) AS [BankAccount]
         , CAST(JSON_VALUE(data, N'$.CashRegister') AS UNIQUEIDENTIFIER) AS [CashRegister]
@@ -113,7 +113,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
-        , CAST(JSON_VALUE(data, N'$.PaymantKind') AS NVARCHAR(150))
+        , CAST(JSON_VALUE(data, N'$.PaymantKind') AS NVARCHAR(250))
         , CAST(JSON_VALUE(data, N'$.Customer') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.BankAccount') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.CashRegister') AS UNIQUEIDENTIFIER)
@@ -758,7 +758,7 @@
         , CAST(JSON_VALUE(data, N'$.Contract') AS UNIQUEIDENTIFIER) AS [Contract]
         , CAST(JSON_VALUE(data, N'$.BankAccountPerson') AS UNIQUEIDENTIFIER) AS [BankAccountPerson]
         , CAST(JSON_VALUE(data, N'$.Department') AS UNIQUEIDENTIFIER) AS [Department]
-        , CAST(JSON_VALUE(data, N'$.OperationType') AS NVARCHAR(150)) AS [OperationType]
+        , CAST(JSON_VALUE(data, N'$.OperationType') AS NVARCHAR(250)) AS [OperationType]
         , CAST(JSON_VALUE(data, N'$.Loan') AS UNIQUEIDENTIFIER) AS [Loan]
         , CAST(JSON_VALUE(data, N'$.CashOrBank') AS UNIQUEIDENTIFIER) AS [CashOrBank]
         , CAST(JSON_VALUE(data, N'$.CashRecipient') AS UNIQUEIDENTIFIER) AS [CashRecipient]
@@ -779,7 +779,7 @@
         , CAST(JSON_VALUE(data, N'$.Contract') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.BankAccountPerson') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.Department') AS UNIQUEIDENTIFIER)
-        , CAST(JSON_VALUE(data, N'$.OperationType') AS NVARCHAR(150))
+        , CAST(JSON_VALUE(data, N'$.OperationType') AS NVARCHAR(250))
         , CAST(JSON_VALUE(data, N'$.Loan') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.CashOrBank') AS UNIQUEIDENTIFIER)
         , CAST(JSON_VALUE(data, N'$.CashRecipient') AS UNIQUEIDENTIFIER)
