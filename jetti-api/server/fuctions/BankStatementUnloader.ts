@@ -736,7 +736,7 @@ export class BankStatementUnloader {
     if (!country) throw new Error(`Не удалось определить страну организации ${(await lib.doc.byId(parentCompany, tx))!.description}`);
     this.country = country.id;
     this.tx = tx;
-    this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
+
     const query = `
     SELECT d.id,
       d.Operation operation
@@ -762,6 +762,8 @@ export class BankStatementUnloader {
   }
 
   static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
+    if (!docsID.length) return '';
+    this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
     let result = await this.getBankStatementAsStringWithRules(docsID, tx);
     if (result) return result;
     if (!await this.init(docsID, tx)) return '';
