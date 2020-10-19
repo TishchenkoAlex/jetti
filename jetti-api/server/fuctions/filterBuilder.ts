@@ -7,7 +7,7 @@ export interface IQueryFilter {
 
 export const filterBuilder = (filter: FormListFilter[],
     quote = '"',
-    exTypes = ['Catalog.Operation.Group', 'Catalog.User']): IQueryFilter => {
+    exTypes = ['Catalog.Operation.Group', 'Catalog.User, Catalog.Operation']): IQueryFilter => {
     let where = ' (1 = 1) ';
     let tempTabe = '';
 

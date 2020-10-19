@@ -13,7 +13,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Company', required: true, dimension: true })
   KorrCompany: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
   @Props({ type: 'Catalog.Person', required: true, dimension: true })
@@ -22,7 +22,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Catalog.Person', required: true, dimension: true })
   Employee: Ref = null;
 
-  @Props({ type: 'enum', resource: true, value: ['INCOME', 'EXPENSE', 'PAID'] })
+  @Props({ type: 'enum', dimension: true, value: ['INCOME', 'EXPENSE', 'PAID'] })
   SalaryKind = 'INCOME';
 
   @Props({ type: 'Catalog.Salary.Analytics', required: true, dimension: true })
@@ -34,7 +34,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'Types.Catalog', required: false, dimension: true })
   PLAnalytics: Ref = null;
 
-  @Props({ type: 'enum', value: ['APPROVED', 'PREPARED'], resource: true })
+  @Props({ type: 'enum', value: ['APPROVED', 'PREPARED'], dimension: true })
   Status = 'APPROVED';
 
   @Props({ type: 'boolean', resource: true })
