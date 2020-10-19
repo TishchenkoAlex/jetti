@@ -25,64 +25,55 @@ export class SQLGenegatorMetadata {
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') {
         return `
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}') [${prop}]`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
       }
       if (type === 'number') {
         return `
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1, -1) [${prop}]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, 1,  null) [${prop}.In]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1) [${prop}]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1,  null) [${prop}.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
       }
       if (type === 'date') {
         return `
-        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$.${prop}'),127) [${prop}]`;
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
       }
       if (type === 'datetime') {
         return `
-        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$.${prop}'),127) [${prop}]`;
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
       }
       return `
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$.${prop}')) [${prop}] \n`;
+        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
     };
 
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
-    let insert = ''; let select = ''; let fields = ''; let isIndexed = '';
+    let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
-      fields += prop + ',';
+      fields += `, [${prop}]`;
       const propType: string = doc[prop].type || 'string';
-      insert += `
-        , "${prop}"`;
-      if (propType === 'number') {
-        insert += `
-        , "${prop}.In"
-        , "${prop}.Out"`;
-      }
-
       if (propType.includes('.')) {
         select += complexProperty(prop, propType);
       } else {
         select += simleProperty(prop, propType);
       }
-      if (doc[prop].isIndexed) isIndexed += `
-    CREATE INDEX [${type}.${prop}] ON [${type}.v]([${prop}]);`;
     }
 
     const query = `
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
+    DROP TABLE IF EXISTS [${type}];
+    GO
     CREATE OR ALTER VIEW [${type}.v] WITH SCHEMABINDING AS
-    SELECT [id], [parent], CAST(date AS DATE) [date], [document], [company], [kind], [calculated]
-        , TRY_CONVERT(NUMERIC(15,10), JSON_VALUE(data, N'$.exchangeRate')) [exchangeRate]${select}
+    SELECT [id], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    GRANT SELECT,DELETE ON [${type}] TO JETTI;
-    GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}] ON [${type}.v]([date], [company], [calculated], [id]);
-    CREATE UNIQUE INDEX [${type}.id] ON [${type}.v]([id]);${isIndexed}
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [parent], [date], [document], [company], [calculated]${fields});
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
+    GO
+    GRANT SELECT, DELETE ON [${type}] TO JETTI;
     GO
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
@@ -98,8 +89,6 @@ export class SQLGenegatorMetadata {
     }
     query = `
     ${query}
-    EXEC [rpt].[CreateIndexReportHelper]
-    GO
     `;
     return query;
   }
@@ -323,7 +312,9 @@ END CATCH` : ''}`);
           .join('\n')}
       ${Type.isDocument(doc.type) ? `
 CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id);` : `
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.deleted] ON [${catalog.type}.v](deleted,date,id);` : `
+CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.deleted] ON [${catalog.type}.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id);
 CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id);`}
@@ -385,17 +376,16 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
 
     const simleProperty = (prop: string, type: string) => {
       if (type.includes('.')) return `
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS UNIQUEIDENTIFIER) AS [${prop}]`;
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
 
       if (type === 'number') {
         return `
-        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, -1), 0)) [${prop}]
-        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, 1, null), 0)) [${prop}.In]
-        , SUM(ISNULL(CAST(JSON_VALUE(data, N'$.${prop}') AS MONEY) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1), 0)) [${prop}]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, null), 0)) [${prop}.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
       }
-
-      if (type === 'string') return `
-        , CAST(JSON_VALUE(data, N'$.${prop}') AS NVARCHAR(250)) AS [${prop}]`;
+      return `
+        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
     };
 
     let query = '';
@@ -410,14 +400,15 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
         const field = simleProperty(prop, type) || '';
         if (dimension) {
           groupBy += field.slice(0, field.indexOf(' AS ['));
-          indexGroupBy += `
-        , [${prop}]`;
+          indexGroupBy += `, [${prop}]`;
         }
         if (dimension || resource) select += field;
       }
 
       query += `\n
-      CREATE OR ALTER VIEW [dbo].[${register.type}.TO] WITH SCHEMABINDING AS
+      RAISERROR('${register.type} start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO.v] WITH SCHEMABINDING AS
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]${select}
@@ -427,12 +418,13 @@ CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operatio
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO] (
-          [date]
-        , [company]${indexGroupBy}
-      )
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO
       GRANT SELECT ON [dbo].[${register.type}.TO] TO jetti;
+      GO
+      RAISERROR('${register.type} end', 0 ,1) WITH NOWAIT;
       GO`;
     }
 
