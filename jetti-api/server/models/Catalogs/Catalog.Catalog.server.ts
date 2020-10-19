@@ -3,7 +3,7 @@ import { CatalogCatalog, Parameter } from './Catalog.Catalog';
 import { IServerDocument } from './../documents.factory.server';
 import { MSSQL } from '../../mssql';
 import { PropOptions, DocumentBase, DocumentOptions } from '../document';
-import { lib } from '../../std.lib';
+import { getAdminTX, lib } from '../../std.lib';
 import { riseUpdateMetadataEvent, IDynamicProps } from '../Dynamic/dynamic.common';
 import { x100DATA_POOL } from '../../sql.pool.x100-DATA';
 
@@ -20,7 +20,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
   }
 
   async createSequence() {
-    const err = await lib.meta.getTX().metaSequenceCreate(`Sq.${this.typeString}`);
+    const err = await getAdminTX().metaSequenceCreate(`Sq.${this.typeString}`);
     if (err) throw Error(err);
   }
 

@@ -110,8 +110,7 @@ export interface JTL {
   meta: {
     updateSQLViewsByType: (type: AllDocTypes, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
-    riseUpdateMetadataEvent: () => void,
-    getTX: () => MSSQL
+    riseUpdateMetadataEvent: () => void
   };
   util: {
     formatDate: (date: Date) => string
@@ -190,8 +189,7 @@ export const lib: JTL = {
   meta: {
     updateSQLViewsByType,
     updateSQLViewsByOperationId,
-    riseUpdateMetadataEvent,
-    getTX
+    riseUpdateMetadataEvent
   },
   info: {
     sliceLast,
@@ -661,7 +659,7 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
 }
 
 async function updateSQLViewsByType(type: DocTypes, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
-  if (!tx) tx = getTX();
+  if (!tx) tx = getAdminTX();
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
     ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
@@ -679,7 +677,7 @@ async function updateSQLViewsByType(type: DocTypes, tx?: MSSQL, withSecurityPoli
 async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
   const indexedOperation = getIndexedOperationById(id);
   if (!indexedOperation) throw new Error(`Operation ${id} is not indexed`);
-  if (!tx) tx = getTX();
+  if (!tx) tx = getAdminTX();
   const queries = [
     ...await SQLGenegatorMetadata.CreateViewOperationIndex(indexedOperation, tx, true, withSecurityPolicy),
     ...await SQLGenegatorMetadata.CreateViewOperation(indexedOperation, true)
@@ -694,7 +692,7 @@ async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityP
   }
 }
 
-function getTX(): MSSQL {
+export function getAdminTX(): MSSQL {
   return new MSSQL(TASKS_POOL);
 }
 

@@ -7,8 +7,9 @@ import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../m
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
 import { lib } from '../std.lib';
-import { getIndexedOperations } from '../models/indexedOperation';
+import { getIndexedOperationById, getIndexedOperations, IIndexedOperation } from '../models/indexedOperation';
 import { Type } from '../models/type';
+import { MSSQL } from '../mssql';
 
 // tslint:disable:max-line-length
 // tslint:disable:no-shadowed-variable
@@ -173,75 +174,124 @@ export class SQLGenegatorMetadata {
     return query;
   }
 
-  static async CreateViewOperations(operationsId?: string[], asArrayOfQueries = false) {
+  static async CreateViewOperations() {
 
-    const tx = lib.util.jettiPoolTx();
-    const subQueries: string[] = [];
-    const operations = await getIndexedOperations(tx, operationsId);
+    const operations = Global.indexedOperations();
+    let query = '';
 
     for (const operation of operations) {
-      const type = operation.type as DocTypes;
-      let select = Global.configSchema().get(operation.type)!.QueryList;
-      select = select
-        .replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `FROM [${type}.v] d WITH (NOEXPAND)`)
-        .replace('d.description,', `d.description "${operation.shortName.trim()}", `);
+      const indexedOperation = getIndexedOperationById(operation[0]);
+      if (!indexedOperation) continue;
+      query += `${this.typeSpliter(indexedOperation.type, true)}
+      ${this.CreateViewOperation(indexedOperation)}
+      ${this.typeSpliter(indexedOperation.type, false)}`;
+    }
+    return query;
+  }
 
-      subQueries.push(`${this.typeSpliter(operation.type, true)}
-      CREATE OR ALTER VIEW dbo.[${type}] AS
+  static CreateViewOperation(operation: IIndexedOperation, asArrayOfQueries = false) {
+
+    const subQueries: string[] = [];
+    const type = operation.type as DocTypes;
+    let select = Global.configSchema().get(operation.type)!.QueryList;
+    select = select
+      .replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `FROM [${type}.v] d WITH (NOEXPAND)`)
+      .replace('d.description,', `d.description "${operation.shortName.trim()}", `);
+
+    subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}] AS
       ${select}; `);
 
-      subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti;${this.typeSpliter(operation.type, false)}`);
-    }
+    subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti;`);
+    subQueries.push('');
+
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static async CreateViewOperationsIndex(operationsId?: string[], asArrayOfQueries = false, withSecurityPolicy = true) {
+  static async CreateViewOperationsIndex(withSecurityPolicy = true) {
 
     const tx = lib.util.jettiPoolTx();
-
-    const subQueries: string[] = [];
-    const operations = await getIndexedOperations(tx, operationsId);
+    const operations = Global.indexedOperations();
+    let query = '';
 
     for (const operation of operations) {
-      const type = operation.type as DocTypes;
-      const doc = await lib.doc.createDocServer<CatalogOperationServer>('Catalog.Operation', { id: operation.id, Operation: operation.id } as any, tx);
-      const Props = (await doc.getPropsFunc(tx))();
-      const select = SQLGenegator.QueryListRaw(Props, type)
-        .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
-      subQueries.push(`${this.typeSpliter(operation.type, true)}${withSecurityPolicy ? `
+      const indexedOperation = getIndexedOperationById(operation[0]);
+      if (!indexedOperation) continue;
+      query += `${this.typeSpliter(indexedOperation.type, true)}
+      RAISERROR('${indexedOperation.type} start', 0 ,1) WITH NOWAIT;
+      ${await this.CreateViewOperationIndex(indexedOperation, tx, false, withSecurityPolicy)}
+      RAISERROR('${indexedOperation.type} finish', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(indexedOperation.type, true)}
+      `;
+    }
+
+    return query;
+  }
+
+  static async CreateViewOperationIndex(operation: IIndexedOperation, tx: MSSQL, asArrayOfQueries = false, withSecurityPolicy = true) {
+
+    const subQueries: string[] = [];
+    const type = operation.type as DocTypes;
+    const doc = await lib.doc.createDocServer<CatalogOperationServer>('Catalog.Operation', { id: operation.id, Operation: operation.id } as any, tx);
+    const Props = (await doc.getPropsFunc(tx))();
+    const select = SQLGenegator.QueryListRaw(Props, type)
+      .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
+
+    if (withSecurityPolicy)
+      subQueries.push(`
       BEGIN TRY
         ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
       END TRY
       BEGIN CATCH
-      END CATCH` : ''}`);
+      END CATCH`);
 
-      subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
+    subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
 
-      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
+    subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
       ${Object.keys(Props)
-          .filter(key => Props[key].isIndexed)
-          .map(key => `CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.${key}] ON[${type}.v](${key}, id) INCLUDE([company]);`)
-          .join('\n')}`);
+        .filter(key => Props[key].isIndexed)
+        .map(key => `CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.${key}] ON[${type}.v](${key}, id) INCLUDE([company]);`)
+        .join('\n')}`);
 
-      subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti; `);
+    subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti; `);
 
-      subQueries.push(`${withSecurityPolicy ? `ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];` : ''}
-      ${this.typeSpliter(operation.type, false)}`);
-
-    }
+    if (withSecurityPolicy)
+      subQueries.push(`ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];`);
 
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogs(types?: { type: DocTypes }[], asArrayOfQueries = false) {
+
+  static CreateViewCatalogs() {
+    let query = `CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
+    SELECT
+    'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
+      d.id, d.date[date],
+      d.description Presentation,
+        d.info,
+        d.type, CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
+    FROM dbo.[Documents] d
+    GO
+    GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
+    GO`;
+    const allTypes = RegisteredDocument();
+    for (const catalog of allTypes) {
+      query += `
+      ${this.typeSpliter(catalog.type, true)}
+      ${this.CreateViewCatalog(catalog.type)}
+      ${this.typeSpliter(catalog.type, false)}
+      `;
+    }
+
+    return query;
+  }
+
+  static CreateViewCatalog(type: DocTypes, asArrayOfQueries = false) {
 
     const subQueries: string[] = [];
-    const allTypes = types || RegisteredDocument();
-    for (const catalog of allTypes) {
-      const doc = createDocument(catalog.type);
-      if (doc['QueryList']) continue;
+    const doc = createDocument(type);
+    if (!doc['QueryList']) {
       const Props = doc.Props();
       const type = (doc.Prop() as DocumentOptions).type;
       let select = SQLGenegator.QueryList(Props, doc.type);
@@ -262,89 +312,89 @@ export class SQLGenegatorMetadata {
         LEFT JOIN [${type}.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
       `).replace('d.description,', `d.description "${name}",`);
 
-      subQueries.push(`${this.typeSpliter(catalog.type, true)}\n
-      CREATE OR ALTER VIEW dbo.[${catalog.type}] AS
+      subQueries.push(`
+      CREATE OR ALTER VIEW dbo.[${type}] AS
         ${select};`);
-      subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}] TO jetti;${this.typeSpliter(catalog.type, false)}`);
+      subQueries.push(`GRANT SELECT ON dbo.[${type}] TO jetti;`);
+      subQueries.push('');
     }
 
-    if (!types) {
-      subQueries.unshift(`
-      CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
-      SELECT
-      'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
-        d.id, d.date[date],
-        d.description Presentation,
-          d.info,
-          d.type, CAST(JSON_VALUE(doc, N'$.DocReceived') as bit) DocReceived
-      FROM dbo.[Documents] d
-      GO
-      GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
-      `);
-    }
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogsIndex(types?: { type: DocTypes }[], asArrayOfQueries = false, withSecurityPolicy = true) {
+  static CreateViewCatalogsIndex(withSecurityPolicy = true) {
 
-    const allTypes = types || RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const subQueries: string[] = [];
+    const allTypes = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    let query = '';
 
     for (const catalog of allTypes) {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
+      query += `${this.typeSpliter(catalog.type, true)}
+      RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;
+      ${this.CreateViewCatalogIndex(catalog.type, withSecurityPolicy)}
+      RAISERROR('${catalog.type} end', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(catalog.type, false)}`;
+    }
+
+    query += `
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [dbo].[Document.Operation.v]([Group],[date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group.user] ON [dbo].[Document.Operation.v]([user],[Group],[date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id);
+    CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operation.v]([timestamp],[Operation]);
+    `;
+
+    return query;
+  }
+
+  static CreateViewCatalogIndex(type: DocTypes, withSecurityPolicy = true, asArrayOfQueries = false) {
+    const subQueries: string[] = [];
+    const doc = createDocument(type);
+    if (!doc['QueryList']) {
       const Props = doc.Props();
       const select = SQLGenegator.QueryListRaw(Props, doc.type);
-      // subQueries.push(`RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;`);
-      subQueries.push(`${this.typeSpliter(catalog.type, true)}
-        ${withSecurityPolicy ? `
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${catalog.type}.v];
-END TRY
-BEGIN CATCH
-END CATCH` : ''}`);
+      if (withSecurityPolicy)
+        subQueries.push(`
+    BEGIN TRY
+      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
+    END TRY
+    BEGIN CATCH
+    END CATCH;`);
 
-      subQueries.push(`CREATE OR ALTER VIEW dbo.[${catalog.type}.v] WITH SCHEMABINDING AS${select};`);
-      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${catalog.type}.v] ON [${catalog.type}.v](id);
-      ${Object.keys(Props)
+      subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v]WITH SCHEMABINDING AS${select};`);
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v]ON[${type}.v](id);
+    ${Object.keys(Props)
           .filter(key => Props[key].isIndexed)
-          .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]);`)
-          .join('\n')}
-      ${Type.isDocument(doc.type) ? `
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.date] ON [${catalog.type}.v](date,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.parent] ON [${catalog.type}.v](parent,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.deleted] ON [${catalog.type}.v](deleted,date,id);` : `
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.deleted] ON [${catalog.type}.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code.f] ON [${catalog.type}.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description.f] ON [${catalog.type}.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.description] ON [${catalog.type}.v](description,id);`}
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.code] ON [${catalog.type}.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.user] ON [${catalog.type}.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}.v.company] ON [${catalog.type}.v](company,id);`);
+          .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+          .join('\n')
+        }
+        ${Type.isDocument(doc.type) ? `
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [${type}.v](date,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);` : `
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,description,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code.f] ON [${type}.v](parent,isfolder,code,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description.f] ON [${type}.v](parent,isfolder,description,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description] ON [${type}.v](description,id);`}
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
+        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);`);
 
-      subQueries.push(`GRANT SELECT ON dbo.[${catalog.type}.v] TO jetti;`);
+      subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti;`);
 
-      subQueries.push(`${withSecurityPolicy ? `ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${catalog.type}.v];` : ''}
-      ${this.typeSpliter(catalog.type, false)}`);
-
-      // subQueries.push(`RAISERROR('${catalog.type} complete', 0 ,1) WITH NOWAIT;`);
+      if (withSecurityPolicy)
+        subQueries.push(`
+      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${type}.v];`);
     }
 
-    if (!types) {
-      subQueries.push(`
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount] ON [Document.Operation.v](Amount,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group] ON [dbo].[Document.Operation.v]([Group],[date],[id]);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group.user] ON [dbo].[Document.Operation.v]([user],[Group],[date],[id]);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation] ON [Document.Operation.v](Operation,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency] ON [Document.Operation.v](currency,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1] ON [Document.Operation.v](f1,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id);
-CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operation.v]([timestamp],[Operation]);
-`);
-    }
-    return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
+    return asArrayOfQueries ? subQueries : subQueries.join(`\nGO\n`);
+
   }
 
   static CreateDocumentIndexes() {
