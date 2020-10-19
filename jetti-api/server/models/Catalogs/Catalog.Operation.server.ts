@@ -55,13 +55,19 @@ Registers.Accumulation.push({
     }
 
     async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
-        this[command](args, tx);
+        await this[command](args, tx);
         return this;
     }
 
     async updateSQLViews() {
         await lib.meta.updateSQLViewsByOperationId(this.id as any);
     }
+
+    async createSequence(tx: MSSQL) {
+        if (!this.shortName) throw Error('"shortName" is not defined!');
+        const err = await tx.metaSequenceCreate(`Sq.Operation.${this.shortName}`);
+        if (err) throw Error(err);
+      }
 
     async updateSQLViewsX100DATA() {
         await lib.meta.updateSQLViewsByOperationId(this.id as any, new MSSQL(x100DATA_POOL), false);

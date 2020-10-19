@@ -59,6 +59,7 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
 
   get isDoc() { return Type.isDocument(this.type); }
   get isCatalog() { return Type.isCatalog(this.type); }
+  get selectedId() { return this.selectionData.id; }
   get selectionData() { return this.treeNodesVisible ? (this.selectedNode ? this.selectedNode.data : null) : this.selectedRow; }
   get isSelectEnabled() {
     const sel = this.selectionData;
@@ -348,18 +349,18 @@ export class SuggestDialogHierarchyComponent implements OnInit, OnDestroy {
   copy() {
     this.Close.emit();
     this.router.navigate([this.type, v1().toUpperCase()],
-      { queryParams: { copy: this.selectedNode.key, uuid: this.uuid } });
+      { queryParams: { copy: this.selectedId, uuid: this.uuid } });
   }
 
   open(id = null) {
     this.Close.emit();
-    this.router.navigate([this.type, id ? id : this.selectedNode.key],
+    this.router.navigate([this.type, id ? id : this.selectedId],
       { queryParams: { uuid: this.uuid } });
   }
 
   delete() {
-    if (this.selectedNode) {
-      this.ds.delete(this.selectedNode.key);
+    if (this.selectedId) {
+      this.ds.delete(this.selectedId);
       this.loadNodes();
     }
   }

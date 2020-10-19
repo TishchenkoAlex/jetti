@@ -42,23 +42,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   params.command = params.command || 'first';
 
-
-  // function indexedOperationType(type: DocTypes, id: string) {
-  //   if (type !== 'Document.Operation') return '';
-  //   const operType = indexedOperations().get(id);
-  //   return operType || '';
-  // }
-
   const cs = configSchema().get(params.type);
-
-  // if (params.type === 'Document.Operation') {
-  //   const operFilter = params.filter.find(e => e.left === 'Operation');
-  //   if (operFilter && operFilter.right && operFilter.right.id) {
-  //     const operType = indexedOperationType(params.type, operFilter.right.id);
-  //     if (operType) cs = configSchema().get(operType as DocTypes);
-  //   }
-  // }
-
   const { QueryList, Props } = cs!;
 
   let row: DocumentBase | null = null;

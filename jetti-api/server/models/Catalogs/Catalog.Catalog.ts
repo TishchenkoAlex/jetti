@@ -8,7 +8,9 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
   commands: [
     { method: 'updateSQLViewsX100DATA', icon: 'pi pi-plus', label: 'Обновить SQL представления (X100-DATA)', order: 3 },
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 2 },
-    { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 1 }
+    { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 1 },
+    { method: 'createSequence', icon: 'pi pi-plus', label: 'Создать последовательность', order: 3 },
+    { method: 'fillByType', icon: 'pi pi-plus', label: 'Заполнить по типу', order: 5 }
   ]
 })
 export class CatalogCatalog extends DocumentBase {

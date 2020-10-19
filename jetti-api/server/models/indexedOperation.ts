@@ -20,3 +20,9 @@ export async function getIndexedOperations(tx?: MSSQL, operationsId?: string[]) 
 export function getIndexedOperationType(operationId: string): DocTypes | undefined {
     return Global.indexedOperations().get(operationId) as DocTypes || undefined;
 }
+
+export function getIndexedOperationById(operationId: string): IIndexedOperation | undefined {
+    const operType = Global.indexedOperations().get(operationId);
+    if (!operType) return undefined;
+    return { id: operationId, type: operType as DocTypes, shortName: operType.replace('Operation.', '') };
+}

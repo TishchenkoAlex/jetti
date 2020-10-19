@@ -161,7 +161,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
   private async ExportSalaryToCSV(tx: MSSQL) {
     if (this.Status !== 'APPROVED') throw new Error(`Possible only in the APPROVED document!`);
-    if (this.Operation !== 'Выплата заработной платы (наличные)') throw new Error(`Доступно только для операции "Выплата заработной платы (наличные)"`);
+    // if (this.Operation !== 'Выплата заработной платы (наличные)') throw new Error(`Доступно только для операции "Выплата заработной платы (наличные)"`);
     const query = `
     SELECT
     per.description Person,
@@ -180,10 +180,29 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     LEFT JOIN [dbo].[Catalog.JobTitle.v] jt on jt.id = per.JobTitle
     LEFT JOIN [dbo].[Catalog.CashRegister.v] CR on CR.id = CashRequests.CashRegister
     LEFT JOIN [dbo].[Catalog.Person.BankAccount.v] bap on bap.id = CashRequests.BankAccountPerson
-      where d.id = @p1
+      where d.id = @p1 and @p2 <> N'Оплата по кредитам и займам полученным'
+      AND Amount > 0
+    UNION
+      SELECT
+	  cp.description Person,
+    '' JobTitle,
+    ISNULL(ba.description,'') CashRegister,
+    '' BankAccountPerson,
+    Amount
+    FROM Documents d
+        CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
+        WITH (CashRecipient VARCHAR(40),
+             BankAccount VARCHAR(40),
+            [Amount] MONEY
+        ) AS CashRequests
+    LEFT JOIN Documents cp on cp.id = CashRequests.CashRecipient
+    LEFT JOIN Documents ba on ba.id = CashRequests.BankAccount
+      where d.id = @p1 and @p2 = N'Оплата по кредитам и займам полученным'
       AND Amount > 0
       ORDER BY CashRegister, Person `;
-    const salaryData = await tx.manyOrNone<{ CashRegister, Person, JobTitle, BankAccountPerson, Amount }>(query, [this.id]);
+
+    const salaryData = await tx.manyOrNone<{ CashRegister, Person, JobTitle, BankAccountPerson, Amount }>
+      (query, [this.id, this.Operation]);
 
     let result = '№;Касса;Сотрудник;Должность;Счет;Сумма;Подпись;Примечание';
     for (let index = 0; index < salaryData.length; index++) {

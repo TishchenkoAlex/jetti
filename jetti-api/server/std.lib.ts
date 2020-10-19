@@ -27,6 +27,8 @@ import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { Type } from './models/type';
+import { Global } from './models/global';
+import { getIndexedOperationById } from './models/indexedOperation';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -133,6 +135,7 @@ export interface JTL {
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
+    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
     xmlStringToJSON: (xmlString: string) => string,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
   };
@@ -218,6 +221,7 @@ export const lib: JTL = {
     exchangeDB,
     taskPoolTx,
     decodeBase64StringAsUTF8,
+    converStringEncoding,
     xmlStringToJSON,
     executeGETRequest,
     jettiPoolTx
@@ -631,6 +635,11 @@ function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
   return iconv.decode(Buffer.from(buff), encodingIn).toString();
 }
 
+function converStringEncoding(string: string, encodingIn: string, ecnodingOut: string) {
+  const buff = Buffer.from(string, encodingIn as any);
+  return iconv.decode(buff, ecnodingOut).toString();
+}
+
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
@@ -654,10 +663,10 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
 async function updateSQLViewsByType(type: DocTypes, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
   if (!tx) tx = getTX();
   const queries = [
-    ...SQLGenegatorMetadata.CreateViewCatalogsIndex([{ type: type }], true, withSecurityPolicy),
-    ...SQLGenegatorMetadata.CreateViewCatalogs([{ type: type }], true)
+    ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
+    ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
   ];
-  // console.log(queries);
+
   for (const querText of queries) {
     try {
       await tx.none(`execute sp_executesql @p1`, [querText]);
@@ -666,15 +675,18 @@ async function updateSQLViewsByType(type: DocTypes, tx?: MSSQL, withSecurityPoli
     }
   }
 }
+
 async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
+  const indexedOperation = getIndexedOperationById(id);
+  if (!indexedOperation) throw new Error(`Operation ${id} is not indexed`);
   if (!tx) tx = getTX();
   const queries = [
-    ...await SQLGenegatorMetadata.CreateViewOperationsIndex([id], true, withSecurityPolicy),
-    ...await SQLGenegatorMetadata.CreateViewOperations([id], true)
+    ...await SQLGenegatorMetadata.CreateViewOperationIndex(indexedOperation, tx, true, withSecurityPolicy),
+    ...await SQLGenegatorMetadata.CreateViewOperation(indexedOperation, true)
   ];
-  // console.log(queries);
   for (const querText of queries) {
     try {
+      if (process.env.NODE_ENV !== 'production') console.log(querText);
       await tx.none(`execute sp_executesql @p1`, [querText]);
     } catch (error) {
       if (queries.indexOf(querText)) throw new Error(error);

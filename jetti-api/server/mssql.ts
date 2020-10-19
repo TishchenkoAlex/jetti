@@ -222,6 +222,17 @@ export class MSSQL {
     return this.isRoleAvailable('Modify protected');
   }
 
+  async metaSequenceByName(sequenceName: string) {
+    return await this.oneOrNone(`SELECT * FROM sys.objects WHERE name = '${sequenceName}' AND type = 'SO'`);
+  }
+
+  async metaSequenceCreate(name: string, startWith = 0) {
+    if (!name) return `Sequence name is not defined`;
+    if (await this.metaSequenceByName(name)) return `Sequence "${name}" is exist`;
+    await this.none(`CREATE SEQUENCE [dbo].[${name}] START WITH ${startWith}`);
+    return '';
+  }
+
 }
 
 

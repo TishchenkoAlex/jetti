@@ -19,7 +19,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   commands: [
     { method: 'updateSQLViewsX100DATA', icon: 'pi pi-plus', label: 'Обновить SQL представления (X100-DATA)', order: 3 },
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 1 },
-    { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 2 }
+    { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 2 },
+    { method: 'createSequence', icon: 'pi pi-plus', label: 'Создать последовательность', order: 4 }
   ]
 })
 export class CatalogOperation extends DocumentBase {
