@@ -146,6 +146,12 @@
             </j-register-movements-list>
           </p-panel>
 
+          <p-panel [toggleable]="true" [collapsed]="true" header="Transformed register movements" #trams_movements
+            *ngIf="isDoc" toggler="header">
+            <j-transformed-register-movements *ngIf="!trams_movements.collapsed" [doc]="viewModel">
+            </j-transformed-register-movements>
+          </p-panel>
+
           <div *ngIf="(isFolder$ | async) === false">
             <div *ngFor="let r of relations$ | async">
               <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name" toggler="header">

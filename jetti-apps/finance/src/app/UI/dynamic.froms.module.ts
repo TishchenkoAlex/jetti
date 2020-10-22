@@ -29,6 +29,7 @@ import { OperationListComponent } from './Operation/operation.list.component';
 import { DisableControlDirective } from '../common/directives/disabled-control';
 import { HistoryComponent } from '../common/history/history.component';
 import { DescendantsComponent } from '../common/descendants/descendants.component';
+import { TransformedRegisterMovementsComponent } from '../x100/transformed.register.movements.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { DescendantsComponent } from '../common/descendants/descendants.componen
     RegisterAccumulationComponent,
     RegisterMovementsListComponent,
     RegisterInfoComponent,
+    TransformedRegisterMovementsComponent,
 
     OperationListComponent,
 

@@ -62,7 +62,8 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
     Object.keys(prop)
       .filter(key => thisPropKeys.includes(key))
       .forEach(key => this[key] = prop[key]);
-
+    this.relations = prop['relations'];
+    this.dimensions = prop['dimensions'];
     this.Parameters = [];
     const props = doc.Props();
     const commonProps = [...Object.keys((new DocumentBase).Props()), 'type'];
