@@ -12,11 +12,13 @@ import {
   IUpdateOperationTaxCheckResponse,
   findTaxCheckAttachmentsByOperationId
 } from './x100/functions/taxCheck';
+import { TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environment';
 
 export interface Ix100Lib {
   account: {
   };
   register: {
+    getTransformedRegisterMovementsByDocId: (docId) => Promise<any>
   };
   catalog: {
     counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
@@ -44,6 +46,7 @@ export const x100: Ix100Lib = {
   account: {
   },
   register: {
+    getTransformedRegisterMovementsByDocId
   },
   catalog: {
     counterpartieByINNAndKPP
@@ -66,6 +69,31 @@ export const x100: Ix100Lib = {
     x100DataDB
   }
 };
+
+async function getTransformedRegisterMovementsByDocId(docID: string): Promise<any> {
+  return await x100DataDB().manyOrNone(`
+  SELECT r.id, r.parent, r.date, r."kind", r.calculated,
+    "company".id "company.id", "company".description "company.value", "company".code "company.code", 'Catalog.Company' "company.type"
+
+    , [ResponsibilityCenter].id [ResponsibilityCenter.id], [ResponsibilityCenter].description [ResponsibilityCenter.value], 'Catalog.ResponsibilityCenter' [ResponsibilityCenter.type], [ResponsibilityCenter].code [ResponsibilityCenter.code]
+    , [Department].id [Department.id], [Department].description [Department.value], 'Catalog.Department' [Department.type], [Department].code [Department.code]
+    , [Balance].id [Balance.id], [Balance].description [Balance.value], 'Catalog.Balance' [Balance.type], [Balance].code [Balance.code]
+    , [Analytics].id [Analytics.id], [Analytics].description [Analytics.value], 'Types.Catalog' [Analytics.type], [Analytics].code [Analytics.code]
+    , [Analytics2].id [Analytics2.id], [Analytics2].description [Analytics2.value], 'Types.Catalog' [Analytics2.type], [Analytics2].code [Analytics2.code]
+    , [Currency].id [Currency.id], [Currency].description [Currency.value], 'Catalog.Currency' [Currency.type], [Currency].code [Currency.code]
+    , ISNULL(TRY_CONVERT(MONEY, r.Amount), 0) [Amount]
+    , ISNULL(TRY_CONVERT(MONEY, r.AmountRC), 0) [AmountRC]
+    , r.Info "Info"
+  FROM ${TRANSFORMED_REGISTER_MOVEMENTS_TABLE} r
+    LEFT JOIN dbo.[Documents] company ON company.id = r.company
+    LEFT JOIN dbo.[Documents] [ResponsibilityCenter] ON [ResponsibilityCenter].id = r.ResponsibilityCenter
+    LEFT JOIN dbo.[Documents] [Department] ON [Department].id = r.Department
+    LEFT JOIN dbo.[Documents] [Balance] ON [Balance].id = r.Balance
+    LEFT JOIN dbo.[Documents] [Analytics] ON [Analytics].id = r.Analytics
+    LEFT JOIN dbo.[Documents] [Analytics2] ON [Analytics2].id = r.Analytics2
+    LEFT JOIN dbo.[Documents] [Currency] ON [Currency].id = r.Currency
+  WHERE r.document = @p1`, [docID]);
+}
 
 async function counterpartieByINNAndKPP(INN: string, KPP: string, tx: MSSQL): Promise<Ref | null> {
   const query = `SELECT TOP 1 cp.id FROM [dbo].[Catalog.Counterpartie.v] cp WHERE cp.Code1 = @p1 and (cp.Code2 = @p2 or @p2 is NULL)`;

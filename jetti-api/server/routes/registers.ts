@@ -5,6 +5,7 @@ import { createRegisterAccumulation, RegisterAccumulationTypes } from '../models
 import { RegisterAccumulation, RegisterAccumulationOptions } from '../models/Registers/Accumulation/RegisterAccumulation';
 import { createRegisterInfo, RegisterInfoTypes } from '../models/Registers/Info/factory';
 import { RegisterInfo, RegisterInfoOptions } from '../models/Registers/Info/RegisterInfo';
+import { x100 } from '../x100.lib';
 import { SDB } from './middleware/db-sessions';
 
 export const router = express.Router();
@@ -138,6 +139,13 @@ router.post('/register/info/byFilter/:type', async (req: Request, res: Response,
       const result = await tx.manyOrNone<RegisterInfo>(query + filterText);
       res.json(result);
     });
+  } catch (err) { next(err); }
+});
+
+// x100 only
+router.get('/register/movements/transformed/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await x100.register.getTransformedRegisterMovementsByDocId(req.params.id));
   } catch (err) { next(err); }
 });
 
