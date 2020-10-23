@@ -21,8 +21,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) "Country"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Info')) "Info"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) [Country]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Info"')) [Info]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Holiday';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Holiday] TO JETTI;
@@ -38,17 +38,17 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Role')) "Role"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')) "Unit"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) "PriceType"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forSales')) "forSales"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.forPurchases')) "forPurchases"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) [Storehouse]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Role"')) [Role]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Unit"')) [Unit]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PriceType"')) [PriceType]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Price"')) [Price]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."forSales"')) [forSales]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."forPurchases"')) [forPurchases]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.PriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.PriceList] TO JETTI;
@@ -64,10 +64,10 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) "Person"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) "BankAccount"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) [Contract]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) [BankAccount]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.SelfEmployed';
     GO
     GRANT SELECT,DELETE ON [Register.Info.SelfEmployed] TO JETTI;
@@ -83,10 +83,10 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Modifier"')) "Modifier"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Qty')) "Qty"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Modifier"')) [Modifier]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ProductModifier';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ProductModifier] TO JETTI;
@@ -102,19 +102,19 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) "Customer"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Status')) "Status"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.Period'),127) "Period"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Operation"')) "Operation"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.OperationDescription')) "OperationDescription"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.OperationInDocNumber')) "OperationInDocNumber"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.OperationInDocDate'),127) "OperationInDocDate"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Comment')) "Comment"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Amount')) "Amount"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountPaid')) "AmountPaid"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountBalance')) "AmountBalance"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) [Customer]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) [Contract]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Status"')) [Status]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."Period"'),127) [Period]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Operation"')) [Operation]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."OperationDescription"')) [OperationDescription]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."OperationInDocNumber"')) [OperationInDocNumber]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."OperationInDocDate"'),127) [OperationInDocDate]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Comment"')) [Comment]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) [AmountPaid]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountBalance"')) [AmountBalance]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.SettlementsReconciliation';
     GO
     GRANT SELECT,DELETE ON [Register.Info.SettlementsReconciliation] TO JETTI;
@@ -130,9 +130,9 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Rate')) "Rate"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Mutiplicity')) "Mutiplicity"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Rate"')) [Rate]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Mutiplicity"')) [Mutiplicity]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ExchangeRates';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ExchangeRates] TO JETTI;
@@ -148,11 +148,11 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) "Country"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency1"')) "Currency1"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency2"')) "Currency2"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Rate')) "Rate"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Mutiplicity')) "Mutiplicity"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Country"')) [Country]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency1"')) [Currency1]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency2"')) [Currency2]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Rate"')) [Rate]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Mutiplicity"')) [Mutiplicity]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ExchangeRates.National';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ExchangeRates.National] TO JETTI;
@@ -168,11 +168,11 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Specification"')) "Specification"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) [Storehouse]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Specification"')) [Specification]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ProductSpecificationByDepartment';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ProductSpecificationByDepartment] TO JETTI;
@@ -188,8 +188,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."balanceCurrency"')) "balanceCurrency"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."accountingCurrency"')) "accountingCurrency"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."balanceCurrency"')) [balanceCurrency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."accountingCurrency"')) [accountingCurrency]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Settings';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Settings] TO JETTI;
@@ -205,12 +205,12 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OE"')) "OE"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.StartDate'),127) "StartDate"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Period')) "Period"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.StartCost')) "StartCost"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.EndCost')) "EndCost"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Method')) "Method"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OE"')) [OE]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."StartDate"'),127) [StartDate]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Period"')) [Period]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."StartCost"')) [StartCost]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."EndCost"')) [EndCost]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Method"')) [Method]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Depreciation';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Depreciation] TO JETTI;
@@ -226,8 +226,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.user')) "user"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.partition')) "partition"
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."user"')) [user]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."partition"')) [partition]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS.Period';
     GO
     GRANT SELECT,DELETE ON [Register.Info.RLS.Period] TO JETTI;
@@ -243,7 +243,7 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.user')) "user"
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."user"')) [user]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RLS';
     GO
     GRANT SELECT,DELETE ON [Register.Info.RLS] TO JETTI;
@@ -259,9 +259,9 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BudgetItem"')) "BudgetItem"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Scenario"')) "Scenario"
-        , ISNULL(JSON_VALUE(data, '$.Rule'), '') "Rule"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BudgetItem"')) [BudgetItem]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Scenario"')) [Scenario]
+        , JSON_VALUE(data, N'$."Rule"') [Rule]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.BudgetItemRule';
     GO
     GRANT SELECT,DELETE ON [Register.Info.BudgetItemRule] TO JETTI;
@@ -277,7 +277,7 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Intercompany"')) "Intercompany"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Intercompany"')) [Intercompany]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.IntercompanyHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.IntercompanyHistory] TO JETTI;
@@ -293,10 +293,10 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) "company2"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) "InvestorGroup"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.TypeFranchise')) "TypeFranchise"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) [company2]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."TypeFranchise"')) [TypeFranchise]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentCompanyHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.DepartmentCompanyHistory] TO JETTI;
@@ -312,11 +312,11 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.BeginDate'),127) "BeginDate"
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.EndDate'),127) "EndDate"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Info')) "Info"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StatusReason"')) "StatusReason"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."BeginDate"'),127) [BeginDate]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."EndDate"'),127) [EndDate]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Info"')) [Info]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StatusReason"')) [StatusReason]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.DepartmentStatus';
     GO
     GRANT SELECT,DELETE ON [Register.Info.DepartmentStatus] TO JETTI;
@@ -332,18 +332,18 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.Scenario')) "Scenario"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) "Contract"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
-        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.DocDate'),127) "DocDate"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) "Storehouse"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) "Product"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Qty')) "Qty"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Price')) "Price"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Cost')) "Cost"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Scenario"')) [Scenario]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) [Counterpartie]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) [Contract]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DocNumber"')) [DocNumber]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."DocDate"'),127) [DocDate]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) [Storehouse]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Price"')) [Price]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Cost"')) [Cost]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CounterpartiePriceList';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CounterpartiePriceList] TO JETTI;
@@ -359,11 +359,11 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) "companyOrGroup"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) "Loan"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) "User"
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.isActive')) "isActive"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) [companyOrGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CompanyResponsiblePersons] TO JETTI;
@@ -379,16 +379,16 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.StatusRegistry')) "StatusRegistry"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) "Counterpartie"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) "Currency"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.DocNumber')) "DocNumber"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DocJETTI"')) "DocJETTI"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountIncome')) "AmountIncome"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountJETTI')) "AmountJETTI"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ReasonType"')) "ReasonType"
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."StatusRegistry"')) [StatusRegistry]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) [Counterpartie]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) [Currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DocNumber"')) [DocNumber]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DocJETTI"')) [DocJETTI]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIncome"')) [AmountIncome]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountJETTI"')) [AmountJETTI]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ReasonType"')) [ReasonType]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.IncomeDocumentRegistry';
     GO
     GRANT SELECT,DELETE ON [Register.Info.IncomeDocumentRegistry] TO JETTI;
@@ -404,8 +404,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.CompanyPrice')) "CompanyPrice"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."CompanyPrice"')) [CompanyPrice]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyPrice';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CompanyPrice] TO JETTI;
@@ -421,9 +421,9 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) "currency"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.SharePrice')) "SharePrice"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.ShareQty')) "ShareQty"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SharePrice"')) [SharePrice]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ShareQty"')) [ShareQty]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ShareEmission';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ShareEmission] TO JETTI;
@@ -439,8 +439,8 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) "User"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LoanOwner"')) "LoanOwner"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LoanOwner"')) [LoanOwner]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.LoanOwner';
     GO
     GRANT SELECT,DELETE ON [Register.Info.LoanOwner] TO JETTI;
@@ -456,10 +456,10 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountMin')) "AmountMin"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.AmountMax')) "AmountMax"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.Royalty')) "Royalty"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountMin"')) [AmountMin]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountMax"')) [AmountMax]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Royalty"')) [Royalty]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.RoyaltySales';
     GO
     GRANT SELECT,DELETE ON [Register.Info.RoyaltySales] TO JETTI;
@@ -475,14 +475,14 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) "Employee"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) "Person"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) "Department"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) "DepartmentCompany"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."JobTitle"')) "JobTitle"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) "StaffingPosition"
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) "OperationType"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.SalaryRate')) "SalaryRate"
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) [DepartmentCompany]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."JobTitle"')) [JobTitle]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) [StaffingPosition]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SalaryRate"')) [SalaryRate]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.EmployeeHistory';
     GO
     GRANT SELECT,DELETE ON [Register.Info.EmployeeHistory] TO JETTI;
@@ -498,12 +498,12 @@
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.clientInn')) "clientInn"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.inn')) "inn"
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.totalAmount')) "totalAmount"
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.receiptId')) "receiptId"
-        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.operationTime'),127) "operationTime"
-        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.modifyDate'),127) "modifyDate"
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."clientInn"')) [clientInn]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."inn"')) [inn]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."totalAmount"')) [totalAmount]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."receiptId"')) [receiptId]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."operationTime"'),127) [operationTime]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."modifyDate"'),127) [modifyDate]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.TaxCheck';
     GO
     GRANT SELECT,DELETE ON [Register.Info.TaxCheck] TO JETTI;

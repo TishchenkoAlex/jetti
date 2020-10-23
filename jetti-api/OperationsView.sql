@@ -36,4 +36,7 @@
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.LotModelsVsDepartment] TO jetti;
+GO
+
+      
 ------------------------------ END Operation.LotModelsVsDepartment ------------------------------

@@ -27,7 +27,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.AccountablePersons';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
     
@@ -62,7 +61,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.PaymentBatch';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
     GO
     
@@ -97,7 +95,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.OrderPayment';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.OrderPayment] TO JETTI;
     GO
     
@@ -132,7 +129,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.AP';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
     
@@ -167,7 +163,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.AR';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
     
@@ -197,7 +192,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Bank';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
     
@@ -223,7 +217,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
     
@@ -254,7 +247,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance.RC';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
     GO
     
@@ -285,7 +277,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Balance.Report';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
     GO
     
@@ -315,7 +306,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Cash';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
     
@@ -346,7 +336,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Cash.Transit';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
     
@@ -383,7 +372,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Inventory';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
     
@@ -418,7 +406,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Loan';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
     
@@ -445,7 +432,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.PL';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
     
@@ -476,7 +462,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.PL.RC';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
     GO
     
@@ -528,7 +513,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Sales';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
     
@@ -565,7 +549,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Salary';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
     GO
     
@@ -596,7 +579,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Depreciation';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
     
@@ -632,7 +614,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.CashToPay';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
     
@@ -671,7 +652,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.BudgetItemTurnover';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
     
@@ -704,7 +684,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Intercompany';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
     GO
     
@@ -743,7 +722,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.Acquiring';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.Acquiring] TO JETTI;
     GO
     
@@ -774,7 +752,6 @@
         ) AS d
         WHERE r.type = N'Register.Accumulation.StaffingTable';
     GO
-
     GRANT SELECT,DELETE ON [Register.Accumulation.StaffingTable] TO JETTI;
     GO
     

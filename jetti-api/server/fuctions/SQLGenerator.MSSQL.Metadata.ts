@@ -43,7 +43,7 @@ export class SQLGenegatorMetadata {
         , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
       }
       return `
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
     };
 
     const complexProperty = (prop: string, type: string) => `
@@ -66,11 +66,11 @@ export class SQLGenegatorMetadata {
     DROP TABLE IF EXISTS [${type}];
     GO
     CREATE OR ALTER VIEW [${type}.v] WITH SCHEMABINDING AS
-    SELECT [id], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
+    SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
     CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [parent], [date], [document], [company], [calculated]${fields});
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -100,30 +100,30 @@ export class SQLGenegatorMetadata {
       switch (type) {
         case 'boolean':
           return `
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
         case 'number':
           return `
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
         case 'date':
           return `
-        , TRY_CONVERT(DATE,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
         case 'time':
           return `
-        , TRY_CONVERT(TIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        , TRY_CONVERT(TIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
         case 'datetime':
           return `
-        , TRY_CONVERT(DATETIME,JSON_VALUE(data, N'$.${prop}'),127) "${prop}"`;
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
         case 'string': case 'enum':
           return `
-        , TRY_CONVERT(NVARCHAR(250),JSON_VALUE(data, N'$.${prop}')) "${prop}"`;
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
         default:
           return `
-        , ISNULL(JSON_VALUE(data, '$.${prop}'), '') "${prop}"`;
+        , JSON_VALUE(data, N'$."${prop}"') [${prop}]`;
       }
     };
 
     const complexProperty = (prop: string) => `
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) "${prop}"`;
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
     let insert = ''; let select = ''; let fields = '';
     const Props = excludeRegisterAccumulatioProps(doc);
