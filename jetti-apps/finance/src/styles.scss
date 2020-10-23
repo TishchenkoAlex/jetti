@@ -1683,3 +1683,6 @@ body{
   border: 1px solid #dee2e6;
   background-color: #f1f2f4;
 }
+.p-inputgroup .p-inputtext, .p-fluid .p-inputgroup .p-inputtext{
+  padding-left: 5px !important; 
+}
