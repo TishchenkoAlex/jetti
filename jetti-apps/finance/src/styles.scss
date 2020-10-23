@@ -2,6 +2,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -ms-overflow-style: none;
+  overflow-y: auto !important;
+  overflow-x: hidden;
   margin: 0;
   font-size: 12px !important;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
@@ -1670,6 +1672,14 @@ td {
 }
 body{
   white-space: nowrap;
-  overflow: hidden;
+  // overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.p-fluid .p-inputtext{
+  padding-left: 10px !important; 
+}
+.p-datatable-tfoot{
+  border: 1px solid #dee2e6;
+  background-color: #f1f2f4;
 }
