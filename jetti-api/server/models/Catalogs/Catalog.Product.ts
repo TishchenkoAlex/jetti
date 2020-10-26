@@ -100,6 +100,12 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'string', useIn: 'all' })
   Eancode = '';
 
+  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  isVegan = false;
+
+  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  isHot = false;
+
   @Props({ type: 'table', label: 'Products', order: 666 })
   Product: Product[] = [new Product()];
 
