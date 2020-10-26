@@ -70,8 +70,35 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'number', order: 666, useIn: 'all' })
   Volume = '';
 
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  Calorie = 0;
+
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  Carbohydrates = 0;
+
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  Fat = 0;
+
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  Proteins = 0;
+
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  CookingTime = 0;
+
+  @Props({ type: 'string', order: 666, useIn: 'all' })
+  Composition = '';
+
   @Props({ type: 'enum', order: 666, value: ['kitchen', 'outlet'], useIn: 'all' })
   CookingPlace = 'kitchen';
+
+  @Props({ type: 'number', order: 666, useIn: 'all' })
+  Order = 0;
+
+  @Props({ type: 'string', order: 666, useIn: 'all' })
+  Barcode = '';
+
+  @Props({ type: 'string', useIn: 'all' })
+  Eancode = '';
 
   @Props({ type: 'table', label: 'Products', order: 666 })
   Product: Product[] = [new Product()];

@@ -13,4 +13,7 @@ export class CatalogProductCategory extends DocumentBase {
   @Props({ type: 'Catalog.ProductCategory', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
+  @Props({ type: 'number' })
+  Order = 0;
+
 }
