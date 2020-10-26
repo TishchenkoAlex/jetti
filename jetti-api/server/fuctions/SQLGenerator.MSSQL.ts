@@ -387,7 +387,7 @@ export class SQLGenegator {
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]${query}
       FROM dbo.[Documents]
       WHERE [type] = N'${type}'
-    `;
+`;
 
     return query;
   }
