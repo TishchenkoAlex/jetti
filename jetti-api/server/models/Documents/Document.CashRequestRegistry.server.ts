@@ -135,10 +135,12 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
           if (OperationType === 'Оплата по кредитам и займам полученным' && row.BankAccount) OperationServer['BankAccount'] = row.BankAccount;
           OperationServer['BankAccountSupplier'] = BankAccountSupplier;
         }
+
+        if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
         await OperationServer.baseOn!(row.CashRequest, tx, addBaseOnParams);
         // переопределение счета
         if (OperationType !== 'Выплата заработной платы' && !cashOper && BankAccountSupplier) OperationServer['BankAccountSupplier'] = BankAccountSupplier;
-        if (OperationType !== 'Выплата заработной платы' && !cashOper && OperationType !== 'Выплата заработной платы без ведомости') OperationServer['Amount'] = row.Amount;
+
         if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
         if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
         if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);

@@ -234,7 +234,7 @@ export class SQLGenegatorMetadata {
     const doc = await lib.doc.createDocServer<CatalogOperationServer>('Catalog.Operation', { id: operation.id, Operation: operation.id } as any, tx);
     const Props = (await doc.getPropsFunc(tx))();
     const select = SQLGenegator.QueryListRaw(Props, type)
-      .replace(`WHERE [type] = '${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
+      .replace(`WHERE [type] = N'${type}'`, `WHERE JSON_VALUE(doc, N'$."Operation"') = '${operation.id}'`);
 
     if (withSecurityPolicy)
       subQueries.push(`
