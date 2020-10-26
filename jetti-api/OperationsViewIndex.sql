@@ -1,6 +1,8 @@
 
 ------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
 
+      RAISERROR('Operation.LotModelsVsDepartment start', 0 ,1) WITH NOWAIT;
+      
       BEGIN TRY
         ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LotModelsVsDepartment.v];
       END TRY
@@ -35,5 +37,8 @@ GRANT SELECT ON dbo.[Operation.LotModelsVsDepartment.v]TO jetti;
 GO
 ALTER SECURITY POLICY[rls].[companyAccessPolicy]
       ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.LotModelsVsDepartment.v];
+      RAISERROR('Operation.LotModelsVsDepartment finish', 0 ,1) WITH NOWAIT;
       
------------------------------- END Operation.LotModelsVsDepartment ------------------------------
+------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
+
+      

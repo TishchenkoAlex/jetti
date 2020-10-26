@@ -1,13 +1,11 @@
 
     DROP INDEX IF EXISTS [Documents.parent] ON [dbo].[Documents];
     CREATE UNIQUE NONCLUSTERED INDEX [Documents.parent] ON [dbo].[Documents]([parent], [id]);
-
     
 ------------------------------ BEGIN Register.Accumulation.AccountablePersons ------------------------------
 
     RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.AccountablePersons];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -33,7 +31,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.AccountablePersons';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.AccountablePersons.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -65,13 +62,10 @@
         WHERE r.type = N'Register.Accumulation.AccountablePersons';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AccountablePersons] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.AccountablePersons] ADD CONSTRAINT [PK_Register.Accumulation.AccountablePersons] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons];
-
     RAISERROR('Register.Accumulation.AccountablePersons finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -81,7 +75,6 @@
 
     RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.PaymentBatch];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -109,7 +102,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.PaymentBatch';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.PaymentBatch.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -143,13 +135,10 @@
         WHERE r.type = N'Register.Accumulation.PaymentBatch';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PaymentBatch] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.PaymentBatch] ADD CONSTRAINT [PK_Register.Accumulation.PaymentBatch] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch];
-
     RAISERROR('Register.Accumulation.PaymentBatch finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -159,7 +148,6 @@
 
     RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.OrderPayment];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -187,7 +175,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.OrderPayment';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.OrderPayment.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -221,13 +208,10 @@
         WHERE r.type = N'Register.Accumulation.OrderPayment';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.OrderPayment] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.OrderPayment] ADD CONSTRAINT [PK_Register.Accumulation.OrderPayment] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment];
-
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -237,7 +221,6 @@
 
     RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.AP];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -265,7 +248,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.AP';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.AP.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -299,13 +281,10 @@
         WHERE r.type = N'Register.Accumulation.AP';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AP] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.AP] ADD CONSTRAINT [PK_Register.Accumulation.AP] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP];
-
     RAISERROR('Register.Accumulation.AP finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -315,7 +294,6 @@
 
     RAISERROR('Register.Accumulation.AR start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.AR];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -343,7 +321,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.AR';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.AR.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -377,13 +354,10 @@
         WHERE r.type = N'Register.Accumulation.AR';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.AR] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.AR] ADD CONSTRAINT [PK_Register.Accumulation.AR] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR];
-
     RAISERROR('Register.Accumulation.AR finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -393,7 +367,6 @@
 
     RAISERROR('Register.Accumulation.Bank start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Bank];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -416,7 +389,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Bank';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Bank.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -445,13 +417,10 @@
         WHERE r.type = N'Register.Accumulation.Bank';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Bank] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Bank] ADD CONSTRAINT [PK_Register.Accumulation.Bank] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank];
-
     RAISERROR('Register.Accumulation.Bank finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -461,7 +430,6 @@
 
     RAISERROR('Register.Accumulation.Balance start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Balance];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -480,7 +448,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -505,13 +472,10 @@
         WHERE r.type = N'Register.Accumulation.Balance';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Balance] ADD CONSTRAINT [PK_Register.Accumulation.Balance] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance];
-
     RAISERROR('Register.Accumulation.Balance finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -521,7 +485,6 @@
 
     RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Balance.RC];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -545,7 +508,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance.RC';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -575,13 +537,10 @@
         WHERE r.type = N'Register.Accumulation.Balance.RC';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.RC] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Balance.RC] ADD CONSTRAINT [PK_Register.Accumulation.Balance.RC] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC];
-
     RAISERROR('Register.Accumulation.Balance.RC finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -591,7 +550,6 @@
 
     RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Balance.Report];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -615,7 +573,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Balance.Report';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Balance.Report.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -645,13 +602,10 @@
         WHERE r.type = N'Register.Accumulation.Balance.Report';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Balance.Report] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Balance.Report] ADD CONSTRAINT [PK_Register.Accumulation.Balance.Report] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report];
-
     RAISERROR('Register.Accumulation.Balance.Report finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -661,7 +615,6 @@
 
     RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Cash];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -684,7 +637,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Cash';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -713,13 +665,10 @@
         WHERE r.type = N'Register.Accumulation.Cash';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Cash] ADD CONSTRAINT [PK_Register.Accumulation.Cash] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash];
-
     RAISERROR('Register.Accumulation.Cash finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -729,7 +678,6 @@
 
     RAISERROR('Register.Accumulation.Cash.Transit start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Cash.Transit];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -753,7 +701,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Cash.Transit';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Cash.Transit.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -783,13 +730,10 @@
         WHERE r.type = N'Register.Accumulation.Cash.Transit';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Cash.Transit] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Cash.Transit] ADD CONSTRAINT [PK_Register.Accumulation.Cash.Transit] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit];
-
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -799,7 +743,6 @@
 
     RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Inventory];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -829,7 +772,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Inventory';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Inventory.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -865,13 +807,10 @@
         WHERE r.type = N'Register.Accumulation.Inventory';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Inventory] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Inventory] ADD CONSTRAINT [PK_Register.Accumulation.Inventory] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory];
-
     RAISERROR('Register.Accumulation.Inventory finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -881,7 +820,6 @@
 
     RAISERROR('Register.Accumulation.Loan start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Loan];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -909,7 +847,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Loan';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Loan.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -943,13 +880,10 @@
         WHERE r.type = N'Register.Accumulation.Loan';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Loan] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Loan] ADD CONSTRAINT [PK_Register.Accumulation.Loan] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan];
-
     RAISERROR('Register.Accumulation.Loan finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -959,7 +893,6 @@
 
     RAISERROR('Register.Accumulation.PL start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.PL];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -979,7 +912,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.PL';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.PL.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1005,13 +937,10 @@
         WHERE r.type = N'Register.Accumulation.PL';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.PL] ADD CONSTRAINT [PK_Register.Accumulation.PL] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL];
-
     RAISERROR('Register.Accumulation.PL finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1021,7 +950,6 @@
 
     RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.PL.RC];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1045,7 +973,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.PL.RC';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.PL.RC.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1075,13 +1002,10 @@
         WHERE r.type = N'Register.Accumulation.PL.RC';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PL.RC] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.PL.RC] ADD CONSTRAINT [PK_Register.Accumulation.PL.RC] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC];
-
     RAISERROR('Register.Accumulation.PL.RC finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1091,7 +1015,6 @@
 
     RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Sales];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1136,7 +1059,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Sales';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Sales.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1187,13 +1109,10 @@
         WHERE r.type = N'Register.Accumulation.Sales';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Sales] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Sales] ADD CONSTRAINT [PK_Register.Accumulation.Sales] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales];
-
     RAISERROR('Register.Accumulation.Sales finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1203,7 +1122,6 @@
 
     RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Salary];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1233,7 +1151,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Salary';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Salary.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1269,13 +1186,10 @@
         WHERE r.type = N'Register.Accumulation.Salary';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Salary] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Salary] ADD CONSTRAINT [PK_Register.Accumulation.Salary] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary];
-
     RAISERROR('Register.Accumulation.Salary finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1285,7 +1199,6 @@
 
     RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Depreciation];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1309,7 +1222,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Depreciation';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Depreciation.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1339,13 +1251,10 @@
         WHERE r.type = N'Register.Accumulation.Depreciation';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Depreciation] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Depreciation] ADD CONSTRAINT [PK_Register.Accumulation.Depreciation] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation];
-
     RAISERROR('Register.Accumulation.Depreciation finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1355,7 +1264,6 @@
 
     RAISERROR('Register.Accumulation.CashToPay start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.CashToPay];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1384,7 +1292,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.CashToPay';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.CashToPay.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1419,13 +1326,10 @@
         WHERE r.type = N'Register.Accumulation.CashToPay';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.CashToPay] ADD CONSTRAINT [PK_Register.Accumulation.CashToPay] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay];
-
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1435,7 +1339,6 @@
 
     RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.BudgetItemTurnover];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1467,7 +1370,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.BudgetItemTurnover';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.BudgetItemTurnover.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1505,13 +1407,10 @@
         WHERE r.type = N'Register.Accumulation.BudgetItemTurnover';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.BudgetItemTurnover] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.BudgetItemTurnover] ADD CONSTRAINT [PK_Register.Accumulation.BudgetItemTurnover] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover];
-
     RAISERROR('Register.Accumulation.BudgetItemTurnover finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1521,7 +1420,6 @@
 
     RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Intercompany];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1547,7 +1445,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Intercompany';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Intercompany.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1579,13 +1476,10 @@
         WHERE r.type = N'Register.Accumulation.Intercompany';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Intercompany] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Intercompany] ADD CONSTRAINT [PK_Register.Accumulation.Intercompany] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany];
-
     RAISERROR('Register.Accumulation.Intercompany finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1595,7 +1489,6 @@
 
     RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.Acquiring];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1627,7 +1520,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.Acquiring';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.Acquiring.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1665,13 +1557,10 @@
         WHERE r.type = N'Register.Accumulation.Acquiring';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Acquiring] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.Acquiring] ADD CONSTRAINT [PK_Register.Accumulation.Acquiring] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring];
-
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
     
@@ -1681,7 +1570,6 @@
 
     RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
     GO
-
     DROP TABLE IF EXISTS [Register.Accumulation.StaffingTable];
     SELECT
       r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
@@ -1705,7 +1593,6 @@
     ) AS d
     WHERE r.type = N'Register.Accumulation.StaffingTable';
     GO
-
     CREATE OR ALTER TRIGGER [Register.Accumulation.StaffingTable.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -1735,13 +1622,10 @@
         WHERE r.type = N'Register.Accumulation.StaffingTable';
     END
     GO
-
     GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.StaffingTable] TO JETTI;
     GO
-
     ALTER TABLE [Register.Accumulation.StaffingTable] ADD CONSTRAINT [PK_Register.Accumulation.StaffingTable] PRIMARY KEY NONCLUSTERED (id);
     CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable];
-
     RAISERROR('Register.Accumulation.StaffingTable finish', 0 ,1) WITH NOWAIT;
     GO
     

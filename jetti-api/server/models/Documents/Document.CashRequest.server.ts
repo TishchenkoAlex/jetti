@@ -183,12 +183,17 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async FillTaxInfo(tx: MSSQL) {
+    const info = await this.getTaxInfo(tx, this.Amount);
+    if (info) this.info = info;
+  }
+
+  async getTaxInfo(tx: MSSQL, amount: number) {
     if (this.ManualInfo || `Выплата заработной платы
-        Выплата заработной платы без ведомости`.indexOf(this.Operation) !== -1) return;
+    Выплата заработной платы без ведомости`.indexOf(this.Operation) !== -1) return;
     if (!this.company) throw Error('Не заполнена компания');
     if (!this.сurrency) throw Error('Не заполнена валюта');
     if (!this.TaxRate) throw Error('Не заполнена ставка НДС');
-    if (!this.Amount) throw Error('Не заполнена сумма');
+    if (!amount) throw Error('Не заполнена сумма');
     if (!this.info.trim()) throw Error('Не заполнен комментарий');
     const countryCode = await lib.util.getObjectPropertyById(this.company, 'Country.code', tx);
     if (!countryCode) throw Error('Не определена страна организации');
@@ -196,7 +201,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     if (!currencyShortName) throw Error('Не определено краткое наименование валюты');
     const taxRate = await lib.util.getObjectPropertyById(this.TaxRate, 'Rate', tx);
     const infoArr = String(this.info).trim().split('\n');
-    const Tax = this.Amount - this.Amount / (taxRate * 0.01 + 1);
+    const Tax = amount - amount / (taxRate * 0.01 + 1);
     const newInfo: string[] = [];
     let taxInfo = '';
     if (countryCode === 'UKR') {
@@ -206,8 +211,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       taxInfo = taxRate ? `В т.ч. НДС (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
     }
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(this.Amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
-    this.info = newInfo.join('\n');
+    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
+    return newInfo.join('\n');
   }
 
   async returnToStatusPrepared(tx: MSSQL) {
@@ -607,7 +612,7 @@ ORDER BY
     docOperation.currency = this.сurrency;
     docOperation.parent = this.id;
     docOperation.date = new Date();
-    docOperation.Amount = this.Amount;
+    docOperation.Amount = docOperation.Amount || this.Amount;
     docOperation['CashFlow'] = this.CashFlow;
     docOperation['Department'] = this.Department;
     docOperation.info = this.info;
@@ -646,6 +651,10 @@ ORDER BY
       default:
         throw new Error(`Не реализовано создание документа для вида операции ${this.Operation} `);
     }
+
+    if (docOperation.Amount !== this.Amount)
+      docOperation.info = await this.getTaxInfo(tx, docOperation.Amount) || docOperation.info;
+
   }
 
 
