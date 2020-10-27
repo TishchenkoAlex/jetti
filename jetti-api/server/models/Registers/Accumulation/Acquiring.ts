@@ -25,7 +25,7 @@ export class RegisterAccumulationAcquiring extends RegisterAccumulation {
   @Props({ type: 'string' })
   PaymantCard = '';
 
-  @Props({ type: 'date', resource: true })
+  @Props({ type: 'date' })
   PayDay = new Date();
 
   @Props({ type: 'Catalog.Currency', dimension: true })
@@ -43,10 +43,10 @@ export class RegisterAccumulationAcquiring extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountPaid = 0;
 
-  @Props({ type: 'date', resource: true })
+  @Props({ type: 'date' })
   DateOperation = null;
 
-  @Props({ type: 'date', resource: true })
+  @Props({ type: 'date' })
   DatePaid = null;
 
   @Props({ type: 'string' })

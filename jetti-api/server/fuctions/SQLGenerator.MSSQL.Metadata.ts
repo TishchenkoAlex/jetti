@@ -331,9 +331,9 @@ export class SQLGenegatorMetadata {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
       query += `${this.typeSpliter(catalog.type, true)}
-      RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;
+RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;
       ${this.CreateViewCatalogIndex(catalog.type, withSecurityPolicy)}
-      RAISERROR('${catalog.type} end', 0 ,1) WITH NOWAIT;
+RAISERROR('${catalog.type} end', 0 ,1) WITH NOWAIT;
       ${this.typeSpliter(catalog.type, false)}`;
     }
 
@@ -360,37 +360,35 @@ export class SQLGenegatorMetadata {
       const select = SQLGenegator.QueryListRaw(Props, doc.type);
       if (withSecurityPolicy)
         subQueries.push(`
-    BEGIN TRY
-      ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
-    END TRY
-    BEGIN CATCH
-    END CATCH;`);
+BEGIN TRY
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
+END TRY
+BEGIN CATCH
+END CATCH;`);
 
-      subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v]WITH SCHEMABINDING AS${select};`);
-      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v]ON[${type}.v](id);
-    ${Object.keys(Props)
-          .filter(key => Props[key].isIndexed)
-          .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
-          .join('\n')
+      subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS${select};`);
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v]ON[${type}.v](id);${Object.keys(Props)
+        .filter(key => Props[key].isIndexed)
+        .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+        .join('\n')
         }
         ${Type.isDocument(doc.type) ? `
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [${type}.v](date,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);` : `
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,description,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code.f] ON [${type}.v](parent,isfolder,code,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description.f] ON [${type}.v](parent,isfolder,description,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description] ON [${type}.v](description,id);`}
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
-        CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);`);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [${type}.v](date,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);` : `
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code.f] ON [${type}.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description.f] ON [${type}.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description] ON [${type}.v](description,id);`}
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);`);
 
       subQueries.push(`GRANT SELECT ON dbo.[${type}.v]TO jetti;`);
 
       if (withSecurityPolicy)
         subQueries.push(`
-      ALTER SECURITY POLICY [rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${type}.v];`);
+ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[${type}.v];`);
     }
 
     return asArrayOfQueries ? subQueries : subQueries.join(`\nGO\n`);

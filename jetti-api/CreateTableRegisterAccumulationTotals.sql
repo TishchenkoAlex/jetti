@@ -865,7 +865,6 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"')) AS [CashFlow]
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."PayDay"')) AS [PayDay]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
@@ -879,8 +878,6 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) * IIF(kind = 1, 1, -1), 0)) [AmountPaid]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountPaid.Out]
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."DateOperation"')) AS [DateOperation]
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."DatePaid"')) AS [DatePaid]
         , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Acquiring'
       GROUP BY
