@@ -1704,6 +1704,8 @@ GO
         , d.[Order] [Order]
         , d.[Barcode] [Barcode]
         , d.[Eancode] [Eancode]
+        , d.[isVegan] [isVegan]
+        , d.[isHot] [isHot]
       
         , ISNULL(l5.description, d.description) [Product.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Product.Level4]
