@@ -1420,6 +1420,8 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Order"')), 0) [Order]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Barcode"')), '') [Barcode]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Eancode"')), '') [Eancode]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isVegan"')), 0) [isVegan]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isHot"')), 0) [isHot]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product'
 ;
