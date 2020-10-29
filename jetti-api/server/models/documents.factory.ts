@@ -97,6 +97,7 @@ import { CatalogDynamic } from './Dynamic/dynamic.prototype';
 import { CatalogResponsibilityCenter } from './Catalogs/Catalog.ResponsibilityCenter';
 import { Global } from './global';
 import { defaultTypeValue } from './Types/Types.factory';
+import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -190,6 +191,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.CashFlow', Class: CatalogCashFlow },
   { type: 'Catalog.CashRegister', Class: CatalogCashRegister },
   { type: 'Catalog.Currency', Class: CatalogCurrency },
+  { type: 'Catalog.Configuration', Class: CatalogConfiguration },
   { type: 'Catalog.Company', Class: CatalogCompany },
   { type: 'Catalog.Company.Group', Class: CatalogCompanyGroup },
   { type: 'Catalog.Country', Class: CatalogCountry },
