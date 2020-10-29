@@ -248,6 +248,11 @@ export class SQLGenegatorMetadata {
 
     subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);
       ${Object.keys(Props)
         .filter(key => Props[key].isIndexed)
         .map(key => `CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.${key}] ON[${type}.v](${key}, id) INCLUDE([company]);`)
