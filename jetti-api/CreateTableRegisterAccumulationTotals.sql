@@ -33,7 +33,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.TO] ON [dbo].[Register.Accumulation.AccountablePersons.TO.v] ([date], [company], [currency], [Employee], [CashFlow]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.TO] ON [dbo].[Register.Accumulation.AccountablePersons.TO.v] ([date], [company], [currency], [Employee], [CashFlow]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AccountablePersons.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AccountablePersons.TO.v] WITH (NOEXPAND);
       GO
@@ -78,7 +78,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."batch"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.TO] ON [dbo].[Register.Accumulation.PaymentBatch.TO.v] ([date], [company], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [batch]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.TO] ON [dbo].[Register.Accumulation.PaymentBatch.TO.v] ([date], [company], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [batch]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PaymentBatch.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PaymentBatch.TO.v] WITH (NOEXPAND);
       GO
@@ -122,7 +122,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.TO] ON [dbo].[Register.Accumulation.OrderPayment.TO.v] ([date], [company], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.TO] ON [dbo].[Register.Accumulation.OrderPayment.TO.v] ([date], [company], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderPayment.TO] AS SELECT * FROM [dbo].[Register.Accumulation.OrderPayment.TO.v] WITH (NOEXPAND);
       GO
@@ -164,7 +164,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [AO], [Supplier]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [AO], [Supplier]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AP.TO.v] WITH (NOEXPAND);
       GO
@@ -206,7 +206,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.TO] ON [dbo].[Register.Accumulation.AR.TO.v] ([date], [company], [currency], [AO], [Customer]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.TO] ON [dbo].[Register.Accumulation.AR.TO.v] ([date], [company], [currency], [AO], [Customer]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AR.TO.v] WITH (NOEXPAND);
       GO
@@ -244,7 +244,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.TO] ON [dbo].[Register.Accumulation.Bank.TO.v] ([date], [company], [currency], [BankAccount], [CashFlow], [Analytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.TO] ON [dbo].[Register.Accumulation.Bank.TO.v] ([date], [company], [currency], [BankAccount], [CashFlow], [Analytics]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Bank.TO.v] WITH (NOEXPAND);
       GO
@@ -272,7 +272,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.TO] ON [dbo].[Register.Accumulation.Balance.TO.v] ([date], [company], [Balance], [Analytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.TO] ON [dbo].[Register.Accumulation.Balance.TO.v] ([date], [company], [Balance], [Analytics]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.TO.v] WITH (NOEXPAND);
       GO
@@ -311,7 +311,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.TO] ON [dbo].[Register.Accumulation.Balance.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.TO] ON [dbo].[Register.Accumulation.Balance.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.RC.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.RC.TO.v] WITH (NOEXPAND);
       GO
@@ -347,7 +347,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.Report.TO.v] WITH (NOEXPAND);
       GO
@@ -385,7 +385,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.TO] ON [dbo].[Register.Accumulation.Cash.TO.v] ([date], [company], [currency], [CashRegister], [CashFlow], [Analytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.TO] ON [dbo].[Register.Accumulation.Cash.TO.v] ([date], [company], [currency], [CashRegister], [CashFlow], [Analytics]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Cash.TO.v] WITH (NOEXPAND);
       GO
@@ -425,7 +425,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.TO] ON [dbo].[Register.Accumulation.Cash.Transit.TO.v] ([date], [company], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.TO] ON [dbo].[Register.Accumulation.Cash.Transit.TO.v] ([date], [company], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Cash.Transit.TO.v] WITH (NOEXPAND);
       GO
@@ -456,7 +456,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.TO] ON [dbo].[Register.Accumulation.Inventory.TO.v] ([date], [company], [Storehouse], [SKU]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.TO] ON [dbo].[Register.Accumulation.Inventory.TO.v] ([date], [company], [Storehouse], [SKU]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Inventory.TO.v] WITH (NOEXPAND);
       GO
@@ -500,7 +500,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.TO] ON [dbo].[Register.Accumulation.Loan.TO.v] ([date], [company], [Loan], [Counterpartie], [CashFlow], [currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.TO] ON [dbo].[Register.Accumulation.Loan.TO.v] ([date], [company], [Loan], [Counterpartie], [CashFlow], [currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Loan.TO.v] WITH (NOEXPAND);
       GO
@@ -532,7 +532,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.TO] ON [dbo].[Register.Accumulation.PL.TO.v] ([date], [company], [Department], [PL], [Analytics], [Analytics2]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.TO] ON [dbo].[Register.Accumulation.PL.TO.v] ([date], [company], [Department], [PL], [Analytics], [Analytics2]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PL.TO.v] WITH (NOEXPAND);
       GO
@@ -571,7 +571,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.TO] ON [dbo].[Register.Accumulation.PL.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.TO] ON [dbo].[Register.Accumulation.PL.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.RC.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PL.RC.TO.v] WITH (NOEXPAND);
       GO
@@ -627,7 +627,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Manager"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.TO] ON [dbo].[Register.Accumulation.Sales.TO.v] ([date], [company], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [Storehouse]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.TO] ON [dbo].[Register.Accumulation.Sales.TO.v] ([date], [company], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [Storehouse]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Sales.TO.v] WITH (NOEXPAND);
       GO
@@ -678,7 +678,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PLAnalytics"'))
         , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."Status"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.TO] ON [dbo].[Register.Accumulation.Salary.TO.v] ([date], [company], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.TO] ON [dbo].[Register.Accumulation.Salary.TO.v] ([date], [company], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Salary.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Salary.TO.v] WITH (NOEXPAND);
       GO
@@ -716,7 +716,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsiblePerson"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.TO] ON [dbo].[Register.Accumulation.Depreciation.TO.v] ([date], [company], [OperationType], [currency], [Department], [ResponsiblePerson]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.TO] ON [dbo].[Register.Accumulation.Depreciation.TO.v] ([date], [company], [OperationType], [currency], [Department], [ResponsiblePerson]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Depreciation.TO.v] WITH (NOEXPAND);
       GO
@@ -766,7 +766,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceAnalytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO] AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.TO.v] WITH (NOEXPAND);
       GO
@@ -810,7 +810,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BudgetItem"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.TO] ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] ([date], [company], [Department], [Scenario], [BudgetItem], [currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.TO] ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] ([date], [company], [Department], [Scenario], [BudgetItem], [currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.TO] AS SELECT * FROM [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] WITH (NOEXPAND);
       GO
@@ -846,7 +846,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LegalCompanySender"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LegalCompanyRecipient"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.TO] ON [dbo].[Register.Accumulation.Intercompany.TO.v] ([date], [company], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.TO] ON [dbo].[Register.Accumulation.Intercompany.TO.v] ([date], [company], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Intercompany.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Intercompany.TO.v] WITH (NOEXPAND);
       GO
@@ -889,7 +889,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.TO] ON [dbo].[Register.Accumulation.Acquiring.TO.v] ([date], [company], [AcquiringTerminal], [OperationType], [Department], [CashFlow], [currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.TO] ON [dbo].[Register.Accumulation.Acquiring.TO.v] ([date], [company], [AcquiringTerminal], [OperationType], [Department], [CashFlow], [currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Acquiring.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Acquiring.TO.v] WITH (NOEXPAND);
       GO
@@ -930,7 +930,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryAnalytic], [currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryAnalytic], [currency]) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO] AS SELECT * FROM [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH (NOEXPAND);
       GO
