@@ -8,7 +8,8 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   prefix: 'DEPC-',
   hierarchy: 'folders',
   relations: [
-    { name: 'Manager history', type: 'Register.Info.EmployeeHistory', field: 'StaffingPositionManager.id' }
+    { name: 'Manager history', type: 'Register.Info.EmployeeHistory', field: 'StaffingPositionManager.id' },
+    { name: 'Assistant history', type: 'Register.Info.EmployeeHistory', field: 'StaffingPositionAssistant.id' }
   ],
   dimensions: [
     { company: 'Catalog.Company' }
@@ -32,10 +33,12 @@ export class CatalogDepartmentCompany extends DocumentBase {
   })
   ShortName = '';
 
-  @Props({type: 'string', required: false, hiddenInList: false, label: 'Security group', order: 4, useIn: 'all'  })
+  @Props({ type: 'string', required: false, hiddenInList: false, label: 'Security group', order: 4, useIn: 'all' })
   SecurityGroup = '';
 
   @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all', order: 5 })
   StaffingPositionManager: Ref = null;
 
+  @Props({ type: 'Catalog.StaffingTable', label: 'Должность помощника руководителя', useIn: 'all', order: 6 })
+  StaffingPositionAssistant: Ref = null;
 }

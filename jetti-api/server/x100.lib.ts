@@ -30,6 +30,9 @@ export interface Ix100Lib {
     company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
   };
+  salary: {
+    personFIFO: (date: Date, person: Ref, currency: Ref, amount: number, tx: MSSQL) => Promise<any>
+  };
   util: {
     updateOperationTaxCheck: (taxCheck: ITaxCheck) => Promise<IUpdateOperationTaxCheckResponse>,
     getTaxCheckFromURL: (taxCheckURL: string) => Promise<ITaxCheck>,
@@ -57,6 +60,9 @@ export const x100: Ix100Lib = {
     companyByDepartment,
     company2ByDepartment,
     IntercompanyByCompany,
+  },
+  salary: {
+    personFIFO
   },
   util: {
     updateOperationTaxCheck,
@@ -143,6 +149,16 @@ async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string |
   return await lib.doc.byCode('Catalog.Company', CodeCompanySalary, tx);
 }
 
+
+async function personFIFO(date: Date, person: Ref, currency: Ref, amount: number, tx: MSSQL): Promise<any> {
+  const queryText = `
+  EXEC [dbo].[Distribution.Salary.Person.FIFO]
+  @EndDate = '${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}',
+  @Currency = '${currency}',
+  @Person = '${person}',
+  @Amount = ${amount}`;
+  return await tx.manyOrNone(queryText);
+}
 
 
 async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
