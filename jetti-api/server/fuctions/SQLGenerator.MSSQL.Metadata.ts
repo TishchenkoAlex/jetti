@@ -69,8 +69,8 @@ export class SQLGenegatorMetadata {
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields}) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -465,7 +465,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy}) ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO

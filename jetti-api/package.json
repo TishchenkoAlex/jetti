@@ -5,7 +5,8 @@
   "scripts": {
     "start": "tsc && node dist/server/index.js",
     "tsc": "tsc",
-    "build": "tsc && docker build -t eu.gcr.io/jetti-x100/jetti-api:latest . && docker push eu.gcr.io/jetti-x100/jetti-api:latest"
+    "build": "tsc && docker build -t eu.gcr.io/jetti-x100/jetti-api:latest . && docker push eu.gcr.io/jetti-x100/jetti-api:latest",
+    "build2": "tsc && docker build -t x100jetti.azurecr.io/jetti-x100/jetti-api:latest . && docker push x100jetti.azurecr.io/jetti-x100/jetti-api:latest"
   },
   "private": true,
   "dependencies": {

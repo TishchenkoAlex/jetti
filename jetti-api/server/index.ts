@@ -69,7 +69,7 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('*', (req: Request, res: Response) => {
   res.status(200);
-  res.send('Jetti API');
+  res.send('Jetti API 1.0.0');
 });
 
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {

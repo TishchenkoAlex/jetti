@@ -1179,6 +1179,7 @@ GO
         , d.[ShortName] [ShortName]
         , d.[SecurityGroup] [SecurityGroup]
         , ISNULL([StaffingPositionManager.v].description, '') [StaffingPositionManager.value], d.[StaffingPositionManager] [StaffingPositionManager.id], [StaffingPositionManager.v].type [StaffingPositionManager.type]
+        , ISNULL([StaffingPositionAssistant.v].description, '') [StaffingPositionAssistant.value], d.[StaffingPositionAssistant] [StaffingPositionAssistant.id], [StaffingPositionAssistant.v].type [StaffingPositionAssistant.type]
       
         , ISNULL(l5.description, d.description) [DepartmentCompany.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [DepartmentCompany.Level4]
@@ -1197,6 +1198,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.StaffingTable.v] [StaffingPositionManager.v] WITH (NOEXPAND) ON [StaffingPositionManager.v].id = d.[StaffingPositionManager]
+        LEFT JOIN dbo.[Catalog.StaffingTable.v] [StaffingPositionAssistant.v] WITH (NOEXPAND) ON [StaffingPositionAssistant.v].id = d.[StaffingPositionAssistant]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Company] TO jetti;
