@@ -26,8 +26,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null,  1) [AmountIsPaid.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.AccountablePersons';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.id] ON [Register.Accumulation.AccountablePersons.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.id] ON [Register.Accumulation.AccountablePersons.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AccountablePersons] ON [Register.Accumulation.AccountablePersons.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Employee], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.AccountablePersons] AS SELECT * FROM [Register.Accumulation.AccountablePersons.v] WITH (NOEXPAND);
     GO
@@ -63,8 +63,8 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."batch"')) [batch]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PaymentBatch';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.id] ON [Register.Accumulation.PaymentBatch.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch.v]([id], [kind], [parent], [date], [document], [company], [calculated], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Price], [Amount], [AmountInBalance], [batch]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.id] ON [Register.Accumulation.PaymentBatch.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PaymentBatch] ON [Register.Accumulation.PaymentBatch.v]([id], [kind], [parent], [date], [document], [company], [calculated], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [PayDay], [Qty], [Price], [Amount], [AmountInBalance], [batch]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PaymentBatch] AS SELECT * FROM [Register.Accumulation.PaymentBatch.v] WITH (NOEXPAND);
     GO
@@ -100,8 +100,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.OrderPayment';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.id] ON [Register.Accumulation.OrderPayment.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment.v]([id], [kind], [parent], [date], [document], [company], [calculated], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department], [CashShift], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.id] ON [Register.Accumulation.OrderPayment.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderPayment] ON [Register.Accumulation.OrderPayment.v]([id], [kind], [parent], [date], [document], [company], [calculated], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department], [CashShift], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment] AS SELECT * FROM [Register.Accumulation.OrderPayment.v] WITH (NOEXPAND);
     GO
@@ -138,8 +138,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null,  1) [AmountIsPaid.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.AP';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.AP] AS SELECT * FROM [Register.Accumulation.AP.v] WITH (NOEXPAND);
     GO
@@ -176,8 +176,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null,  1) [AmountIsPaid.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.AR';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.id] ON [Register.Accumulation.AR.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.id] ON [Register.Accumulation.AR.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AR] ON [Register.Accumulation.AR.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [AO], [Customer], [PayDay], [AR], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.AR] AS SELECT * FROM [Register.Accumulation.AR.v] WITH (NOEXPAND);
     GO
@@ -207,8 +207,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Bank';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.id] ON [Register.Accumulation.Bank.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.id] ON [Register.Accumulation.Bank.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Bank] ON [Register.Accumulation.Bank.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [BankAccount], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Bank] AS SELECT * FROM [Register.Accumulation.Bank.v] WITH (NOEXPAND);
     GO
@@ -232,8 +232,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."Info"')) [Info]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Balance';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [Balance], [Analytics], [Amount], [Info]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.id] ON [Register.Accumulation.Balance.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance] ON [Register.Accumulation.Balance.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [Balance], [Analytics], [Amount], [Info]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Balance] AS SELECT * FROM [Register.Accumulation.Balance.v] WITH (NOEXPAND);
     GO
@@ -263,8 +263,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."Info"')) [Info]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Balance.RC';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.id] ON [Register.Accumulation.Balance.RC.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC.v]([id], [kind], [parent], [date], [document], [company], [calculated], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.id] ON [Register.Accumulation.Balance.RC.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.RC] ON [Register.Accumulation.Balance.RC.v]([id], [kind], [parent], [date], [document], [company], [calculated], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.RC] AS SELECT * FROM [Register.Accumulation.Balance.RC.v] WITH (NOEXPAND);
     GO
@@ -295,8 +295,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."Info"')) [Info]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Balance.Report';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting], [Info]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [Balance], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting], [Info]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report] AS SELECT * FROM [Register.Accumulation.Balance.Report.v] WITH (NOEXPAND);
     GO
@@ -326,8 +326,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Cash';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.id] ON [Register.Accumulation.Cash.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.id] ON [Register.Accumulation.Cash.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash] ON [Register.Accumulation.Cash.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [CashRegister], [CashFlow], [Analytics], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Cash] AS SELECT * FROM [Register.Accumulation.Cash.v] WITH (NOEXPAND);
     GO
@@ -358,8 +358,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Cash.Transit';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit.v]([id], [kind], [parent], [date], [document], [company], [calculated], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.id] ON [Register.Accumulation.Cash.Transit.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Cash.Transit] ON [Register.Accumulation.Cash.Transit.v]([id], [kind], [parent], [date], [document], [company], [calculated], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Cash.Transit] AS SELECT * FROM [Register.Accumulation.Cash.Transit.v] WITH (NOEXPAND);
     GO
@@ -395,8 +395,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null,  1) [Qty.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Inventory';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([id], [kind], [parent], [date], [document], [company], [calculated], [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([id], [kind], [parent], [date], [document], [company], [calculated], [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Qty]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory] AS SELECT * FROM [Register.Accumulation.Inventory.v] WITH (NOEXPAND);
     GO
@@ -433,8 +433,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null,  1) [AmountIsPaid.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Loan';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.id] ON [Register.Accumulation.Loan.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.id] ON [Register.Accumulation.Loan.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Loan] ON [Register.Accumulation.Loan.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Loan], [Counterpartie], [CashFlow], [currency], [PaymentKind], [Amount], [AmountInBalance], [AmountInAccounting], [AmountToPay], [AmountIsPaid]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Loan] AS SELECT * FROM [Register.Accumulation.Loan.v] WITH (NOEXPAND);
     GO
@@ -459,8 +459,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."Info"')) [Info]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PL';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [PL], [Analytics], [Analytics2], [Amount], [Info]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL] AS SELECT * FROM [Register.Accumulation.PL.v] WITH (NOEXPAND);
     GO
@@ -490,8 +490,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."Info"')) [Info]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PL.RC';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.id] ON [Register.Accumulation.PL.RC.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC.v]([id], [kind], [parent], [date], [document], [company], [calculated], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.id] ON [Register.Accumulation.PL.RC.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL.RC] ON [Register.Accumulation.PL.RC.v]([id], [kind], [parent], [date], [document], [company], [calculated], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency], [Amount], [AmountRC], [Info]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL.RC] AS SELECT * FROM [Register.Accumulation.PL.RC.v] WITH (NOEXPAND);
     GO
@@ -548,8 +548,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAR"')) * IIF(kind = 1, null,  1) [AmountInAR.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Sales';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [Cost], [Qty], [Amount], [Discount], [Tax], [AmountInDoc], [AmountInAR]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Sales] AS SELECT * FROM [Register.Accumulation.Sales.v] WITH (NOEXPAND);
     GO
@@ -586,8 +586,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Salary';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.id] ON [Register.Accumulation.Salary.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Salary] ON [Register.Accumulation.Salary.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status], [IsPortal], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Salary] AS SELECT * FROM [Register.Accumulation.Salary.v] WITH (NOEXPAND);
     GO
@@ -618,8 +618,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Depreciation';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation.v]([id], [kind], [parent], [date], [document], [company], [calculated], [OperationType], [currency], [Department], [ResponsiblePerson], [OE], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.id] ON [Register.Accumulation.Depreciation.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Depreciation] ON [Register.Accumulation.Depreciation.v]([id], [kind], [parent], [date], [document], [company], [calculated], [OperationType], [currency], [Department], [ResponsiblePerson], [OE], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Depreciation] AS SELECT * FROM [Register.Accumulation.Depreciation.v] WITH (NOEXPAND);
     GO
@@ -653,8 +653,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.CashToPay';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay.v]([id], [kind], [parent], [date], [document], [company], [calculated], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay] AS SELECT * FROM [Register.Accumulation.CashToPay.v] WITH (NOEXPAND);
     GO
@@ -695,8 +695,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null,  1) [Qty.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.BudgetItemTurnover';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [Register.Accumulation.BudgetItemTurnover.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.id] ON [Register.Accumulation.BudgetItemTurnover.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.BudgetItemTurnover] ON [Register.Accumulation.BudgetItemTurnover.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [Scenario], [BudgetItem], [Anatitic1], [Anatitic2], [Anatitic3], [Anatitic4], [Anatitic5], [currency], [Amount], [AmountInScenatio], [AmountInCurrency], [AmountInAccounting], [Qty]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.BudgetItemTurnover] AS SELECT * FROM [Register.Accumulation.BudgetItemTurnover.v] WITH (NOEXPAND);
     GO
@@ -729,8 +729,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Intercompany';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.id] ON [Register.Accumulation.Intercompany.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency], [Amount], [AmountInBalance], [AmountInAccounting]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.id] ON [Register.Accumulation.Intercompany.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Intercompany] ON [Register.Accumulation.Intercompany.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient], [Contract], [OperationType], [Analytics], [currency], [Amount], [AmountInBalance], [AmountInAccounting]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Intercompany] AS SELECT * FROM [Register.Accumulation.Intercompany.v] WITH (NOEXPAND);
     GO
@@ -770,8 +770,8 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."AuthorizationCode"')) [AuthorizationCode]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Acquiring';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring.v]([id], [kind], [parent], [date], [document], [company], [calculated], [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AmountOperation], [AmountPaid], [DateOperation], [DatePaid], [AuthorizationCode]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.id] ON [Register.Accumulation.Acquiring.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Acquiring] ON [Register.Accumulation.Acquiring.v]([id], [kind], [parent], [date], [document], [company], [calculated], [AcquiringTerminal], [AcquiringTerminalCode1], [OperationType], [Department], [CashFlow], [PaymantCard], [PayDay], [currency], [Amount], [AmountInBalance], [AmountOperation], [AmountPaid], [DateOperation], [DatePaid], [AuthorizationCode]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Acquiring] AS SELECT * FROM [Register.Accumulation.Acquiring.v] WITH (NOEXPAND);
     GO
@@ -801,8 +801,8 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.StaffingTable';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.id] ON [Register.Accumulation.StaffingTable.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]);
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.id] ON [Register.Accumulation.StaffingTable.v]([id], [date]) ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([id], [kind], [parent], [date], [document], [company], [calculated], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryAnalytic], [currency], [Amount]) ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable] AS SELECT * FROM [Register.Accumulation.StaffingTable.v] WITH (NOEXPAND);
     GO

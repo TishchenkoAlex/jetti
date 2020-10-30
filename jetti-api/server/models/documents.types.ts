@@ -10,6 +10,7 @@ export type CatalogTypes =
   'Catalog.Brand' |
   'Catalog.CashFlow' |
   'Catalog.CashRegister' |
+  'Catalog.Configuration' |
   'Catalog.Company' |
   'Catalog.Company.Group' |
   'Catalog.Country' |
