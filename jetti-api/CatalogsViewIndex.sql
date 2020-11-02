@@ -457,6 +457,41 @@ RAISERROR('Catalog.Currency end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Currency ------------------------------
 
+------------------------------ BEGIN Catalog.Configuration ------------------------------
+
+RAISERROR('Catalog.Configuration start', 0 ,1) WITH NOWAIT;
+      
+BEGIN TRY
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Configuration.v];
+END TRY
+BEGIN CATCH
+END CATCH;
+GO
+CREATE OR ALTER VIEW dbo.[Catalog.Configuration.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      FROM dbo.[Documents]
+      WHERE [type] = N'Catalog.Configuration'
+;
+GO
+CREATE UNIQUE CLUSTERED INDEX[Catalog.Configuration.v]ON[Catalog.Configuration.v](id);
+        
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.deleted] ON [Catalog.Configuration.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.code.f] ON [Catalog.Configuration.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.description.f] ON [Catalog.Configuration.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.description] ON [Catalog.Configuration.v](description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.code] ON [Catalog.Configuration.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.user] ON [Catalog.Configuration.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.company] ON [Catalog.Configuration.v](company,id);
+GO
+GRANT SELECT ON dbo.[Catalog.Configuration.v]TO jetti;
+GO
+
+ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Configuration.v];
+RAISERROR('Catalog.Configuration end', 0 ,1) WITH NOWAIT;
+      
+------------------------------ END Catalog.Configuration ------------------------------
+
 ------------------------------ BEGIN Catalog.Company ------------------------------
 
 RAISERROR('Catalog.Company start', 0 ,1) WITH NOWAIT;
@@ -1675,6 +1710,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."shortName"')), '') [shortName]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Configuration"')) [Configuration]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."script"')), '') [script]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."module"')), '') [module]
       FROM dbo.[Documents]
