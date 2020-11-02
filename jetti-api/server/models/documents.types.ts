@@ -85,8 +85,8 @@ export type CatalogTypes =
   'Catalog.ReasonTypes' |
   'Catalog.Dynamic' |
   'Catalog.Employee' |
-  'Catalog.ResponsibilityCenter'
-  ;
+  'Catalog.ResponsibilityCenter' |
+  'Catalog.RetailNetwork';
 
 export type DocumentTypes =
   'Document.ExchangeRates' |
