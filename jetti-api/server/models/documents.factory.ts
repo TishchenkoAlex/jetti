@@ -98,6 +98,7 @@ import { CatalogResponsibilityCenter } from './Catalogs/Catalog.ResponsibilityCe
 import { Global } from './global';
 import { defaultTypeValue } from './Types/Types.factory';
 import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
+import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -263,6 +264,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.TaxPayerStatus', Class: CatalogTaxPayerStatus },
   { type: 'Catalog.TaxOffice', Class: CatalogTaxOffice },
   { type: 'Catalog.RetailClient', Class: CatalogRetailClient },
+  { type: 'Catalog.RetailNetwork', Class: CatalogRetailNetwork },
   { type: 'Catalog.SalaryProject', Class: CatalogSalaryProject },
   { type: 'Catalog.Specification', Class: CatalogSpecification },
   { type: 'Catalog.InvestorGroup', Class: CatalogInvestorGroup },

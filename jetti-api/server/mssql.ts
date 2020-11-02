@@ -53,7 +53,7 @@ export class MSSQL {
       if (params[i] instanceof Date) {
         request.addParameter(`p${i + 1}`, TYPES.DateTime2, params[i]);
       } else if (typeof params[i] === 'number') {
-        request.addParameter(`p${i + 1}`, TYPES.Numeric, params[i]);
+        request.addParameter(`p${i + 1}`, TYPES.Money, params[i]);
       } else if (typeof params[i] === 'boolean') {
         request.addParameter(`p${i + 1}`, TYPES.Bit, params[i]);
       } else
