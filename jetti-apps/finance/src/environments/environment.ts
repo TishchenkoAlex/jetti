@@ -1,7 +1,7 @@
 import { Configuration } from 'msal';
 import { MsalAngularConfiguration } from '@azure/msal-angular';
 
-const domain = 'http://localhost:3000';
+const domain = 'http://localhost:3000'; // 'https://jetti-api.azurewebsites.net'; // 'http://localhost:3000';
 const BPAPI = 'https://bp.x100-group.com/JettiProcesses/hs';
 
 export const environment = {
