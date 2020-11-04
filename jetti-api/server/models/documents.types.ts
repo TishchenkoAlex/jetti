@@ -44,6 +44,7 @@ export type CatalogTypes =
   'Catalog.Subcount' |
   'Catalog.Documents' |
   'Catalog.Catalogs' |
+  'Catalog.Register' |
   'Catalog.Forms' |
   'Catalog.Objects' |
   'Catalog.User' |

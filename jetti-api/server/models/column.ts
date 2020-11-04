@@ -4,7 +4,7 @@ import { FormListFilter, FormListOrder } from './user.settings';
 
 export interface ColumnDef {
     field: string;
-    type: AllTypes | AllTypes[];
+    type: AllTypes | AllTypes[] | string;
     label: string;
     hidden: boolean;
     order: number;

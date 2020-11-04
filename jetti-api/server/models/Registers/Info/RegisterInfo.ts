@@ -29,7 +29,8 @@ export class RegisterInfo {
   @Props({ type: 'Types.Document', hiddenInList: true, required: true })
   document: Ref = null;
 
-  constructor(init: Partial<RegisterInfo>) {
+  constructor(init?: Partial<RegisterInfo>) {
+    if (!init) return;
     Object.assign(this, init);
     this.type = (this.Prop() as RegisterInfoOptions).type;
   }

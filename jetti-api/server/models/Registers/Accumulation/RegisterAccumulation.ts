@@ -44,7 +44,8 @@ export class RegisterAccumulation {
   @Props({ type: 'Catalog.Company', required: true, dimension: true })
   company: Ref = null;
 
-  constructor(init: Partial<RegisterAccumulation>) {
+  constructor(init?: Partial<RegisterAccumulation>) {
+    if (!init) return;
     Object.assign(this, init);
     this.type = (this.Prop() as RegisterAccumulationOptions).type;
   }

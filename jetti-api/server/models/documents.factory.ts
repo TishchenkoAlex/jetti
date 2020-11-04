@@ -100,6 +100,7 @@ import { defaultTypeValue } from './Types/Types.factory';
 import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
 import { Type } from './type';
+import { CatalogRegister } from './Catalogs/Catalog.Register';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -243,6 +244,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.Product.Analytic', Class: CatalogProductAnalytic },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
+  { type: 'Catalog.Register', Class: CatalogRegister },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },
   { type: 'Catalog.Forms', Class: CatalogForms },
   { type: 'Catalog.Objects', Class: CatalogObjects },
