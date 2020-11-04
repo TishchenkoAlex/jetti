@@ -22,6 +22,7 @@ export const filterBuilder = (filter: FormListFilter[],
           if (f.right[1]) where += ` AND ${f.leftQ} <= '${f.right[1]}'`;
           break;
         }
+        if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
         if (typeof f.right === 'number') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
         if (typeof f.right === 'boolean') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
         if (f.right instanceof Date) { where += ` AND ${f.leftQ} ${f.center} '${f.right.toJSON()}'`; break; }
@@ -35,9 +36,7 @@ export const filterBuilder = (filter: FormListFilter[],
           }
           break;
         }
-        if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
-        if (!f.right) where += ` AND ${f.leftQ} IS NULL `;
-        else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
+        if (!f.right) where += ` AND ${f.leftQ} IS NULL `; else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
         break;
       case 'like':
         where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
