@@ -371,3 +371,7 @@ body .ui-treetable .ui-treetable-thead > tr > th, body .ui-treetable .ui-treetab
 body .ui-table .ui-table-thead > tr > th, body .ui-table .ui-table-tfoot > tr > td {
   font-weight: normal !important;
 }
+
+.layout-wrapper .layout-menu li ul li a i:first-child {
+  font-size: 16px !important;
+}

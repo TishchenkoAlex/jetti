@@ -13,7 +13,7 @@ export class CatalogRetailNetwork extends DocumentBase {
   parent: Ref = null;
 
   @Props({ type: 'Catalog.Brand' })
-  Brand = '';
+  Brand: Ref = null;
 
   @Props({ type: 'Catalog.Country' })
   Country: Ref = null;
