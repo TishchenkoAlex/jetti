@@ -21,6 +21,7 @@ export interface IDynamicProps {
 export interface IDynamicMetadata {
     Metadata: IDynamicProps[];
     RegisteredDocument: RegisteredDocumentType[];
+    RegisteredServerDocument: RegisteredDocumentType[];
 }
 
 export function riseUpdateMetadataEvent() {
@@ -38,15 +39,20 @@ export const getDynamicMeta = async (): Promise<IDynamicMetadata> => {
     const operationsMeta = await getDynamicMetaOperation(tx);
     return {
         Metadata: [...catalogsMeta.Metadata, ...operationsMeta.Metadata],
-        RegisteredDocument: [...catalogsMeta.RegisteredDocument, ...operationsMeta.RegisteredDocument]
+        RegisteredDocument: [...catalogsMeta.RegisteredDocument, ...operationsMeta.RegisteredDocument],
+        RegisteredServerDocument: [...catalogsMeta.RegisteredServerDocument]
     };
 };
 
 export const getDynamicMetaCatalog = async (tx: MSSQL) => {
 
-    const query = `SELECT id, typeString type FROM [dbo].[Catalog.Catalog.v] where posted = 1`;
+    const query = `
+    SELECT id,
+    JSON_VALUE(doc,'$.typeString') type
+    FROM [dbo].[Documents]
+    WHERE [type] = 'Catalog.Catalog' and posted = 1`;
     const cats = await tx.manyOrNone<{ id: string }>(query);
-    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [] };
+    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [], RegisteredServerDocument: [] };
 
     for (const cat of cats) {
         const ob = await lib.doc.createDocServerById<CatalogCatalogServer>(cat.id, tx);
@@ -60,7 +66,7 @@ export const getDynamicMetaCatalog = async (tx: MSSQL) => {
 export const getDynamicMetaOperation = async (tx: MSSQL) => {
 
     const operations = await getIndexedOperations(tx);
-    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [] };
+    const res: IDynamicMetadata = { RegisteredDocument: [], Metadata: [], RegisteredServerDocument: [] };
 
     for (const operation of operations) {
         const ob = await lib.doc.createDocServerById<CatalogOperationServer>(operation.id, tx);

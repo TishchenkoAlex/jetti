@@ -99,6 +99,7 @@ import { Global } from './global';
 import { defaultTypeValue } from './Types/Types.factory';
 import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
+import { Type } from './type';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -138,8 +139,11 @@ export interface IFlatDocument {
   ExchangeBase?: string;
 }
 
-export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
-  const doc = RegisteredDocument().find(el => el.type === type);
+export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument, dynamic?: boolean): T {
+
+  // tslint:disable-next-line: max-line-length
+  const registeredDocument = dynamic === undefined ? RegisteredDocument() : dynamic === true ? RegisteredDocumentDynamic() : RegisteredDocumentStatic;
+  const doc = registeredDocument.find(el => el.type === type);
   if (doc) {
     const result = <T>new doc.Class;
     if (doc.dynamic) {
@@ -153,7 +157,7 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
       result.Props = () => ({ ...Props });
       result.Prop = () => ({ ...docMeta!.Prop() });
       result.type = type;
-      if (!document && !result.date) result.date = new Date;
+      if (Type.isDocument(type) && !document && !result.date) result.date = new Date;
     } else {
       const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
       ArrayProps.forEach(prop => result[prop].length = 0);

@@ -48,7 +48,7 @@ export interface IServerDocument {
 
 export type DocumentBaseServer = DocumentBase & IServerDocument;
 
-export const RegisteredServerDocument: RegisteredDocumentType[] = [
+export const RegisteredDocumentServerStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
@@ -68,10 +68,29 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Document.CashRequestRegistry', Class: DocumentCashRequestRegistryServer }
 ];
 
+export function RegisteredDocumentServer(): RegisteredDocumentType[] {
+  return [
+    ...RegisteredDocumentServerDynamic(),
+    ...RegisteredDocumentServerStatic
+  ];
+}
+
+export function RegisteredDocumentServerDynamic(): RegisteredDocumentType[] {
+  return [
+    ...global['dynamicMeta'] ? global['dynamicMeta']['RegisteredDocument'] : []
+  ];
+}
+
 export async function createDocumentServer<T extends DocumentBaseServer>
-  (type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) {
+  (type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL, dynamic?: boolean) {
   let result: T;
-  const doc = RegisteredServerDocument.find(el => el.type === type);
+
+  // tslint:disable-next-line: max-line-length
+  const registeredDocument = dynamic === undefined ? RegisteredDocumentServer() : dynamic === true ? RegisteredDocumentServerDynamic() : RegisteredDocumentServerStatic;
+  // const findPredicate = dynamic === undefined ?
+  //   el => el.type === type :
+  //   el => el.type === type && (dynamic === el.dynamic || (!dynamic && !el.dynamic));
+  const doc = registeredDocument.find(el => el.type === type);
   if (doc) {
     const serverResult = <T>new doc.Class;
     const ArrayProps = Object.keys(serverResult).filter(k => Array.isArray(serverResult[k]));
@@ -79,7 +98,7 @@ export async function createDocumentServer<T extends DocumentBaseServer>
     if (document) serverResult.map(document);
     result = serverResult;
   } else {
-    result = createDocument<T>(type, document);
+    result = createDocument<T>(type, document, dynamic);
   }
   result['serverModule'] = {};
 

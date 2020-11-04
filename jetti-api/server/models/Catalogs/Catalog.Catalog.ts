@@ -125,7 +125,7 @@ class Relation {
 
 }
 
-class Dimension {
+export class Dimension {
 
   @Props({ type: 'string', required: true })
   name = '';

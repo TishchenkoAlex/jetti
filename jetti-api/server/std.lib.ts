@@ -69,9 +69,10 @@ export interface JTL {
     formControlRef: (id: Ref, tx: MSSQL) => Promise<RefValue | null>;
     postById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
     unPostById: (id: Ref, tx: MSSQL) => Promise<DocumentBaseServer>;
-    createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument) => Promise<T>;
-    createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL) => Promise<T>;
-    createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL) => Promise<T | null>;
+    createDoc: <T extends DocumentBase>(type: DocTypes, document?: IFlatDocument, dynamic?: boolean) => Promise<T>;
+    // tslint:disable-next-line: max-line-length
+    createDocServer: <T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL, dynamic?: boolean) => Promise<T>;
+    createDocServerById: <T extends DocumentBaseServer>(id: string, tx: MSSQL, dynamic?: boolean) => Promise<T | null>;
     saveDoc: (
       servDoc: DocumentBaseServer,
       tx: MSSQL,
@@ -84,7 +85,7 @@ export interface JTL {
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
   };
   info: {
-    sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
+    sliceLast: <T extends RegisterInfo>(type: string, date: Date, company: Ref,
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
@@ -343,18 +344,19 @@ async function findDocumentByProps<T>(
 
 }
 
-async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): Promise<T> {
-  return await createDocument<T>(type, document);
+async function createDoc<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument, dynamic?: boolean): Promise<T> {
+  return await createDocument<T>(type, document, dynamic);
 }
 
-async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL): Promise<T> {
-  return await createDocumentServer<T>(type, document, tx);
+// tslint:disable-next-line: max-line-length
+async function createDocServer<T extends DocumentBaseServer>(type: DocTypes, document: IFlatDocument | undefined, tx: MSSQL, dynamic?: boolean): Promise<T> {
+  return await createDocumentServer<T>(type, document, tx, dynamic);
 }
 
-async function createDocServerById<T extends DocumentBaseServer>(id: string, tx: MSSQL): Promise<T | null> {
+async function createDocServerById<T extends DocumentBaseServer>(id: string, tx: MSSQL, dynamic?: boolean): Promise<T | null> {
   const flatDoc = await byId(id, tx);
   if (!flatDoc) return null;
-  return await createDocServer<T>(flatDoc.type, flatDoc, tx);
+  return await createDocServer<T>(flatDoc.type, flatDoc, tx, dynamic);
 }
 
 async function saveDoc(

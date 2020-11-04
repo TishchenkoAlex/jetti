@@ -13,8 +13,6 @@ export class Global {
     static lib = lib;
     static isProd: boolean = global['isProd'];
     static byCode = lib.doc.byCode;
-    static DocBase = DocumentBase;
-
     static indexedOperations = () => global['indexedOperations'] as Map<string, string>;
     static dynamicMeta = () => global['dynamicMeta'] as IDynamicMetadata;
     static configSchema = () => global['configSchema'] as Map<AllDocTypes, IConfigSchema>;

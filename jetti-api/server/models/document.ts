@@ -9,7 +9,7 @@ export interface OwnerRef { dependsOn: string; filterBy: string; isOwnerFixed?: 
 export type StorageType = 'folders' | 'elements' | 'all';
 
 export interface PropOptions {
-  type: AllTypes | AllTypes[];
+  type: AllTypes | AllTypes[] | string;
   controlType?: PrimitiveTypes;
   label?: string;
   required?: boolean;
