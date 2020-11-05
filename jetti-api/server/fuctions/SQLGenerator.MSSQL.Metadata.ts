@@ -329,17 +329,20 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(withSecurityPolicy = true) {
 
-    const allTypes = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const groupArray = <T>(arr: T[], groupField = ''): T[] => groupField ? [...new Set<T>(arr.map(e => e[groupField]))] : [...new Set<T>(arr as any)];
+
+    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const allTypes = groupArray<any>(registeredDocuments, 'type').sort();
     let query = '';
 
-    for (const catalog of allTypes) {
-      const doc = createDocument(catalog.type);
+    for (const type of allTypes) {
+      const doc = createDocument(type);
       if (doc['QueryList']) continue;
-      query += `${this.typeSpliter(catalog.type, true)}
-RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;
-      ${this.CreateViewCatalogIndex(catalog.type, withSecurityPolicy)}
-RAISERROR('${catalog.type} end', 0 ,1) WITH NOWAIT;
-      ${this.typeSpliter(catalog.type, false)}`;
+      query += `${this.typeSpliter(type, true)}
+RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
+      ${this.CreateViewCatalogIndex(type, withSecurityPolicy)}
+RAISERROR('${type} end', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(type, false)}`;
     }
 
     query += `
