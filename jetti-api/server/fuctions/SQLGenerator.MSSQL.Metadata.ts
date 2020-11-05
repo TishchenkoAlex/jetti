@@ -248,6 +248,11 @@ export class SQLGenegatorMetadata {
 
     subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);
       ${Object.keys(Props)
         .filter(key => Props[key].isIndexed)
         .map(key => `CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.${key}] ON[${type}.v](${key}, id) INCLUDE([company]);`)
@@ -275,12 +280,13 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
     GO`;
-    const allTypes = RegisteredDocument();
-    for (const catalog of allTypes) {
+    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    for (const type of allTypes) {
       query += `
-      ${this.typeSpliter(catalog.type, true)}
-      ${this.CreateViewCatalog(catalog.type)}
-      ${this.typeSpliter(catalog.type, false)}
+      ${this.typeSpliter(type, true)}
+      ${this.CreateViewCatalog(type)}
+      ${this.typeSpliter(type, false)}
       `;
     }
 
@@ -324,17 +330,18 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(withSecurityPolicy = true) {
 
-    const allTypes = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
     let query = '';
 
-    for (const catalog of allTypes) {
-      const doc = createDocument(catalog.type);
+    for (const type of allTypes) {
+      const doc = createDocument(type);
       if (doc['QueryList']) continue;
-      query += `${this.typeSpliter(catalog.type, true)}
-RAISERROR('${catalog.type} start', 0 ,1) WITH NOWAIT;
-      ${this.CreateViewCatalogIndex(catalog.type, withSecurityPolicy)}
-RAISERROR('${catalog.type} end', 0 ,1) WITH NOWAIT;
-      ${this.typeSpliter(catalog.type, false)}`;
+      query += `${this.typeSpliter(type, true)}
+RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
+      ${this.CreateViewCatalogIndex(type, withSecurityPolicy)}
+RAISERROR('${type} end', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(type, false)}`;
     }
 
     query += `

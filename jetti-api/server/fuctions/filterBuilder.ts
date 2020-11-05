@@ -7,9 +7,9 @@ export interface IQueryFilter {
 
 export const filterBuilder = (filter: FormListFilter[],
   quote = '"',
-  exTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation']): IQueryFilter => {
+  excludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation']): IQueryFilter => {
 
-  let where = ' (1 = 1) '; let tempTabe = '';
+  let where = ' (1 = 1) '; let tempTable = '';
   const filterList = filter
     .filter(f => !(f.right === null || f.right === undefined))
     .map(f => ({ ...f, leftQ: `${quote}${f.left}${quote}` }));
@@ -22,22 +22,21 @@ export const filterBuilder = (filter: FormListFilter[],
           if (f.right[1]) where += ` AND ${f.leftQ} <= '${f.right[1]}'`;
           break;
         }
+        if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
         if (typeof f.right === 'number') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
         if (typeof f.right === 'boolean') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
         if (f.right instanceof Date) { where += ` AND ${f.leftQ} ${f.center} '${f.right.toJSON()}'`; break; }
         if (typeof f.right === 'object') {
           if (!f.right.id) where += ` AND ${f.leftQ} IS NULL `;
           else if (f.left === 'parent.id') where += ` AND ${f.leftQ} = '${f.right.id}'`;
-          else if (exTypes.includes(f.right.type)) where += ` AND ${f.leftQ} = '${f.right.id}'`;
-          else if (tempTabe.indexOf(`[#${f.left}]`) < 0) {
-            tempTabe += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
+          else if (excludesTypes.includes(f.right.type)) where += ` AND ${f.leftQ} = '${f.right.id}'`;
+          else if (tempTable.indexOf(`[#${f.left}]`) < 0) {
+            tempTable += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
             where += ` AND ${f.leftQ} IN (SELECT id FROM [#${f.left}])`;
           }
           break;
         }
-        if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
-        if (!f.right) where += ` AND ${f.leftQ} IS NULL `;
-        else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
+        if (!f.right) where += ` AND ${f.leftQ} IS NULL `; else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
         break;
       case 'like':
         where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
@@ -54,5 +53,5 @@ export const filterBuilder = (filter: FormListFilter[],
         break;
     }
   }
-  return { where: where, tempTable: tempTabe };
+  return { where: where, tempTable: tempTable };
 };

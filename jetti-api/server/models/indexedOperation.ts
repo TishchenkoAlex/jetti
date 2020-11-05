@@ -12,7 +12,10 @@ export async function getIndexedOperationsMap() {
 
 export async function getIndexedOperations(tx?: MSSQL, operationsId?: string[]) {
     const sdbl = tx ? tx : new MSSQL(JETTI_POOL);
-    let query = `SELECT id, CONCAT('Operation.', shortName) type, shortName FROM [dbo].[Catalog.Operation.v] WHERE posted = 1 and shortName <> ''`;
+    let query = `
+    SELECT id, CONCAT('Operation.', shortName) type, shortName
+    FROM [dbo].[Catalog.Operation.v] WHERE posted = 1 and shortName <> ''
+    ORDER BY shortName`;
     if (operationsId) query += `and id in (${operationsId.map(e => '\'' + e + '\'').join()})`;
     return await sdbl.manyOrNone<IIndexedOperation>(query);
 }
