@@ -280,12 +280,13 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
     GO`;
-    const allTypes = RegisteredDocument();
-    for (const catalog of allTypes) {
+    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
+    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    for (const type of allTypes) {
       query += `
-      ${this.typeSpliter(catalog.type, true)}
-      ${this.CreateViewCatalog(catalog.type)}
-      ${this.typeSpliter(catalog.type, false)}
+      ${this.typeSpliter(type, true)}
+      ${this.CreateViewCatalog(type)}
+      ${this.typeSpliter(type, false)}
       `;
     }
 
@@ -329,10 +330,8 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(withSecurityPolicy = true) {
 
-    const groupArray = <T>(arr: T[], groupField = ''): T[] => groupField ? [...new Set<T>(arr.map(e => e[groupField]))] : [...new Set<T>(arr as any)];
-
     const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const allTypes = groupArray<any>(registeredDocuments, 'type').sort();
+    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
     let query = '';
 
     for (const type of allTypes) {

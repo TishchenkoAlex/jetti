@@ -113,6 +113,7 @@ export interface JTL {
     riseUpdateMetadataEvent: () => void
   };
   util: {
+    groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string
     round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
@@ -200,6 +201,7 @@ export const lib: JTL = {
     turnover
   },
   util: {
+    groupArray,
     formatDate,
     round,
     addAttachments,
@@ -778,6 +780,10 @@ function formatDate(date: Date): string {
   const mm = date.getMonth() + 1;
   const yy = date.getFullYear();
   return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy}`;
+}
+
+function groupArray<T>(array: T[], groupField = ''): T[] {
+  return groupField ? [...new Set<T>(array.map(e => e[groupField]))] : [...new Set<T>(array)];
 }
 
 function round(num: number, precision = 4): number {
