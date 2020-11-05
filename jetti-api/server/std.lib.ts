@@ -84,7 +84,7 @@ export interface JTL {
     docPrefix: (type: DocTypes, tx: MSSQL) => Promise<string>
   };
   info: {
-    sliceLast: <T extends RegistersInfo>(type: string, date: Date, company: Ref,
+    sliceLast: <T extends RegisterInfo>(type: string, date: Date, company: Ref,
       analytics: { [key: string]: any }, tx: MSSQL) => Promise<T | null>,
     exchangeRate: (date: Date, company: Ref, currency: Ref, tx: MSSQL) => Promise<number>
   };
