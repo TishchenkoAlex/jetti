@@ -34,6 +34,9 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Brand', order: 666, useIn: 'all' })
   Brand: Ref = null;
 
+  @Props({ type: 'Catalog.RetailNetwork', order: 666 })
+  RetailNetwork: Ref = null;
+
   @Props({ type: 'Catalog.Unit', label: 'Unit', order: 666, useIn: 'all' })
   Unit: Ref = null;
 

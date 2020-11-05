@@ -22,4 +22,7 @@ export class CatalogPriceType extends DocumentBase {
   @Props({ type: 'Catalog.Brand', isProtected: true })
   Brand: Ref = null;
 
+  @Props({ type: 'Catalog.RetailNetwork' })
+  RetailNetwork: Ref = null;
+
 }

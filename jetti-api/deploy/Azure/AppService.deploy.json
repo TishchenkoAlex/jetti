@@ -1,0 +1,117 @@
+[
+    {
+        "name": "AAD_TENANT_ID",
+        "value": "b91c98b1-d543-428b-9469-f5f8f25bc37b",
+        "slotSetting": false
+    },
+    {
+        "name": "AAD_CLIENT_ID",
+        "value": "8497b6af-a0c3-4b55-9e60-11bc8ff237e4",
+        "slotSetting": false
+    },
+    {
+        "name": "AZURE_CLIENT_SECRET",
+        "value": "@Microsoft.KeyVault(SecretUri=https://x100.vault.azure.net/secrets/AZURE-CLIENT-SECRET/bed078641d0d40b1b767e562a5fa852d)",
+        "slotSetting": false
+    },
+    {
+        "name": "AAD_TOKEN_REQUEST",
+        "value": "https://login.microsoftonline.com/b91c98b1-d543-428b-9469-f5f8f25bc37b/oauth2/v2.0/token",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_HOST",
+        "value": "sql-jetti.northeurope.cloudapp.azure.com",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_NAME",
+        "value": "sm",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_USER",
+        "value": "jetti",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_PASSWORD",
+        "value": "DY8Gfp18gKrPLoLXpSw0vamN",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_PORT",
+        "value": "1433",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_TASK_PASSWORD",
+        "value": "DY8Gfp18gKrPLoLXpSw0vamN",
+        "slotSetting": false
+    },
+    {
+        "name": "DB_TASK_USER",
+        "value": "jetti_task",
+        "slotSetting": false
+    },
+    {
+        "name": "DOCKER_ENABLE_CI",
+        "value": "true",
+        "slotSetting": false
+    },
+    {
+        "name": "EXCHANGE_ACCESS_KEY",
+        "value": "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=",
+        "slotSetting": false
+    },
+    {
+        "name": "JETTI_IS_HOST",
+        "value": "http://localhost:3500",
+        "slotSetting": false
+    },
+    {
+        "name": "JTW_KEY",
+        "value": "Pa5315word",
+        "slotSetting": false
+    },
+    {
+        "name": "REDIS_DB_HOST",
+        "value": "jetti-api.redis.cache.windows.net",
+        "slotSetting": false
+    },
+    {
+        "name": "REDIS_DB_AUTH",
+        "value": "ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=",
+        "slotSetting": false
+    },
+    {
+        "name": "REGISTER_ACCUMULATION_SOURCE",
+        "value": "[x100-data].",
+        "slotSetting": false
+    },
+    {
+        "name": "LOGIC_USECASHREQUESTAPPROVING",
+        "value": "0",
+        "slotSetting": false
+    },
+    {
+        "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+        "value": "false",
+        "slotSetting": false
+    },
+    {
+        "name": "DOCKER_REGISTRY_SERVER_URL",
+        "value": "https://x100jetti.azurecr.io",
+        "slotSetting": false
+    },
+    {
+        "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+        "value": "x100jetti",
+        "slotSetting": false
+    },
+    {
+        "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+        "value": "DOnKQsMPOJOmALGSP8djfU4pWbEuTLr=",
+        "slotSetting": false
+    }
+]
