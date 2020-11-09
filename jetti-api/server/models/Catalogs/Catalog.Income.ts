@@ -5,7 +5,10 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   description: 'Статья доходов',
   icon: 'fa fa-list',
   menu: 'Статьи доходов',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  relations: [
+    { name: 'Income analytics', type: 'Catalog.Expense.Analytics', field: 'parent' }
+  ]
 })
 export class CatalogIncome extends DocumentBase {
 
