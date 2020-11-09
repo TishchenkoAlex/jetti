@@ -17,6 +17,7 @@ import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpar
 import { RegisteredDocument, createDocument } from '../documents.factory';
 import { DocumentOptions } from '../document';
 import { Type } from '../type';
+import { TypesExpenseOrIncome } from './Types.ExpenseOrIncome';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -75,6 +76,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
   { type: 'Types.ExpenseOrBalanceOrIncome', Class: TypesExpenseOrBalanceOrIncome },
+  { type: 'Types.TypesExpenseOrIncome', Class: TypesExpenseOrIncome },
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
