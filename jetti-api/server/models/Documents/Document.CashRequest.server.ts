@@ -569,7 +569,7 @@ ORDER BY
     const res = !!(this.date >= new Date(2020, 5, 1) && this.company && this.Operation.includes('Выплата заработной платы'));
     if (!res) return res;
     const country = await lib.util.getObjectPropertyById(this.company as string, 'country', tx);
-    return country === 'BA065230-4D6A-11EA-9419-5B6F020710B8';
+    return country && country.id === 'BA065230-4D6A-11EA-9419-5B6F020710B8';
   }
 
   async beforePostDocumentOperation(docOperation: DocumentOperationServer, tx: MSSQL) {
@@ -799,8 +799,9 @@ ORDER BY
       } else if (CashRecipient.type === 'Catalog.Person') {
         // tslint:disable-next-line: max-line-length
         docOperation.Operation = '8C3B61A0-6512-11EA-A8B2-95688F3F3592'; // Из кассы - Выдача/Возврат кредитов и займов (Физ.лицо) (МУЛЬТИВАЛЮТНЫЙ)
-        docOperation['CurrencyLoan'] = await lib.util.getObjectPropertyById(this.Loan as any, 'currency', tx);
-        if (docOperation['CurrencyLoan']) {
+        const CurrencyLoan = await lib.util.getObjectPropertyById(this.Loan as any, 'currency.id', tx);
+        if (CurrencyLoan) {
+          docOperation['CurrencyLoan'] = CurrencyLoan.id;
           const CompanyHolding = await lib.doc.byCode('Catalog.Company', 'HOLDING', tx) as string;
           const ExchangeRateDoc = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation.currency, tx);
           const ExchangeRateLoan = await lib.info.exchangeRate(docOperation.date, CompanyHolding, docOperation['CurrencyLoan'], tx);

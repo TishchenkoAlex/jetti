@@ -35,6 +35,9 @@ export class CatalogSpecification extends DocumentBase {
   @Props({ type: 'Catalog.Person', label: 'Отвественный' })
   ResponsiblePerson: Ref = null;
 
+  @Props({ type: 'Catalog.RetailNetwork', label: 'Торовая сеть' })
+  RetailNetwork: Ref = null;
+
   @Props({ type: 'table', required: false, label: 'Выходные изделия' })
   OutputProducts: OutputProduct[] = [new OutputProduct()];
 
