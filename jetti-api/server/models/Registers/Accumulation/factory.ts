@@ -22,9 +22,11 @@ import { RegisterAccumulationCashToPay } from './CashToPay';
 import { RegisterAccumulationOrderPayment } from './OrderPayment';
 import { RegisterAccumulationBalanceRC } from './Balance.RC';
 import { RegisterAccumulationPLRC } from './PL.RC';
+import { RegisterAccumulationInvestmentAnalytics } from './Investment.Analytics';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
+  'Register.Accumulation.Investment.Analytics' |
   'Register.Accumulation.PaymentBatch' |
   'Register.Accumulation.OrderPayment' |
   'Register.Accumulation.Acquiring' |
@@ -52,6 +54,7 @@ interface IRegisteredRegisterAccumulation { type: RegisterAccumulationTypes; Cla
 export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] = [
   { type: 'Register.Accumulation.AccountablePersons', Class: RegisterAccumulationAccountablePersons },
   { type: 'Register.Accumulation.PaymentBatch', Class: RegisterAccumulationPaymentBatch },
+  { type: 'Register.Accumulation.Investment.Analytics', Class: RegisterAccumulationInvestmentAnalytics },
   { type: 'Register.Accumulation.OrderPayment', Class: RegisterAccumulationOrderPayment },
   { type: 'Register.Accumulation.AP', Class: RegisterAccumulationAP },
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },
