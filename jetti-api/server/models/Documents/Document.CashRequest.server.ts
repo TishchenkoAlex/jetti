@@ -306,7 +306,7 @@ WHERE (1=1)
     FROM #Person)))
     AND currency = @p2
     AND date <= @p3
-    AND company = @p4
+    AND company in (SELECT id FROM [dbo].Descendants(@p4, ''))
 GROUP BY Person
 HAVING SUM(Amount) > 0;
 
@@ -353,22 +353,26 @@ ORDER BY
         p.Person`;
 
     const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
+    const CompanyParent = await lib.doc.byId(CompanyEmployee, tx);
     const persons = '';
     if (byPersons) query = query.replace('@p5', this.PayRolls.map(el => '\'' + el.Employee + '\'').join(','));
     const currentMounth = {
       begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
       end: new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0, 23, 59, 59)
     };
-    const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query,
-      [byPersons ? null : this.Department,
-      this.сurrency,
-      this.date,
-        CompanyEmployee,
-        persons,
-      byPersons ? 1 : 0,
-      currentMounth.begin,
-      currentMounth.end,
-      withCurrentMonth ? 1 : 0]);
+    console.log(query);
+
+    const params = [byPersons ? null : this.Department,
+    this.сurrency,
+    this.date,
+      CompanyParent!.parent,
+      persons,
+    byPersons ? 1 : 0,
+    currentMounth.begin,
+    currentMounth.end,
+    withCurrentMonth ? 1 : 0];
+    console.log(params);
+    const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query, params);
     this.PayRolls = [];
     this.Amount = 0;
     this.PayDay = new Date;
