@@ -144,6 +144,91 @@
     
 ------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
 
+------------------------------ BEGIN Register.Accumulation.Investment.Analytics ------------------------------
+
+    RAISERROR('Register.Accumulation.Investment.Analytics start', 0 ,1) WITH NOWAIT;
+    GO
+    DROP TABLE IF EXISTS [Register.Accumulation.Investment.Analytics];
+    SELECT
+      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [Department], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out], [CurrencyProduct]
+      , d.[AmountProduct] * IIF(r.kind = 1, 1, -1) [AmountProduct], d.[AmountProduct] * IIF(r.kind = 1, 1, null) [AmountProduct.In], d.[AmountProduct] * IIF(r.kind = 1, null, 1) [AmountProduct.Out], [PaymentSource], [CurrencySource]
+      , d.[AmountSource] * IIF(r.kind = 1, 1, -1) [AmountSource], d.[AmountSource] * IIF(r.kind = 1, 1, null) [AmountSource.In], d.[AmountSource] * IIF(r.kind = 1, null, 1) [AmountSource.Out], [CompanyLoan], [Loan], [CurrencyLoan]
+      , d.[AmountLoan] * IIF(r.kind = 1, 1, -1) [AmountLoan], d.[AmountLoan] * IIF(r.kind = 1, 1, null) [AmountLoan.In], d.[AmountLoan] * IIF(r.kind = 1, null, 1) [AmountLoan.Out]
+    INTO [Register.Accumulation.Investment.Analytics]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [SourceTransaction] NVARCHAR(250) N'$.SourceTransaction'
+        , [CreditTransaction] UNIQUEIDENTIFIER N'$.CreditTransaction'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Investor] UNIQUEIDENTIFIER N'$.Investor'
+        , [CompanyProduct] UNIQUEIDENTIFIER N'$.CompanyProduct'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Qty] MONEY N'$.Qty'
+        , [CurrencyProduct] UNIQUEIDENTIFIER N'$.CurrencyProduct'
+        , [AmountProduct] MONEY N'$.AmountProduct'
+        , [PaymentSource] UNIQUEIDENTIFIER N'$.PaymentSource'
+        , [CurrencySource] UNIQUEIDENTIFIER N'$.CurrencySource'
+        , [AmountSource] MONEY N'$.AmountSource'
+        , [CompanyLoan] UNIQUEIDENTIFIER N'$.CompanyLoan'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [CurrencyLoan] UNIQUEIDENTIFIER N'$.CurrencyLoan'
+        , [AmountLoan] MONEY N'$.AmountLoan'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.Investment.Analytics';
+    GO
+    CREATE OR ALTER TRIGGER [Register.Accumulation.Investment.Analytics.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
+      INSERT INTO [Register.Accumulation.Investment.Analytics]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [Department], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out], [CurrencyProduct]
+      , d.[AmountProduct] * IIF(r.kind = 1, 1, -1) [AmountProduct], d.[AmountProduct] * IIF(r.kind = 1, 1, null) [AmountProduct.In], d.[AmountProduct] * IIF(r.kind = 1, null, 1) [AmountProduct.Out], [PaymentSource], [CurrencySource]
+      , d.[AmountSource] * IIF(r.kind = 1, 1, -1) [AmountSource], d.[AmountSource] * IIF(r.kind = 1, 1, null) [AmountSource.In], d.[AmountSource] * IIF(r.kind = 1, null, 1) [AmountSource.Out], [CompanyLoan], [Loan], [CurrencyLoan]
+      , d.[AmountLoan] * IIF(r.kind = 1, 1, -1) [AmountLoan], d.[AmountLoan] * IIF(r.kind = 1, 1, null) [AmountLoan.In], d.[AmountLoan] * IIF(r.kind = 1, null, 1) [AmountLoan.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [SourceTransaction] NVARCHAR(250) N'$.SourceTransaction'
+        , [CreditTransaction] UNIQUEIDENTIFIER N'$.CreditTransaction'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Investor] UNIQUEIDENTIFIER N'$.Investor'
+        , [CompanyProduct] UNIQUEIDENTIFIER N'$.CompanyProduct'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Qty] MONEY N'$.Qty'
+        , [CurrencyProduct] UNIQUEIDENTIFIER N'$.CurrencyProduct'
+        , [AmountProduct] MONEY N'$.AmountProduct'
+        , [PaymentSource] UNIQUEIDENTIFIER N'$.PaymentSource'
+        , [CurrencySource] UNIQUEIDENTIFIER N'$.CurrencySource'
+        , [AmountSource] MONEY N'$.AmountSource'
+        , [CompanyLoan] UNIQUEIDENTIFIER N'$.CompanyLoan'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [CurrencyLoan] UNIQUEIDENTIFIER N'$.CurrencyLoan'
+        , [AmountLoan] MONEY N'$.AmountLoan'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Investment.Analytics';
+    END
+    GO
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.Investment.Analytics] TO JETTI;
+    GO
+    ALTER TABLE [Register.Accumulation.Investment.Analytics] ADD CONSTRAINT [PK_Register.Accumulation.Investment.Analytics] PRIMARY KEY NONCLUSTERED (id);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Investment.Analytics] ON [Register.Accumulation.Investment.Analytics];
+    RAISERROR('Register.Accumulation.Investment.Analytics finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.Investment.Analytics ------------------------------
+
 ------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
 
     RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;

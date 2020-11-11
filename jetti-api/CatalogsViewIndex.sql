@@ -1,7 +1,7 @@
 
 ------------------------------ BEGIN Catalog.Account ------------------------------
 
-    RAISERROR('Catalog.Account start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Account start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Account.v];
@@ -33,13 +33,13 @@ GRANT SELECT ON dbo.[Catalog.Account.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Account.v];
-    RAISERROR('Catalog.Account end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Account end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Account ------------------------------
 
 ------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
 
-    RAISERROR('Catalog.AcquiringTerminal start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.AcquiringTerminal start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AcquiringTerminal.v];
@@ -73,13 +73,13 @@ GRANT SELECT ON dbo.[Catalog.AcquiringTerminal.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v];
-    RAISERROR('Catalog.AcquiringTerminal end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.AcquiringTerminal end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.AcquiringTerminal ------------------------------
 
 ------------------------------ BEGIN Catalog.AllUnic.Lot ------------------------------
 
-    RAISERROR('Catalog.AllUnic.Lot start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.AllUnic.Lot start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AllUnic.Lot.v];
@@ -112,13 +112,13 @@ GRANT SELECT ON dbo.[Catalog.AllUnic.Lot.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AllUnic.Lot.v];
-    RAISERROR('Catalog.AllUnic.Lot end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.AllUnic.Lot end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.AllUnic.Lot ------------------------------
 
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
 
-    RAISERROR('Catalog.Attachment start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Attachment start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.v];
@@ -154,13 +154,13 @@ GRANT SELECT ON dbo.[Catalog.Attachment.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.v];
-    RAISERROR('Catalog.Attachment end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Attachment end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Attachment ------------------------------
 
 ------------------------------ BEGIN Catalog.Attachment.Type ------------------------------
 
-    RAISERROR('Catalog.Attachment.Type start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Attachment.Type start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Attachment.Type.v];
@@ -197,13 +197,13 @@ GRANT SELECT ON dbo.[Catalog.Attachment.Type.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Attachment.Type.v];
-    RAISERROR('Catalog.Attachment.Type end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Attachment.Type end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Attachment.Type ------------------------------
 
 ------------------------------ BEGIN Catalog.Balance ------------------------------
 
-    RAISERROR('Catalog.Balance start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Balance start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.v];
@@ -235,13 +235,13 @@ GRANT SELECT ON dbo.[Catalog.Balance.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.v];
-    RAISERROR('Catalog.Balance end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Balance end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Balance ------------------------------
 
 ------------------------------ BEGIN Catalog.Balance.Analytics ------------------------------
 
-    RAISERROR('Catalog.Balance.Analytics start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Balance.Analytics start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Balance.Analytics.v];
@@ -271,13 +271,13 @@ GRANT SELECT ON dbo.[Catalog.Balance.Analytics.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Balance.Analytics.v];
-    RAISERROR('Catalog.Balance.Analytics end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Balance.Analytics end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Balance.Analytics ------------------------------
 
 ------------------------------ BEGIN Catalog.Bank ------------------------------
 
-    RAISERROR('Catalog.Bank start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Bank start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Bank.v];
@@ -312,13 +312,13 @@ GRANT SELECT ON dbo.[Catalog.Bank.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Bank.v];
-    RAISERROR('Catalog.Bank end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Bank end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Bank ------------------------------
 
 ------------------------------ BEGIN Catalog.BankAccount ------------------------------
 
-    RAISERROR('Catalog.BankAccount start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BankAccount start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BankAccount.v];
@@ -351,13 +351,13 @@ GRANT SELECT ON dbo.[Catalog.BankAccount.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BankAccount.v];
-    RAISERROR('Catalog.BankAccount end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BankAccount end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BankAccount ------------------------------
 
 ------------------------------ BEGIN Catalog.Brand ------------------------------
 
-    RAISERROR('Catalog.Brand start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Brand start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Brand.v];
@@ -386,13 +386,13 @@ GRANT SELECT ON dbo.[Catalog.Brand.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Brand.v];
-    RAISERROR('Catalog.Brand end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Brand end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Brand ------------------------------
 
 ------------------------------ BEGIN Catalog.BudgetItem ------------------------------
 
-    RAISERROR('Catalog.BudgetItem start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BudgetItem start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BudgetItem.v];
@@ -424,13 +424,13 @@ GRANT SELECT ON dbo.[Catalog.BudgetItem.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BudgetItem.v];
-    RAISERROR('Catalog.BudgetItem end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BudgetItem end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BudgetItem ------------------------------
 
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
-    RAISERROR('Catalog.BusinessDirection start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BusinessDirection start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessDirection.v];
@@ -459,13 +459,13 @@ GRANT SELECT ON dbo.[Catalog.BusinessDirection.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessDirection.v];
-    RAISERROR('Catalog.BusinessDirection end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BusinessDirection end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BusinessDirection ------------------------------
 
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
-    RAISERROR('Catalog.BusinessRegion start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BusinessRegion start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessRegion.v];
@@ -494,13 +494,13 @@ GRANT SELECT ON dbo.[Catalog.BusinessRegion.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v];
-    RAISERROR('Catalog.BusinessRegion end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.BusinessRegion end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BusinessRegion ------------------------------
 
 ------------------------------ BEGIN Catalog.CashFlow ------------------------------
 
-    RAISERROR('Catalog.CashFlow start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.CashFlow start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashFlow.v];
@@ -530,13 +530,13 @@ GRANT SELECT ON dbo.[Catalog.CashFlow.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashFlow.v];
-    RAISERROR('Catalog.CashFlow end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.CashFlow end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.CashFlow ------------------------------
 
 ------------------------------ BEGIN Catalog.CashRegister ------------------------------
 
-    RAISERROR('Catalog.CashRegister start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.CashRegister start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.CashRegister.v];
@@ -568,13 +568,13 @@ GRANT SELECT ON dbo.[Catalog.CashRegister.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.CashRegister.v];
-    RAISERROR('Catalog.CashRegister end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.CashRegister end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.CashRegister ------------------------------
 
 ------------------------------ BEGIN Catalog.Catalog ------------------------------
 
-    RAISERROR('Catalog.Catalog start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Catalog start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Catalog.v];
@@ -610,13 +610,13 @@ GRANT SELECT ON dbo.[Catalog.Catalog.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Catalog.v];
-    RAISERROR('Catalog.Catalog end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Catalog end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Catalog ------------------------------
 
 ------------------------------ BEGIN Catalog.Company ------------------------------
 
-    RAISERROR('Catalog.Company start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Company start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.v];
@@ -663,13 +663,13 @@ GRANT SELECT ON dbo.[Catalog.Company.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.v];
-    RAISERROR('Catalog.Company end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Company end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Company ------------------------------
 
 ------------------------------ BEGIN Catalog.Company.Group ------------------------------
 
-    RAISERROR('Catalog.Company.Group start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Company.Group start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Company.Group.v];
@@ -699,13 +699,13 @@ GRANT SELECT ON dbo.[Catalog.Company.Group.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Company.Group.v];
-    RAISERROR('Catalog.Company.Group end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Company.Group end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Company.Group ------------------------------
 
 ------------------------------ BEGIN Catalog.Configuration ------------------------------
 
-    RAISERROR('Catalog.Configuration start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Configuration start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Configuration.v];
@@ -734,13 +734,13 @@ GRANT SELECT ON dbo.[Catalog.Configuration.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Configuration.v];
-    RAISERROR('Catalog.Configuration end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Configuration end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Configuration ------------------------------
 
 ------------------------------ BEGIN Catalog.Contract ------------------------------
 
-    RAISERROR('Catalog.Contract start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Contract start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.v];
@@ -791,13 +791,13 @@ GRANT SELECT ON dbo.[Catalog.Contract.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.v];
-    RAISERROR('Catalog.Contract end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Contract end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Contract ------------------------------
 
 ------------------------------ BEGIN Catalog.Contract.Intercompany ------------------------------
 
-    RAISERROR('Catalog.Contract.Intercompany start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Contract.Intercompany start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Contract.Intercompany.v];
@@ -835,13 +835,13 @@ GRANT SELECT ON dbo.[Catalog.Contract.Intercompany.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Contract.Intercompany.v];
-    RAISERROR('Catalog.Contract.Intercompany end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Contract.Intercompany end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Contract.Intercompany ------------------------------
 
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
-    RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.v];
@@ -884,13 +884,13 @@ GRANT SELECT ON dbo.[Catalog.Counterpartie.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.v];
-    RAISERROR('Catalog.Counterpartie end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Counterpartie end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Counterpartie ------------------------------
 
 ------------------------------ BEGIN Catalog.Counterpartie.BankAccount ------------------------------
 
-    RAISERROR('Catalog.Counterpartie.BankAccount start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Counterpartie.BankAccount start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.BankAccount.v];
@@ -924,13 +924,13 @@ GRANT SELECT ON dbo.[Catalog.Counterpartie.BankAccount.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.BankAccount.v];
-    RAISERROR('Catalog.Counterpartie.BankAccount end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Counterpartie.BankAccount end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Counterpartie.BankAccount ------------------------------
 
 ------------------------------ BEGIN Catalog.Country ------------------------------
 
-    RAISERROR('Catalog.Country start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Country start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Country.v];
@@ -960,13 +960,13 @@ GRANT SELECT ON dbo.[Catalog.Country.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Country.v];
-    RAISERROR('Catalog.Country end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Country end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Country ------------------------------
 
 ------------------------------ BEGIN Catalog.Currency ------------------------------
 
-    RAISERROR('Catalog.Currency start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Currency start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Currency.v];
@@ -996,13 +996,13 @@ GRANT SELECT ON dbo.[Catalog.Currency.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Currency.v];
-    RAISERROR('Catalog.Currency end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Currency end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Currency ------------------------------
 
 ------------------------------ BEGIN Catalog.Department ------------------------------
 
-    RAISERROR('Catalog.Department start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.v];
@@ -1049,13 +1049,13 @@ GRANT SELECT ON dbo.[Catalog.Department.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.v];
-    RAISERROR('Catalog.Department end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Department ------------------------------
 
 ------------------------------ BEGIN Catalog.Department.Company ------------------------------
 
-    RAISERROR('Catalog.Department.Company start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.Company start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Company.v];
@@ -1089,13 +1089,13 @@ GRANT SELECT ON dbo.[Catalog.Department.Company.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Company.v];
-    RAISERROR('Catalog.Department.Company end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.Company end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Department.Company ------------------------------
 
 ------------------------------ BEGIN Catalog.Department.Kind ------------------------------
 
-    RAISERROR('Catalog.Department.Kind start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.Kind start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Kind.v];
@@ -1124,13 +1124,13 @@ GRANT SELECT ON dbo.[Catalog.Department.Kind.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Kind.v];
-    RAISERROR('Catalog.Department.Kind end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.Kind end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Department.Kind ------------------------------
 
 ------------------------------ BEGIN Catalog.Department.StatusReason ------------------------------
 
-    RAISERROR('Catalog.Department.StatusReason start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.StatusReason start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.StatusReason.v];
@@ -1159,13 +1159,13 @@ GRANT SELECT ON dbo.[Catalog.Department.StatusReason.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.StatusReason.v];
-    RAISERROR('Catalog.Department.StatusReason end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Department.StatusReason end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Department.StatusReason ------------------------------
 
 ------------------------------ BEGIN Catalog.Dynamic ------------------------------
 
-    RAISERROR('Catalog.Dynamic start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Dynamic start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Dynamic.v];
@@ -1194,13 +1194,13 @@ GRANT SELECT ON dbo.[Catalog.Dynamic.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Dynamic.v];
-    RAISERROR('Catalog.Dynamic end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Dynamic end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Dynamic ------------------------------
 
 ------------------------------ BEGIN Catalog.Employee ------------------------------
 
-    RAISERROR('Catalog.Employee start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Employee start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Employee.v];
@@ -1230,13 +1230,13 @@ GRANT SELECT ON dbo.[Catalog.Employee.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Employee.v];
-    RAISERROR('Catalog.Employee end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Employee end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Employee ------------------------------
 
 ------------------------------ BEGIN Catalog.Expense ------------------------------
 
-    RAISERROR('Catalog.Expense start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Expense start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.v];
@@ -1269,13 +1269,13 @@ GRANT SELECT ON dbo.[Catalog.Expense.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.v];
-    RAISERROR('Catalog.Expense end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Expense end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Expense ------------------------------
 
 ------------------------------ BEGIN Catalog.Expense.Analytics ------------------------------
 
-    RAISERROR('Catalog.Expense.Analytics start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Expense.Analytics start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Expense.Analytics.v];
@@ -1306,13 +1306,13 @@ GRANT SELECT ON dbo.[Catalog.Expense.Analytics.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Expense.Analytics.v];
-    RAISERROR('Catalog.Expense.Analytics end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Expense.Analytics end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Expense.Analytics ------------------------------
 
 ------------------------------ BEGIN Catalog.GroupObjectsExploitation ------------------------------
 
-    RAISERROR('Catalog.GroupObjectsExploitation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.GroupObjectsExploitation start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.GroupObjectsExploitation.v];
@@ -1342,13 +1342,13 @@ GRANT SELECT ON dbo.[Catalog.GroupObjectsExploitation.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.GroupObjectsExploitation.v];
-    RAISERROR('Catalog.GroupObjectsExploitation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.GroupObjectsExploitation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.GroupObjectsExploitation ------------------------------
 
 ------------------------------ BEGIN Catalog.Income ------------------------------
 
-    RAISERROR('Catalog.Income start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Income start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Income.v];
@@ -1381,13 +1381,13 @@ GRANT SELECT ON dbo.[Catalog.Income.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Income.v];
-    RAISERROR('Catalog.Income end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Income end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Income ------------------------------
 
 ------------------------------ BEGIN Catalog.InvestorGroup ------------------------------
 
-    RAISERROR('Catalog.InvestorGroup start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.InvestorGroup start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.InvestorGroup.v];
@@ -1416,13 +1416,13 @@ GRANT SELECT ON dbo.[Catalog.InvestorGroup.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.InvestorGroup.v];
-    RAISERROR('Catalog.InvestorGroup end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.InvestorGroup end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.InvestorGroup ------------------------------
 
 ------------------------------ BEGIN Catalog.JobTitle ------------------------------
 
-    RAISERROR('Catalog.JobTitle start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.JobTitle start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.v];
@@ -1454,13 +1454,13 @@ GRANT SELECT ON dbo.[Catalog.JobTitle.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.v];
-    RAISERROR('Catalog.JobTitle end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.JobTitle end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.JobTitle ------------------------------
 
 ------------------------------ BEGIN Catalog.JobTitle.Category ------------------------------
 
-    RAISERROR('Catalog.JobTitle.Category start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.JobTitle.Category start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.Category.v];
@@ -1489,13 +1489,13 @@ GRANT SELECT ON dbo.[Catalog.JobTitle.Category.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.Category.v];
-    RAISERROR('Catalog.JobTitle.Category end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.JobTitle.Category end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.JobTitle.Category ------------------------------
 
 ------------------------------ BEGIN Catalog.Loan ------------------------------
 
-    RAISERROR('Catalog.Loan start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Loan start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Loan.v];
@@ -1543,13 +1543,13 @@ GRANT SELECT ON dbo.[Catalog.Loan.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Loan.v];
-    RAISERROR('Catalog.Loan end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Loan end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Loan ------------------------------
 
 ------------------------------ BEGIN Catalog.LoanRepaymentProcedure ------------------------------
 
-    RAISERROR('Catalog.LoanRepaymentProcedure start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.LoanRepaymentProcedure start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanRepaymentProcedure.v];
@@ -1578,13 +1578,13 @@ GRANT SELECT ON dbo.[Catalog.LoanRepaymentProcedure.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanRepaymentProcedure.v];
-    RAISERROR('Catalog.LoanRepaymentProcedure end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.LoanRepaymentProcedure end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.LoanRepaymentProcedure ------------------------------
 
 ------------------------------ BEGIN Catalog.LoanTypes ------------------------------
 
-    RAISERROR('Catalog.LoanTypes start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.LoanTypes start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.LoanTypes.v];
@@ -1614,13 +1614,13 @@ GRANT SELECT ON dbo.[Catalog.LoanTypes.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.LoanTypes.v];
-    RAISERROR('Catalog.LoanTypes end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.LoanTypes end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.LoanTypes ------------------------------
 
 ------------------------------ BEGIN Catalog.Manager ------------------------------
 
-    RAISERROR('Catalog.Manager start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Manager start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Manager.v];
@@ -1652,13 +1652,13 @@ GRANT SELECT ON dbo.[Catalog.Manager.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Manager.v];
-    RAISERROR('Catalog.Manager end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Manager end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Manager ------------------------------
 
 ------------------------------ BEGIN Catalog.ManufactureLocation ------------------------------
 
-    RAISERROR('Catalog.ManufactureLocation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ManufactureLocation start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ManufactureLocation.v];
@@ -1687,359 +1687,13 @@ GRANT SELECT ON dbo.[Catalog.ManufactureLocation.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ManufactureLocation.v];
-    RAISERROR('Catalog.ManufactureLocation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ManufactureLocation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ManufactureLocation ------------------------------
 
------------------------------- BEGIN Catalog.Newdynocat ------------------------------
-
-    RAISERROR('Catalog.Newdynocat start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."simpleString"')), '') [simpleString]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat.v]ON[Catalog.Newdynocat.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.deleted] ON [Catalog.Newdynocat.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.code.f] ON [Catalog.Newdynocat.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.description.f] ON [Catalog.Newdynocat.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.description] ON [Catalog.Newdynocat.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.code] ON [Catalog.Newdynocat.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.user] ON [Catalog.Newdynocat.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.company] ON [Catalog.Newdynocat.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat.v];
-    RAISERROR('Catalog.Newdynocat end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat2 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat2 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat2.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat2.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat2'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat2.v]ON[Catalog.Newdynocat2.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.deleted] ON [Catalog.Newdynocat2.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.code.f] ON [Catalog.Newdynocat2.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.description.f] ON [Catalog.Newdynocat2.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.description] ON [Catalog.Newdynocat2.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.code] ON [Catalog.Newdynocat2.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.user] ON [Catalog.Newdynocat2.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.company] ON [Catalog.Newdynocat2.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat2.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat2.v];
-    RAISERROR('Catalog.Newdynocat2 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat2 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat3 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat3 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat3.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat3.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat3'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat3.v]ON[Catalog.Newdynocat3.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.deleted] ON [Catalog.Newdynocat3.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.code.f] ON [Catalog.Newdynocat3.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.description.f] ON [Catalog.Newdynocat3.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.description] ON [Catalog.Newdynocat3.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.code] ON [Catalog.Newdynocat3.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.user] ON [Catalog.Newdynocat3.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.company] ON [Catalog.Newdynocat3.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat3.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat3.v];
-    RAISERROR('Catalog.Newdynocat3 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat3 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat4 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat4 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat4.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat4.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat4'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat4.v]ON[Catalog.Newdynocat4.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.deleted] ON [Catalog.Newdynocat4.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.code.f] ON [Catalog.Newdynocat4.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.description.f] ON [Catalog.Newdynocat4.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.description] ON [Catalog.Newdynocat4.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.code] ON [Catalog.Newdynocat4.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.user] ON [Catalog.Newdynocat4.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.company] ON [Catalog.Newdynocat4.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat4.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat4.v];
-    RAISERROR('Catalog.Newdynocat4 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat4 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat5 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat5 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat5.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat5.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dyno6"')) [dyno6]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat5'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat5.v]ON[Catalog.Newdynocat5.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.deleted] ON [Catalog.Newdynocat5.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.code.f] ON [Catalog.Newdynocat5.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.description.f] ON [Catalog.Newdynocat5.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.description] ON [Catalog.Newdynocat5.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.code] ON [Catalog.Newdynocat5.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.user] ON [Catalog.Newdynocat5.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.company] ON [Catalog.Newdynocat5.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat5.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat5.v];
-    RAISERROR('Catalog.Newdynocat5 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat5 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat6 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat6 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat6.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat6.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat6'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat6.v]ON[Catalog.Newdynocat6.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.deleted] ON [Catalog.Newdynocat6.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.code.f] ON [Catalog.Newdynocat6.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.description.f] ON [Catalog.Newdynocat6.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.description] ON [Catalog.Newdynocat6.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.code] ON [Catalog.Newdynocat6.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.user] ON [Catalog.Newdynocat6.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.company] ON [Catalog.Newdynocat6.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat6.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat6.v];
-    RAISERROR('Catalog.Newdynocat6 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat6 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat7 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat7 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat7.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat7.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat7'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat7.v]ON[Catalog.Newdynocat7.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.deleted] ON [Catalog.Newdynocat7.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.code.f] ON [Catalog.Newdynocat7.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.description.f] ON [Catalog.Newdynocat7.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.description] ON [Catalog.Newdynocat7.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.code] ON [Catalog.Newdynocat7.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.user] ON [Catalog.Newdynocat7.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.company] ON [Catalog.Newdynocat7.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat7.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat7.v];
-    RAISERROR('Catalog.Newdynocat7 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat7 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat8 ------------------------------
-
-    RAISERROR('Catalog.Newdynocat8 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat8.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat8.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."complex"')) [complex]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."complex2"')) [complex2]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat8'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat8.v]ON[Catalog.Newdynocat8.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.deleted] ON [Catalog.Newdynocat8.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.code.f] ON [Catalog.Newdynocat8.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.description.f] ON [Catalog.Newdynocat8.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.description] ON [Catalog.Newdynocat8.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.code] ON [Catalog.Newdynocat8.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.user] ON [Catalog.Newdynocat8.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.company] ON [Catalog.Newdynocat8.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat8.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat8.v];
-    RAISERROR('Catalog.Newdynocat8 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat8 ------------------------------
-
 ------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
-    RAISERROR('Catalog.ObjectsExploitation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ObjectsExploitation start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ObjectsExploitation.v];
@@ -2070,13 +1724,13 @@ GRANT SELECT ON dbo.[Catalog.ObjectsExploitation.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ObjectsExploitation.v];
-    RAISERROR('Catalog.ObjectsExploitation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ObjectsExploitation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ObjectsExploitation ------------------------------
 
 ------------------------------ BEGIN Catalog.Operation ------------------------------
 
-    RAISERROR('Catalog.Operation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.v];
@@ -2110,13 +1764,13 @@ GRANT SELECT ON dbo.[Catalog.Operation.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.v];
-    RAISERROR('Catalog.Operation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Operation ------------------------------
 
 ------------------------------ BEGIN Catalog.Operation.Group ------------------------------
 
-    RAISERROR('Catalog.Operation.Group start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation.Group start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Group.v];
@@ -2148,13 +1802,13 @@ GRANT SELECT ON dbo.[Catalog.Operation.Group.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Group.v];
-    RAISERROR('Catalog.Operation.Group end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation.Group end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Operation.Group ------------------------------
 
 ------------------------------ BEGIN Catalog.Operation.Type ------------------------------
 
-    RAISERROR('Catalog.Operation.Type start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation.Type start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Operation.Type.v];
@@ -2183,13 +1837,13 @@ GRANT SELECT ON dbo.[Catalog.Operation.Type.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Operation.Type.v];
-    RAISERROR('Catalog.Operation.Type end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Operation.Type end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Operation.Type ------------------------------
 
 ------------------------------ BEGIN Catalog.OrderSource ------------------------------
 
-    RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
@@ -2219,13 +1873,13 @@ GRANT SELECT ON dbo.[Catalog.OrderSource.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
-    RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.OrderSource ------------------------------
 
 ------------------------------ BEGIN Catalog.Person ------------------------------
 
-    RAISERROR('Catalog.Person start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.v];
@@ -2267,6 +1921,7 @@ GO
 CREATE UNIQUE CLUSTERED INDEX[Catalog.Person.v]ON[Catalog.Person.v](id);CREATE NONCLUSTERED INDEX[Catalog.Person.v.Code1] ON [Catalog.Person.v]([Code1]) INCLUDE([company]);
 CREATE NONCLUSTERED INDEX[Catalog.Person.v.Department] ON [Catalog.Person.v]([Department]) INCLUDE([company]);
 CREATE NONCLUSTERED INDEX[Catalog.Person.v.Profile] ON [Catalog.Person.v]([Profile]) INCLUDE([company]);
+CREATE NONCLUSTERED INDEX[Catalog.Person.v.AccountAD] ON [Catalog.Person.v]([AccountAD]) INCLUDE([company]);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.deleted] ON [Catalog.Person.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.code.f] ON [Catalog.Person.v](parent,isfolder,code,id);
@@ -2280,13 +1935,13 @@ GRANT SELECT ON dbo.[Catalog.Person.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.v];
-    RAISERROR('Catalog.Person end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Person ------------------------------
 
 ------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
-    RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.BankAccount.v];
@@ -2319,13 +1974,13 @@ GRANT SELECT ON dbo.[Catalog.Person.BankAccount.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.BankAccount.v];
-    RAISERROR('Catalog.Person.BankAccount end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person.BankAccount end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Person.BankAccount ------------------------------
 
 ------------------------------ BEGIN Catalog.Person.Contract ------------------------------
 
-    RAISERROR('Catalog.Person.Contract start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person.Contract start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Person.Contract.v];
@@ -2360,13 +2015,13 @@ GRANT SELECT ON dbo.[Catalog.Person.Contract.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Person.Contract.v];
-    RAISERROR('Catalog.Person.Contract end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Person.Contract end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Person.Contract ------------------------------
 
 ------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
 
-    RAISERROR('Catalog.PersonIdentity start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PersonIdentity start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PersonIdentity.v];
@@ -2395,13 +2050,13 @@ GRANT SELECT ON dbo.[Catalog.PersonIdentity.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PersonIdentity.v];
-    RAISERROR('Catalog.PersonIdentity end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PersonIdentity end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.PersonIdentity ------------------------------
 
 ------------------------------ BEGIN Catalog.PlanningScenario ------------------------------
 
-    RAISERROR('Catalog.PlanningScenario start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PlanningScenario start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PlanningScenario.v];
@@ -2430,13 +2085,13 @@ GRANT SELECT ON dbo.[Catalog.PlanningScenario.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PlanningScenario.v];
-    RAISERROR('Catalog.PlanningScenario end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PlanningScenario end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.PlanningScenario ------------------------------
 
 ------------------------------ BEGIN Catalog.PriceType ------------------------------
 
-    RAISERROR('Catalog.PriceType start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PriceType start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PriceType.v];
@@ -2469,13 +2124,13 @@ GRANT SELECT ON dbo.[Catalog.PriceType.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PriceType.v];
-    RAISERROR('Catalog.PriceType end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PriceType end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.PriceType ------------------------------
 
 ------------------------------ BEGIN Catalog.Product ------------------------------
 
-    RAISERROR('Catalog.Product start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.v];
@@ -2532,13 +2187,13 @@ GRANT SELECT ON dbo.[Catalog.Product.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.v];
-    RAISERROR('Catalog.Product end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Product ------------------------------
 
 ------------------------------ BEGIN Catalog.Product.Analytic ------------------------------
 
-    RAISERROR('Catalog.Product.Analytic start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Analytic start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Analytic.v];
@@ -2570,13 +2225,13 @@ GRANT SELECT ON dbo.[Catalog.Product.Analytic.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Analytic.v];
-    RAISERROR('Catalog.Product.Analytic end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Analytic end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Product.Analytic ------------------------------
 
 ------------------------------ BEGIN Catalog.Product.Package ------------------------------
 
-    RAISERROR('Catalog.Product.Package start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Package start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Package.v];
@@ -2609,13 +2264,13 @@ GRANT SELECT ON dbo.[Catalog.Product.Package.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Package.v];
-    RAISERROR('Catalog.Product.Package end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Package end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Product.Package ------------------------------
 
 ------------------------------ BEGIN Catalog.Product.Report ------------------------------
 
-    RAISERROR('Catalog.Product.Report start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Report start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Product.Report.v];
@@ -2646,13 +2301,13 @@ GRANT SELECT ON dbo.[Catalog.Product.Report.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Product.Report.v];
-    RAISERROR('Catalog.Product.Report end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Product.Report end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Product.Report ------------------------------
 
 ------------------------------ BEGIN Catalog.ProductCategory ------------------------------
 
-    RAISERROR('Catalog.ProductCategory start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ProductCategory start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductCategory.v];
@@ -2682,13 +2337,13 @@ GRANT SELECT ON dbo.[Catalog.ProductCategory.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductCategory.v];
-    RAISERROR('Catalog.ProductCategory end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ProductCategory end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ProductCategory ------------------------------
 
 ------------------------------ BEGIN Catalog.ProductKind ------------------------------
 
-    RAISERROR('Catalog.ProductKind start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ProductKind start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ProductKind.v];
@@ -2718,13 +2373,13 @@ GRANT SELECT ON dbo.[Catalog.ProductKind.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ProductKind.v];
-    RAISERROR('Catalog.ProductKind end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ProductKind end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ProductKind ------------------------------
 
 ------------------------------ BEGIN Catalog.PromotionChannel ------------------------------
 
-    RAISERROR('Catalog.PromotionChannel start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PromotionChannel start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.PromotionChannel.v];
@@ -2753,13 +2408,13 @@ GRANT SELECT ON dbo.[Catalog.PromotionChannel.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.PromotionChannel.v];
-    RAISERROR('Catalog.PromotionChannel end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.PromotionChannel end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.PromotionChannel ------------------------------
 
 ------------------------------ BEGIN Catalog.ReasonTypes ------------------------------
 
-    RAISERROR('Catalog.ReasonTypes start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ReasonTypes start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ReasonTypes.v];
@@ -2788,13 +2443,13 @@ GRANT SELECT ON dbo.[Catalog.ReasonTypes.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ReasonTypes.v];
-    RAISERROR('Catalog.ReasonTypes end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ReasonTypes end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ReasonTypes ------------------------------
 
 ------------------------------ BEGIN Catalog.ResponsibilityCenter ------------------------------
 
-    RAISERROR('Catalog.ResponsibilityCenter start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ResponsibilityCenter start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.ResponsibilityCenter.v];
@@ -2826,13 +2481,13 @@ GRANT SELECT ON dbo.[Catalog.ResponsibilityCenter.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.ResponsibilityCenter.v];
-    RAISERROR('Catalog.ResponsibilityCenter end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.ResponsibilityCenter end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ResponsibilityCenter ------------------------------
 
 ------------------------------ BEGIN Catalog.RetailClient ------------------------------
 
-    RAISERROR('Catalog.RetailClient start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.RetailClient start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.RetailClient.v];
@@ -2871,13 +2526,13 @@ GRANT SELECT ON dbo.[Catalog.RetailClient.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailClient.v];
-    RAISERROR('Catalog.RetailClient end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.RetailClient end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.RetailClient ------------------------------
 
 ------------------------------ BEGIN Catalog.RetailNetwork ------------------------------
 
-    RAISERROR('Catalog.RetailNetwork start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.RetailNetwork start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.RetailNetwork.v];
@@ -2910,13 +2565,13 @@ GRANT SELECT ON dbo.[Catalog.RetailNetwork.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailNetwork.v];
-    RAISERROR('Catalog.RetailNetwork end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.RetailNetwork end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.RetailNetwork ------------------------------
 
 ------------------------------ BEGIN Catalog.Role ------------------------------
 
-    RAISERROR('Catalog.Role start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Role start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Role.v];
@@ -2945,13 +2600,13 @@ GRANT SELECT ON dbo.[Catalog.Role.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Role.v];
-    RAISERROR('Catalog.Role end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Role end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Role ------------------------------
 
 ------------------------------ BEGIN Catalog.Salary.Analytics ------------------------------
 
-    RAISERROR('Catalog.Salary.Analytics start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Salary.Analytics start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Salary.Analytics.v];
@@ -2982,13 +2637,13 @@ GRANT SELECT ON dbo.[Catalog.Salary.Analytics.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Salary.Analytics.v];
-    RAISERROR('Catalog.Salary.Analytics end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Salary.Analytics end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Salary.Analytics ------------------------------
 
 ------------------------------ BEGIN Catalog.SalaryProject ------------------------------
 
-    RAISERROR('Catalog.SalaryProject start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.SalaryProject start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SalaryProject.v];
@@ -3023,13 +2678,13 @@ GRANT SELECT ON dbo.[Catalog.SalaryProject.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SalaryProject.v];
-    RAISERROR('Catalog.SalaryProject end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.SalaryProject end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.SalaryProject ------------------------------
 
 ------------------------------ BEGIN Catalog.Scenario ------------------------------
 
-    RAISERROR('Catalog.Scenario start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Scenario start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Scenario.v];
@@ -3059,13 +2714,13 @@ GRANT SELECT ON dbo.[Catalog.Scenario.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Scenario.v];
-    RAISERROR('Catalog.Scenario end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Scenario end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Scenario ------------------------------
 
 ------------------------------ BEGIN Catalog.Specification ------------------------------
 
-    RAISERROR('Catalog.Specification start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Specification start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Specification.v];
@@ -3083,6 +2738,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Specification'
 ;
@@ -3101,13 +2757,13 @@ GRANT SELECT ON dbo.[Catalog.Specification.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Specification.v];
-    RAISERROR('Catalog.Specification end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Specification end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Specification ------------------------------
 
 ------------------------------ BEGIN Catalog.StaffingTable ------------------------------
 
-    RAISERROR('Catalog.StaffingTable start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.StaffingTable start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.StaffingTable.v];
@@ -3144,13 +2800,13 @@ GRANT SELECT ON dbo.[Catalog.StaffingTable.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.StaffingTable.v];
-    RAISERROR('Catalog.StaffingTable end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.StaffingTable end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.StaffingTable ------------------------------
 
 ------------------------------ BEGIN Catalog.Storehouse ------------------------------
 
-    RAISERROR('Catalog.Storehouse start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Storehouse start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Storehouse.v];
@@ -3180,13 +2836,13 @@ GRANT SELECT ON dbo.[Catalog.Storehouse.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Storehouse.v];
-    RAISERROR('Catalog.Storehouse end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Storehouse end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Storehouse ------------------------------
 
 ------------------------------ BEGIN Catalog.SubSystem ------------------------------
 
-    RAISERROR('Catalog.SubSystem start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.SubSystem start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.SubSystem.v];
@@ -3216,13 +2872,13 @@ GRANT SELECT ON dbo.[Catalog.SubSystem.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.SubSystem.v];
-    RAISERROR('Catalog.SubSystem end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.SubSystem end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.SubSystem ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxAssignmentCode ------------------------------
 
-    RAISERROR('Catalog.TaxAssignmentCode start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxAssignmentCode start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxAssignmentCode.v];
@@ -3252,13 +2908,13 @@ GRANT SELECT ON dbo.[Catalog.TaxAssignmentCode.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxAssignmentCode.v];
-    RAISERROR('Catalog.TaxAssignmentCode end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxAssignmentCode end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxAssignmentCode ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxBasisPayment ------------------------------
 
-    RAISERROR('Catalog.TaxBasisPayment start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxBasisPayment start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxBasisPayment.v];
@@ -3287,13 +2943,13 @@ GRANT SELECT ON dbo.[Catalog.TaxBasisPayment.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxBasisPayment.v];
-    RAISERROR('Catalog.TaxBasisPayment end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxBasisPayment end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxBasisPayment ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxOffice ------------------------------
 
-    RAISERROR('Catalog.TaxOffice start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxOffice start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxOffice.v];
@@ -3326,13 +2982,13 @@ GRANT SELECT ON dbo.[Catalog.TaxOffice.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxOffice.v];
-    RAISERROR('Catalog.TaxOffice end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxOffice end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxOffice ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxPayerStatus ------------------------------
 
-    RAISERROR('Catalog.TaxPayerStatus start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPayerStatus start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPayerStatus.v];
@@ -3362,13 +3018,13 @@ GRANT SELECT ON dbo.[Catalog.TaxPayerStatus.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPayerStatus.v];
-    RAISERROR('Catalog.TaxPayerStatus end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPayerStatus end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxPayerStatus ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxPaymentCode ------------------------------
 
-    RAISERROR('Catalog.TaxPaymentCode start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPaymentCode start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentCode.v];
@@ -3399,13 +3055,13 @@ GRANT SELECT ON dbo.[Catalog.TaxPaymentCode.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentCode.v];
-    RAISERROR('Catalog.TaxPaymentCode end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPaymentCode end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxPaymentCode ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxPaymentPeriod ------------------------------
 
-    RAISERROR('Catalog.TaxPaymentPeriod start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPaymentPeriod start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxPaymentPeriod.v];
@@ -3434,13 +3090,13 @@ GRANT SELECT ON dbo.[Catalog.TaxPaymentPeriod.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxPaymentPeriod.v];
-    RAISERROR('Catalog.TaxPaymentPeriod end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxPaymentPeriod end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxPaymentPeriod ------------------------------
 
 ------------------------------ BEGIN Catalog.TaxRate ------------------------------
 
-    RAISERROR('Catalog.TaxRate start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxRate start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.TaxRate.v];
@@ -3470,13 +3126,13 @@ GRANT SELECT ON dbo.[Catalog.TaxRate.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.TaxRate.v];
-    RAISERROR('Catalog.TaxRate end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.TaxRate end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.TaxRate ------------------------------
 
 ------------------------------ BEGIN Catalog.Unit ------------------------------
 
-    RAISERROR('Catalog.Unit start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Unit start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Unit.v];
@@ -3508,13 +3164,13 @@ GRANT SELECT ON dbo.[Catalog.Unit.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Unit.v];
-    RAISERROR('Catalog.Unit end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.Unit end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Unit ------------------------------
 
 ------------------------------ BEGIN Catalog.User ------------------------------
 
-    RAISERROR('Catalog.User start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.User start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.User.v];
@@ -3547,13 +3203,13 @@ GRANT SELECT ON dbo.[Catalog.User.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.User.v];
-    RAISERROR('Catalog.User end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.User end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.User ------------------------------
 
 ------------------------------ BEGIN Catalog.UsersGroup ------------------------------
 
-    RAISERROR('Catalog.UsersGroup start', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.UsersGroup start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.UsersGroup.v];
@@ -3582,13 +3238,13 @@ GRANT SELECT ON dbo.[Catalog.UsersGroup.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.UsersGroup.v];
-    RAISERROR('Catalog.UsersGroup end', 0 ,1) WITH NOWAIT;
+RAISERROR('Catalog.UsersGroup end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.UsersGroup ------------------------------
 
 ------------------------------ BEGIN Document.CashRequest ------------------------------
 
-    RAISERROR('Document.CashRequest start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.CashRequest start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequest.v];
@@ -3657,13 +3313,13 @@ GRANT SELECT ON dbo.[Document.CashRequest.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequest.v];
-    RAISERROR('Document.CashRequest end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.CashRequest end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.CashRequest ------------------------------
 
 ------------------------------ BEGIN Document.CashRequestRegistry ------------------------------
 
-    RAISERROR('Document.CashRequestRegistry start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.CashRequestRegistry start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.CashRequestRegistry.v];
@@ -3700,13 +3356,13 @@ GRANT SELECT ON dbo.[Document.CashRequestRegistry.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.CashRequestRegistry.v];
-    RAISERROR('Document.CashRequestRegistry end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.CashRequestRegistry end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.CashRequestRegistry ------------------------------
 
 ------------------------------ BEGIN Document.ExchangeRates ------------------------------
 
-    RAISERROR('Document.ExchangeRates start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.ExchangeRates start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.ExchangeRates.v];
@@ -3734,13 +3390,13 @@ GRANT SELECT ON dbo.[Document.ExchangeRates.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.ExchangeRates.v];
-    RAISERROR('Document.ExchangeRates end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.ExchangeRates end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.ExchangeRates ------------------------------
 
 ------------------------------ BEGIN Document.Invoice ------------------------------
 
-    RAISERROR('Document.Invoice start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Invoice start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Invoice.v];
@@ -3777,13 +3433,13 @@ GRANT SELECT ON dbo.[Document.Invoice.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Invoice.v];
-    RAISERROR('Document.Invoice end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Invoice end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.Invoice ------------------------------
 
 ------------------------------ BEGIN Document.Operation ------------------------------
 
-    RAISERROR('Document.Operation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Operation start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Operation.v];
@@ -3818,13 +3474,13 @@ GRANT SELECT ON dbo.[Document.Operation.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Operation.v];
-    RAISERROR('Document.Operation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Operation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.Operation ------------------------------
 
 ------------------------------ BEGIN Document.PriceList ------------------------------
 
-    RAISERROR('Document.PriceList start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.PriceList start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.PriceList.v];
@@ -3854,13 +3510,13 @@ GRANT SELECT ON dbo.[Document.PriceList.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.PriceList.v];
-    RAISERROR('Document.PriceList end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.PriceList end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.PriceList ------------------------------
 
 ------------------------------ BEGIN Document.Settings ------------------------------
 
-    RAISERROR('Document.Settings start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Settings start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Settings.v];
@@ -3890,13 +3546,13 @@ GRANT SELECT ON dbo.[Document.Settings.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Settings.v];
-    RAISERROR('Document.Settings end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.Settings end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.Settings ------------------------------
 
 ------------------------------ BEGIN Document.UserSettings ------------------------------
 
-    RAISERROR('Document.UserSettings start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.UserSettings start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.UserSettings.v];
@@ -3931,13 +3587,13 @@ GRANT SELECT ON dbo.[Document.UserSettings.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.UserSettings.v];
-    RAISERROR('Document.UserSettings end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.UserSettings end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.UserSettings ------------------------------
 
 ------------------------------ BEGIN Document.WorkFlow ------------------------------
 
-    RAISERROR('Document.WorkFlow start', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.WorkFlow start', 0 ,1) WITH NOWAIT;
       
 BEGIN TRY
   ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.WorkFlow.v];
@@ -3967,7 +3623,7 @@ GRANT SELECT ON dbo.[Document.WorkFlow.v]TO jetti;
 GO
 
 ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.WorkFlow.v];
-    RAISERROR('Document.WorkFlow end', 0 ,1) WITH NOWAIT;
+RAISERROR('Document.WorkFlow end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.WorkFlow ------------------------------
 

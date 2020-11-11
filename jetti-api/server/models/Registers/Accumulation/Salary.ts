@@ -37,7 +37,7 @@ export class RegisterAccumulationSalary extends RegisterAccumulation {
   @Props({ type: 'enum', value: ['APPROVED', 'PREPARED'], dimension: true })
   Status = 'APPROVED';
 
-  @Props({ type: 'boolean', resource: true })
+  @Props({ type: 'boolean' })
   IsPortal = false;
 
   @Props({ type: 'number', resource: true })

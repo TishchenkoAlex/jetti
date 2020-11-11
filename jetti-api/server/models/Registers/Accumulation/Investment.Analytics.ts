@@ -10,7 +10,7 @@ export class RegisterAccumulationInvestmentAnalytics extends RegisterAccumulatio
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'enum', dimension: true, value: ['ALLUNIC', 'JETTI', 'X100FINANCE']})
+  @Props({ type: 'enum', dimension: true, value: ['ALLUNIC', 'JETTI', 'X100FINANCE'] })
   SourceTransaction = 'JETTI';
 
   @Props({ type: 'Document.Operation', dimension: true })
@@ -31,7 +31,7 @@ export class RegisterAccumulationInvestmentAnalytics extends RegisterAccumulatio
   @Props({ type: 'number', resource: true })
   Qty = 0;
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   CurrencyProduct: Ref = null;
 
   @Props({ type: 'number', resource: true })
@@ -40,7 +40,7 @@ export class RegisterAccumulationInvestmentAnalytics extends RegisterAccumulatio
   @Props({ type: 'Types.Catalog', dimension: true })
   PaymentSource: Ref = null;
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   CurrencySource: Ref = null;
 
   @Props({ type: 'number', resource: true })
@@ -52,7 +52,7 @@ export class RegisterAccumulationInvestmentAnalytics extends RegisterAccumulatio
   @Props({ type: 'Catalog.Loan', dimension: true })
   Loan: Ref = null;
 
-  @Props({ type: 'Catalog.Currency', required: true })
+  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   CurrencyLoan: Ref = null;
 
   @Props({ type: 'number', resource: true })
