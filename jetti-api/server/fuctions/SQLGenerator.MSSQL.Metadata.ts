@@ -24,24 +24,19 @@ export class SQLGenegatorMetadata {
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') {
-        return `
+      if (type === 'boolean') return `
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
-      }
-      if (type === 'number') {
+      if (type === 'number')
         return `
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1) [${prop}]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1,  null) [${prop}.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
-      }
-      if (type === 'date') {
-        return `
+      if (type === 'date') return `
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      }
-      if (type === 'datetime') {
-        return `
+      if (type === 'datetime') return `
         , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      }
+      if (type === 'enum') return `
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
       return `
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
     };
@@ -69,8 +64,8 @@ export class SQLGenegatorMetadata {
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]) ON PS_month([date]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields}) ON PS_month([date]);
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]) WITH(ONLINE = ON);-- ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields}) WITH(ONLINE = ON);-- ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -438,8 +433,10 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, null), 0)) [${prop}.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
       }
+      if (type === 'boolean') return `
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
       return `
-        , TRY_CONVERT(NVARCHAR(150), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
     };
 
     let query = '';
@@ -472,7 +469,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy}) ON PS_month([date]);
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy}) WITH(ONLINE = ON);-- ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO

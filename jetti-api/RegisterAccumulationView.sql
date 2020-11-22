@@ -66,6 +66,46 @@
     
 ------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
 
+------------------------------ BEGIN Register.Accumulation.Investment.Analytics ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.Investment.Analytics]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, Department, SourceTransaction, CreditTransaction, OperationType, Investor, CompanyProduct, Product
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out], CurrencyProduct
+      , d.[AmountProduct] * IIF(r.kind = 1, 1, -1) [AmountProduct], d.[AmountProduct] * IIF(r.kind = 1, 1, null) [AmountProduct.In], d.[AmountProduct] * IIF(r.kind = 1, null, 1) [AmountProduct.Out], PaymentSource, CurrencySource
+      , d.[AmountSource] * IIF(r.kind = 1, 1, -1) [AmountSource], d.[AmountSource] * IIF(r.kind = 1, 1, null) [AmountSource.In], d.[AmountSource] * IIF(r.kind = 1, null, 1) [AmountSource.Out], CompanyLoan, Loan, CurrencyLoan
+      , d.[AmountLoan] * IIF(r.kind = 1, 1, -1) [AmountLoan], d.[AmountLoan] * IIF(r.kind = 1, 1, null) [AmountLoan.In], d.[AmountLoan] * IIF(r.kind = 1, null, 1) [AmountLoan.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [SourceTransaction] NVARCHAR(250) N'$.SourceTransaction'
+        , [CreditTransaction] UNIQUEIDENTIFIER N'$.CreditTransaction'
+        , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Investor] UNIQUEIDENTIFIER N'$.Investor'
+        , [CompanyProduct] UNIQUEIDENTIFIER N'$.CompanyProduct'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [Qty] MONEY N'$.Qty'
+        , [CurrencyProduct] UNIQUEIDENTIFIER N'$.CurrencyProduct'
+        , [AmountProduct] MONEY N'$.AmountProduct'
+        , [PaymentSource] UNIQUEIDENTIFIER N'$.PaymentSource'
+        , [CurrencySource] UNIQUEIDENTIFIER N'$.CurrencySource'
+        , [AmountSource] MONEY N'$.AmountSource'
+        , [CompanyLoan] UNIQUEIDENTIFIER N'$.CompanyLoan'
+        , [Loan] UNIQUEIDENTIFIER N'$.Loan'
+        , [CurrencyLoan] UNIQUEIDENTIFIER N'$.CurrencyLoan'
+        , [AmountLoan] MONEY N'$.AmountLoan'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.Investment.Analytics';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.Investment.Analytics] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.Investment.Analytics ------------------------------
+
 ------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
