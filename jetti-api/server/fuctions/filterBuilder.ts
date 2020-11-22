@@ -6,13 +6,12 @@ export interface IQueryFilter {
 }
 
 export const filterBuilder = (filter: FormListFilter[],
-  quote = '"',
   excludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation']): IQueryFilter => {
 
   let where = ' (1 = 1) '; let tempTable = '';
   const filterList = filter
     .filter(f => !(f.right === null || f.right === undefined))
-    .map(f => ({ ...f, leftQ: `${quote}${f.left}${quote}` }));
+    .map(f => ({ ...f, leftQ: `\"${f.left}\"` }));
 
   for (const f of filterList) {
     switch (f.center) {

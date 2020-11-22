@@ -250,6 +250,8 @@ export class BankStatementUnloader {
     ,'01' as N'ВидОплаты'
     ,JSON_VALUE(Supp.doc, '$.Code2') as N'ПолучательКПП'
     ,5 as N'Очередность'
+    ,TaxPaymentCode.code as N'ПоказательКБК'
+    ,JSON_VALUE(obj.doc, '$.TaxOfficeCode2') as N'ОКАТО'
     ,Obj.[info] as N'НазначениеПлатежа'
     ,Obj.company  as Company_ig
     ,JSON_VALUE(Comp.doc, '$.FullName') as N'Плательщик_ig'
@@ -257,11 +259,12 @@ export class BankStatementUnloader {
     ,JSON_VALUE(Obj.doc, '$.Operation') as Oper_ig
     FROM [dbo].[Documents] as Obj
     LEFT JOIN [dbo].[Documents] as Comp on Comp.id = Obj.company and Comp.[type] = 'Catalog.Company'
-    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
-    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
-    LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier') and Supp.[type] = 'Catalog.Counterpartie'
-    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier') and BASupp.[type] = 'Catalog.Counterpartie.BankAccount'
-    LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank') and BankComp.[type] = 'Catalog.Bank'
+    LEFT JOIN [dbo].[Documents] as TaxPaymentCode on TaxPaymentCode.id = JSON_VALUE(Obj.doc, '$.TaxPaymentCode')
+    LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount')
+    LEFT JOIN [dbo].[Documents] as BankComp on BankComp.id = JSON_VALUE(BAComp.doc, '$.Bank')
+    LEFT JOIN [dbo].[Documents] as Supp on Supp.id = JSON_VALUE(Obj.doc, '$.Supplier')
+    LEFT JOIN [dbo].[Documents] as BASupp on BASupp.id = JSON_VALUE(Obj.doc, '$.BankAccountSupplier')
+    LEFT JOIN [dbo].[Documents] as BankSupp on BankSupp.id = JSON_VALUE(BASupp.doc, '$.Bank')
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = '68FA31F0-BDB0-11E7-9C95-E3F9522E1FC9' -- С р/с -  оплата поставщику
     order by Obj.company, BAComp.[code], Obj.[date]`;
   }

@@ -210,8 +210,7 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'Types.PersonOrCounterpartieBankAccount',
     label: 'Счет получателя',
     owner: [
-      { dependsOn: 'CashRecipient', filterBy: 'owner' },
-      { dependsOn: 'сurrency', filterBy: 'currency' }
+      { dependsOn: 'CashRecipient', filterBy: 'owner' }
     ]
   })
   CashRecipientBankAccount: Ref = null;
@@ -334,6 +333,11 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({ type: 'string', hiddenInList: true })
   tempSalaryKind = 'PAID';
+
+  @Props({
+    type: 'Catalog.User', label: 'Ответственный'
+  })
+  manager: Ref = null;
 
   @Props({
     type: 'table', required: false, order: 1,
