@@ -109,12 +109,12 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         if (result[c.parameter] === undefined) result[c.parameter] = Props[c.parameter].value;
       });
 
+
       Prop.commands = [
-        ...(Operation && Operation.commandsOnServer || []),
-        ...(Operation && Operation.commandsOnClient || []),
+        ...Operation.commandsOnServer || [],
+        ...(Operation.commandsOnClient || []).map(command => ({ ...command, isClientCommand: true }))
       ];
 
-      Prop.copyTo = [];
       for (const o of ((Operation && Operation.CopyTo) || [])) {
         const base = await lib.doc.byIdT<CatalogOperation>(o.Operation, tx);
         if (base) {

@@ -67,7 +67,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     return (m && m['commands'] as Command[] || []).map(c => (
       <MenuItem>{
         label: c.label, icon: c.icon,
-        command: () => this.commandOnSever(c.method, c.clientModule)
+        command: () => this.executeCommand(c)
       }));
   }));
   copyTo$ = this.metadata$.pipe(map(m => {
@@ -108,14 +108,16 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   get isNew() { return !this.form.get('timestamp').value; }
   get isFolder() { return !!this.form.get('isfolder').value; }
   get isDirty() { return !!this.form.dirty; }
+
   get commands() {
-    return (this.metadata['commands'] as Command[] || []).map(c => {
+    return ([...this.metadata['commands'] as Command[] || []]).map(c => {
       return (<MenuItem>{
         label: c.label, icon: c.icon,
         command: () => this.commandOnSever(c.method)
       });
     });
   }
+
   get copyTo() {
     return (this.metadata['copyTo'] as CopyTo[] || []).map(c => {
       return (<MenuItem>{ label: c.label, icon: c.icon, command: (event) => this.baseOn(c.type, c.Operation) });
@@ -314,6 +316,11 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   baseOn(type: DocTypes, Operation: Ref) {
     this.router.navigate([type, v1().toLocaleUpperCase()],
       { queryParams: { base: this.id, Operation } });
+  }
+
+  executeCommand(command: Command) {
+    if (command.isClientCommand) this.commandOnClient(command.method);
+    else this.commandOnSever(command.method);
   }
 
   commandOnSever(method: string, clientModule?: string) {
