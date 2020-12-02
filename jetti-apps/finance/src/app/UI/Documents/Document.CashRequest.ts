@@ -167,8 +167,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     Оплата по кредитам и займам полученным
     Выдача займа контрагенту
     Возврат оплаты клиенту`.includes(oper)) this.throwError('Ошибка', 'Не указан получатель');
-    const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
-    if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
+    // const CashRecipientBankAccount = this.getValue('CashRecipientBankAccount');
+    // if (oper === 'Оплата поставщику' && (!CashRecipientBankAccount || !CashRecipientBankAccount.value)) this.throwError('Ошибка', 'Не указан счет получателя');
   }
 
 

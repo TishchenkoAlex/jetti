@@ -83,7 +83,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         if (this.CashRecipient) {
           const CashRecipient = await lib.doc.byId(this.CashRecipient, tx);
           if (CashRecipient && CashRecipient.type === 'Catalog.Counterpartie' && CashRecipient['Manager'])
-            this.manager = CashRecipient['Manager'];
+            this.Manager = CashRecipient['Manager'];
         }
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
