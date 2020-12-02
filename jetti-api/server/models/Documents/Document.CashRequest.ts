@@ -337,7 +337,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({
     type: 'Catalog.User', label: 'Ответственный'
   })
-  manager: Ref = null;
+  Manager: Ref = null;
 
   @Props({
     type: 'table', required: false, order: 1,
