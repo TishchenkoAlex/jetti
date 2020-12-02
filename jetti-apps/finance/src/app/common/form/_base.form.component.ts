@@ -113,7 +113,7 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     return ([...this.metadata['commands'] as Command[] || []]).map(c => {
       return (<MenuItem>{
         label: c.label, icon: c.icon,
-        command: () => this.commandOnSever(c.method)
+        command: () => this.executeCommand(c)
       });
     });
   }
@@ -319,27 +319,27 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
   }
 
   executeCommand(command: Command) {
-    if (command.isClientCommand) this.commandOnClient(command.method);
-    else this.commandOnSever(command.method);
+    if (command.isClientCommand) this.commandOnClient(command);
+    else this.commandOnSever(command);
   }
 
-  commandOnSever(method: string, clientModule?: string) {
-    this.ds.api.onCommand(this.viewModel, method, {}).then((value: IViewModel) => {
+  commandOnSever(command: Command) {
+    this.ds.api.onCommand(this.viewModel, command.method, {}).then((value: IViewModel) => {
       const form = getFormGroup(value.schema, value.model, true);
       form['metadata'] = value.metadata;
       this.Next(form);
       this.form.markAsDirty();
 
-      if (clientModule) {
-        const func = new Function('', clientModule).bind(this)();
+      if (command.clientModule) {
+        const func = new Function('', command.clientModule).bind(this)();
         const afterExecution = func['afterExecution'];
         if (afterExecution) afterExecution();
       }
     });
   }
 
-  commandOnClient(method: string) {
-    this.module[method](this.viewModel).then(value => {
+  commandOnClient(command: Command) {
+    this.module[command.method](this.viewModel).then(value => {
       this.form.patchValue(value || {}, patchOptionsNoEvents);
       this.form.markAsDirty();
       this._form$.next(this.form);
