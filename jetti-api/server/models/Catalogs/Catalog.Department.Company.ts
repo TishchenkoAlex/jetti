@@ -8,8 +8,7 @@ import { DocumentBase, JDocument, Props, Ref } from './../document';
   prefix: 'DEPC-',
   hierarchy: 'folders',
   relations: [
-    { name: 'Manager history', type: 'Register.Info.EmployeeHistory', field: 'StaffingPositionManager.id' },
-    { name: 'Assistant history', type: 'Register.Info.EmployeeHistory', field: 'StaffingPositionAssistant.id' }
+    { name: 'Employee history', type: 'Register.Info.EmployeeHistory', field: 'DepartmentCompany.id' },
   ],
   dimensions: [
     { company: 'Catalog.Company' }
@@ -24,8 +23,8 @@ export class CatalogDepartmentCompany extends DocumentBase {
   @Props({ type: 'boolean', hidden: false, hiddenInList: true, order: 6, isIndexed: true })
   isfolder = false;
 
-  @Props({ type: 'enum', value: ['COMPANY', 'DEPARTMENT', 'NETWORK', 'REGION', 'BRANCH', 'SALEPOINT'], useIn: 'all' })
-  kind = '';
+  @Props({ type: 'enum', value: ['COMPANY', 'DEPARTMENT', 'NETWORK', 'REGION', 'BRANCH', 'SALEPOINT', 'NONE'], useIn: 'all' })
+  kind = 'NONE';
 
   @Props({
     type: 'string', required: false, hiddenInList: false

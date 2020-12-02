@@ -138,6 +138,7 @@ export interface JTL {
     converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
     xmlStringToJSON: (xmlString: string) => string,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
+    isEqualObjects: (object1: Object, object2: Object) => boolean
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -224,7 +225,8 @@ export const lib: JTL = {
     converStringEncoding,
     xmlStringToJSON,
     executeGETRequest,
-    jettiPoolTx
+    jettiPoolTx,
+    isEqualObjects
   },
   queue: {
     insertQueue,
@@ -692,6 +694,19 @@ async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityP
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
+}
+
+export function isEqualObjects(object1: Object, object2: Object): boolean {
+  const keysObject1 = Object.keys(object1);
+  const keysObject2 = Object.keys(object2);
+  if (keysObject1.length !== keysObject2.length ||
+    keysObject1.join().length !== keysObject2.join().length)
+    return false;
+  keysObject1.forEach(keyObj1 => {
+    if (!keysObject2.includes(keyObj1) ||
+      object1[keyObj1] !== object2[keyObj1]) return false;
+  });
+  return true;
 }
 
 export function getAdminTX(): MSSQL {

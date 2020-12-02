@@ -189,16 +189,18 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 	  cp.description Person,
     '' JobTitle,
     ISNULL(ba.description,'') CashRegister,
-    '' BankAccountPerson,
+    crb.code BankAccountPerson,
     Amount
     FROM Documents d
         CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
         WITH (CashRecipient VARCHAR(40),
              BankAccount VARCHAR(40),
+             CashRecipientBankAccount VARCHAR(40),
             [Amount] MONEY
         ) AS CashRequests
     LEFT JOIN Documents cp on cp.id = CashRequests.CashRecipient
     LEFT JOIN Documents ba on ba.id = CashRequests.BankAccount
+    LEFT JOIN Documents crb on crb.id = CashRequests.CashRecipientBankAccount
       where d.id = @p1 and @p2 = N'Оплата по кредитам и займам полученным'
       AND Amount > 0
       ORDER BY CashRegister, Person `;
@@ -320,7 +322,9 @@ HAVING SUM(Balance.[Amount]) > 0;
         , CAST(0 AS BIT) AS Confirm
         , CRT.[CashRecipient] AS CashRecipient
         , DocCR.[company.id] AS company
-        , IIF(@p5 = 1,DocCR.[CashOrBank.id],NULL) AS CashRegister
+        , IIF(@p5 = 1 OR
+          (DocCR.Operation = N'Оплата по кредитам и займам полученным' AND DocCR.[CashKind] <> 'BANK')
+          ,DocCR.[CashOrBank.id],NULL) AS CashRegister
         , IIF(@p5 = 1,NULL,DocCR.[CashOrBank.id]) AS BankAccount
         , DocCR.[CashOrBankIn.id] AS BankAccountIn
         , DocCR.[CashRecipientBankAccount.id] AS CashRecipientBankAccount

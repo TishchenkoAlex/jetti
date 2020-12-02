@@ -80,6 +80,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CashRecipient':
         this.Contract = null;
         this.CashRecipientBankAccount = null;
+        if (this.CashRecipient) {
+          const CashRecipient = await lib.doc.byId(this.CashRecipient, tx);
+          if (CashRecipient && CashRecipient.type === 'Catalog.Counterpartie' && CashRecipient['Manager'])
+            this.manager = CashRecipient['Manager'];
+        }
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         query = `
@@ -365,7 +370,7 @@ ORDER BY
     const params = [byPersons ? null : this.Department,
     this.сurrency,
     this.date,
-      CompanyParent!.parent,
+    CompanyParent!.parent,
       persons,
     byPersons ? 1 : 0,
     currentMounth.begin,
@@ -649,6 +654,9 @@ ORDER BY
       case 'Внутренний займ':
         await this.FillOperationВнутреннийЗайм(docOperation, tx, params);
         break;
+      case 'Прочий расход ДС':
+        await this.FillOperationПрочийРасходДС(docOperation, tx, params);
+        break;
       case 'Выдача займа контрагенту':
         await this.FillOperationВыдачаЗаймаКонтрагенту(docOperation, tx, params);
         break;
@@ -725,12 +733,31 @@ ORDER BY
       docOperation['TaxAssignmentCode'] = this.TaxAssignmentCode; // КНП для Казахстана
       docOperation['BankAccountSupplier'] = CashRecipientBankAccount;
       docOperation['BankAccount'] = CashOrBank.id;
+      docOperation['TaxPaymentCode'] = this.TaxPaymentCode;
+      docOperation['TaxOfficeCode2'] = this.TaxOfficeCode2;
       docOperation.f1 = docOperation['BankAccount'];
       docOperation.f2 = docOperation['Supplier'];
       docOperation.f3 = docOperation['CashFlow'];
     }
   }
 
+  async FillOperationПрочийРасходДС(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
+
+    const CashOrBank = await lib.doc.byId(this.CashOrBank, tx);
+
+    if (!CashOrBank || CashOrBank!.type !== 'Catalog.CashRegister')
+      throw new Error('Источником может быть только касса');
+    docOperation.Operation = 'C5BFBB30-DA4B-11E9-9A3A-E3F9D911F5D5'; // Из кассы -  Прочий расход ДС (Статья расходов)
+    docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97';
+    docOperation['Supplier'] = this.CashRecipient;
+    docOperation['CashRegister'] = CashOrBank.id;
+    docOperation['ExpenseAnalytics'] = this.CashFlow;
+    docOperation['Expense'] = this.CashFlow;
+    docOperation.f1 = docOperation['CashRegister'];
+    docOperation.f2 = docOperation['ExpenseAnalytics'];
+    docOperation.f3 = docOperation['Expense'];
+
+  }
 
 
   async FillOperationВыплатаЗаработнойПлатыБезВедомости(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
@@ -883,15 +910,12 @@ ORDER BY
     //   docOperation.f2 = docOperation['CashRegisterIn'];
     // } else {
     docOperation['CashFlow'] = this.CashFlow;
-    docOperation['CashFlow'] = this.ContractIntercompany;
     docOperation.Operation = '433D63DE-D849-11E7-83D2-2724888A9E4F'; // С р/с - на расчетный счет  (в путь)
     docOperation['BankAccountOut'] = CashOrBank.id;
     docOperation['BankAccountTransit'] = CashOrBankIn.id;
     docOperation['BankConfirm'] = false;
     docOperation.f1 = docOperation['BankAccountOut'];
     docOperation.f2 = docOperation['BankAccountTransit'];
-    // }
-    // }
 
   }
 

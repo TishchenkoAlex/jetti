@@ -120,8 +120,6 @@ Global.init().then(e => {
     script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
     fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
 
-    script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
   }
 });
 

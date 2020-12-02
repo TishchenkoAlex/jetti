@@ -159,8 +159,8 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
     if ((!CashFlow || !CashFlow.value)) this.throwError('Ошибка', 'Не указана статья ДДС');
     const oper = this.getValue('Operation');
     const CashRecipient = this.getValue('CashRecipient');
-    if ((!CashRecipient || !CashRecipient.value) && 
-    `Оплата поставщику
+    if ((!CashRecipient || !CashRecipient.value) &&
+      `Оплата поставщику
     Перечисление налогов и взносов
     Оплата ДС в другую организацию
     Выдача ДС подотчетнику
@@ -208,6 +208,19 @@ export class DocumentCashRequestComponent extends _baseDocFormComponent implemen
       this.Next(formGroup);
       this.onOpen();
     });
+  }
+
+  useCashOrBank() {
+    return this.CashKind !== 'ANY' && this.Operation !== 'Перемещение ДС' && this.Operation !== 'Внутренний займ';
+  }
+
+  useCashRecipientBankAccount() {
+    return this.Operation === 'Оплата по кредитам и займам полученным'
+      || (this.CashKind === 'BANK'
+        && this.Operation !== 'Оплата ДС в другую организацию'
+        && this.Operation !== 'Выплата заработной платы'
+        && this.Operation !== 'Перемещение ДС'
+        && this.Operation !== 'Внутренний займ');
   }
 
   onCashKindChange(event) {
