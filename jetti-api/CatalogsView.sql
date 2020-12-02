@@ -3708,7 +3708,7 @@ GO
         , d.[RelatedURL] [RelatedURL]
         , ISNULL([tempCompanyParent.v].description, '') [tempCompanyParent.value], d.[tempCompanyParent] [tempCompanyParent.id], [tempCompanyParent.v].type [tempCompanyParent.type]
         , d.[tempSalaryKind] [tempSalaryKind]
-        , ISNULL([manager.v].description, '') [manager.value], d.[manager] [manager.id], [manager.v].type [manager.type]
+        , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
       
         , ISNULL(l5.description, d.description) [CashRequest.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
@@ -3749,7 +3749,7 @@ GO
         LEFT JOIN dbo.[Catalog.TaxPaymentPeriod.v] [TaxPaymentPeriod.v] WITH (NOEXPAND) ON [TaxPaymentPeriod.v].id = d.[TaxPaymentPeriod]
         LEFT JOIN dbo.[Catalog.Balance.Analytics.v] [BalanceAnalytics.v] WITH (NOEXPAND) ON [BalanceAnalytics.v].id = d.[BalanceAnalytics]
         LEFT JOIN dbo.[Catalog.Company.v] [tempCompanyParent.v] WITH (NOEXPAND) ON [tempCompanyParent.v].id = d.[tempCompanyParent]
-        LEFT JOIN dbo.[Catalog.User.v] [manager.v] WITH (NOEXPAND) ON [manager.v].id = d.[manager]
+        LEFT JOIN dbo.[Catalog.User.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
     ;
 GO
 GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
