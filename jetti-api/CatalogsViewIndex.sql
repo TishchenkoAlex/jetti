@@ -476,6 +476,8 @@ GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Population"')), 0) [Population]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDevelopmentRegion"')), 0) [isDevelopmentRegion]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BusinessRegion'
 ;
@@ -866,6 +868,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BC"')), '') [BC]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Counterpartie'
 ;
@@ -3296,6 +3299,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."RelatedURL"')), '') [RelatedURL]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."tempCompanyParent"')) [tempCompanyParent]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."tempSalaryKind"')), '') [tempSalaryKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."manager"')) [manager]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.CashRequest'
 ;

@@ -491,6 +491,31 @@
     GO
 ------------------------------ END Register.Info.EmployeeHistory ------------------------------
 
+------------------------------ BEGIN Register.Info.StaffingTableHistory ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.StaffingTableHistory]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) [DepartmentCompany]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) [StaffingPosition]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"')) [SalaryAnalytic]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) [Currency]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."AccrualType"')) [AccrualType]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."ActivationDate"'),127) [ActivationDate]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."CloseDate"'),127) [CloseDate]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Cost"')) [Cost]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.StaffingTableHistory';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.StaffingTableHistory] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.StaffingTableHistory] ON [dbo].[Register.Info.StaffingTableHistory]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.StaffingTableHistory ------------------------------
+
 ------------------------------ BEGIN Register.Info.TaxCheck ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.TaxCheck]
