@@ -533,6 +533,8 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[Population] [Population]
+        , d.[isDevelopmentRegion] [isDevelopmentRegion]
       
         , ISNULL(l5.description, d.description) [BusinessRegion.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BusinessRegion.Level4]
@@ -975,6 +977,7 @@ GO
         , d.[Code3] [Code3]
         , d.[BC] [BC]
         , d.[GLN] [GLN]
+        , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
       
         , ISNULL(l5.description, d.description) [Counterpartie.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Counterpartie.Level4]
@@ -993,6 +996,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
+        LEFT JOIN dbo.[Catalog.User.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
@@ -3704,6 +3708,7 @@ GO
         , d.[RelatedURL] [RelatedURL]
         , ISNULL([tempCompanyParent.v].description, '') [tempCompanyParent.value], d.[tempCompanyParent] [tempCompanyParent.id], [tempCompanyParent.v].type [tempCompanyParent.type]
         , d.[tempSalaryKind] [tempSalaryKind]
+        , ISNULL([manager.v].description, '') [manager.value], d.[manager] [manager.id], [manager.v].type [manager.type]
       
         , ISNULL(l5.description, d.description) [CashRequest.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
@@ -3744,6 +3749,7 @@ GO
         LEFT JOIN dbo.[Catalog.TaxPaymentPeriod.v] [TaxPaymentPeriod.v] WITH (NOEXPAND) ON [TaxPaymentPeriod.v].id = d.[TaxPaymentPeriod]
         LEFT JOIN dbo.[Catalog.Balance.Analytics.v] [BalanceAnalytics.v] WITH (NOEXPAND) ON [BalanceAnalytics.v].id = d.[BalanceAnalytics]
         LEFT JOIN dbo.[Catalog.Company.v] [tempCompanyParent.v] WITH (NOEXPAND) ON [tempCompanyParent.v].id = d.[tempCompanyParent]
+        LEFT JOIN dbo.[Catalog.User.v] [manager.v] WITH (NOEXPAND) ON [manager.v].id = d.[manager]
     ;
 GO
 GRANT SELECT ON dbo.[Document.CashRequest] TO jetti;
