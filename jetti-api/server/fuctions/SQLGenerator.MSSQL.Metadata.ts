@@ -58,14 +58,12 @@ export class SQLGenegatorMetadata {
     const query = `
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
-    DROP TABLE IF EXISTS [${type}];
-    GO
     CREATE OR ALTER VIEW [${type}.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]) WITH(ONLINE = ON);-- ON PS_month([date]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields}) WITH(ONLINE = ON);-- ON PS_month([date]);
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]);-- ON PS_month([date]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});-- ON PS_month([date]);
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -469,7 +467,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy}) WITH(ONLINE = ON);-- ON PS_month([date]);
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});-- ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO
@@ -538,7 +536,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     GO
     DROP TABLE IF EXISTS [${type}];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
       d.exchangeRate${fields}
     INTO [${type}]
     FROM [Accumulation] r
@@ -568,8 +566,10 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     GO
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
-    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
-    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}];
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY CLUSTERED ([id], [date]) ON [PS_month_date]([date]);
+    ALTER TABLE [${type}] DROP CONSTRAINT [PK_${type}];
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED ([id], [date]) ON [PS_month_date]([date]);
+    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] ON [PS_month_date]([date]);
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
     `;
