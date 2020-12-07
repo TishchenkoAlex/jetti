@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { FormControlInfo } from './dynamic-form-base';
 import { DocService } from '../doc.service';
-import { getFormGroup, patchOptionsNoEvents } from './dynamic-form.service';
+import { getFormGroup } from './dynamic-form.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

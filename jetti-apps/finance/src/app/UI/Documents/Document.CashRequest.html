@@ -125,6 +125,7 @@
 
         <div *ngIf="Operation === 'Выплата заработной платы без ведомости'" fxLayout="row" fxLayout.xs="column"
           fxLayoutGap="35px" fxLayoutGap.xs="0px">
+          <j-control *ngIf="CashKind === 'CASH'" [control]="vk.PersonContract" [form]="form"></j-control>
           <j-control [control]="vk.SalaryAnalitics" [form]="form"></j-control>
           <j-control [control]="vk.EnforcementProceedings" [form]="form"></j-control>
           <j-control [control]="vk.AmountPenalty" [form]="form"></j-control>

@@ -776,7 +776,10 @@ ORDER BY
 
     if (CashOrBank.type === 'Catalog.CashRegister') {
       docOperation.Group = '42512520-BE7A-11E7-A145-CF5C65BC8F97'; // Расходный кассовый ордер
-      docOperation.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A'; // Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
+      if (this.PersonContract) {
+        docOperation.Operation = 'B7380C50-346F-11EB-BE52-014B0CAC0EFD'; // С кассы - выплата зарплаты (САМОЗАНЯТОМУ СОТРУДНИКУ)
+        docOperation['PersonContract'] = this.PersonContract;
+      } else docOperation.Operation = 'D354F830-459B-11EA-AAE2-A1796B9A826A'; // Из кассы - выплата зарплаты (СОТРУДНИКУ без ведомости)
       docOperation['CashRegister'] = CashOrBank.id;
       docOperation.f1 = docOperation['CashRegister'];
     } else if (CashOrBank.type === 'Catalog.BankAccount') {

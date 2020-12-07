@@ -163,6 +163,14 @@ export class DocumentCashRequest extends DocumentBase {
   Contract: Ref = null;
 
   @Props({
+    type: 'Catalog.Person.Contract',
+    label: 'Договор',
+    owner: [
+      { dependsOn: 'CashRecipient', filterBy: 'owner' }]
+  })
+  PersonContract: Ref = null;
+
+  @Props({
     type: 'Catalog.Contract.Intercompany',
     hiddenInList: true,
     required: false,
