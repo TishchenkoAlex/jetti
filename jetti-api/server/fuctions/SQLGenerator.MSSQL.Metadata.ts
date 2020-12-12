@@ -239,7 +239,7 @@ export class SQLGenegatorMetadata {
 
     subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
 
-    subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
+    subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
       CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);
@@ -367,7 +367,7 @@ BEGIN CATCH
 END CATCH;`);
 
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS${select};`);
-      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v]ON[${type}.v](id);${Object.keys(Props)
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);${Object.keys(Props)
         .filter(key => Props[key].isIndexed)
         .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
         .join('\n')
@@ -432,7 +432,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
       }
       if (type === 'boolean') return `
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
       return `
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
     };
