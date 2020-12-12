@@ -43,6 +43,7 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
     WHERE clientInn = @p1
         and inn = @p2
         and totalAmount = cast(@p3 as money)
+        and [date] <= @p5
         ${taxCheck.operationId ? 'and [document] = @p4' : ''}`;
 
     return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
@@ -50,7 +51,8 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
             taxCheck.clientInn,
             taxCheck.inn,
             taxCheck.totalAmount.toString(),
-            taxCheck.operationId
+            taxCheck.operationId,
+            taxCheck.operationTime
         ]);
 }
 

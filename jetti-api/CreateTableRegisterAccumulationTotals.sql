@@ -1,10 +1,13 @@
 
 
-      RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AccountablePersons start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AccountablePersons.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AccountablePersons.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
@@ -25,28 +28,35 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountIsPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountIsPaid.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.AccountablePersons'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.AccountablePersons'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.TO] ON [dbo].[Register.Accumulation.AccountablePersons.TO.v] ([date], [company], [currency], [Employee], [CashFlow]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AccountablePersons.TO] ON [dbo].[Register.Accumulation.AccountablePersons.TO.v] ([date], [company], [currency], [Employee], [CashFlow]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AccountablePersons.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AccountablePersons.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AccountablePersons.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.AccountablePersons.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.AccountablePersons.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.AccountablePersons.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.AccountablePersons end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AccountablePersons end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PaymentBatch start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PaymentBatch.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PaymentBatch.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymentsKind"')) AS [PaymentsKind]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) AS [Counterpartie]
@@ -67,8 +77,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, null, 1), 0)) [AmountInBalance.Out]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."batch"')) AS [batch]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.PaymentBatch'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.PaymentBatch'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymentsKind"'))
@@ -78,20 +89,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."batch"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.TO] ON [dbo].[Register.Accumulation.PaymentBatch.TO.v] ([date], [company], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [batch]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PaymentBatch.TO] ON [dbo].[Register.Accumulation.PaymentBatch.TO.v] ([date], [company], [PaymentsKind], [Counterpartie], [ProductPackage], [Product], [Currency], [batch]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PaymentBatch.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PaymentBatch.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PaymentBatch.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.PaymentBatch.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.PaymentBatch.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.PaymentBatch.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.PaymentBatch end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PaymentBatch end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Investment.Analytics start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Investment.Analytics start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Investment.Analytics.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Investment.Analytics.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SourceTransaction"')) AS [SourceTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"')) AS [CreditTransaction]
@@ -118,8 +135,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountLoan"')) * IIF(kind = 1, 1, null), 0)) [AmountLoan.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountLoan"')) * IIF(kind = 1, null, 1), 0)) [AmountLoan.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Investment.Analytics'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Investment.Analytics'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SourceTransaction"'))
@@ -135,20 +153,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CurrencyLoan"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Investment.Analytics.TO] ON [dbo].[Register.Accumulation.Investment.Analytics.TO.v] ([date], [company], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product], [CurrencyProduct], [PaymentSource], [CurrencySource], [CompanyLoan], [Loan], [CurrencyLoan]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Investment.Analytics.TO] ON [dbo].[Register.Accumulation.Investment.Analytics.TO.v] ([date], [company], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product], [CurrencyProduct], [PaymentSource], [CurrencySource], [CompanyLoan], [Loan], [CurrencyLoan]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Investment.Analytics.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Investment.Analytics.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Investment.Analytics.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Investment.Analytics.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Investment.Analytics.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Investment.Analytics.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Investment.Analytics end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Investment.Analytics end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.OrderPayment start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderPayment.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderPayment.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymantKind"')) AS [PaymantKind]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) AS [Customer]
@@ -167,8 +191,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.OrderPayment'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.OrderPayment'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymantKind"'))
@@ -179,20 +204,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.TO] ON [dbo].[Register.Accumulation.OrderPayment.TO.v] ([date], [company], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderPayment.TO] ON [dbo].[Register.Accumulation.OrderPayment.TO.v] ([date], [company], [PaymantKind], [Customer], [BankAccount], [CashRegister], [AcquiringTerminal], [currency], [Department]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderPayment.TO] AS SELECT * FROM [dbo].[Register.Accumulation.OrderPayment.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderPayment.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.OrderPayment.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.OrderPayment.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.OrderPayment.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.OrderPayment end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.OrderPayment end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"')) AS [AO]
@@ -213,28 +244,35 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountIsPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountIsPaid.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.AP'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.AP'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [AO], [Supplier]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [AO], [Supplier]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AP.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.AP.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.AP.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.AP.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.AP end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AP end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.AR start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AR start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"')) AS [AO]
@@ -255,28 +293,35 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountIsPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountIsPaid.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.AR'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.AR'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.TO] ON [dbo].[Register.Accumulation.AR.TO.v] ([date], [company], [currency], [AO], [Customer]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AR.TO] ON [dbo].[Register.Accumulation.AR.TO.v] ([date], [company], [currency], [AO], [Customer]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AR.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AR.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.AR.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.AR.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.AR.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.AR end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.AR end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Bank start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Bank start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) AS [BankAccount]
@@ -292,8 +337,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Bank'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Bank'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
@@ -301,20 +347,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.TO] ON [dbo].[Register.Accumulation.Bank.TO.v] ([date], [company], [currency], [BankAccount], [CashFlow], [Analytics]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Bank.TO] ON [dbo].[Register.Accumulation.Bank.TO.v] ([date], [company], [currency], [BankAccount], [CashFlow], [Analytics]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Bank.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Bank.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Bank.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Bank.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Bank.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Bank end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Bank end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Balance start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) AS [Balance]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) AS [Analytics]
@@ -322,27 +374,34 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Balance'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Balance'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.TO] ON [dbo].[Register.Accumulation.Balance.TO.v] ([date], [company], [Balance], [Analytics]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.TO] ON [dbo].[Register.Accumulation.Balance.TO.v] ([date], [company], [Balance], [Analytics]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Balance.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Balance.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Balance.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Balance end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance.RC start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.RC.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.RC.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsibilityCenter"')) AS [ResponsibilityCenter]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
@@ -357,8 +416,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountRC"')) * IIF(kind = 1, 1, null), 0)) [AmountRC.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountRC"')) * IIF(kind = 1, null, 1), 0)) [AmountRC.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Balance.RC'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Balance.RC'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsibilityCenter"'))
@@ -368,20 +428,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.TO] ON [dbo].[Register.Accumulation.Balance.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.RC.TO] ON [dbo].[Register.Accumulation.Balance.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [Balance], [Analytics], [Analytics2], [Currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.RC.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.RC.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.RC.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Balance.RC.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Balance.RC.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Balance.RC.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Balance.RC end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance.RC end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance.Report start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) AS [Balance]
@@ -396,28 +462,35 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Balance.Report'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Balance.Report'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.Report.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Balance.Report.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Balance.Report.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Balance.Report.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Balance.Report end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Balance.Report end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Cash start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRegister"')) AS [CashRegister]
@@ -433,8 +506,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Cash'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Cash'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
@@ -442,20 +516,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.TO] ON [dbo].[Register.Accumulation.Cash.TO.v] ([date], [company], [currency], [CashRegister], [CashFlow], [Analytics]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.TO] ON [dbo].[Register.Accumulation.Cash.TO.v] ([date], [company], [currency], [CashRegister], [CashFlow], [Analytics]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Cash.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Cash.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Cash.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Cash.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Cash end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Cash end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Cash.Transit start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Cash.Transit start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyRecipient"')) AS [CompanyRecipient]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
@@ -472,8 +552,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Cash.Transit'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Cash.Transit'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyRecipient"'))
@@ -482,20 +563,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.TO] ON [dbo].[Register.Accumulation.Cash.Transit.TO.v] ([date], [company], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Cash.Transit.TO] ON [dbo].[Register.Accumulation.Cash.Transit.TO.v] ([date], [company], [CompanyRecipient], [currency], [Sender], [Recipient], [CashFlow]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Cash.Transit.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Cash.Transit.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Cash.Transit.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Cash.Transit.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Cash.Transit.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Cash.Transit end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Cash.Transit end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"')) AS [Storehouse]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"')) AS [SKU]
@@ -506,27 +593,34 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1, null), 0)) [Qty.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null, 1), 0)) [Qty.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Inventory'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Inventory'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SKU"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.TO] ON [dbo].[Register.Accumulation.Inventory.TO.v] ([date], [company], [Storehouse], [SKU]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.TO] ON [dbo].[Register.Accumulation.Inventory.TO.v] ([date], [company], [Storehouse], [SKU]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Inventory.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Inventory.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Inventory.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Inventory.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Inventory end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Inventory end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Loan start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Loan start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) AS [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) AS [Counterpartie]
@@ -548,8 +642,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountIsPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountIsPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountIsPaid.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Loan'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Loan'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"'))
@@ -557,20 +652,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.TO] ON [dbo].[Register.Accumulation.Loan.TO.v] ([date], [company], [Loan], [Counterpartie], [CashFlow], [currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Loan.TO] ON [dbo].[Register.Accumulation.Loan.TO.v] ([date], [company], [Loan], [Counterpartie], [CashFlow], [currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Loan.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Loan.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Loan.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Loan.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Loan.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Loan end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Loan end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.PL start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PL start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) AS [PL]
@@ -580,8 +681,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.PL'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.PL'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
@@ -589,20 +691,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.TO] ON [dbo].[Register.Accumulation.PL.TO.v] ([date], [company], [Department], [PL], [Analytics], [Analytics2]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.TO] ON [dbo].[Register.Accumulation.PL.TO.v] ([date], [company], [Department], [PL], [Analytics], [Analytics2]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PL.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.PL.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.PL.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.PL.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.PL end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PL end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PL.RC start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.RC.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.RC.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsibilityCenter"')) AS [ResponsibilityCenter]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
@@ -617,8 +725,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountRC"')) * IIF(kind = 1, 1, null), 0)) [AmountRC.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountRC"')) * IIF(kind = 1, null, 1), 0)) [AmountRC.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.PL.RC'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.PL.RC'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsibilityCenter"'))
@@ -628,20 +737,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.TO] ON [dbo].[Register.Accumulation.PL.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.RC.TO] ON [dbo].[Register.Accumulation.PL.RC.TO.v] ([date], [company], [ResponsibilityCenter], [Department], [PL], [Analytics], [Analytics2], [Currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.RC.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PL.RC.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PL.RC.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.PL.RC.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.PL.RC.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.PL.RC.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.PL.RC end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.PL.RC end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Sales start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
@@ -672,8 +787,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAR"')) * IIF(kind = 1, 1, null), 0)) [AmountInAR.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAR"')) * IIF(kind = 1, null, 1), 0)) [AmountInAR.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Sales'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Sales'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
@@ -684,20 +800,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Manager"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Storehouse"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.TO] ON [dbo].[Register.Accumulation.Sales.TO.v] ([date], [company], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [Storehouse]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.TO] ON [dbo].[Register.Accumulation.Sales.TO.v] ([date], [company], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [Storehouse]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Sales.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Sales.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Sales.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Sales.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Sales.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Sales end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Sales end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Salary start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Salary.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Salary.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."KorrCompany"')) AS [KorrCompany]
@@ -719,8 +841,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Salary'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Salary'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
@@ -734,20 +857,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PLAnalytics"'))
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."Status"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.TO] ON [dbo].[Register.Accumulation.Salary.TO.v] ([date], [company], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.TO] ON [dbo].[Register.Accumulation.Salary.TO.v] ([date], [company], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Salary.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Salary.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Salary.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Salary.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Salary.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Salary.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Salary end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Salary end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Depreciation start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
@@ -763,8 +892,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Depreciation'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Depreciation'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"'))
@@ -772,20 +902,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ResponsiblePerson"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.TO] ON [dbo].[Register.Accumulation.Depreciation.TO.v] ([date], [company], [OperationType], [currency], [Department], [ResponsiblePerson]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Depreciation.TO] ON [dbo].[Register.Accumulation.Depreciation.TO.v] ([date], [company], [OperationType], [currency], [Department], [ResponsiblePerson]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Depreciation.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Depreciation.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Depreciation.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Depreciation.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Depreciation.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Depreciation end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Depreciation end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.CashToPay start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.CashToPay start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"')) AS [CashFlow]
@@ -804,8 +940,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.CashToPay'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.CashToPay'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
@@ -822,20 +959,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceAnalytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO] AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.CashToPay.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.CashToPay.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.CashToPay.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.CashToPay end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.CashToPay end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Scenario"')) AS [Scenario]
@@ -857,8 +1000,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1, null), 0)) [Qty.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null, 1), 0)) [Qty.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.BudgetItemTurnover'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.BudgetItemTurnover'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
@@ -866,20 +1010,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BudgetItem"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.TO] ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] ([date], [company], [Department], [Scenario], [BudgetItem], [currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.BudgetItemTurnover.TO] ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] ([date], [company], [Department], [Scenario], [BudgetItem], [currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.TO] AS SELECT * FROM [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.BudgetItemTurnover.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.BudgetItemTurnover.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.BudgetItemTurnover.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.BudgetItemTurnover end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.BudgetItemTurnover end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Intercompany start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Intercompany.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Intercompany.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Intercompany"')) AS [Intercompany]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LegalCompanySender"')) AS [LegalCompanySender]
@@ -894,28 +1044,35 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Intercompany'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Intercompany'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Intercompany"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LegalCompanySender"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LegalCompanyRecipient"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.TO] ON [dbo].[Register.Accumulation.Intercompany.TO.v] ([date], [company], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Intercompany.TO] ON [dbo].[Register.Accumulation.Intercompany.TO.v] ([date], [company], [Intercompany], [LegalCompanySender], [LegalCompanyRecipient]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Intercompany.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Intercompany.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Intercompany.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Intercompany.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Intercompany.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Intercompany.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Intercompany end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Intercompany end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Acquiring start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Acquiring.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Acquiring.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AcquiringTerminal"')) AS [AcquiringTerminal]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
@@ -935,8 +1092,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) * IIF(kind = 1, 1, null), 0)) [AmountPaid.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPaid"')) * IIF(kind = 1, null, 1), 0)) [AmountPaid.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.Acquiring'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.Acquiring'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AcquiringTerminal"'))
@@ -945,20 +1103,26 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.TO] ON [dbo].[Register.Accumulation.Acquiring.TO.v] ([date], [company], [AcquiringTerminal], [OperationType], [Department], [CashFlow], [currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Acquiring.TO] ON [dbo].[Register.Accumulation.Acquiring.TO.v] ([date], [company], [AcquiringTerminal], [OperationType], [Department], [CashFlow], [currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Acquiring.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Acquiring.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Acquiring.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.Acquiring.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.Acquiring.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.Acquiring.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.Acquiring end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.Acquiring end', 0 ,1) WITH NOWAIT;
       GO
 
-      RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH SCHEMABINDING AS
-      SELECT
-          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO.v]
+WITH
+  SCHEMABINDING
+AS
+  SELECT
+    DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) AS [DepartmentCompany]
@@ -975,8 +1139,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
         , COUNT_BIG(*) AS COUNT
-      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.StaffingTable'
-      GROUP BY
+  FROM [dbo].[Accumulation]
+  WHERE [type] = N'Register.Accumulation.StaffingTable'
+  GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
@@ -988,11 +1153,14 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [isMainPosition], [Employee], [Person], [SalaryAnalytic], [currency]);-- ON PS_month([date]);
+CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [isMainPosition], [Employee], [Person], [SalaryAnalytic], [currency]);-- ON PS_month([date]);
       GO
-      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO] AS SELECT * FROM [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH (NOEXPAND);
+CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO]
+AS
+  SELECT *
+  FROM [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH (NOEXPAND);
       GO
-      GRANT SELECT ON [dbo].[Register.Accumulation.StaffingTable.TO] TO jetti;
+GRANT SELECT ON [dbo].[Register.Accumulation.StaffingTable.TO] TO jetti;
       GO
-      RAISERROR('Register.Accumulation.StaffingTable end', 0 ,1) WITH NOWAIT;
+RAISERROR('Register.Accumulation.StaffingTable end', 0 ,1) WITH NOWAIT;
       GO

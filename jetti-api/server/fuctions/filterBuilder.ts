@@ -15,7 +15,7 @@ export const filterBuilder = (filter: FormListFilter[],
 
   for (const f of filterList) {
     switch (f.center) {
-      case '=': case '>=': case '<=': case '>': case '<':
+      case '=': case '>=': case '<=': case '>': case '<': case '<>':
         if (Array.isArray(f.right)) { // time interval
           if (f.right[0]) where += ` AND ${f.leftQ} >= '${f.right[0]}'`;
           if (f.right[1]) where += ` AND ${f.leftQ} <= '${f.right[1]}'`;
@@ -38,7 +38,10 @@ export const filterBuilder = (filter: FormListFilter[],
         if (!f.right) where += ` AND ${f.leftQ} IS NULL `; else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
         break;
       case 'like':
-        where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
+        where += ` AND ${f.leftQ} LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
+        break;
+      case 'not like':
+        where += ` AND ${f.leftQ} NOT LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
         break;
       case 'beetwen':
         const interval = f.right as FilterInterval;
@@ -47,8 +50,13 @@ export const filterBuilder = (filter: FormListFilter[],
       case 'in':
         where += ` AND ${f.leftQ} IN (${(f.right['value'] || f.right)}) `;
         break;
+      case 'not in':
+        where += ` AND ${f.leftQ} NOT IN (${(f.right['value'] || f.right)}) `;
+        break;
       case 'is null':
         where += ` AND ${f.leftQ} IS NULL `;
+      case 'is not null':
+        where += ` AND ${f.leftQ} IS NOT NULL `;
         break;
     }
   }
