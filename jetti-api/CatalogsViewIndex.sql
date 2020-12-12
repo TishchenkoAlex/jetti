@@ -19,7 +19,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Account'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Account.v]ON[Catalog.Account.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Account.v] ON [Catalog.Account.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.deleted] ON [Catalog.Account.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code.f] ON [Catalog.Account.v](parent,isfolder,code,id);
@@ -59,7 +59,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.AcquiringTerminal'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.AcquiringTerminal.v]ON[Catalog.AcquiringTerminal.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.AcquiringTerminal.v] ON [Catalog.AcquiringTerminal.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.deleted] ON [Catalog.AcquiringTerminal.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,code,id);
@@ -98,7 +98,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.AllUnic.Lot'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.AllUnic.Lot.v]ON[Catalog.AllUnic.Lot.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.AllUnic.Lot.v] ON [Catalog.AllUnic.Lot.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.deleted] ON [Catalog.AllUnic.Lot.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AllUnic.Lot.v.code.f] ON [Catalog.AllUnic.Lot.v](parent,isfolder,code,id);
@@ -140,7 +140,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Attachment'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Attachment.v]ON[Catalog.Attachment.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.v] ON [Catalog.Attachment.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.deleted] ON [Catalog.Attachment.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.v.code.f] ON [Catalog.Attachment.v](parent,isfolder,code,id);
@@ -183,7 +183,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Attachment.Type'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Attachment.Type.v]ON[Catalog.Attachment.Type.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Attachment.Type.v] ON [Catalog.Attachment.Type.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.deleted] ON [Catalog.Attachment.Type.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Attachment.Type.v.code.f] ON [Catalog.Attachment.Type.v](parent,isfolder,code,id);
@@ -221,7 +221,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Balance'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Balance.v]ON[Catalog.Balance.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.v] ON [Catalog.Balance.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.deleted] ON [Catalog.Balance.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.v.code.f] ON [Catalog.Balance.v](parent,isfolder,code,id);
@@ -257,7 +257,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Balance.Analytics'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Balance.Analytics.v]ON[Catalog.Balance.Analytics.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Balance.Analytics.v] ON [Catalog.Balance.Analytics.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.deleted] ON [Catalog.Balance.Analytics.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Balance.Analytics.v.code.f] ON [Catalog.Balance.Analytics.v](parent,isfolder,code,id);
@@ -298,7 +298,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Bank'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Bank.v]ON[Catalog.Bank.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Bank.v] ON [Catalog.Bank.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.deleted] ON [Catalog.Bank.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Bank.v.code.f] ON [Catalog.Bank.v](parent,isfolder,code,id);
@@ -337,7 +337,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.BankAccount'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.BankAccount.v]ON[Catalog.BankAccount.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.BankAccount.v] ON [Catalog.BankAccount.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.deleted] ON [Catalog.BankAccount.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BankAccount.v.code.f] ON [Catalog.BankAccount.v](parent,isfolder,code,id);
@@ -372,7 +372,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Brand.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Brand'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Brand.v]ON[Catalog.Brand.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Brand.v] ON [Catalog.Brand.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.deleted] ON [Catalog.Brand.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Brand.v.code.f] ON [Catalog.Brand.v](parent,isfolder,code,id);
@@ -410,7 +410,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.BudgetItem'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.BudgetItem.v]ON[Catalog.BudgetItem.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.BudgetItem.v] ON [Catalog.BudgetItem.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.deleted] ON [Catalog.BudgetItem.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BudgetItem.v.code.f] ON [Catalog.BudgetItem.v](parent,isfolder,code,id);
@@ -445,7 +445,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.BusinessDirection'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.BusinessDirection.v]ON[Catalog.BusinessDirection.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessDirection.v] ON [Catalog.BusinessDirection.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.deleted] ON [Catalog.BusinessDirection.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessDirection.v.code.f] ON [Catalog.BusinessDirection.v](parent,isfolder,code,id);
@@ -476,11 +476,13 @@ GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Population"')), 0) [Population]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDevelopmentRegion"')), 0) [isDevelopmentRegion]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BusinessRegion'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.BusinessRegion.v]ON[Catalog.BusinessRegion.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessRegion.v] ON [Catalog.BusinessRegion.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.deleted] ON [Catalog.BusinessRegion.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code.f] ON [Catalog.BusinessRegion.v](parent,isfolder,code,id);
@@ -516,7 +518,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.CashFlow.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.CashFlow'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.CashFlow.v]ON[Catalog.CashFlow.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.CashFlow.v] ON [Catalog.CashFlow.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.deleted] ON [Catalog.CashFlow.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashFlow.v.code.f] ON [Catalog.CashFlow.v](parent,isfolder,code,id);
@@ -554,7 +556,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.CashRegister'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.CashRegister.v]ON[Catalog.CashRegister.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.CashRegister.v] ON [Catalog.CashRegister.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.deleted] ON [Catalog.CashRegister.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.CashRegister.v.code.f] ON [Catalog.CashRegister.v](parent,isfolder,code,id);
@@ -596,7 +598,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Catalog'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Catalog.v]ON[Catalog.Catalog.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Catalog.v] ON [Catalog.Catalog.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.deleted] ON [Catalog.Catalog.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Catalog.v.code.f] ON [Catalog.Catalog.v](parent,isfolder,code,id);
@@ -649,7 +651,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Company'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Company.v]ON[Catalog.Company.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.v] ON [Catalog.Company.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.deleted] ON [Catalog.Company.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.v.code.f] ON [Catalog.Company.v](parent,isfolder,code,id);
@@ -685,7 +687,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Company.Group'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Company.Group.v]ON[Catalog.Company.Group.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Company.Group.v] ON [Catalog.Company.Group.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.Group.v.deleted] ON [Catalog.Company.Group.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Company.Group.v.code.f] ON [Catalog.Company.Group.v](parent,isfolder,code,id);
@@ -720,7 +722,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Configuration.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Configuration'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Configuration.v]ON[Catalog.Configuration.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Configuration.v] ON [Catalog.Configuration.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.deleted] ON [Catalog.Configuration.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Configuration.v.code.f] ON [Catalog.Configuration.v](parent,isfolder,code,id);
@@ -777,7 +779,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Contract'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Contract.v]ON[Catalog.Contract.v](id);CREATE NONCLUSTERED INDEX[Catalog.Contract.v.owner] ON [Catalog.Contract.v]([owner]) INCLUDE([company]);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.v] ON [Catalog.Contract.v](id);CREATE NONCLUSTERED INDEX[Catalog.Contract.v.owner] ON [Catalog.Contract.v]([owner]) INCLUDE([company]);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.deleted] ON [Catalog.Contract.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.code.f] ON [Catalog.Contract.v](parent,isfolder,code,id);
@@ -821,7 +823,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Contract.Intercompany'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Contract.Intercompany.v]ON[Catalog.Contract.Intercompany.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.Intercompany.v] ON [Catalog.Contract.Intercompany.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.deleted] ON [Catalog.Contract.Intercompany.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.Intercompany.v.code.f] ON [Catalog.Contract.Intercompany.v](parent,isfolder,code,id);
@@ -866,11 +868,12 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."BC"')), '') [BC]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Counterpartie'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Counterpartie.v]ON[Catalog.Counterpartie.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.v] ON [Catalog.Counterpartie.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.deleted] ON [Catalog.Counterpartie.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code.f] ON [Catalog.Counterpartie.v](parent,isfolder,code,id);
@@ -910,7 +913,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDIN
       WHERE [type] = N'Catalog.Counterpartie.BankAccount'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Counterpartie.BankAccount.v]ON[Catalog.Counterpartie.BankAccount.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v] ON [Catalog.Counterpartie.BankAccount.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.deleted] ON [Catalog.Counterpartie.BankAccount.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.BankAccount.v.code.f] ON [Catalog.Counterpartie.BankAccount.v](parent,isfolder,code,id);
@@ -946,7 +949,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Country'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Country.v]ON[Catalog.Country.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Country.v] ON [Catalog.Country.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Country.v.deleted] ON [Catalog.Country.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Country.v.code.f] ON [Catalog.Country.v](parent,isfolder,code,id);
@@ -982,7 +985,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Currency'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Currency.v]ON[Catalog.Currency.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Currency.v] ON [Catalog.Currency.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.deleted] ON [Catalog.Currency.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Currency.v.code.f] ON [Catalog.Currency.v](parent,isfolder,code,id);
@@ -1035,7 +1038,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Department'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Department.v]ON[Catalog.Department.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.v] ON [Catalog.Department.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.deleted] ON [Catalog.Department.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.v.code.f] ON [Catalog.Department.v](parent,isfolder,code,id);
@@ -1075,7 +1078,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Department.Company'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Department.Company.v]ON[Catalog.Department.Company.v](id);CREATE NONCLUSTERED INDEX[Catalog.Department.Company.v.isfolder] ON [Catalog.Department.Company.v]([isfolder]) INCLUDE([company]);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Company.v] ON [Catalog.Department.Company.v](id);CREATE NONCLUSTERED INDEX[Catalog.Department.Company.v.isfolder] ON [Catalog.Department.Company.v]([isfolder]) INCLUDE([company]);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.deleted] ON [Catalog.Department.Company.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code.f] ON [Catalog.Department.Company.v](parent,isfolder,code,id);
@@ -1110,7 +1113,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Department.Kind'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Department.Kind.v]ON[Catalog.Department.Kind.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Kind.v] ON [Catalog.Department.Kind.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Kind.v.deleted] ON [Catalog.Department.Kind.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Kind.v.code.f] ON [Catalog.Department.Kind.v](parent,isfolder,code,id);
@@ -1145,7 +1148,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason.v] WITH SCHEMABINDING 
       WHERE [type] = N'Catalog.Department.StatusReason'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Department.StatusReason.v]ON[Catalog.Department.StatusReason.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.StatusReason.v] ON [Catalog.Department.StatusReason.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.StatusReason.v.deleted] ON [Catalog.Department.StatusReason.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.StatusReason.v.code.f] ON [Catalog.Department.StatusReason.v](parent,isfolder,code,id);
@@ -1180,7 +1183,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Dynamic.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Dynamic'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Dynamic.v]ON[Catalog.Dynamic.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Dynamic.v] ON [Catalog.Dynamic.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Dynamic.v.deleted] ON [Catalog.Dynamic.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Dynamic.v.code.f] ON [Catalog.Dynamic.v](parent,isfolder,code,id);
@@ -1216,7 +1219,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Employee'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Employee.v]ON[Catalog.Employee.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Employee.v] ON [Catalog.Employee.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.deleted] ON [Catalog.Employee.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code.f] ON [Catalog.Employee.v](parent,isfolder,code,id);
@@ -1255,7 +1258,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Expense'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Expense.v]ON[Catalog.Expense.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.v] ON [Catalog.Expense.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.deleted] ON [Catalog.Expense.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.v.code.f] ON [Catalog.Expense.v](parent,isfolder,code,id);
@@ -1292,7 +1295,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Expense.Analytics'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Expense.Analytics.v]ON[Catalog.Expense.Analytics.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Expense.Analytics.v] ON [Catalog.Expense.Analytics.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.deleted] ON [Catalog.Expense.Analytics.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Expense.Analytics.v.code.f] ON [Catalog.Expense.Analytics.v](parent,isfolder,code,id);
@@ -1328,7 +1331,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING
       WHERE [type] = N'Catalog.GroupObjectsExploitation'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.GroupObjectsExploitation.v]ON[Catalog.GroupObjectsExploitation.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.GroupObjectsExploitation.v] ON [Catalog.GroupObjectsExploitation.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.deleted] ON [Catalog.GroupObjectsExploitation.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.GroupObjectsExploitation.v.code.f] ON [Catalog.GroupObjectsExploitation.v](parent,isfolder,code,id);
@@ -1367,7 +1370,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Income'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Income.v]ON[Catalog.Income.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Income.v] ON [Catalog.Income.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.deleted] ON [Catalog.Income.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Income.v.code.f] ON [Catalog.Income.v](parent,isfolder,code,id);
@@ -1402,7 +1405,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.InvestorGroup'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.InvestorGroup.v]ON[Catalog.InvestorGroup.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.InvestorGroup.v] ON [Catalog.InvestorGroup.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.InvestorGroup.v.deleted] ON [Catalog.InvestorGroup.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.InvestorGroup.v.code.f] ON [Catalog.InvestorGroup.v](parent,isfolder,code,id);
@@ -1440,7 +1443,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.JobTitle'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.JobTitle.v]ON[Catalog.JobTitle.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.v] ON [Catalog.JobTitle.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.deleted] ON [Catalog.JobTitle.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code.f] ON [Catalog.JobTitle.v](parent,isfolder,code,id);
@@ -1475,7 +1478,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.JobTitle.Category'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.JobTitle.Category.v]ON[Catalog.JobTitle.Category.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.Category.v] ON [Catalog.JobTitle.Category.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Category.v.deleted] ON [Catalog.JobTitle.Category.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Category.v.code.f] ON [Catalog.JobTitle.Category.v](parent,isfolder,code,id);
@@ -1529,7 +1532,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Loan'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Loan.v]ON[Catalog.Loan.v](id);CREATE NONCLUSTERED INDEX[Catalog.Loan.v.owner] ON [Catalog.Loan.v]([owner]) INCLUDE([company]);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Loan.v] ON [Catalog.Loan.v](id);CREATE NONCLUSTERED INDEX[Catalog.Loan.v.owner] ON [Catalog.Loan.v]([owner]) INCLUDE([company]);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.deleted] ON [Catalog.Loan.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Loan.v.code.f] ON [Catalog.Loan.v](parent,isfolder,code,id);
@@ -1564,7 +1567,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure.v] WITH SCHEMABINDING A
       WHERE [type] = N'Catalog.LoanRepaymentProcedure'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.LoanRepaymentProcedure.v]ON[Catalog.LoanRepaymentProcedure.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v] ON [Catalog.LoanRepaymentProcedure.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v.deleted] ON [Catalog.LoanRepaymentProcedure.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanRepaymentProcedure.v.code.f] ON [Catalog.LoanRepaymentProcedure.v](parent,isfolder,code,id);
@@ -1600,7 +1603,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.LoanTypes'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.LoanTypes.v]ON[Catalog.LoanTypes.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.LoanTypes.v] ON [Catalog.LoanTypes.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.deleted] ON [Catalog.LoanTypes.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.LoanTypes.v.code.f] ON [Catalog.LoanTypes.v](parent,isfolder,code,id);
@@ -1638,7 +1641,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Manager'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Manager.v]ON[Catalog.Manager.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Manager.v] ON [Catalog.Manager.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.deleted] ON [Catalog.Manager.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Manager.v.code.f] ON [Catalog.Manager.v](parent,isfolder,code,id);
@@ -1673,7 +1676,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ManufactureLocation'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ManufactureLocation.v]ON[Catalog.ManufactureLocation.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ManufactureLocation.v] ON [Catalog.ManufactureLocation.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.deleted] ON [Catalog.ManufactureLocation.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ManufactureLocation.v.code.f] ON [Catalog.ManufactureLocation.v](parent,isfolder,code,id);
@@ -1690,352 +1693,6 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 RAISERROR('Catalog.ManufactureLocation end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.ManufactureLocation ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat ------------------------------
-
-RAISERROR('Catalog.Newdynocat start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."simpleString"')), '') [simpleString]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat.v]ON[Catalog.Newdynocat.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.deleted] ON [Catalog.Newdynocat.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.code.f] ON [Catalog.Newdynocat.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.description.f] ON [Catalog.Newdynocat.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.description] ON [Catalog.Newdynocat.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.code] ON [Catalog.Newdynocat.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.user] ON [Catalog.Newdynocat.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat.v.company] ON [Catalog.Newdynocat.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat.v];
-RAISERROR('Catalog.Newdynocat end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat2 ------------------------------
-
-RAISERROR('Catalog.Newdynocat2 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat2.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat2.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat2'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat2.v]ON[Catalog.Newdynocat2.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.deleted] ON [Catalog.Newdynocat2.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.code.f] ON [Catalog.Newdynocat2.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.description.f] ON [Catalog.Newdynocat2.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.description] ON [Catalog.Newdynocat2.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.code] ON [Catalog.Newdynocat2.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.user] ON [Catalog.Newdynocat2.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat2.v.company] ON [Catalog.Newdynocat2.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat2.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat2.v];
-RAISERROR('Catalog.Newdynocat2 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat2 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat3 ------------------------------
-
-RAISERROR('Catalog.Newdynocat3 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat3.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat3.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat3'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat3.v]ON[Catalog.Newdynocat3.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.deleted] ON [Catalog.Newdynocat3.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.code.f] ON [Catalog.Newdynocat3.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.description.f] ON [Catalog.Newdynocat3.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.description] ON [Catalog.Newdynocat3.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.code] ON [Catalog.Newdynocat3.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.user] ON [Catalog.Newdynocat3.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat3.v.company] ON [Catalog.Newdynocat3.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat3.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat3.v];
-RAISERROR('Catalog.Newdynocat3 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat3 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat4 ------------------------------
-
-RAISERROR('Catalog.Newdynocat4 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat4.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat4.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat4'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat4.v]ON[Catalog.Newdynocat4.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.deleted] ON [Catalog.Newdynocat4.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.code.f] ON [Catalog.Newdynocat4.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.description.f] ON [Catalog.Newdynocat4.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.description] ON [Catalog.Newdynocat4.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.code] ON [Catalog.Newdynocat4.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.user] ON [Catalog.Newdynocat4.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat4.v.company] ON [Catalog.Newdynocat4.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat4.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat4.v];
-RAISERROR('Catalog.Newdynocat4 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat4 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat5 ------------------------------
-
-RAISERROR('Catalog.Newdynocat5 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat5.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat5.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dyno6"')) [dyno6]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat5'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat5.v]ON[Catalog.Newdynocat5.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.deleted] ON [Catalog.Newdynocat5.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.code.f] ON [Catalog.Newdynocat5.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.description.f] ON [Catalog.Newdynocat5.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.description] ON [Catalog.Newdynocat5.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.code] ON [Catalog.Newdynocat5.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.user] ON [Catalog.Newdynocat5.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat5.v.company] ON [Catalog.Newdynocat5.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat5.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat5.v];
-RAISERROR('Catalog.Newdynocat5 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat5 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat6 ------------------------------
-
-RAISERROR('Catalog.Newdynocat6 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat6.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat6.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat6'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat6.v]ON[Catalog.Newdynocat6.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.deleted] ON [Catalog.Newdynocat6.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.code.f] ON [Catalog.Newdynocat6.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.description.f] ON [Catalog.Newdynocat6.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.description] ON [Catalog.Newdynocat6.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.code] ON [Catalog.Newdynocat6.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.user] ON [Catalog.Newdynocat6.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat6.v.company] ON [Catalog.Newdynocat6.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat6.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat6.v];
-RAISERROR('Catalog.Newdynocat6 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat6 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat7 ------------------------------
-
-RAISERROR('Catalog.Newdynocat7 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat7.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat7.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat7'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat7.v]ON[Catalog.Newdynocat7.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.deleted] ON [Catalog.Newdynocat7.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.code.f] ON [Catalog.Newdynocat7.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.description.f] ON [Catalog.Newdynocat7.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.description] ON [Catalog.Newdynocat7.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.code] ON [Catalog.Newdynocat7.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.user] ON [Catalog.Newdynocat7.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat7.v.company] ON [Catalog.Newdynocat7.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat7.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat7.v];
-RAISERROR('Catalog.Newdynocat7 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat7 ------------------------------
-
------------------------------- BEGIN Catalog.Newdynocat8 ------------------------------
-
-RAISERROR('Catalog.Newdynocat8 start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Newdynocat8.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Newdynocat8.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."FieldString"')), '') [FieldString]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."FieldNumber"')), 0) [FieldNumber]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."dynocat1"')) [dynocat1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Str"')), '') [Str]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."numb"')), 0) [numb]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Job"')) [Job]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank2"')) [Bank2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank3"')) [Bank3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."store"')) [store]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."complex"')) [complex]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."complex2"')) [complex2]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Newdynocat8'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Newdynocat8.v]ON[Catalog.Newdynocat8.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.deleted] ON [Catalog.Newdynocat8.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.code.f] ON [Catalog.Newdynocat8.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.description.f] ON [Catalog.Newdynocat8.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.description] ON [Catalog.Newdynocat8.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.code] ON [Catalog.Newdynocat8.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.user] ON [Catalog.Newdynocat8.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Newdynocat8.v.company] ON [Catalog.Newdynocat8.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Newdynocat8.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Newdynocat8.v];
-RAISERROR('Catalog.Newdynocat8 end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Newdynocat8 ------------------------------
 
 ------------------------------ BEGIN Catalog.ObjectsExploitation ------------------------------
 
@@ -2056,7 +1713,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ObjectsExploitation'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ObjectsExploitation.v]ON[Catalog.ObjectsExploitation.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ObjectsExploitation.v] ON [Catalog.ObjectsExploitation.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.deleted] ON [Catalog.ObjectsExploitation.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ObjectsExploitation.v.code.f] ON [Catalog.ObjectsExploitation.v](parent,isfolder,code,id);
@@ -2096,7 +1753,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Operation'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Operation.v]ON[Catalog.Operation.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.v] ON [Catalog.Operation.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.deleted] ON [Catalog.Operation.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.v.code.f] ON [Catalog.Operation.v](parent,isfolder,code,id);
@@ -2134,7 +1791,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Operation.Group'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Operation.Group.v]ON[Catalog.Operation.Group.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Group.v] ON [Catalog.Operation.Group.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.deleted] ON [Catalog.Operation.Group.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Group.v.code.f] ON [Catalog.Operation.Group.v](parent,isfolder,code,id);
@@ -2169,7 +1826,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Operation.Type'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Operation.Type.v]ON[Catalog.Operation.Type.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Operation.Type.v] ON [Catalog.Operation.Type.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.deleted] ON [Catalog.Operation.Type.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Operation.Type.v.code.f] ON [Catalog.Operation.Type.v](parent,isfolder,code,id);
@@ -2205,7 +1862,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.OrderSource'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.OrderSource.v]ON[Catalog.OrderSource.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.deleted] ON [Catalog.OrderSource.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id);
@@ -2264,7 +1921,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Person'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Person.v]ON[Catalog.Person.v](id);CREATE NONCLUSTERED INDEX[Catalog.Person.v.Code1] ON [Catalog.Person.v]([Code1]) INCLUDE([company]);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.v] ON [Catalog.Person.v](id);CREATE NONCLUSTERED INDEX[Catalog.Person.v.Code1] ON [Catalog.Person.v]([Code1]) INCLUDE([company]);
 CREATE NONCLUSTERED INDEX[Catalog.Person.v.Department] ON [Catalog.Person.v]([Department]) INCLUDE([company]);
 CREATE NONCLUSTERED INDEX[Catalog.Person.v.Profile] ON [Catalog.Person.v]([Profile]) INCLUDE([company]);
 CREATE NONCLUSTERED INDEX[Catalog.Person.v.AccountAD] ON [Catalog.Person.v]([AccountAD]) INCLUDE([company]);
@@ -2306,7 +1963,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Person.BankAccount'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Person.BankAccount.v]ON[Catalog.Person.BankAccount.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.BankAccount.v] ON [Catalog.Person.BankAccount.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.deleted] ON [Catalog.Person.BankAccount.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.code.f] ON [Catalog.Person.BankAccount.v](parent,isfolder,code,id);
@@ -2347,7 +2004,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Person.Contract'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Person.Contract.v]ON[Catalog.Person.Contract.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.Contract.v] ON [Catalog.Person.Contract.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.deleted] ON [Catalog.Person.Contract.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.Contract.v.code.f] ON [Catalog.Person.Contract.v](parent,isfolder,code,id);
@@ -2382,7 +2039,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.PersonIdentity'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.PersonIdentity.v]ON[Catalog.PersonIdentity.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.PersonIdentity.v] ON [Catalog.PersonIdentity.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.deleted] ON [Catalog.PersonIdentity.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PersonIdentity.v.code.f] ON [Catalog.PersonIdentity.v](parent,isfolder,code,id);
@@ -2417,7 +2074,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.PlanningScenario'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.PlanningScenario.v]ON[Catalog.PlanningScenario.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.PlanningScenario.v] ON [Catalog.PlanningScenario.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.deleted] ON [Catalog.PlanningScenario.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PlanningScenario.v.code.f] ON [Catalog.PlanningScenario.v](parent,isfolder,code,id);
@@ -2456,7 +2113,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PriceType.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.PriceType'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.PriceType.v]ON[Catalog.PriceType.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.PriceType.v] ON [Catalog.PriceType.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.deleted] ON [Catalog.PriceType.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PriceType.v.code.f] ON [Catalog.PriceType.v](parent,isfolder,code,id);
@@ -2519,7 +2176,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Product'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Product.v]ON[Catalog.Product.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.v] ON [Catalog.Product.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.deleted] ON [Catalog.Product.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.v.code.f] ON [Catalog.Product.v](parent,isfolder,code,id);
@@ -2557,7 +2214,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Product.Analytic'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Product.Analytic.v]ON[Catalog.Product.Analytic.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Analytic.v] ON [Catalog.Product.Analytic.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Analytic.v.deleted] ON [Catalog.Product.Analytic.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Analytic.v.code.f] ON [Catalog.Product.Analytic.v](parent,isfolder,code,id);
@@ -2596,7 +2253,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Product.Package'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Product.Package.v]ON[Catalog.Product.Package.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Package.v] ON [Catalog.Product.Package.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Package.v.deleted] ON [Catalog.Product.Package.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Package.v.code.f] ON [Catalog.Product.Package.v](parent,isfolder,code,id);
@@ -2633,7 +2290,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Product.Report'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Product.Report.v]ON[Catalog.Product.Report.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Product.Report.v] ON [Catalog.Product.Report.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Report.v.deleted] ON [Catalog.Product.Report.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Product.Report.v.code.f] ON [Catalog.Product.Report.v](parent,isfolder,code,id);
@@ -2669,7 +2326,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ProductCategory'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ProductCategory.v]ON[Catalog.ProductCategory.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductCategory.v] ON [Catalog.ProductCategory.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.deleted] ON [Catalog.ProductCategory.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductCategory.v.code.f] ON [Catalog.ProductCategory.v](parent,isfolder,code,id);
@@ -2705,7 +2362,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ProductKind'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ProductKind.v]ON[Catalog.ProductKind.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ProductKind.v] ON [Catalog.ProductKind.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.deleted] ON [Catalog.ProductKind.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ProductKind.v.code.f] ON [Catalog.ProductKind.v](parent,isfolder,code,id);
@@ -2740,7 +2397,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.PromotionChannel.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.PromotionChannel'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.PromotionChannel.v]ON[Catalog.PromotionChannel.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.PromotionChannel.v] ON [Catalog.PromotionChannel.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PromotionChannel.v.deleted] ON [Catalog.PromotionChannel.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.PromotionChannel.v.code.f] ON [Catalog.PromotionChannel.v](parent,isfolder,code,id);
@@ -2775,7 +2432,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ReasonTypes'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ReasonTypes.v]ON[Catalog.ReasonTypes.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ReasonTypes.v] ON [Catalog.ReasonTypes.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReasonTypes.v.deleted] ON [Catalog.ReasonTypes.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ReasonTypes.v.code.f] ON [Catalog.ReasonTypes.v](parent,isfolder,code,id);
@@ -2813,7 +2470,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.ResponsibilityCenter'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.ResponsibilityCenter.v]ON[Catalog.ResponsibilityCenter.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.ResponsibilityCenter.v] ON [Catalog.ResponsibilityCenter.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.deleted] ON [Catalog.ResponsibilityCenter.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.ResponsibilityCenter.v.code.f] ON [Catalog.ResponsibilityCenter.v](parent,isfolder,code,id);
@@ -2858,7 +2515,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.RetailClient'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.RetailClient.v]ON[Catalog.RetailClient.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailClient.v] ON [Catalog.RetailClient.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.deleted] ON [Catalog.RetailClient.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailClient.v.code.f] ON [Catalog.RetailClient.v](parent,isfolder,code,id);
@@ -2897,7 +2554,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailNetwork.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.RetailNetwork'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.RetailNetwork.v]ON[Catalog.RetailNetwork.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailNetwork.v] ON [Catalog.RetailNetwork.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.deleted] ON [Catalog.RetailNetwork.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.code.f] ON [Catalog.RetailNetwork.v](parent,isfolder,code,id);
@@ -2932,7 +2589,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Role.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Role'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Role.v]ON[Catalog.Role.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Role.v] ON [Catalog.Role.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.deleted] ON [Catalog.Role.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Role.v.code.f] ON [Catalog.Role.v](parent,isfolder,code,id);
@@ -2969,7 +2626,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Salary.Analytics'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Salary.Analytics.v]ON[Catalog.Salary.Analytics.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Salary.Analytics.v] ON [Catalog.Salary.Analytics.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Salary.Analytics.v.deleted] ON [Catalog.Salary.Analytics.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Salary.Analytics.v.code.f] ON [Catalog.Salary.Analytics.v](parent,isfolder,code,id);
@@ -3010,7 +2667,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.SalaryProject'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.SalaryProject.v]ON[Catalog.SalaryProject.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.SalaryProject.v] ON [Catalog.SalaryProject.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.deleted] ON [Catalog.SalaryProject.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SalaryProject.v.code.f] ON [Catalog.SalaryProject.v](parent,isfolder,code,id);
@@ -3046,7 +2703,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Scenario'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Scenario.v]ON[Catalog.Scenario.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Scenario.v] ON [Catalog.Scenario.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.deleted] ON [Catalog.Scenario.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Scenario.v.code.f] ON [Catalog.Scenario.v](parent,isfolder,code,id);
@@ -3089,7 +2746,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Specification'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Specification.v]ON[Catalog.Specification.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Specification.v] ON [Catalog.Specification.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.deleted] ON [Catalog.Specification.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code.f] ON [Catalog.Specification.v](parent,isfolder,code,id);
@@ -3132,7 +2789,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.StaffingTable'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.StaffingTable.v]ON[Catalog.StaffingTable.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.StaffingTable.v] ON [Catalog.StaffingTable.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.deleted] ON [Catalog.StaffingTable.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.StaffingTable.v.code.f] ON [Catalog.StaffingTable.v](parent,isfolder,code,id);
@@ -3168,7 +2825,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Storehouse'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Storehouse.v]ON[Catalog.Storehouse.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Storehouse.v] ON [Catalog.Storehouse.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.deleted] ON [Catalog.Storehouse.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Storehouse.v.code.f] ON [Catalog.Storehouse.v](parent,isfolder,code,id);
@@ -3204,7 +2861,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.SubSystem'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.SubSystem.v]ON[Catalog.SubSystem.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.SubSystem.v] ON [Catalog.SubSystem.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.deleted] ON [Catalog.SubSystem.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.SubSystem.v.code.f] ON [Catalog.SubSystem.v](parent,isfolder,code,id);
@@ -3240,7 +2897,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxAssignmentCode'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxAssignmentCode.v]ON[Catalog.TaxAssignmentCode.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxAssignmentCode.v] ON [Catalog.TaxAssignmentCode.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxAssignmentCode.v.deleted] ON [Catalog.TaxAssignmentCode.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxAssignmentCode.v.code.f] ON [Catalog.TaxAssignmentCode.v](parent,isfolder,code,id);
@@ -3275,7 +2932,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxBasisPayment'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxBasisPayment.v]ON[Catalog.TaxBasisPayment.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxBasisPayment.v] ON [Catalog.TaxBasisPayment.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.deleted] ON [Catalog.TaxBasisPayment.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxBasisPayment.v.code.f] ON [Catalog.TaxBasisPayment.v](parent,isfolder,code,id);
@@ -3314,7 +2971,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxOffice'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxOffice.v]ON[Catalog.TaxOffice.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxOffice.v] ON [Catalog.TaxOffice.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxOffice.v.deleted] ON [Catalog.TaxOffice.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxOffice.v.code.f] ON [Catalog.TaxOffice.v](parent,isfolder,code,id);
@@ -3350,7 +3007,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxPayerStatus'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxPayerStatus.v]ON[Catalog.TaxPayerStatus.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPayerStatus.v] ON [Catalog.TaxPayerStatus.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPayerStatus.v.deleted] ON [Catalog.TaxPayerStatus.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPayerStatus.v.code.f] ON [Catalog.TaxPayerStatus.v](parent,isfolder,code,id);
@@ -3387,7 +3044,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxPaymentCode'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxPaymentCode.v]ON[Catalog.TaxPaymentCode.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentCode.v] ON [Catalog.TaxPaymentCode.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.deleted] ON [Catalog.TaxPaymentCode.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentCode.v.code.f] ON [Catalog.TaxPaymentCode.v](parent,isfolder,code,id);
@@ -3422,7 +3079,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxPaymentPeriod'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxPaymentPeriod.v]ON[Catalog.TaxPaymentPeriod.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxPaymentPeriod.v] ON [Catalog.TaxPaymentPeriod.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentPeriod.v.deleted] ON [Catalog.TaxPaymentPeriod.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxPaymentPeriod.v.code.f] ON [Catalog.TaxPaymentPeriod.v](parent,isfolder,code,id);
@@ -3458,7 +3115,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.TaxRate'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.TaxRate.v]ON[Catalog.TaxRate.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.TaxRate.v] ON [Catalog.TaxRate.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.deleted] ON [Catalog.TaxRate.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.TaxRate.v.code.f] ON [Catalog.TaxRate.v](parent,isfolder,code,id);
@@ -3496,7 +3153,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.Unit'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.Unit.v]ON[Catalog.Unit.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Unit.v] ON [Catalog.Unit.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.deleted] ON [Catalog.Unit.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Unit.v.code.f] ON [Catalog.Unit.v](parent,isfolder,code,id);
@@ -3535,7 +3192,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.User'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.User.v]ON[Catalog.User.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.User.v] ON [Catalog.User.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.deleted] ON [Catalog.User.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.User.v.code.f] ON [Catalog.User.v](parent,isfolder,code,id);
@@ -3570,7 +3227,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Catalog.UsersGroup'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Catalog.UsersGroup.v]ON[Catalog.UsersGroup.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Catalog.UsersGroup.v] ON [Catalog.UsersGroup.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.deleted] ON [Catalog.UsersGroup.v](deleted,description,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.code.f] ON [Catalog.UsersGroup.v](parent,isfolder,code,id);
@@ -3648,7 +3305,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.CashRequest'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.CashRequest.v]ON[Document.CashRequest.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.CashRequest.v] ON [Document.CashRequest.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.date] ON [Document.CashRequest.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequest.v.parent] ON [Document.CashRequest.v](parent,id);
@@ -3691,7 +3348,7 @@ CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.CashRequestRegistry'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.CashRequestRegistry.v]ON[Document.CashRequestRegistry.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.CashRequestRegistry.v] ON [Document.CashRequestRegistry.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.date] ON [Document.CashRequestRegistry.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.CashRequestRegistry.v.parent] ON [Document.CashRequestRegistry.v](parent,id);
@@ -3725,7 +3382,7 @@ CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.ExchangeRates'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.ExchangeRates.v]ON[Document.ExchangeRates.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.ExchangeRates.v] ON [Document.ExchangeRates.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.date] ON [Document.ExchangeRates.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.ExchangeRates.v.parent] ON [Document.ExchangeRates.v](parent,id);
@@ -3768,7 +3425,7 @@ CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.Invoice'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.Invoice.v]ON[Document.Invoice.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.Invoice.v] ON [Document.Invoice.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.date] ON [Document.Invoice.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Invoice.v.parent] ON [Document.Invoice.v](parent,id);
@@ -3809,7 +3466,7 @@ CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.Operation'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.Operation.v]ON[Document.Operation.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.Operation.v] ON [Document.Operation.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.date] ON [Document.Operation.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.parent] ON [Document.Operation.v](parent,id);
@@ -3845,7 +3502,7 @@ CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.PriceList'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.PriceList.v]ON[Document.PriceList.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.PriceList.v] ON [Document.PriceList.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.date] ON [Document.PriceList.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.PriceList.v.parent] ON [Document.PriceList.v](parent,id);
@@ -3881,7 +3538,7 @@ CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.Settings'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.Settings.v]ON[Document.Settings.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.Settings.v] ON [Document.Settings.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.date] ON [Document.Settings.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.parent] ON [Document.Settings.v](parent,id);
@@ -3922,7 +3579,7 @@ CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.UserSettings'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.UserSettings.v]ON[Document.UserSettings.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.UserSettings.v] ON [Document.UserSettings.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.date] ON [Document.UserSettings.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.UserSettings.v.parent] ON [Document.UserSettings.v](parent,id);
@@ -3958,7 +3615,7 @@ CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
       WHERE [type] = N'Document.WorkFlow'
 ;
 GO
-CREATE UNIQUE CLUSTERED INDEX[Document.WorkFlow.v]ON[Document.WorkFlow.v](id);
+CREATE UNIQUE CLUSTERED INDEX [Document.WorkFlow.v] ON [Document.WorkFlow.v](id);
         
 CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.date] ON [Document.WorkFlow.v](date,id);
 CREATE UNIQUE NONCLUSTERED INDEX [Document.WorkFlow.v.parent] ON [Document.WorkFlow.v](parent,id);
