@@ -773,7 +773,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, DepartmentCompany, StaffingTablePosition, Employee, Person
+        d.exchangeRate, Department, DepartmentCompany, StaffingTablePosition, isMainPosition, Employee, Person
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], SalaryAnalytic, currency
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM [dbo].Accumulation r
@@ -783,6 +783,7 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
         , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
+        , [isMainPosition] BIT N'$.isMainPosition'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [SalaryRate] MONEY N'$.SalaryRate'

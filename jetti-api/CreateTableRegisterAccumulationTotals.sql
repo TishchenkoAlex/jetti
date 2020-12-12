@@ -963,6 +963,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) AS [DepartmentCompany]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTablePosition"')) AS [StaffingTablePosition]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isMainPosition"')) [isMainPosition]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) AS [Person]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SalaryRate"')) * IIF(kind = 1, 1, -1), 0)) [SalaryRate]
@@ -981,12 +982,13 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTablePosition"'))
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isMainPosition"')) [isMainPosition
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryAnalytic], [currency]);-- ON PS_month([date]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [isMainPosition], [Employee], [Person], [SalaryAnalytic], [currency]);-- ON PS_month([date]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO] AS SELECT * FROM [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH (NOEXPAND);
       GO
