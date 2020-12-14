@@ -136,6 +136,7 @@ export type ComplexTypes =
   'Types.CounterpartieOrPerson' |
   'Types.PersonOrCounterpartieBankAccount' |
   'Types.CompanyOrCounterpartieOrPerson' |
+  'Types.CounterpartieOrPersonContract' |
   'Types.CompanyOrCounterpartieOrPersonOrRetailClient' |
   'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalanceOrIncome' |

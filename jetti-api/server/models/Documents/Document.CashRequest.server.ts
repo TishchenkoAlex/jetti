@@ -508,7 +508,7 @@ ORDER BY
         );
       });
     } else {
-      Registers.Accumulation.push(new RegisterAccumulationCashToPay({
+      const movements = new RegisterAccumulationCashToPay({
         kind: true,
         CashRecipient: this.CashRecipient,
         Amount: this.Amount - (this.AmountPenalty || 0),
@@ -518,8 +518,9 @@ ORDER BY
         currency: сurrency,
         CashFlow: this.CashFlow,
         OperationType: this.Operation
-      })
-      );
+      });
+      if (this.Operation === 'Выплата заработной платы без ведомости' && this.CashKind === 'CASH') movements.Contract = this.PersonContract;
+      Registers.Accumulation.push(movements);
     }
 
     return Registers;
