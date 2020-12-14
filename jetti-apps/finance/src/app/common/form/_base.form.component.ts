@@ -179,9 +179,10 @@ export class _baseDocFormComponent implements OnDestroy, OnInit, IFormEventsMode
     this._form$.next(this.data);
     this.onOpen();
 
-    this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id === this.id)).subscribe(form => {
-      this.Next(form);
-    });
+    this._formSubscription$ = this.ds.form$.pipe(filter(f => f.value.id.toLocaleUpperCase() === this.id.toLocaleUpperCase()))
+      .subscribe(form => {
+        this.Next(form);
+      });
 
     if (this.isHistory || this.readonly) this.form.disable(patchOptionsNoEvents);
     this.navigateCommands.push(<MenuItem>{ label: 'Show in list', command: () => this.goto() });

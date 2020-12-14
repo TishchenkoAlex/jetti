@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { BaseDocListComponent } from '../common/datatable/base.list.component';
+// import { BaseDocListComponent } from '../common/datatable/base.list.component';
 import { HomeComponent } from '../home/home.component';
 import { BaseDocFormComponent } from './../common/form/base.form.component';
 import { OperationListComponent } from './Operation/operation.list.component';
@@ -16,7 +16,7 @@ const userForms: { [x: string]: { formComponent: Type<any>, listComponent: Type<
   'Document.Operation': { formComponent: BaseDocFormComponent, listComponent: OperationListComponent },
   'Form.PostAfterEchange': { formComponent: SyncFormComponent, listComponent: SyncFormComponent },
   'Form.BusinessProcessTasks': { formComponent: TaskListComponent, listComponent: TaskListComponent },
-  'Document.CashRequest': { formComponent: DocumentCashRequestComponent, listComponent: BaseDocListComponent },
+  'Document.CashRequest': { formComponent: DocumentCashRequestComponent, listComponent: BaseHierarchyListComponent },
   'Form.SearchAndReplace': { formComponent: SearchAndReplaceComponent, listComponent: SearchAndReplaceComponent },
   'Form.ObjectsGroupModify': { formComponent: ObjectsGroupModifyComponent, listComponent: ObjectsGroupModifyComponent },
   'Form.QueueManager': { formComponent: QueueManagerComponent, listComponent: QueueManagerComponent }

@@ -39,7 +39,11 @@ export class ApiDataSource {
           case 'next': id = this.continuation.last!.id as string; break;
           case 'refresh': case 'sort': case undefined:
             offset = this.renderedDataList.findIndex(r => r.id === id);
-            if (offset === -1) offset = 0; else id = this.renderedDataList[offset].id;
+            if (offset === -1) offset = 0;
+            else if (this.listOptions.withHierarchy) {
+              const row = this.renderedDataList[offset];
+              if (!row.isfolder) { offset = offset - this.renderedDataList.filter(e => e.isfolder).length; }
+            }
             stream.command = 'sort';
             break;
         }

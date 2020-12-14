@@ -20,7 +20,7 @@ export class AuthService {
   isAdmin$ = this.userProfile$.pipe(map(u => u.account.isAdmin));
   userRoles$ = this.userProfile$.pipe(map(u => u.account.roles));
   get userProfile() { return this._userProfile$.value; }
-
+  get userEmail() { return this.tokenPayload ? this.tokenPayload['email'] : ''; }
   get token() { return localStorage.getItem('jetti_token') || ''; }
   set token(value) { localStorage.setItem('jetti_token', value); }
   get tokenPayload() { return jwt_decode(this.token); }
@@ -73,6 +73,10 @@ export class AuthService {
 
   public isRoleAvailableReadonly(): boolean {
     return this.isRoleAvailable('Readonly');
+  }
+
+  public isRoleAvailableAllColumns(): boolean {
+    return this.isRoleAvailable('All columns');
   }
 
   public isRoleAvailableOperationRulesDesigner(): boolean {

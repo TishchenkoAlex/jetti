@@ -155,10 +155,10 @@
           <div *ngIf="(isFolder$ | async) === false">
             <div *ngFor="let r of relations$ | async">
               <p-panel [toggleable]="true" [collapsed]="true" #relation [header]="r.name" toggler="header">
-                <j-list *ngIf="!relation.collapsed && !r.type.startsWith('Register.')" [type]="r.type" [pageSize]=10
+                <j-hierarchy-list *ngIf="!relation.collapsed && !r.type.startsWith('Register.')" [type]="r.type" [pageSize]=10
                   [settings]="{order: [], filter: [
                   {left: r.field, center: '=', right: {id: viewModel.id, type: viewModel.type, value: viewModel.description}}]}">
-                </j-list>
+                </j-hierarchy-list>
                 <j-register-info *ngIf="!relation.collapsed && r.type.startsWith('Register.Info')" [register]="r.type"
                   [filter]="[{key: r.field, value: viewModel.id}]">
                 </j-register-info>

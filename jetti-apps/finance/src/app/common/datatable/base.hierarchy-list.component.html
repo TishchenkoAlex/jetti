@@ -1,4 +1,193 @@
-<div [ngStyle]="{'display':'block'}" [class]="'scroll-' + type" [id]="type">
+<div>
+  <p-sidebar [(visible)]="sidebarDisplay" [style]="{width:'40em'}" position="right">
+    <p-accordion>
+
+      <p-accordionTab header="View">
+        <p-splitButton [label]="'Mode: '+ _presentation" class="ui-button-secondary" (onClick)="presentation = $event"
+          [model]="dataViewTypeChangeCommands"></p-splitButton>
+      </p-accordionTab>
+      <!-- <p-accordionTab header="Settings">
+        <div>
+          <p-dropdown #ddSettings [ngModel]="uss.selectedSettings" (onChange)="onSettingsChange($event)"
+            (onBlur)="onSettingsBlur($event, ddSettings)" (onFocus)="onSettingsFocus($event)" optionLabel="description"
+            [options]="uss.allSettings" filter="true" editable="true"></p-dropdown>
+          <button type="button" pButton label="New" (click)="onSettingsCreated(ddSettings)"></button>
+          <button id="CopySettings" class="ui-button-warning" pButton type="button" (click)="copySettings()"
+            label="Copy"></button>
+          <button type="button" pButton class="ui-button-danger" label="Delete"
+            (click)="deleteSelectedSettings()"></button>
+        </div> -->
+
+      <!-- <p-table #settingsTbl [value]="uss.allSettings" [rows]="uss.allSettings" [responsive]="true">
+          <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+            <tr *ngIf="rowData.id !=''" [id]="rowData.id" (dblclick)="uss.setSelectedSettings(rowData)">
+              <td>
+                <i *ngIf="rowData.id === uss.selectedSettings.id" style="padding-right: 7px;"
+                  class="fa fa-check-square"></i>
+                {{rowData.description ? rowData.description : 'Default'}}
+              </td>
+            </tr>
+            <tr *ngIf="rowData.id === '' && rowData !== uss.defaultSettings" [id]="rowData.id">
+              <input [ngModel]="rowData.description" pInputText type="string"
+                (ngModelChange)="onSettingsDescriptionChanged(rowData)">
+            </tr>
+          </ng-template>
+        </p-table> -->
+
+      <!-- </p-accordionTab> -->
+
+      <p-accordionTab [header]="'Filters'">
+
+
+        <div style="display: flex; flex-direction: column; overflow-x: hidden;">
+          <div class="ui-toolbar-group-left">
+            <p-dropdown #ddSettingsFilter [(ngModel)]="uss.selectedSettingsFilterDescription"
+              (onChange)="_usOnUserSettingsChangeFilter($event, ddSettingsFilter)"
+              (onBlur)="_usOnUserSettingsBlurFilter($event, ddSettingsFilter)" optionLabel="description" [options]="uss.allSettingsFilter"
+              filter="true" [editable]="!this.uss.readonlyFilter">
+            </p-dropdown>
+          </div>
+          <p-toolbar>
+            <div class="ui-toolbar-group-right">
+              <button id="showActiveFiltersOn" class="ui-button-success" pButton type="button" label="Active"
+                (click)="showActiveFilters = true" [disabled]="!activeFilters.length"></button>
+              <button id="showActiveFiltersOff" class="ui-button-warning" label="All" pButton type="button"
+                (click)="showActiveFilters = false" [disabled]="!allFilters.length"></button>
+              <button id="disableFilters" class="ui-button-secondary" label="Disable all" pButton type="button"
+                (click)="clearAllFilters()" [disabled]="!activeFilters.length"></button>
+            </div>
+          </p-toolbar>
+        </div>
+        <p-table #columnsTbl [value]="showActiveFilters ? activeFilters : allFilters"
+          [rows]="showActiveFilters ? activeFilters : allFilters" [responsive]="true" [scrollable]="true">
+          <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+            <tr [id]="rowData.left"
+              (dblclick)="setColumnFilterIsActive(this.getColumn(rowData.left), !rowData.isActive)">
+              <td style="width: 20px;">
+                <i *ngIf="rowData.isActive" style="padding-right: 7px;" class="fa fa-check-square"></i>
+                <i *ngIf="!rowData.isActive" class="far fa-square" style="padding-right: 7px;"></i>
+              </td>
+              <td style="width: 30%;">
+                {{rowData.left}}
+              </td>
+              <td style="width: 70px; text-align: center;">
+                <p-dropdown [ngStyle]="{'width': '50px', 'text-align': 'center'}"
+                  [options]="matchOperatorsByType[getColumn(rowData.left).type.toString()]" optionLabel="label"
+                  optionValue="value" [ngModel]="rowData.right"
+                  (ngModelChange)="update(getColumn(rowData.left), rowData.right, $event.value)" [showClear]="true"
+                  appendTo="body">
+                </p-dropdown>
+              </td>
+              <td style="width: auto;" [ngSwitch]="getColumn(rowData.left).type">
+
+                <div *ngSwitchCase="'number'">
+                  <input [ngModel]="rowData.right" pInputText type="numeric"
+                    (ngModelChange)="update(getColumn(rowData.left), $event, rowData.center || '>=')">
+                </div>
+                <div *ngSwitchCase="'date'">
+                  <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="rowData.right" readonlyInput="true"
+                    [appendTo]="'body'" [locale]="locale"
+                    (ngModelChange)="update(getColumn(rowData.left), $event,  rowData.center || '=')"
+                    [dateFormat]="dateFormat" [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
+                  </p-calendar>
+                </div>
+                <div *ngSwitchCase="'datetime'">
+                  <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="rowData.right" readonlyInput="true"
+                    [appendTo]="'body'" [locale]="locale"
+                    (ngModelChange)="update(getColumn(rowData.left), $event,  rowData.center || '=')"
+                    [dateFormat]="dateFormat" [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
+                  </p-calendar>
+                </div>
+                <div *ngSwitchCase="'string'">
+                  <input [ngModel]="rowData.right" pInputText
+                    (ngModelChange)="update(getColumn(rowData.left), $event,  rowData.center || 'like')">
+                </div>
+                <div *ngSwitchCase="'enum'">
+                  <p-dropdown [options]="getColumn(rowData.left).value" [ngModel]="rowData.right"
+                    (ngModelChange)="update(getColumn(rowData.left), $event, rowData.center ||  '=')" [showClear]="true"
+                    appendTo="body">
+                  </p-dropdown>
+                </div>
+                <div *ngSwitchDefault>
+                  <j-autocomplete-png [checkValue]="false"
+                    [type]="rowData.right?.type || getColumn(rowData.left).type || 'string'" [ngModel]="rowData.right"
+                    [showOpen]="true" [showFind]="true" [showClear]="true"
+                    (ngModelChange)="update(getColumn(rowData.left), $event,  rowData.center || '=')"
+                    [appendTo]="'body'">
+                  </j-autocomplete-png>
+                </div>
+                <!-- {{rowData.right && rowData.right.id ? rowData.right.value : rowData.right}} -->
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-accordionTab>
+
+      <p-accordionTab header="Columns">
+        <div>
+          <p-toolbar>
+            <div class="ui-toolbar-group-left">
+              <p-dropdown #ddSettings [(ngModel)]="uss.selectedSettingsDescription"
+                (onChange)="_usOnUserSettingsChange($event, ddSettings)"
+                (onBlur)="_usOnUserSettingsBlur($event, ddSettings)" optionLabel="description"
+                [options]="uss.allSettings" filter="true" [editable]="!this.uss.readonly">
+              </p-dropdown>
+            </div>
+            <div class="ui-toolbar-group-right">
+              <!-- <button type="button" class="ui-button-success" pButton label="New"
+                (click)="onSettingsCreated(ddSettings)"></button> -->
+              <button id="CopySettings" class="ui-button-success" pButton type="button"
+                (click)="this.uss.copySettings()" label="Copy"></button>
+              <button type="button" pButton class="ui-button-danger" label="Delete" [disabled]="this.uss.readonly"
+                (click)="uss.deleteSelectedSettings()"></button>
+              <button type="button" pButton class="ui-button-warning" label="Save" [disabled]="!this.uss.isModify"
+                (click)="usSaveCurrentSettings()"></button>
+              <button id="resetColumns" class="ui-button-secondary" pButton type="button" label="Reset"
+                (click)="uss.resetSelectedSettings()"></button>
+            </div>
+          </p-toolbar>
+        </div>
+
+        <p-table #columnsTbl [value]="columns" [rows]="columns" [responsive]="true"
+          (onRowReorder)="this.uss.isModify = true">
+
+          <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+            <tr *ngIf="!this.uss.readonly" [id]="rowData.field" [pReorderableRow]="index"
+              (dblclick)="invertColumnHidden(rowData)">
+              <td pReorderableRowHandle>
+                <i *ngIf="!rowData.hidden" style="padding-right: 7px;" class="fa fa-check-square"></i>
+                <i *ngIf="rowData.hidden" class="far fa-square" style="padding-right: 7px;"></i>
+                {{rowData.label}}
+              </td>
+            </tr>
+            <tr *ngIf="this.uss.readonly" [id]="rowData.field">
+              <td>
+                <i *ngIf="!rowData.hidden" style="padding-right: 7px;" class="fa fa-check-square"></i>
+                <i *ngIf="rowData.hidden" class="far fa-square" style="padding-right: 7px;"></i>
+                {{rowData.label}}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- <p-toolbar>
+            <div class="ui-toolbar-group-left">
+              <button id="Cancel" class="ui-button-secondary" pButton type="button" (click)="onCancel()"
+                label="Cancel"></button>
+              <button id="Default" class="ui-button-info" pButton type="button" (click)="setDefaultSettings()"
+                label="Default"></button>
+            </div>
+            <div class="ui-toolbar-group-right">
+              <button id="OK" class="ui-button-success" icon="pi pi-check" pButton type="button" (click)="onOk()"
+                label="OK"></button>
+            </div>
+          </p-toolbar> -->
+        <!-- </div> -->
+      </p-accordionTab>
+
+    </p-accordion>
+  </p-sidebar>
 
   <div style="display: flex; flex-direction: column; overflow-x: hidden;">
     <ng-content></ng-content>
@@ -35,83 +224,104 @@
         <i *ngIf="this.hierarchy" class="pi pi-bars" style="margin-left: 0.5em; margin-right: 0.5em;"></i>
         <p-selectButton *ngIf="this.hierarchy" [options]="presentationTypes" [(ngModel)]="presentation"
           (onChange)="onChangePresentation()"></p-selectButton> -->
-        <p-slideMenu #addMenu [model]="addMenuItems" [popup]="true" effectDuration="200" easing="ease-in" [viewportHeight]="130"></p-slideMenu>
+        <p-slideMenu #addMenu [model]="addMenuItems" [popup]="true" effectDuration="300" easing="ease-in"
+          [viewportHeight]="155"></p-slideMenu>
         <button #addMenuBtn type="button" pButton icon="pi pi-list" (click)="addMenu.toggle($event)"></button>
+        <p-button type="text" (click)="sidebarDisplay = !sidebarDisplay" icon="fa fa-cog"></p-button>
       </div>
     </p-toolbar>
 
     <div *ngIf="treeNodesVisible">
       <p-treeTable #treeTable [value]="(treeNodes$ | async)" selectionMode="single" dataKey="id"
         [(selection)]="selectedNode" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeExpand($event)"
-        [filterDelay]="500" [columns]="columns" [reorderableColumns]="true" [resizableColumns]="true"
+        [filterDelay]="500" [columns]="visibleColumns" [reorderableColumns]="true" [resizableColumns]="true"
         columnResizeMode="expand" [scrollable]="true" sortMode="multiple" [scrollHeight]="(pageSize$ | async)*29 + 'px'"
         class="noselect" [contextMenu]="cm" [multiSortMeta]="multiSortMeta" (onLazyLoad)="onLazyLoad($event)"
-        [lazy]="true" [(contextMenuSelection)]="selectedNode" (onContextMenuSelect)="onContextMenuSelect($event)">
+        [lazy]="true" [(contextMenuSelection)]="selectedNode" (onContextMenuSelect)="onContextMenuSelect($event)"
+        (onColResize)="onColResize($event)" (onColReorder)="onColReorder($event)">
 
-        <ng-template pTemplate="colgroup" let-columns>
+        <ng-template pTemplate="colgroup">
           <colgroup>
-            <col>
-            <col *ngFor="let column of columns">
+            <col *ngFor="let column of columns" [ngStyle]="column.style">
           </colgroup>
         </ng-template>
 
         <ng-template #ttt pTemplate="header" let-columns>
           <tr>
-            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
-            <th [ttSortableColumn]="column.field" ttResizableColumn *ngFor="let column of columns"
-              [ngStyle]="column.style">
+            <!-- <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th> -->
+            <th ttReorderableColumn ttResizableColumn [ttSortableColumn]="column.field" ttResizableColumn
+              *ngFor="let column of columns" [ngStyle]="column.style">
               {{column.label}}
               <p-treeTableSortIcon [field]="column.field"></p-treeTableSortIcon>
             </th>
           </tr>
           <tr>
-            <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th>
+
+
+            <!-- <th [ngStyle]="{'width': '1px', 'text-align': 'center'}"></th> -->
             <th *ngFor="let column of columns" [ngStyle]="column.style" [ngSwitch]="column.type"
               class="ui-fluid ui-column-filter">
+              <!-- <div style="display: flex; flex-direction: row;"> -->
               <div *ngSwitchCase="'boolean'">
-                <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
+                <p-triStateCheckbox [ngModel]="column.filter.right || false"
                   (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
               </div>
+              <div *ngIf="false && column.type !== 'boolean'">
+
+                <button *ngIf="column.filter.isActive" icon="fa fa-check-square" class="ui-button-secondary" pButton
+                  type="button" (click)="setColumnFilterIsActive(column, !column.filter.isActive)"></button>
+                <button *ngIf="!column.filter.isActive" icon="far fa-square" class="ui-button-secondary" pButton
+                  type="button" (click)="setColumnFilterIsActive(column, !column.filter.isActive)"></button>
+
+                <!-- <i *ngIf="column.filter.isActive" style="padding-right: 7px;" class="fa fa-check-square"
+                    (onclick)="column.filter.isActive = !column.filter.isActive"></i>
+                  <i *ngIf="!column.filter.isActive" class="far fa-square" style="padding-right: 7px;"
+                    (onclick)="column.filter.isActive = !column.filter.isActive"></i> -->
+                <!-- <p-checkbox [ngModel]="column.filter.isActive" [binary]="true"
+                    (ngModelChange)="onFilterIsActiveChange(column)"></p-checkbox> -->
+              </div>
               <div *ngSwitchCase="'number'">
-                <input [ngModel]="filters[column.field]?.value" pInputText type="numeric"
-                  (ngModelChange)="update(column, $event, '>=')">
+                <input [ngModel]="column.filter.right" pInputText type="numeric"
+                  (ngModelChange)="update(column, $event, column.filter.center || '>=')">
               </div>
               <div *ngSwitchCase="'date'">
-                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
+                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="column.filter.right"
                   readonlyInput="true" [appendTo]="'body'" [locale]="locale"
-                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
-                  [yearNavigator]="true" yearRange="2010:2030">
+                  (ngModelChange)="update(column, $event,  column.filter.center || '=')" [dateFormat]="dateFormat"
+                  [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
                 </p-calendar>
               </div>
               <div *ngSwitchCase="'datetime'">
-                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
+                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="column.filter.right"
                   readonlyInput="true" [appendTo]="'body'" [locale]="locale"
-                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
-                  [yearNavigator]="true" yearRange="2010:2030">
+                  (ngModelChange)="update(column, $event,  column.filter.center || '=')" [dateFormat]="dateFormat"
+                  [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
                 </p-calendar>
               </div>
               <div *ngSwitchCase="'string'">
-                <input [ngModel]="filters[column.field]?.value" pInputText
-                  (ngModelChange)="update(column, $event, 'like')">
+                <input [ngModel]="column.filter.right" pInputText (ngModelChange)="update(column, $event, 'like')">
               </div>
               <div *ngSwitchCase="'enum'">
-                <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value"
-                  (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
+                <p-dropdown [options]="column.value" [ngModel]="column.filter.right"
+                  (ngModelChange)="update(column, $event, column.filter.center ||  '=')" [showClear]="true"
+                  appendTo="body"></p-dropdown>
               </div>
               <div *ngSwitchDefault>
-                <j-autocomplete-png [checkValue]="false"
-                  [type]="filters[column.field]?.value?.type || column.type || 'string'"
-                  [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
-                  (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
+                <j-autocomplete-png [checkValue]="false" [type]="column.filter.right?.type || column.type || 'string'"
+                  [ngModel]="column.filter.right" [showOpen]="true" [showFind]="true" [showClear]="true"
+                  (ngModelChange)="update(column, $event,  column.filter.center || '=')" [id]="column.field"
+                  [appendTo]="'body'">
                 </j-autocomplete-png>
               </div>
+              <!-- </div> -->
             </th>
           </tr>
+
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
           <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttContextMenuRow]="rowNode"
             (dblclick)="onNodeDblclick(rowNode)">
-            <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td>
+            <!-- <td class="ui-resizable-column" [ngStyle]="{'width': '1px', 'text-align': 'center'}"></td> -->
             <td *ngFor="let column of columns" [ngStyle]="column.style">
               <span [ngSwitch]="column.type" [id]="column.field">
                 <span *ngSwitchCase="'date'" [id]="column.field">{{rowData[column.field] | date:'dd.MM.yyyy'}}</span>
@@ -153,13 +363,14 @@
       <p-table #tbl [value]="dataSource.result$ | async" selectionMode="multiple" dataKey="id" [lazy]="true"
         [rows]="pageSize$ | async" sortMode="multiple" [scrollable]="true" [reorderableColumns]="true"
         [filterDelay]="1000" (onContextMenuSelect)="onContextMenuSelect($event)" [contextMenu]="cm"
-        [(contextMenuSelection)]="contextMenuSelection" [metaKeySelection]="true" [columns]="columns" class="noselect"
-        [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
-        [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand">
-        <ng-template pTemplate="colgroup" let-columns>
+        [(contextMenuSelection)]="contextMenuSelection" [metaKeySelection]="true" [columns]="visibleColumns"
+        class="noselect" [(selection)]="selection" (onLazyLoad)="onLazyLoad($event)" [(multiSortMeta)]="multiSortMeta"
+        [lazyLoadOnInit]="false" [resizableColumns]="true" columnResizeMode="expand" (onColResize)="onColResize($event)"
+        (onColReorder)="onColReorder($event)">
+        <ng-template pTemplate="colgroup">
           <colgroup>
-            <col>
-            <col *ngFor="let column of tbl.columns">
+            <col [style.width]="30">
+            <col *ngFor="let col of columns" [style]="col.style">
           </colgroup>
         </ng-template>
         <ng-template pTemplate="header">
@@ -174,47 +385,66 @@
           </tr>
           <tr>
             <th [ngStyle]="{'width': '30px', 'text-align': 'center', padding: 0, margin: 0}">
-              <p-triStateCheckbox [ngModel]="filters[postedCol.field]?.value"
+              <p-triStateCheckbox [ngModel]="columns[postedCol.field]?.value"
                 (ngModelChange)="update(postedCol, $event, '=')"></p-triStateCheckbox>
             </th>
             <th *ngFor="let column of tbl.columns" [ngStyle]="column.style" [ngSwitch]="column.type"
               class="ui-fluid ui-column-filter">
-              <div *ngSwitchCase="'boolean'">
-                <p-triStateCheckbox [ngModel]="filters[column.field]?.value"
-                  (ngModelChange)="update(column, $event, '=')"></p-triStateCheckbox>
-              </div>
-              <div *ngSwitchCase="'number'">
-                <input [ngModel]="filters[column.field]?.value" pInputText type="numeric"
-                  (ngModelChange)="update(column, $event, '=')">
-              </div>
-              <div *ngSwitchCase="'date'">
-                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
-                  readonlyInput="true" [appendTo]="'body'" [locale]="locale"
-                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
-                  [yearNavigator]="true" yearRange="2010:2030">
-                </p-calendar>
-              </div>
-              <div *ngSwitchCase="'datetime'">
-                <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="filters[column.field]?.value"
-                  readonlyInput="true" [appendTo]="'body'" [locale]="locale"
-                  (ngModelChange)="update(column, $event, '=')" [dateFormat]="dateFormat" [monthNavigator]="true"
-                  [yearNavigator]="true" yearRange="2010:2030">
-                </p-calendar>
-              </div>
-              <div *ngSwitchCase="'string'">
-                <input [ngModel]="filters[column.field]?.value" pInputText
-                  (ngModelChange)="update(column, $event, 'like')">
-              </div>
-              <div *ngSwitchCase="'enum'">
-                <p-dropdown [options]="column.value" [ngModel]="filters[column.field]?.value"
-                  (ngModelChange)="update(column, $event, '=')" [showClear]="true" appendTo="body"></p-dropdown>
-              </div>
-              <div *ngSwitchDefault>
-                <j-autocomplete-png [checkValue]="false"
-                  [type]="filters[column.field]?.value?.type || column.type || 'string'"
-                  [ngModel]="filters[column.field]?.value" [showOpen]="true" [showFind]="true" [showClear]="true"
-                  (ngModelChange)="update(column, $event, '=')" [id]="column.field" [appendTo]="'body'">
-                </j-autocomplete-png>
+              <div style="display: flex; flex-direction: row;">
+                <div *ngSwitchCase="'boolean'">
+                  <p-triStateCheckbox [ngModel]="column.filter.right"
+                    (ngModelChange)="update(column, $event, column.filter.center || '=')">
+                  </p-triStateCheckbox>
+                </div>
+                <div *ngIf="column.type !== 'boolean'">
+
+                  <button *ngIf="column.filter.isActive" icon="fa fa-check-square" class="ui-button-secondary" pButton
+                    type="button" (click)="setColumnFilterIsActive(column, !column.filter.isActive)"></button>
+                  <button *ngIf="!column.filter.isActive" icon="far fa-square" class="ui-button-secondary" pButton
+                    type="button" (click)="setColumnFilterIsActive(column, !column.filter.isActive)"></button>
+
+                  <!-- <i *ngIf="column.filter.isActive" style="padding-right: 7px;" class="fa fa-check-square"
+                    (onclick)="column.filter.isActive = !column.filter.isActive"></i>
+                  <i *ngIf="!column.filter.isActive" class="far fa-square" style="padding-right: 7px;"
+                    (onclick)="column.filter.isActive = !column.filter.isActive"></i> -->
+                  <!-- <p-checkbox [ngModel]="column.filter.isActive" [binary]="true"
+                    (ngModelChange)="onFilterIsActiveChange(column)"></p-checkbox> -->
+                </div>
+
+                <div *ngSwitchCase="'number'">
+                  <input [ngModel]="column.filter.right" pInputText type="numeric"
+                    (ngModelChange)="update(column, $event, column.filter.center || '=')">
+                </div>
+                <div *ngSwitchCase="'date'">
+                  <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="column.filter.right"
+                    readonlyInput="true" [appendTo]="'body'" [locale]="locale"
+                    (ngModelChange)="update(column, $event, column.filter.center || '=')" [dateFormat]="dateFormat"
+                    [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
+                  </p-calendar>
+                </div>
+                <div *ngSwitchCase="'datetime'">
+                  <p-calendar selectionMode="range" showButtonBar="true" [ngModel]="column.filter.right"
+                    readonlyInput="true" [appendTo]="'body'" [locale]="locale"
+                    (ngModelChange)="update(column, $event, column.filter.center ||  '=')" [dateFormat]="dateFormat"
+                    [monthNavigator]="true" [yearNavigator]="true" yearRange="2010:2030">
+                  </p-calendar>
+                </div>
+                <div *ngSwitchCase="'string'">
+                  <input [ngModel]="column.filter.right" pInputText
+                    (ngModelChange)="update(column, $event, column.filter.center || 'like')">
+                </div>
+                <div *ngSwitchCase="'enum'">
+                  <p-dropdown [options]="column.value" [ngModel]="column.filter.right"
+                    (ngModelChange)="update(column, $event, column.filter.center || '=')" [showClear]="true"
+                    appendTo="body"></p-dropdown>
+                </div>
+                <div *ngSwitchDefault>
+                  <j-autocomplete-png [checkValue]="false" [type]="column.filter.right?.type || column.type || 'string'"
+                    [ngModel]="column.filter.right" [showOpen]="true" [showFind]="true" [showClear]="true"
+                    (ngModelChange)="update(column, $event, column.filter.center || '=')" [id]="column.field"
+                    [appendTo]="'body'">
+                  </j-autocomplete-png>
+                </div>
               </div>
             </th>
             <th></th>

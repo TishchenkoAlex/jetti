@@ -1,0 +1,34 @@
+<div>
+    <div style="display: flex; flex-direction: column;">
+        <div><label>Settings</label>
+            <p-dropdown [options]="settingsAll" [autoDisplayFirst]="false" optionLabel="description" editable="true"></p-dropdown>
+        </div>
+        <div>
+            <p-table #tbl [value]="columns" [rows]="columns" [responsive]="true">
+
+                <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+                    <tr [id]="rowData.field" [pReorderableRow]="index" (dblclick)="invertHidden(rowData)">
+
+                        <td pReorderableRowHandle>
+                            <i *ngIf="!rowData.hidden" style="padding-right: 7px;" class="fa fa-check-square"></i>
+                            <i *ngIf="rowData.hidden" class="far fa-square" style="padding-right: 7px;"></i>
+                            {{rowData.label}}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <p-toolbar>
+        <div class="ui-toolbar-group-left">
+            <button id="Cancel" class="ui-button-secondary" pButton type="button" (click)="onCancel()"
+                label="Cancel"></button>
+            <button id="Default" class="ui-button-info" pButton type="button" (click)="setDefaultSettings()"
+                label="Default"></button>
+        </div>
+        <div class="ui-toolbar-group-right">
+            <button id="OK" class="ui-button-success" icon="pi pi-check" pButton type="button" (click)="onOk()"
+                label="OK"></button>
+        </div>
+    </p-toolbar>
+</div>

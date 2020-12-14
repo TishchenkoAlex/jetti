@@ -13,10 +13,10 @@ import { buildColumnDef } from '../../../../../../jetti-api/server/routes/utils/
 import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
 import { calendarLocale, dateFormat } from '../../primeNG.module';
 import { scrollIntoViewIfNeeded } from '../utils';
-import { UserSettingsService } from './../../auth/settings/user.settings.service';
-import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
-import { DocService } from './../../common/doc.service';
-import { LoadingService } from './../../common/loading.service';
+import { UserSettingsService } from '../../auth/settings/user.settings.service';
+import { ApiDataSource } from './api.datasource.v2';
+import { DocService } from '../doc.service';
+import { LoadingService } from '../loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
@@ -24,11 +24,11 @@ import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/serve
 import { TabsStore } from '../tabcontroller/tabs.store';
 import { Type } from '../../../../../../jetti-api/server/models/type';
 
-@Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'j-list',
-  templateUrl: 'base.list.component.html',
-})
+// @Component({
+//   changeDetection: ChangeDetectionStrategy.OnPush,
+//   selector: 'j-list',
+//   templateUrl: 'base.list.component.html',
+// })
 export class BaseDocListComponent implements OnInit, OnDestroy {
   @Input() pageSize;
   @Input() type: DocTypes;
@@ -354,8 +354,8 @@ export class BaseDocListComponent implements OnInit, OnDestroy {
       filter: (Object.keys(this.filters) || [])
         .map(f => (<FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value })),
       order: ((<SortMeta[]>this.multiSortMeta) || [])
-        .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' })
+        .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' }),
     };
-    this.uss.setFormListSettings(this.type, formListSettings);
+    // this.uss.setFormListSettings(this.type, formListSettings);
   }
 }

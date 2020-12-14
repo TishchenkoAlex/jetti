@@ -4,26 +4,29 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterMetadata } from 'primeng/components/common/filtermetadata';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { SortMeta } from 'primeng/components/common/sortmeta';
-import { iif as _if, merge, Observable, Subject, Subscription, fromEvent, of } from 'rxjs';
+import { iif as _if, merge, Observable, Subject, Subscription, fromEvent, of, BehaviorSubject } from 'rxjs';
 import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { v1 } from 'uuid';
 import { ColumnDef } from '../../../../../../jetti-api/server/models/column';
 import { DocTypes } from '../../../../../../jetti-api/server/models/documents.types';
 import { buildColumnDef } from '../../../../../../jetti-api/server/routes/utils/columns-def';
-import { FormListFilter, FormListOrder, FormListSettings } from '../../../../../../jetti-api/server/models/user.settings';
+import { FormListColumnProps, FormListFilter, FormListOrder, FormListSettings, IUserSettings, matchOperator, matchOperatorByType } from '../../../../../../jetti-api/server/models/user.settings';
 import { calendarLocale, dateFormat } from '../../primeNG.module';
-import { scrollIntoViewIfNeeded } from '../utils';
-import { UserSettingsService } from './../../auth/settings/user.settings.service';
+import { MaxTextWidth, scrollIntoViewIfNeeded } from '../utils';
+import { hiddenColumns, UserSettingsService, UserSettitngsState } from './../../auth/settings/user.settings.service';
 import { ApiDataSource } from './../../common/datatable/api.datasource.v2';
 import { DocService } from './../../common/doc.service';
 import { LoadingService } from './../../common/loading.service';
 import { IViewModel } from '../../../../../../jetti-api/server/models/common-types';
 import { Table } from './table';
 import { DynamicFormService } from '../dynamic-form/dynamic-form.service';
-import { DocumentOptions, DocumentBase } from '../../../../../../jetti-api/server/models/document';
+import { DocumentBase, DocumentOptions } from '../../../../../../jetti-api/server/models/document';
 import { TabsStore } from '../tabcontroller/tabs.store';
-import { TreeNode } from 'primeng/api';
+import { DialogService, DynamicDialogRef, TreeNode } from 'primeng/api';
 import { Type } from '../../../../../../jetti-api/server/models/type';
+import { ColumnsSettingsComponent } from 'src/app/dialog/columns.settings.dialog.component';
+import { TreeTable } from 'primeng/treetable';
+import { lib } from '../../../../../../jetti-api/server/std.lib';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,46 +43,79 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   constructor(public route: ActivatedRoute, public router: Router, public ds: DocService, public tabStore: TabsStore,
     public uss: UserSettingsService, public lds: LoadingService, public dss: DynamicFormService,
-    private auth: AuthService) { }
+    private auth: AuthService, public dialog: DialogService) { }
 
   private _pageSizeSubscription$: Subscription = Subscription.EMPTY;
   private _pageSize$ = new Subject<number>();
   private _docSubscription$: Subscription = Subscription.EMPTY;
-  private _routeSubscruption$: Subscription = Subscription.EMPTY;
+  private _routeSubscription$: Subscription = Subscription.EMPTY;
   private _debonceSubscription$: Subscription = Subscription.EMPTY;
-  private _debonce$ = new Subject<{ col: any, event: any, center: string }>();
+  private _debonce$ = new Subject<FormListFilter>();
   private _resizeSubscription$: Subscription = Subscription.EMPTY;
+
+  private _usSubscription$: Subscription = Subscription.EMPTY;
+  private _columnsSettingsDialogRef: DynamicDialogRef;
+  private _columnSettingsProps = ['width', 'visibility'];
 
   pageSize$: Observable<number>;
 
 
   @ViewChild('tbl', { static: false }) tbl: Table;
+  @ViewChild('treeTable', { static: false }) treeTable: TreeTable;
 
   get isDoc() { return Type.isDocument(this.type); }
   get isCatalog() { return Type.isCatalog(this.type); }
   get id() { return this.selectedData ? this.selectedData.id : null; }
   set id(id: string) { this.selection = [{ id, type: this.type }]; this.selectedNode = { data: { id: id }, key: id, type: this.type }; }
+  get visibleColumns() { return this.columns.filter(column => column && !column.hidden); }
+  get activeFilters() { return this.columns.filter(column => column.filter && column.filter.isActive).map(col => col.filter); }
+  get allFilters() {
+    return this.columns
+      .filter(column => column.filter)
+      .map(col => col.filter);
+  }
   get selectedData() {
     return this.treeNodesVisible ?
       (this.selectedNode ? this.selectedNode.data : null) :
       (this.selection && this.selection.length ? this.selection[0] : null);
   }
+  get matchOperatorsByType() {
+    const res = {};
+    Object.keys(matchOperatorByType).forEach(key => res[key] = matchOperatorByType[key].map(op => ({ label: op, value: op })));
+    return res;
+  }
+
+  get dataViewTypeChangeCommands() {
+    return [
+      { label: 'Tree', command: () => { this._presentation = 'Tree'; this.onChangePresentation(); } },
+      { label: 'List', command: () => { this._presentation = 'List'; this.onChangePresentation(); } },
+      { label: 'Auto', command: () => { this._presentation = 'Auto'; this.onChangePresentation(); } }
+    ];
+  }
+
+  set presentation(mode: 'List' | 'Tree' | '') {
+    if (mode && !'List,Tree,Auto'.includes(mode)) return;
+    this._presentation = mode || 'Auto';
+    this.onChangePresentation();
+  }
 
   postedCol: ColumnDef = ({
     field: 'posted', filter: { left: 'posted', center: '=', right: null }, type: 'boolean', label: 'posted',
-    style: {}, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
+    style: { width: '30px' }, order: 0, readOnly: false, required: false, hidden: false, value: undefined, headerStyle: {}
   });
+
   group = '';
   columns: ColumnDef[] = [];
   selection: any[] = [];
   contextMenuSelection = [];
   ctxData = { column: '', value: undefined };
   contexCommands: { list: MenuItem[], tree: MenuItem[] } = { list: [], tree: [] };
-  filters: { [s: string]: FilterMetadata } = {};
+  filters: { [s: string]: FormListFilter } = {};
   multiSortMeta: SortMeta[] = [];
   showDeleted = false;
   dataSource: ApiDataSource;
-  readonly = false;
+  private _userEmail = this.auth.userEmail;
+  sidebarDisplay = false;
 
   treeNodes$: Observable<TreeNode[]>;
   treeNodes: TreeNode[] = [];
@@ -92,40 +128,32 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     { label: 'List', value: 'List' },
     { label: 'Auto', value: 'Auto' }
   ];
-  presentation = 'Auto';
+  _presentation = 'Auto';
+  _allColumns = this.auth.isRoleAvailableAllColumns();
+  readonly = this.auth.isRoleAvailableReadonly();
   addMenuItems: MenuItem[];
+  showActiveFilters = false;
+  // matchOperatorByType: { [x: string]: matchOperator[] };
+
+  // matchOperatorByTypeInit() {
+  //   this.columns.map(e => e.type)
+  // }
 
   async ngOnInit() {
-    if (!this.type) this.type = this.route.snapshot.params.type;
-    if (!this.group) this.group = this.route.snapshot.params.group;
-    if (!this.settings) this.settings = this.data.settings;
-    if (this.route.snapshot.queryParams.goto) {
-      this.initNodes = true;
-      this.id = this.route.snapshot.queryParams.goto;
-    }
 
+    this.readRouteParams(this.route);
+
+    if (!this.settings) this.settings = this.data.settings;
     if (!this.data && this.type) {
       const DocMeta = await this.ds.api.getDocMetaByType(this.type);
       this.data = { schema: DocMeta.Props, metadata: DocMeta.Prop as DocumentOptions, columnsDef: [], model: {}, settings: this.settings };
     }
-    this.columns = buildColumnDef(this.data.schema, this.settings);
-    if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
 
-    this.hierarchy = this.data.metadata.hierarchy === 'folders';
-    this.treeNodesVisible = this.hierarchy && !this.settings.filter.length;
-    this.columns = [...this.columns.filter(c => !c.hidden)];
+    // default filters is always active
+    this.settings.filter.forEach(e => e.isActive = true);
 
-    if (this.hierarchy) {
-      const descriptionColumn = this.columns.filter(c => c.field === 'description' && this.columns.indexOf(c) !== 0);
-      if (descriptionColumn.length) {
-        this.columns = [descriptionColumn[0], ...this.columns.filter(c => c.field !== 'description')];
-      }
-    }
-
-    this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
-    this.dataSource.id = this.id;
-    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
-
+    this._initColumns();
+    this._initdataSource();
     this.addMenuItemsFill();
     this.setSortOrder();
     this.setFilters();
@@ -133,28 +161,16 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.prepareDataSource();
     this.setContextMenu(this.columns);
 
+    this._usSubscription$ = this.uss._userSettings$
+      .pipe(filter(settings => settings && settings.selected && !settings.dontApply && settings.selected.type === this.type))
+      .subscribe(settings => this.usSubscriptionHandler(settings));
+
     this._docSubscription$ = merge(...[
       this.ds.save$, this.ds.delete$, this.ds.saveClose$, this.ds.goto$, this.ds.post$, this.ds.unpost$]).pipe(
         filter(doc => doc
           && doc.type === this.type
           && !!(!this.group || !doc['Group'] || this.group === doc['Group']['id'])))
-      .subscribe(doc => {
-
-        if (this.treeNodesVisible) {
-          this.selectedNode = null;
-          this.id = doc.id;
-          setTimeout(() => this.loadNodes(doc.id), 20);
-        } else {
-          const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
-          if (exist) {
-            this.dataSource.refresh(exist.id);
-            this.id = exist.id;
-          } else {
-            this.dataSource.goto(doc.id);
-            this.id = doc.id;
-          }
-        }
-      });
+      .subscribe(doc => this.docSubscriptionHandler(doc));
 
     this.treeNodes$ = this.dataSource.result$.pipe(map(rows => {
       if (this.treeNodesVisible) {
@@ -168,40 +184,106 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     }));
 
     // обработка команды найти в списке
-    this._routeSubscruption$ = this.route.params.pipe(
+    this._routeSubscription$ = this.route.params.pipe(
       filter(params => params.type === this.type && params.group === this.group && this.route.snapshot.queryParams.goto))
-      .subscribe(params => {
-        const id = this.route.snapshot.queryParams.goto;
-        this.initNodes = true;
-        this.refresh(id);
-        const route: any[] = [this.type];
-        if (this.group) route.push('group', this.group);
-        setTimeout(() => this.router.navigate(route, { replaceUrl: true }));
-      });
+      .subscribe(params => this.routeSubscruptionHandler());
 
     this._resizeSubscription$ = fromEvent(window, 'resize').subscribe(e => {
       this._pageSize$.next(this.getPageSize());
     });
 
     this._pageSizeSubscription$ = this._pageSize$.pipe(debounceTime(50))
-      .subscribe(pageSize => {
-        this.dataSource.pageSize = pageSize;
-        this.pageSize$ = of(pageSize);
-        if (this.id) this.goto(this.id);
-        else this.first();
-      });
+      .subscribe(pageSize => this.pageSizeSubscriptionHandler(pageSize));
 
     this._debonceSubscription$ = this._debonce$.pipe(debounceTime(1000))
-      .subscribe(event => this._update(event.col, event.event, event.center));
+      .subscribe(event => this._update(event));
 
-    this._pageSize$.next(this.getPageSize());
-    this.readonly = this.auth.isRoleAvailableReadonly();
+    this.usLoad();
+
+  }
+
+  private readRouteParams(route: ActivatedRoute) {
+    if (!this.type) this.type = route.snapshot.params.type;
+    if (!this.group) this.group = route.snapshot.params.group;
+    if (route.snapshot.queryParams.goto) {
+      this.initNodes = true;
+      this.id = route.snapshot.queryParams.goto;
+    }
+  }
+
+  private _initColumns() {
+
+    this.columns = buildColumnDef(this.data.schema, this.settings);
+    if (this.data.metadata['Group']) this.settings.filter.push({ left: 'Group', center: '=', right: this.data.metadata['Group'] });
+
+    this.hierarchy = this.data.metadata.hierarchy === 'folders';
+    this.treeNodesVisible = this.hierarchy && !this.settings.filter.length;
+
+    if (this.hierarchy) {
+      const descriptionColumn = this.columns.find(c => c.field === 'description');
+      if (descriptionColumn) {
+        this.columns = [descriptionColumn, ...this.columns.filter(c => c.field !== 'description')];
+      }
+    }
+    // this.columns = [...this.columns.filter(column => !hiddenColumns.includes(column.field))];
+  }
+
+  private _initdataSource() {
+    this.dataSource = new ApiDataSource(this.ds.api, this.type, this.pageSize, true);
+    this.dataSource.id = this.id;
+    this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
+  }
+
+  private usSubscriptionHandler(settingsState: UserSettitngsState) {
+    this.usApplyUserSettings(settingsState.selected.settings);
+  }
+
+  private pageSizeSubscriptionHandler(pageSize: number) {
+    this.dataSource.pageSize = pageSize;
+    this.pageSize$ = of(pageSize);
+    if (this.id) this.goto(this.id);
+    else this.first();
+  }
+
+  private routeSubscruptionHandler() {
+    const id = this.route.snapshot.queryParams.goto;
+    this.initNodes = true;
+    this.refresh(id);
+    const route: any[] = [this.type];
+    if (this.group) route.push('group', this.group);
+    setTimeout(() => this.router.navigate(route, { replaceUrl: true }));
+  }
+
+
+  private docSubscriptionHandler(doc: DocumentBase) {
+
+    this.id = doc.id;
+    const exist = (this.dataSource.renderedDataList).find(d => d.id === doc.id);
+    if (exist) {
+      const visibleFields = [...this.visibleColumns.map(e => e.field), 'posted', 'deleted'];
+      const complexFields = this.visibleColumns
+        .filter(col => Type.isRefType(col.type as any))
+        .map(e => e.field);
+      for (const key of visibleFields) {
+        const isComplex = complexFields.includes(key);
+        if ((isComplex && exist[key].id !== doc[key].id) ||
+          (!isComplex && exist[key] !== doc[key] && JSON.stringify(exist[key]) !== JSON.stringify(doc[key]))) {
+          this.dataSource.refresh(exist.id);
+          break;
+        }
+      }
+    } else if (this.treeNodesVisible) {
+      this.selectedNode = null;
+      this.loadNodes(doc.id);
+    } else this.dataSource.goto(doc.id);
+  }
+
+  onFiltersEditInit() {
 
   }
 
   isNoFiltered() {
-    const f = this.dataSource.formListSettings.filter.length;
-    return !f || (!this.showDeleted && f === 1);
+    return this.activeFilters.length;
   }
 
   private getPageSize() {
@@ -217,8 +299,8 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   private setFilters() {
     this.settings.filter
-      .filter(c => !(c.right == null || c.right === undefined))
-      .forEach(f => this.filters[f.left] = { matchMode: f.center, value: f.right });
+      .filter(c => !(c.right == null || c.right === undefined) && c.isActive)
+      .forEach(f => this.setColumnFilter(f.left, f));
   }
 
   private setSortOrder() {
@@ -231,20 +313,54 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _update(col: ColumnDef | undefined, event, center, id = null) {
-    if (!col) return;
-    if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
-    this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
-    if (id) this.id = id;
+  private setSettingsFilter(field: string, _filter: FormListFilter) {
+    const settingsFilter = this.settings.filter.find(e => e.left === field);
+    if (settingsFilter) {
+      settingsFilter.isActive = _filter.isActive;
+      settingsFilter.center = _filter.center;
+      settingsFilter.right = _filter.right;
+    } else
+      this.settings.filter.push({ ..._filter });
+  }
+
+  private _update(_filter: FormListFilter) {
+    if (!_filter.left) return;
+    if ((Array.isArray(_filter.right)) && _filter.right[1]) { _filter.right[1].setHours(23, 59, 59, 999); }
+    this.setColumnFilter(_filter.left, _filter);
+    this.setSettingsFilter(_filter.left, _filter);
     this.prepareDataSource(this.multiSortMeta);
     this._pageSize$.next(this.getPageSize());
   }
-  update(col: ColumnDef | { field: string, filter: any }, event, center = 'like') {
+
+  // private _update(col: ColumnDef | undefined, event, center, id = null, isActive: boolean) {
+  //   if (!col) return;
+  //   if ((Array.isArray(event)) && event[1]) { event[1].setHours(23, 59, 59, 999); }
+  //   this.filters[col.field] = { matchMode: center || (col.filter && col.filter.center), value: event };
+  //   const colFilter = this.settings.filter.find(e => e.left === col.field);
+  //   if (colFilter) {
+  //     colFilter.isActive = isActive;
+  //     colFilter.center = center;
+  //     colFilter.right = event;
+  //   } else
+  //     this.settings.filter.push({ ...col.filter, isActive });
+  //   if (id) this.id = id;
+  //   this.prepareDataSource(this.multiSortMeta);
+  //   this._pageSize$.next(this.getPageSize());
+  // }
+
+  setColumnFilterIsActive(column: ColumnDef, isActive: boolean) {
+    if (!column.filter) return;
+    column.filter.isActive = isActive;
+    this._debonce$.next(column.filter);
+  }
+
+
+  update(column: ColumnDef, event, center = 'like' as matchOperator) {
+    if (!column) return;
     if (!event || (typeof event === 'object' && !event.value && !(Array.isArray(event)))) {
       if (typeof event !== 'boolean') event = null;
     }
-
-    this._debonce$.next({ col, event, center });
+    this._debonce$.next({ left: column.field, right: event, center: center || column.filter.center || '=', isActive: !!event });
   }
 
   onLazyLoad(event: { multiSortMeta: SortMeta[]; }) {
@@ -257,7 +373,7 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   loadNodes(id = null) {
     this.dataSource.listOptions.hierarchyDirectionUp = false;
     if (id && id === this.selectedNode.key) {
-      this.dataSource.listOptions.hierarchyDirectionUp = this.selectedNode.expanded;
+      this.dataSource.listOptions.hierarchyDirectionUp = this.selectedNode.children.length === 0;
     }
     if (!id) {
       const sel = this.selectedNode;
@@ -305,24 +421,37 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   private prepareDataSource(multiSortMeta: SortMeta[] = this.multiSortMeta) {
     this.dataSource.id = this.id;
-    const order = multiSortMeta
+    const order = (multiSortMeta || [])
       .map(el => <FormListOrder>({ field: el.field, order: el.order === -1 ? 'desc' : 'asc' }));
-    const Filter = Object.keys(this.filters)
-      .filter(el => this.filters[el].value || el === 'deleted')
-      .map(f => <FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value });
-    this.dataSource.formListSettings = { filter: Filter, order };
+    const listSettigns: FormListSettings = { filter: [...this.activeFilters], order };
+    this.dataSource.formListSettings = listSettigns;
     const treeNodesVisibleBefore = this.treeNodesVisible;
-    // tslint:disable-next-line: max-line-length
-    this.treeNodesVisible = this.presentation !== 'List' && this.hierarchy && (!Filter.length || (Filter.length === 1 && !this.showDeleted));
+    this.treeNodesVisible = this._presentation !== 'List' && this.hierarchy && !this.activeFilters.length;
     this.dataSource.listOptions.withHierarchy = this.treeNodesVisible;
     if (treeNodesVisibleBefore !== this.treeNodesVisible) this.onTreeNodesVisibleChange();
   }
+
+  getColumnFilter(field: string) {
+    return this.getColumn(field).filter;
+  }
+
+  setColumnFilter(field: string, _filter: FormListFilter) {
+    return this.getColumn(field).filter = _filter;
+  }
+
+  getColumn(field: string) {
+    if (!field) return null;
+    const res = this.columns.find(e => e.field === field);
+    if (!res) console.error('Unknow column: ' + field);
+    return res;
+  }
+
 
   private setContextMenu(columns: ColumnDef[]) {
 
     const qFilterCommand = {
       label: 'Quick filter', icon: 'pi pi-search',
-      command: (event) => this._update(columns.find(c => c.field === this.ctxData.column), this.ctxData.value, null, this.id)
+      command: (event) => this._update({ left: this.ctxData.column, right: this.ctxData.value, center: '=', isActive: true })
     };
 
     const selectAllCommand = {
@@ -347,16 +476,16 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
   }
 
   clearAllFilters() {
-    this.filters = {};
+    this.activeFilters.forEach(f => f.isActive = false);
     if (!this.showDeleted) this.showDeletedSet(false);
     this.prepareDataSource(); this.goto(this.id);
   }
 
   private buildFiltersParamQuery() {
     const filters = {};
-    Object.keys(this.filters)
-      .filter(f => this.filters[f].value && this.filters[f].value.id)
-      .forEach(f => filters[f] = this.filters[f].value.id);
+    this.activeFilters
+      .filter(f => f.right && f.right.id)
+      .forEach(f => filters[f.left] = f.right.id);
     return filters;
   }
 
@@ -418,42 +547,88 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
     this.dataSource.refresh(this.selection[0].id);
   }
 
+  addMenuItemsHeight() {
+    return this.addMenuItems.length * 27;
+  }
+
+
   addMenuItemsFill() {
+
+    const viewMenuItems = {
+      label: 'View', items: this.dataViewTypeChangeCommands
+    };
+
     this.addMenuItems = [
-      {
-        label: 'View', items: [
-          { label: 'Tree', command: () => { this.presentation = 'Tree'; this.onChangePresentation(); } },
-          { label: 'List', command: () => { this.presentation = 'List'; this.onChangePresentation(); } },
-          { label: 'Auto', command: () => { this.presentation = 'Auto'; this.onChangePresentation(); } }
-        ]
-      },
+      { label: 'Reset view', command: () => { this._resetTables(); } },
       { separator: true },
       { label: 'Clear filters', command: () => { this.clearAllFilters(); } },
       { separator: true },
-      { label: 'Show deleted', command: () => { this.showDeletedSet(!this.showDeleted, true); } },
+      { label: 'Show deleted', id: 'ShowDeleted', command: () => { this.showDeletedSet(!this.showDeleted, true); } },
+      { separator: true },
+      {
+        label: 'Settings', items: [
+          { label: 'Load', command: () => this.usLoad() },
+          { label: 'Save', command: () => this.usSaveCurrentSettings() },
+          { label: 'Default', command: () => this.uss.resetSelectedSettings() },
+          {
+            label: 'Columns...', command: () => this._showColumnsSettingsDialog()
+          }
+        ]
+      },
     ];
+    if (this.hierarchy) this.addMenuItems = [viewMenuItems, { separator: true }, ...this.addMenuItems];
+  }
+
+  private _showColumnsSettingsDialog(): void {
+    this._columnsSettingsDialogRef = this.dialog.open(ColumnsSettingsComponent, {
+      width: `${MaxTextWidth(this.columns.map(e => e.label), 13) * 1.62}px`,
+      height: `${Math.min(window.innerHeight - 10, 27 * this.columns.length + 52)}px`,
+      contentStyle: { 'overflow': 'auto' },
+      transitionOptions: '400ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+      // header: 'Customize columns'
+      showHeader: false,
+      closeOnEscape: true,
+      baseZIndex: 500,
+      data: { settingsService: this.uss, columns: this.columns }
+    });
+    this._columnsSettingsDialogRef.onClose.pipe(take(1)).subscribe((columns: ColumnDef[]) => {
+      if (!columns) return;
+      this.settings.columns.visibility = {};
+      columns.forEach(col => this.settings.columns.visibility[col.field] = !col.hidden);
+      this.settings.columns.order = columns.map(col => col.field);
+      this.usApplyColumnsProps();
+      this._resetTables();
+      this.usApplyUserSettings(this.settings);
+    });
+  }
+  private _resetTables() {
+    this.treeNodesVisible ? this.treeTable.reset() : this.tbl.reset();
   }
 
   showDeletedSet(showDeleted: boolean, update = false) {
     this.showDeleted = showDeleted;
-    this.addMenuItems[this.addMenuItems.length - 1].label = `${this.showDeleted ? 'Hide' : 'Show'} deleted`;
-    if (showDeleted) delete this.filters['deleted'];
-    else this.filters['deleted'] = { matchMode: '=', value: 0 };
+    this.addMenuItems.find(e => e.id === 'ShowDeleted').label = `${this.showDeleted ? 'Hide' : 'Show'} deleted`;
+    this.setColumnFilter('deleted', { left: 'deleted', isActive: this.showDeleted, center: '=', right: false });
     if (update) {
       this.prepareDataSource(this.multiSortMeta);
       this._pageSize$.next(this.getPageSize());
     }
   }
 
+  setPresentationMode(mode: string = 'List' || 'Tree' || '') {
+    this._presentation = mode;
+    this.onChangePresentation();
+
+  }
   onChangePresentation() {
     const treeNodesVisibleBefore = this.treeNodesVisible;
-    switch (this.presentation) {
+    switch (this._presentation) {
       case 'List':
         this.treeNodesVisible = false;
         break;
       case 'Tree':
         this.treeNodesVisible = true;
-        this.filters = {};
+        this.clearAllFilters();
         this.showDeletedSet(this.showDeleted);
         break;
       case 'Auto':
@@ -480,9 +655,13 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   parentChange(event) {
     this.id = null;
-    this.filters['parent'] = {
-      matchMode: '=',
-      value: event && event.data && event.data.id ? {
+    const column = this.getColumn('parent');
+    if (!column) return;
+    column.filter = {
+      isActive: true,
+      left: 'parent',
+      center: '=',
+      right: event && event.data && event.data.id ? {
         id: event.data.id,
         code: '',
         type: this.type,
@@ -544,22 +723,126 @@ export class BaseHierarchyListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._docSubscription$.unsubscribe();
-    this._routeSubscruption$.unsubscribe();
+    this._routeSubscription$.unsubscribe();
     this._debonceSubscription$.unsubscribe();
     this._debonce$.complete();
     this._pageSize$.complete();
     this._pageSizeSubscription$.unsubscribe();
     this._resizeSubscription$.unsubscribe();
+    this._usSubscription$.unsubscribe();
+    this._columnsSettingsDialogRef.close();
     // if (!this.route.snapshot.queryParams.goto) { this.saveUserSettings(); }
   }
 
-  private saveUserSettings() {
-    const formListSettings: FormListSettings = {
-      filter: (Object.keys(this.filters) || [])
-        .map(f => (<FormListFilter>{ left: f, center: this.filters[f].matchMode, right: this.filters[f].value })),
-      order: ((<SortMeta[]>this.multiSortMeta) || [])
-        .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' })
-    };
-    this.uss.setFormListSettings(this.type, formListSettings);
+
+  onColResize(event) {
+    const col = this._getColumnByElement(event.element);
+    if (!col) console.log('Unknow col: ' + event.element.outerText);
+    this.settings.columns.width[col.field] = `${event.element.offsetWidth}px`;
+    // col.style['width'] = this.settings.columns.width[col.field];
+    this.uss.isModify = true;
   }
+
+  private _getColumnByElement(element: { outerText: string, offsetWidth: number }): ColumnDef {
+    const label = element.outerText.trim();
+    return this.columns.find(e => e.label === label);
+  }
+
+  onColReorder(event) {
+    this.settings.columns.order = event.columns.map(e => e.field);
+    this.usApplyColumnsProps();
+    this.uss.isModify = true;
+  }
+
+  usApplyUserSettings(settings: FormListSettings) {
+    // console.log(JSON.stringify(settings));
+    this.settings = settings ? settings : this.uss.defaultSettings.settings;
+    this.setFilters();
+    this.setSortOrder();
+    this.usApplyColumnsProps();
+    this.prepareDataSource(this.multiSortMeta);
+    this._pageSize$.next(this.getPageSize());
+  }
+
+  private usApplyColumnsProps() {
+
+    this.columns = [
+      ...this.settings.columns.order.map(field => this.columns.find(e => e.field === field)),
+      ...this.columns.filter(col => !this.settings.columns.order.includes(col.field))
+    ];
+
+    for (const column of this.columns) {
+      const colStyle = { ...column.style };
+      for (const prop of this._columnSettingsProps) {
+        if (!Object.keys(this.settings.columns[prop]).includes(column.field)) continue;
+        const propVal = this.settings.columns[prop][column.field];
+        if (prop === 'visibility')
+          column.hidden = !propVal;
+        else
+          colStyle[prop] = propVal;
+      }
+      column.style = colStyle;
+      // this._resetTables();
+    }
+  }
+
+  _usOnUserSettingsBlur(event: any, dialog: any, isFilter = false) {
+    if (this.uss.readonly || typeof dialog.value !== 'string') return;
+    let settingsDesc = typeof dialog.value === 'string' ? dialog.value : dialog.value.description;
+    if (!settingsDesc) settingsDesc = '<unnamed>';
+    if (isFilter && this.uss.allSettingsFilter.find(e => e.id === this.uss.selectedSettingsFilter.id).description !== settingsDesc)
+      this.uss.isModifyFilter = true;
+    else if (!isFilter && this.uss.allSettings.find(e => e.id === this.uss.selectedSettings.id).description !== settingsDesc)
+      this.uss.isModify = true; 
+  }
+ 
+  _usOnUserSettingsChange(event: any, dialog: any) {
+    if (typeof event.value === 'string') return;
+    this.uss.selectedSettings = event.value;
+  }
+
+  usSaveCurrentSettings() {
+    this.uss.setSelectedSettings({ ...this.uss.selectedSettings, settings: this._getCurrentFormListSettings() });
+  }
+
+  invertColumnHidden(column: ColumnDef) {
+    column.hidden = !column.hidden;
+    this.uss.isModify = true;
+  }
+
+  private usLoad() {
+    this.uss.loadSettings(this.type, this._userEmail, this.usGetDefaultSettings());
+  }
+
+  usGetDefaultSettings(): IUserSettings {
+    return {
+      readonly: true,
+      type: this.type,
+      user: this._userEmail,
+      description: 'Default',
+      id: '',
+      settings: this._getCurrentFormListSettings()
+    };
+  }
+
+  private _getCurrentFormListSettings(): FormListSettings {
+
+    return {
+      filter: this.activeFilters,
+      order: ((<SortMeta[]>this.multiSortMeta) || [])
+        .map(o => <FormListOrder>{ field: o.field, order: o.order === 1 ? 'asc' : 'desc' }),
+      columns: this._getCurrentFormListSettingsColumns()
+    };
+  }
+
+  private _getCurrentFormListSettingsColumns(): FormListColumnProps {
+    const res: FormListColumnProps = { color: {}, width: {}, order: this.columns.map(col => col.field), visibility: {} };
+    this.columns.forEach(col => {
+      // res.color[col.field] = col.style['color'];
+      res.width[col.field] = this.settings.columns.width[col.field] || col.style['width'];
+      res.visibility[col.field] = !col.hidden;
+    });
+    return res;
+  }
+
 }

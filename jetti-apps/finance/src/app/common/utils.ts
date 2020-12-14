@@ -17,6 +17,23 @@ export function scrollIntoViewIfNeeded(type, style, direction = false) {
   if (direction) return target.scrollIntoView(false);
 }
 
+export function MaxTextWidth(text: string[], fontsize: number) {
+  return text.map(e => e.split('').length).sort()[0] * fontsize;
+}
+
+export function isEqualObjects(object1: Object, object2: Object): boolean {
+  const keysObject1 = Object.keys(object1);
+  const keysObject2 = Object.keys(object2);
+  if (keysObject1.length !== keysObject2.length ||
+    keysObject1.join().length !== keysObject2.join().length)
+    return false;
+  keysObject1.forEach(keyObj1 => {
+    if (!keysObject2.includes(keyObj1) ||
+      object1[keyObj1] !== object2[keyObj1]) return false;
+  });
+  return true;
+}
+
 // export function newGUID() {
 //   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
 //     const r = Math.random() * 16 | 0;

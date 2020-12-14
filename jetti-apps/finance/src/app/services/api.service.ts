@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, catchError, take } from 'rxjs/operators';
+import { map, catchError, take, filter } from 'rxjs/operators';
 import { AccountRegister } from '../../../../../jetti-api/server/models/account.register';
 // tslint:disable:max-line-length
 import { DocListRequestBody, DocListResponse, IJob, IJobs, ISuggest, ITree, IViewModel, PatchValue, RefValue, MenuItem, DocListOptions } from '../../../../../jetti-api/server/models/common-types';
@@ -9,7 +9,7 @@ import { DocumentBase, Ref, StorageType } from '../../../../../jetti-api/server/
 import { AllDocTypes, DocTypes } from '../../../../../jetti-api/server/models/documents.types';
 import { RegisterAccumulation } from '../../../../../jetti-api/server/models/Registers/Accumulation/RegisterAccumulation';
 import { RegisterInfo } from '../../../../../jetti-api/server/models/Registers/Info/RegisterInfo';
-import { FormListFilter, FormListOrder, FormListSettings, UserDefaultsSettings } from '../../../../../jetti-api/server/models/user.settings';
+import { FormListFilter, FormListOrder, FormListSettings, IUserSettings } from '../../../../../jetti-api/server/models/user.settings';
 import { environment } from '../../environments/environment';
 import { IComplexObject } from '../common/dynamic-form/dynamic-form-base';
 import { LoadingService } from '../common/loading.service';
@@ -101,10 +101,10 @@ export class ApiService {
 
   getDocList(type: AllDocTypes, id: string, command: string,
     count = 10, offset = 0, order: FormListOrder[] = [],
-    filter: FormListFilter[] = [],
+    _filter: FormListFilter[] = [],
     listOptions: DocListOptions = { withHierarchy: false, hierarchyDirectionUp: false }): Observable<DocListResponse> {
     const query = `${environment.api}list`;
-    const body: DocListRequestBody = { id, type, command, count, offset, order, filter, listOptions };
+    const body: DocListRequestBody = { id, type, command, count, offset, order, filter: _filter, listOptions };
     return this.http.post<DocListResponse>(query, body);
   }
 
@@ -118,8 +118,8 @@ export class ApiService {
     return this.http.post<IViewModel>(query, { type, id, ...params }, { params });
   }
 
-  getSuggests(docType: string, filter: string, filters: FormListFilter[]): Observable<ISuggest[]> {
-    const query = `${environment.api}suggest/${docType}?filter=${filter}`;
+  getSuggests(docType: string, _filter: string, filters: FormListFilter[]): Observable<ISuggest[]> {
+    const query = `${environment.api}suggest/${docType}?filter=${_filter}`;
     return this.http.post<ISuggest[]>(query, { filters });
   }
 
@@ -196,9 +196,9 @@ export class ApiService {
     return (this.http.get(query) as Observable<RegisterInfo[]>);
   }
 
-  getRegisterInfoMovementsByFilter(type: string, filter: { key: string, value: any }[]) {
+  getRegisterInfoMovementsByFilter(type: string, _filter: { key: string, value: any }[]) {
     const query = `${environment.api}/register/info/byFilter/${type}`;
-    return (this.http.post(query, filter) as Observable<RegisterInfo[]>);
+    return (this.http.post(query, _filter) as Observable<RegisterInfo[]>);
   }
 
   getOperationsGroups(): Observable<IComplexObject[]> {
@@ -206,24 +206,20 @@ export class ApiService {
     return (this.http.get<IComplexObject[]>(query));
   }
 
-  getUserFormListSettings(type: string): Observable<FormListSettings> {
-    const query = `${environment.api}user/settings/${type}`;
-    return (this.http.get(query) as Observable<FormListSettings>);
+  getUserSettings(type: string, user: string): Observable<IUserSettings[]> {
+    const query = `${environment.api}user/settings/${type}/${user}`;
+    return (this.http.get<IUserSettings[]>(query)) as Observable<IUserSettings[]>;
   }
 
-  setUserFormListSettings(type: string, formListSettings: FormListSettings) {
-    const query = `${environment.api}user/settings/${type}`;
-    return (this.http.post(query, formListSettings) as Observable<boolean>);
+  saveUserSettings(settings: IUserSettings[]): Promise<IUserSettings[]> {
+    if (!settings || !settings.length) return Promise.resolve([]);
+    const query = `${environment.api}user/settings`;
+    return (this.http.post<IUserSettings[]>(query, { command: 'save', settings }).toPromise());
   }
 
-  getUserDefaultsSettings() {
-    const query = `${environment.api}user/settings/defaults`;
-    return (this.http.get(query) as Observable<UserDefaultsSettings>);
-  }
-
-  setUserDefaultsSettings(value: UserDefaultsSettings) {
-    const query = `${environment.api}user/settings/defaults`;
-    return (this.http.post(query, value) as Observable<boolean>);
+  deleteUserSettings(id: string): Promise<void> {
+    const query = `${environment.api}user/settings`;
+    return this.http.post<void>(query, { command: 'delete', id }).toPromise<void>();
   }
 
   getDocDimensions(type: string) {
@@ -282,6 +278,12 @@ export class ApiService {
 
     return result;
   }
+
+  async getBankStatementTextByDocsId(id: Ref[]): Promise<string> {
+    const query = `${environment.api}getBankStatementTextByDocsId`;
+    return await this.http.post<string>(query, { id }, { headers: { charset: 'windows-1251' } }).toPromise();
+  }
+
 
   execute(type: FormTypes, method: string, doc: FormBase) {
     const apiDoc = viewModelToFlatDocument(doc);

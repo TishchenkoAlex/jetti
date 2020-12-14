@@ -8,8 +8,8 @@ export interface ColumnDef {
     label: string;
     hidden: boolean;
     order: number;
-    style: string | {[key: string]: any};
-    headerStyle: string | {[key: string]: any};
+    style: { [key: string]: any };
+    headerStyle: { [key: string]: any };
     required: boolean;
     readOnly: boolean;
     owner?: OwnerRef[];
