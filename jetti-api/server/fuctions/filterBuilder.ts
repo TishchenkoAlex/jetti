@@ -38,10 +38,10 @@ export const filterBuilder = (filter: FormListFilter[],
         if (!f.right) where += ` AND ${f.leftQ} IS NULL `; else where += ` AND ${f.leftQ} ${f.center} N'${f.right}'`;
         break;
       case 'like':
-        where += ` AND ${f.leftQ} LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
+        where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
         break;
       case 'not like':
-        where += ` AND ${f.leftQ} NOT LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
+        where += ` AND ${f.leftQ} NOT LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
         break;
       case 'beetwen':
         const interval = f.right as FilterInterval;

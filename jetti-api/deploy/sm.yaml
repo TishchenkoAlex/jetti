@@ -57,7 +57,7 @@ spec:
         - name: LOGIC_USECASHREQUESTAPPROVING
           value: "1"
         - name: REFRESH_ID
-          value: "0006"
+          value: "0008"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
