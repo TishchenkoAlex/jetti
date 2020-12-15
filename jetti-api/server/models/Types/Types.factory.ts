@@ -12,6 +12,7 @@ import { TypesUserOrGroup } from './Types.UserOrGroup';
 import { TypesCashOrBank } from './Types.CashOrBank';
 import { TypesCashRecipient } from './Types.CashRecipient';
 import { TypesCounterpartieOrPerson } from './Types.CounterpartieOrPerson';
+import { TypesCounterpartieOrPersonContract } from './Types.CounterpartieOrPersonContract';
 import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpartieBankAccount';
 import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
 import { RegisteredDocument, createDocument } from '../documents.factory';
@@ -81,6 +82,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
   { type: 'Types.CounterpartieOrPerson', Class: TypesCounterpartieOrPerson },
+  { type: 'Types.CounterpartieOrPersonContract', Class: TypesCounterpartieOrPersonContract },
   { type: 'Types.PersonOrCounterpartieBankAccount', Class: TypesPersonOrCounterpartieBankAccount },
   { type: 'Types.CompanyOrCounterpartieOrPerson', Class: TypesCompanyOrCounterpartieOrPerson },
   { type: 'Types.CompanyOrCounterpartieOrPersonOrRetailClient', Class: TypesCompanyOrCounterpartieOrPersonOrRetailClient },

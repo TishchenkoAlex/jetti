@@ -271,7 +271,8 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
         RAISERROR('company', 0 ,1) WITH NOWAIT;
         update documents set parent = @p2 where parent = @p1;
         RAISERROR('parent', 0 ,1) WITH NOWAIT;
-        update documents set [user] = @p2 where [user] = @p1;
+        declare @isUser int = (SELECT COUNT(*) FROM Documents WHERE id = @p2 AND type = N'Catalog.User')
+        if @isUser > 0 update documents set [user] = @p2 where [user] = @p1;
         RAISERROR('[user]', 0 ,1) WITH NOWAIT;
         update documents set deleted = 1, timestamp = getdate() where id = @p1 and deleted <> 1;
         RAISERROR('deleted', 0 ,1) WITH NOWAIT;
