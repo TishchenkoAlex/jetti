@@ -1,3 +1,7 @@
+// tslint:disable:max-line-length
+// tslint:disable:no-shadowed-variable
+// tslint:disable:forin
+
 import { Global } from './../models/global';
 import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
 import { DocTypes, PrimitiveTypes } from './../models/documents.types';
@@ -11,9 +15,6 @@ import { getIndexedOperationById, getIndexedOperations, IIndexedOperation } from
 import { Type } from '../models/type';
 import { MSSQL } from '../mssql';
 
-// tslint:disable:max-line-length
-// tslint:disable:no-shadowed-variable
-// tslint:disable:forin
 
 export class SQLGenegatorMetadata {
 
@@ -535,6 +536,8 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
     DROP TABLE IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}.v];
     SELECT
       r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
       d.exchangeRate${fields}
@@ -566,10 +569,8 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     GO
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
-    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY CLUSTERED ([id], [date]) ON [PS_month_date]([date]);
-    ALTER TABLE [${type}] DROP CONSTRAINT [PK_${type}];
-    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED ([id], [date]) ON [PS_month_date]([date]);
-    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}] ON [PS_month_date]([date]);
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED ([id]);
+    CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}];
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
     `;
