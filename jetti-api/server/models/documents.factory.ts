@@ -141,7 +141,6 @@ export interface IFlatDocument {
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
 
-  const cs = configSchema().get(type);
   let result: DocumentBase;
   const doc = RegisteredDocuments().get(type);
   if (!doc) throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
