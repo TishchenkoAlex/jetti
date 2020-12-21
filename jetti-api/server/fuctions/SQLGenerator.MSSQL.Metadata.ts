@@ -6,7 +6,7 @@ import { Global } from './../models/global';
 import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
 import { DocTypes, PrimitiveTypes } from './../models/documents.types';
 import { DocumentOptions, PropOptions } from '../models/document';
-import { createDocument, RegisteredDocument } from '../models/documents.factory';
+import { createDocument, RegisteredDocuments, RegisteredDocumentsTypes } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
@@ -288,8 +288,9 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
     GO`;
-    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    const registeredDocuments = [...RegisteredDocuments().keys()].filter(type => !Type.isOperation(type));
+    // const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    const allTypes = registeredDocuments.sort();
     for (const type of allTypes) {
       query += `
       ${this.typeSpliter(type, true)}
@@ -338,11 +339,11 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(withSecurityPolicy = true) {
 
-    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    const operationTypes = RegisteredDocumentsTypes(type => !Type.isOperation(type));
+
     let query = '';
 
-    for (const type of allTypes) {
+    for (const type of operationTypes) {
       const doc = createDocument(type);
       if (doc['QueryList']) continue;
       query += `${this.typeSpliter(type, true)}
@@ -412,8 +413,17 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 
   static CreateDocumentIndexes() {
 
+    const types = {
+      catalogs: [...RegisteredDocuments().values()].filter(t => Type.isCatalog(t.type)),
+      documents: [...RegisteredDocuments().values()].filter(t => Type.isDocument(t.type))
+    };
+
+    // const registeredCatalogs = ;
+    // const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    // const allCatalogs = registeredCatalogs.sort();
+
     let select = '';
-    for (const catalog of RegisteredDocument().filter(d => d.type.includes('Catalog.'))) {
+    for (const catalog of types.catalogs) {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
       select += `
@@ -423,13 +433,13 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
-    for (const catalog of RegisteredDocument().filter(d => d.type.includes('Document.'))) {
+    for (const document of types.documents) {
       select += `
-    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    DROP INDEX IF EXISTS [${document.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${document.type}]
     ON [dbo].[Documents]([date],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='${catalog.type}')`;
+    WHERE ([type]='${document.type}')`;
     }
     return select;
   }

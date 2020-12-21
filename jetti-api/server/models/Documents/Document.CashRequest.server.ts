@@ -365,7 +365,6 @@ ORDER BY
       begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
       end: new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0, 23, 59, 59)
     };
-    console.log(query);
 
     const params = [byPersons ? null : this.Department,
     this.сurrency,
@@ -376,7 +375,7 @@ ORDER BY
     currentMounth.begin,
     currentMounth.end,
     withCurrentMonth ? 1 : 0];
-    console.log(params);
+
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query, params);
     this.PayRolls = [];
     this.Amount = 0;

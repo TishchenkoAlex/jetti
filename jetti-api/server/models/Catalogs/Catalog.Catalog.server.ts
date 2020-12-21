@@ -66,7 +66,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
     this.dimensions = prop['dimensions'];
     this.Parameters = [];
     const props = doc.Props();
-    const commonProps = [...Object.keys((new DocumentBase).Props()), 'type'];
+    const commonProps = [...Object.keys((new DocumentBase).Props()).filter(key => key !== 'parent'), 'type'];
     const propsKeys = Object.keys(props).filter(key => !commonProps.includes(key));
     this.Parameters = propsKeys.map(key => this.getPropsAsParameter(key, props[key]));
 

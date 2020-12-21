@@ -76,6 +76,12 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта' })
   Latitude = '';
 
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.' })
+  AreaTotal = '';
+
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.' })
+  AreaTrade = '';
+
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
   IntegrationType = '';
 
