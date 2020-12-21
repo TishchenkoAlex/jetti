@@ -143,28 +143,24 @@ export function createDocument<T extends DocumentBase>(type: DocTypes, document?
 
   const cs = configSchema().get(type);
   let result: DocumentBase;
-
-  if (cs && cs.doc) result = cs.doc;
-  else {
-    const doc = RegisteredDocuments().get(type);
-    if (!doc) throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
-    result = <T>new doc.Class;
-    if (doc.dynamic) {
-      const docMeta = Global.dynamicMeta().Metadata.find(e => e.type === type);
-      const Props = docMeta!.Props();
-      Object.keys(Props)
-        .forEach(propName => {
-          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
-          result[propName] = defVal || defaultTypeValue(Props[propName].type);
-        });
-      result.Props = () => ({ ...Props });
-      result.Prop = () => ({ ...docMeta!.Prop() });
-      result.type = type;
-      if (!document && !result.date) result.date = new Date;
-    } else {
-      const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
-      ArrayProps.forEach(prop => result[prop].length = 0);
-    }
+  const doc = RegisteredDocuments().get(type);
+  if (!doc) throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
+  result = <T>new doc.Class;
+  if (doc.dynamic) {
+    const docMeta = Global.dynamicMeta().Metadata.find(e => e.type === type);
+    const Props = docMeta!.Props();
+    Object.keys(Props)
+      .forEach(propName => {
+        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
+        result[propName] = defVal || defaultTypeValue(Props[propName].type);
+      });
+    result.Props = () => ({ ...Props });
+    result.Prop = () => ({ ...docMeta!.Prop() });
+    result.type = type;
+    if (!document && !result.date) result.date = new Date;
+  } else {
+    const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
+    ArrayProps.forEach(prop => result[prop].length = 0);
   }
   if (document) result.map(document);
   return result as T;
