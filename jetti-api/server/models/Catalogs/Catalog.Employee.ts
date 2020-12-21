@@ -26,4 +26,7 @@ export class CatalogEmployee extends DocumentBase {
   @Props({ type: 'string', label: 'Description (auto)', order: 3, required: false, style: { width: '300px' } })
   description = '';
 
+  @Props({ type: 'string', label: 'Inner phone', order: 4, required: false })
+  InnerPhone = '';
+
 }
