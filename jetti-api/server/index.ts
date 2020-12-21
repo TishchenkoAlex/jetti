@@ -11,6 +11,8 @@ import 'reflect-metadata';
 import * as socketIO from 'socket.io';
 import * as ioredis from 'socket.io-redis';
 import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
+import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
+import { Global } from './models/global';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { JQueue } from './models/Tasks/tasks';
 import { router as auth } from './routes/auth';
@@ -29,8 +31,7 @@ import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
 import * as redis from 'redis';
-import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
-import { Global } from './models/global';
+
 
 // tslint:disable: no-shadowed-variable
 

@@ -4,11 +4,11 @@ import { CatalogCatalogs } from './Catalogs/Catalog.Catalogs';
 import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
-import { createDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocumentDynamic } from './documents.factory';
-import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
-import { createTypes, RegisteredTypes } from './Types/Types.factory';
+import { createDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocuments } from './documents.factory';
+import { AllDocTypes, AllTypes, DocTypes } from './documents.types';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
 import { Global } from './global';
+import { lib } from '../std.lib';
 
 export interface IConfigSchema {
   type: AllDocTypes;
@@ -30,16 +30,15 @@ export function configSchema(): Map<AllDocTypes, IConfigSchema> {
 }
 
 export function getConfigSchema() {
+  if (!RegisteredDocuments().size) return new Map;
   return new Map(
-      [...configSchemaStatic,
-      ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentDynamic())
-      ]
-          .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+    ConfigSchemaFromRegisteredDocument([...RegisteredDocuments().values()])
+      .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
 }
 
-export function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: RegisteredDocumentType[]): IConfigSchema[] {
+export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocumentType[]): IConfigSchema[] {
   return [
-    ...RegisteredDocuments.map(el => {
+    ...documents.map(el => {
       const doc = createDocument(el.type);
       const Prop = doc.Prop() as DocumentOptions;
       const Props = doc.Props();
@@ -66,16 +65,38 @@ export function ConfigSchemaFromRegisteredDocument(RegisteredDocuments: Register
     })];
 }
 
-export const configSchemaStatic = [
-  ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentStatic)
-  ,
-  ...RegisteredTypes.map(el => {
-    const doc = createTypes(el.type as ComplexTypes);
-    const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
-    return ({
-      type: el.type as ComplexTypes,
-      QueryList: doc.QueryList(),
-      Props: fakeDoc.Props()
-    });
-  }),
-];
+// export const configSchemaStatic = [
+//   ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentStatic)
+//   ,
+//   ...RegisteredTypes.map(el => {
+//     const doc = createTypes(el.type as ComplexTypes);
+//     const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
+//     return ({
+//       type: el.type as ComplexTypes,
+//       QueryList: doc.QueryList(),
+//       Props: fakeDoc.Props()
+//     });
+//   }),
+// ];
+
+export async function getRegisteredDocuments(): Promise<Map<DocTypes, RegisteredDocumentType>> {
+  const dynamicTypes = Global.RegisteredDocumentDynamic();
+  const res = new Map<DocTypes, RegisteredDocumentType>();
+  const allTypes = lib.util.groupArray<DocTypes>(
+    [...dynamicTypes.map(e => e.type),
+    ...RegisteredDocumentStatic.map(e => e.type)]).sort();
+  allTypes.forEach(type => {
+    const dynamicType = dynamicTypes.find(e => e.type === type);
+    if (dynamicType) res.set(type, dynamicType);
+    else {
+      const staticType = RegisteredDocumentStatic.find(e => e.type === type);
+      res.set(type, { ...staticType!, dynamic: false });
+    }
+  });
+
+  // const res = new Map(dynamicTypes.map(dynamicType => [dynamicType.type, dynamicType]));
+  // RegisteredDocumentStatic
+  //   .filter(staticType => !res.get(staticType.type))
+  //   .forEach(staticType => res.set(staticType.type, { ...staticType, dynamic: false }));
+  return res;
+}

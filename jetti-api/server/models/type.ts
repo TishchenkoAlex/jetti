@@ -1,27 +1,27 @@
 export class Type {
 
     public static isOperation(type: string) {
-        return type && type.startsWith('Operation.');
+        return !!(type && type.startsWith('Operation.'));
     }
 
     public static isDocument(type: string) {
-        return type && (type.startsWith('Document.') || this.isOperation(type));
+        return !!(type && (type.startsWith('Document.') || this.isOperation(type)));
     }
 
     public static isCatalog(type: string) {
-        return type && type.startsWith('Catalog.');
+        return !!(type && type.startsWith('Catalog.'));
     }
 
     public static isType(type: string) {
-        return type && type.startsWith('Types.');
+        return !!(type && type.startsWith('Types.'));
     }
 
     public static isJournal(type: string) {
-        return type && type.startsWith('Journal.');
+        return !!(type && type.startsWith('Journal.'));
     }
 
     public static isForm(type: string) {
-        return type && type.startsWith('Form.');
+        return !!(type && type.startsWith('Form.'));
     }
 
     // stored types
