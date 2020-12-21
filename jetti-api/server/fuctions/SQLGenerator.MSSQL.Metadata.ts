@@ -24,28 +24,42 @@ export class SQLGenegatorMetadata {
 
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
+    let select = ''; let fields = '';
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') return `
+      switch (type) {
+        case 'boolean': {
+          return `
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
-      if (type === 'number')
-        return `
+        }
+        case 'number': {
+          fields += `, [${prop}.In], [${prop}.Out]`;
+          return `
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1) [${prop}]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1,  null) [${prop}.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
-      if (type === 'date') return `
+        }
+        case 'date': {
+          return `
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      if (type === 'datetime') return `
+        }
+        case 'datetime': {
+          return `
         , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      if (type === 'enum') return `
+        }
+        case 'enum': {
+          return `
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
-      return `
+        }
+        default: {
+          return `
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
+        }
+      }
     };
 
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
-    let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       fields += `, [${prop}]`;
       const propType: string = doc[prop].type || 'string';
@@ -63,8 +77,8 @@ export class SQLGenegatorMetadata {
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]);-- ON PS_month([date]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});-- ON PS_month([date]);
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -478,7 +492,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});-- ON PS_month([date]);
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});
       GO
       CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO
@@ -563,8 +577,8 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
+      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'${type}') IS NOT NULL DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'${type}') IS NULL RETURN;
       INSERT INTO [${type}]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
