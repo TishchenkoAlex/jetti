@@ -5,6 +5,6 @@ import { Type } from '../type';
 export class TypesDocument extends TypesBase {
 
   getTypes() {
-    return RegisteredDocumentsTypes(d => Type.isDocument(d.type));
+    return RegisteredDocumentsTypes(type => Type.isDocument(type) && !Type.isOperation(type));
   }
 }

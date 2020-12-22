@@ -38,7 +38,8 @@ export function getConfigSchema() {
 
   const types = RegisteredTypes.map(el => {
     const doc = createTypes(el.type as ComplexTypes);
-    const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
+    const fakeDoc = new DocumentBase();
+    fakeDoc.type = el.type as any;
     return ([el.type, {
       type: el.type as ComplexTypes,
       QueryList: doc.QueryList(),
@@ -78,12 +79,6 @@ export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocument
     })];
 }
 
-// export const configSchemaStatic = [
-//   ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentStatic)
-//   ,
-//   ...
-// ];
-
 export async function getRegisteredDocuments(): Promise<Map<DocTypes, RegisteredDocumentType>> {
   const dynamicTypes = Global.RegisteredDocumentDynamic();
   const res = new Map<DocTypes, RegisteredDocumentType>();
@@ -98,10 +93,5 @@ export async function getRegisteredDocuments(): Promise<Map<DocTypes, Registered
       res.set(type, { ...staticType!, dynamic: false });
     }
   });
-
-  // const res = new Map(dynamicTypes.map(dynamicType => [dynamicType.type, dynamicType]));
-  // RegisteredDocumentStatic
-  //   .filter(staticType => !res.get(staticType.type))
-  //   .forEach(staticType => res.set(staticType.type, { ...staticType, dynamic: false }));
   return res;
 }

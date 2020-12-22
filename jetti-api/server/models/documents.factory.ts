@@ -174,7 +174,7 @@ export function RegisteredDocumentsTypes(filter?: (DocTypes) => boolean): DocTyp
 }
 
 export function RegisteredDocuments(): Map<DocTypes, RegisteredDocumentType> {
-  return Global.RegisteredDocuments(); // global['RegisteredDocuments'] || new Map();
+  return Global.RegisteredDocuments();
 }
 
 export const RegisteredDocumentStatic: RegisteredDocumentType[] = [

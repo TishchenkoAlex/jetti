@@ -3,6 +3,6 @@ import { TypesBase } from './TypesBase';
 export class TypesUserOrGroup extends TypesBase {
 
   getTypes() {
-    return RegisteredDocumentsTypes(d => ['Catalog.User', 'Catalog.UsersGroup'].includes(d));
+    return RegisteredDocumentsTypes(type => ['Catalog.User', 'Catalog.UsersGroup'].includes(type));
   }
 }
