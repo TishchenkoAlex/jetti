@@ -109,6 +109,9 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'boolean', order: 666, useIn: 'all' })
   isHot = false;
 
+  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  isPromo = false;
+
   @Props({ type: 'table', label: 'Products', order: 666 })
   Product: Product[] = [new Product()];
 
