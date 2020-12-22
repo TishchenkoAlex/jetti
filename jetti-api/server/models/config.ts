@@ -5,10 +5,11 @@ import { CatalogDocuments } from './Catalogs/Catalog.Documents';
 import { CatalogObjects } from './Catalogs/Catalog.Objects';
 import { DocumentBase, DocumentOptions, PropOptions, CopyTo } from './document';
 import { createDocument, RegisteredDocumentStatic, RegisteredDocumentType, RegisteredDocuments } from './documents.factory';
-import { AllDocTypes, AllTypes, DocTypes } from './documents.types';
+import { AllDocTypes, AllTypes, ComplexTypes, DocTypes } from './documents.types';
 import { CatalogForms } from './Catalogs/Catalog.Forms';
 import { Global } from './global';
 import { lib } from '../std.lib';
+import { createTypes, RegisteredTypes } from './Types/Types.factory';
 
 export interface IConfigSchema {
   type: AllDocTypes;
@@ -31,9 +32,21 @@ export function configSchema(): Map<AllDocTypes, IConfigSchema> {
 
 export function getConfigSchema() {
   if (!RegisteredDocuments().size) return new Map;
-  return new Map(
-    ConfigSchemaFromRegisteredDocument([...RegisteredDocuments().values()])
-      .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]));
+
+  const docs = ConfigSchemaFromRegisteredDocument([...RegisteredDocuments().values()])
+    .map((i): [AllDocTypes, IConfigSchema] => [i.type, i]);
+
+  const types = RegisteredTypes.map(el => {
+    const doc = createTypes(el.type as ComplexTypes);
+    const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
+    return ([el.type, {
+      type: el.type as ComplexTypes,
+      QueryList: doc.QueryList(),
+      Props: fakeDoc.Props()
+    }]);
+  });
+
+  return new Map([...docs, ...types as any]);
 }
 
 export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocumentType[]): IConfigSchema[] {
@@ -68,15 +81,7 @@ export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocument
 // export const configSchemaStatic = [
 //   ...ConfigSchemaFromRegisteredDocument(RegisteredDocumentStatic)
 //   ,
-//   ...RegisteredTypes.map(el => {
-//     const doc = createTypes(el.type as ComplexTypes);
-//     const fakeDoc = new DocumentBase(); fakeDoc.type = el.type as any;
-//     return ({
-//       type: el.type as ComplexTypes,
-//       QueryList: doc.QueryList(),
-//       Props: fakeDoc.Props()
-//     });
-//   }),
+//   ...
 // ];
 
 export async function getRegisteredDocuments(): Promise<Map<DocTypes, RegisteredDocumentType>> {
