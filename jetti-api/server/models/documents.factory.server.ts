@@ -6,7 +6,7 @@ import { lib } from '../std.lib';
 import { createDocument, IFlatDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue, PatchValue, MenuItem } from './common-types';
+import { calculateDescription, RefValue } from './common-types';
 import { DocumentBase, DocumentOptions, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
@@ -24,6 +24,7 @@ import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequ
 import { CatalogCatalogServer } from './Catalogs/Catalog.Catalog.server';
 import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server';
 import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
+import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -57,6 +58,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
+  { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },

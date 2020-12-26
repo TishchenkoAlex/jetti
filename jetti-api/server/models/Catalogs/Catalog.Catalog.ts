@@ -2,9 +2,11 @@ import { DocumentBase, JDocument, Props, Ref } from '../document';
 
 @JDocument({
   type: 'Catalog.Catalog',
-  description: 'Catalog construcror',
+  description: 'Catalog constructor',
   icon: 'fa fa-list',
-  menu: 'Catalog construcror',
+  menu: 'Catalog constructor',
+  presentation: 'description',
+  prefix: 'CC-',
   commands: [
     { method: 'updateSQLViewsX100DATA', icon: 'pi pi-plus', label: 'Обновить SQL представления (X100-DATA)', order: 3 },
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 2 },
@@ -36,8 +38,8 @@ export class CatalogCatalog extends DocumentBase {
   @Props({ type: 'enum', value: ['code', 'description'], required: true })
   presentation = 'description';
 
-  @Props({ type: 'enum', value: ['folders', 'elements'], required: true })
-  hierarchy = 'elements';
+  @Props({ type: 'enum', value: ['folders', 'elements', 'none'], required: true })
+  hierarchy = 'none';
 
   @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Module' })
   module = '';
@@ -125,7 +127,7 @@ class Relation {
 
 }
 
-class Dimension {
+export class Dimension {
 
   @Props({ type: 'string', required: true })
   name = '';

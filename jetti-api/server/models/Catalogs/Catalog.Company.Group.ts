@@ -19,4 +19,7 @@ export class CatalogCompanyGroup extends DocumentBase {
   @Props({ type: 'string', required: false })
   FullName = '';
 
+  @Props({ type: 'string' })
+  DescriptionENG = '';
+
 }
