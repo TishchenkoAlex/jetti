@@ -14,6 +14,4 @@ export class CatalogCountry extends DocumentBase {
   @Props({ type: 'Catalog.Currency' })
   Currency: Ref = null;
 
-  @Props({ type: 'string' })
-  DescriptionENG = '';
 }

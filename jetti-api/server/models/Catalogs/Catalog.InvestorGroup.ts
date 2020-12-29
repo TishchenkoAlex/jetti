@@ -12,7 +12,4 @@ export class CatalogInvestorGroup extends DocumentBase {
   @Props({ type: 'Catalog.InvestorGroup', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
-  @Props({ type: 'string' })
-  DescriptionENG = '';
-
 }
