@@ -41,6 +41,9 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'Catalog.Country' })
   Country: Ref = null;
 
+  @Props({ type: 'Catalog.BusinessCalendar' })
+  BusinessCalendar: Ref = null;
+
   @Props({ type: 'Catalog.ResponsibilityCenter', required: true, isProtected: true })
   ResponsibilityCenter: Ref = null;
 

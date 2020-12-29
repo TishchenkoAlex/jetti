@@ -7,6 +7,7 @@ export type CatalogTypes =
   'Catalog.Balance' |
   'Catalog.Balance.Analytics' |
   'Catalog.BankAccount' |
+  'Catalog.BusinessCalendar' |
   'Catalog.Brand' |
   'Catalog.CashFlow' |
   'Catalog.CashRegister' |
