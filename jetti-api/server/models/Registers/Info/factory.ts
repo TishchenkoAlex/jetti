@@ -27,6 +27,7 @@ import { RegisterInfoProductModifier } from './ProductModifier';
 import { RegisterInfoSelfEmployed } from './SelfEmployed';
 import { RegisterInfoStaffingTableHistory } from './StaffingTableHistory';
 import { RegisterInfoEmploymentType } from './EmploymentType';
+import { RegisterInfoIntl } from './Intl';
 
 export type RegisterInfoTypes =
     'Register.Info.Dynamic' |
@@ -40,6 +41,7 @@ export type RegisterInfoTypes =
     'Register.Info.ProductSpecificationByDepartment' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
+    'Register.Info.Intl' |
     'Register.Info.RLS.Period' |
     'Register.Info.BudgetItemRule' |
     'Register.Info.DepartmentCompanyHistory' |
@@ -70,6 +72,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
+    RegisterInfoIntl |
     RegisterInfoSelfEmployed |
     RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
@@ -113,6 +116,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.CompanyPrice', Class: RegisterInfoCompanyPrice },
     { type: 'Register.Info.ShareEmission', Class: RegisterInfoShareEmission },
     { type: 'Register.Info.LoanOwner', Class: RegisterInfoLoanOwner },
+    { type: 'Register.Info.Intl', Class: RegisterInfoIntl },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
     { type: 'Register.Info.EmployeeHistory', Class: RegisterInfoEmployeeHistory },
     { type: 'Register.Info.EmploymentType', Class: RegisterInfoEmploymentType },
