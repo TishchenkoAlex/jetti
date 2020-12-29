@@ -276,7 +276,7 @@ export class SQLGenegatorMetadata {
   }
 
 
-  static CreateViewCatalogs() {
+  static CreateViewCatalogs(dynamic = false) {
     let query = `CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
     SELECT
     'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
@@ -288,14 +288,12 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
     GO`;
-    const registeredDocuments = [...RegisteredDocuments().keys()].filter(type => !Type.isOperation(type));
-    // const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
-    const allTypes = registeredDocuments.sort();
-    for (const type of allTypes) {
+    const registeredCatalogs = [...RegisteredDocuments().values()].filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic);
+    for (const registeredCatalog of registeredCatalogs) {
       query += `
-      ${this.typeSpliter(type, true)}
-      ${this.CreateViewCatalog(type)}
-      ${this.typeSpliter(type, false)}
+      ${this.typeSpliter(registeredCatalog.type, true)}
+      ${this.CreateViewCatalog(registeredCatalog.type)}
+      ${this.typeSpliter(registeredCatalog.type, false)}
       `;
     }
 
@@ -337,20 +335,20 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogsIndex(withSecurityPolicy = true) {
+  static CreateViewCatalogsIndex(withSecurityPolicy = true, dynamic = false) {
 
-    const operationTypes = RegisteredDocumentsTypes(type => !Type.isOperation(type));
+    const registeredCatalogs = [...RegisteredDocuments().values()].filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic);
 
     let query = '';
 
-    for (const type of operationTypes) {
-      const doc = createDocument(type);
+    for (const registeredCatalog of registeredCatalogs) {
+      const doc = createDocument(registeredCatalog.type);
       if (doc['QueryList']) continue;
-      query += `${this.typeSpliter(type, true)}
-RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
-      ${this.CreateViewCatalogIndex(type, withSecurityPolicy)}
-RAISERROR('${type} end', 0 ,1) WITH NOWAIT;
-      ${this.typeSpliter(type, false)}`;
+      query += `${this.typeSpliter(registeredCatalog.type, true)}
+RAISERROR('${registeredCatalog.type} start', 0 ,1) WITH NOWAIT;
+      ${this.CreateViewCatalogIndex(registeredCatalog.type, withSecurityPolicy)}
+RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(registeredCatalog.type, false)}`;
     }
 
     query += `

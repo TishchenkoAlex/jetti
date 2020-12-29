@@ -103,8 +103,14 @@ Global.init().then(e => {
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true) as string;
+    fs.writeFile('CatalogsViewIndexDynamic.sql', script, (err) => { });
+
     script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
     fs.writeFile('CatalogsView.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.CreateViewCatalogs(true) as string;
+    fs.writeFile('CatalogsViewDynamic.sql', script, (err) => { });
 
     script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
     fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
