@@ -1032,6 +1032,8 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressLegal"')), '') [AddressLegal]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Longitude"')), '') [Longitude]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Latitude"')), '') [Latitude]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."AreaTotal"')), 0) [AreaTotal]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."AreaTrade"')), 0) [AreaTrade]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."IntegrationType"')), '') [IntegrationType]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."timeZone"')), '') [timeZone]
       FROM dbo.[Documents]
@@ -1215,6 +1217,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."InnerPhone"')), '') [InnerPhone]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Employee'
 ;
@@ -2172,6 +2175,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Eancode"')), '') [Eancode]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isVegan"')), 0) [isVegan]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isHot"')), 0) [isHot]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isPromo"')), 0) [isPromo]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product'
 ;

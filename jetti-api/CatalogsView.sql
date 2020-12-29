@@ -1160,6 +1160,8 @@ GO
         , d.[AddressLegal] [AddressLegal]
         , d.[Longitude] [Longitude]
         , d.[Latitude] [Latitude]
+        , d.[AreaTotal] [AreaTotal]
+        , d.[AreaTrade] [AreaTrade]
         , d.[IntegrationType] [IntegrationType]
         , d.[timeZone] [timeZone]
       
@@ -1375,6 +1377,7 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Person.v].description, '') [Person.value], d.[Person] [Person.id], [Person.v].type [Person.type]
+        , d.[InnerPhone] [InnerPhone]
       
         , ISNULL(l5.description, d.description) [Employee.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Employee.Level4]
@@ -2450,6 +2453,7 @@ GO
         , d.[Eancode] [Eancode]
         , d.[isVegan] [isVegan]
         , d.[isHot] [isHot]
+        , d.[isPromo] [isPromo]
       
         , ISNULL(l5.description, d.description) [Product.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Product.Level4]
