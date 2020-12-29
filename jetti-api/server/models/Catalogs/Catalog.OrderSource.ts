@@ -16,4 +16,7 @@ export class CatalogOrderSource extends DocumentBase {
   @Props({ type: 'enum', value: ['ONLINE', 'OFFINE'] })
   Kind = false;
 
+  @Props({ type: 'string' })
+  DescriptionENG = '';
+
 }

@@ -13,4 +13,7 @@ export class CatalogBrand extends DocumentBase {
   @Props({ type: 'Catalog.Brand', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'string' })
+  DescriptionENG = '';
+
 }
