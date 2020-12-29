@@ -99,7 +99,7 @@ import { Global } from './global';
 import { defaultTypeValue } from './Types/Types.factory';
 import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
-import { configSchema, getConfigSchema } from './config';
+import { CatalogBusinessCalendar } from './Catalogs/Catalog.BusinessCalendar';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -185,6 +185,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
+  { type: 'Catalog.BusinessCalendar', Class: CatalogBusinessCalendar },
   { type: 'Catalog.Balance.Analytics', Class: CatalogBalanceAnalytics },
   { type: 'Catalog.BankAccount', Class: CatalogBankAccount },
   { type: 'Catalog.CashFlow', Class: CatalogCashFlow },

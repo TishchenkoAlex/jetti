@@ -28,11 +28,15 @@ import { RegisterInfoSelfEmployed } from './SelfEmployed';
 import { RegisterInfoStaffingTableHistory } from './StaffingTableHistory';
 import { RegisterInfoEmploymentType } from './EmploymentType';
 import { RegisterInfoIntl } from './Intl';
+import { RegisterInfoBusinessCalendar } from './BusinessCalendar';
+import { RegisterInfoBusinessCalendarMonths } from './BusinessCalendar.Months';
 
 export type RegisterInfoTypes =
     'Register.Info.Dynamic' |
     'Register.Info.Holiday' |
     'Register.Info.PriceList' |
+    'Register.Info.BusinessCalendar' |
+    'Register.Info.BusinessCalendar.Months' |
     'Register.Info.SelfEmployed' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
@@ -64,6 +68,8 @@ export type RegistersInfo =
     RegisterInfoDynamic |
     RegisterInfoHoliday |
     RegisterInfoPriceList |
+    RegisterInfoBusinessCalendar |
+    RegisterInfoBusinessCalendarMonths |
     RegisterInfoDepartmentStatus |
     RegisterInfoRoyaltySales |
     RegisterInfoSettlementsReconciliation |
@@ -95,6 +101,8 @@ export interface IRegisteredRegisterInfo {
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Dynamic', Class: RegisterInfoDynamic },
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
+    { type: 'Register.Info.BusinessCalendar', Class: RegisterInfoBusinessCalendar },
+    { type: 'Register.Info.BusinessCalendar.Months', Class: RegisterInfoBusinessCalendarMonths },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SelfEmployed', Class: RegisterInfoSelfEmployed },
     { type: 'Register.Info.ProductModifier', Class: RegisterInfoProductModifier },
