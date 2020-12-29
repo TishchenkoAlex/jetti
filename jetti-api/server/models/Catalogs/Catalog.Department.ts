@@ -58,6 +58,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Department.Kind', required: true, isProtected: true })
   kind: Ref = null;
 
+  @Props({ type: 'string' })
+  DescriptionENG = '';
+
   @Props({ type: 'string', required: false })
   Mail = '';
 

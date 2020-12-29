@@ -1706,7 +1706,7 @@
     DROP VIEW IF EXISTS [Register.Accumulation.StaffingTable.v];
     SELECT
       r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [isMainPosition], [Employee], [Person]
+      d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person]
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.StaffingTable]
@@ -1717,7 +1717,6 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
         , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
-        , [isMainPosition] BIT N'$.isMainPosition'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [SalaryRate] MONEY N'$.SalaryRate'
@@ -1736,7 +1735,7 @@
       INSERT INTO [Register.Accumulation.StaffingTable]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [isMainPosition], [Employee], [Person]
+        d.exchangeRate, [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person]
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], [SalaryAnalytic], [currency]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
@@ -1746,7 +1745,6 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
         , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
-        , [isMainPosition] BIT N'$.isMainPosition'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
         , [SalaryRate] MONEY N'$.SalaryRate'
