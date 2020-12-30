@@ -443,6 +443,46 @@ GO
 
       
       
+------------------------------ BEGIN Catalog.BusinessCalendar ------------------------------
+
+      
+      CREATE OR ALTER VIEW dbo.[Catalog.BusinessCalendar] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "BusinessCalendar", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
+      
+        , ISNULL(l5.description, d.description) [BusinessCalendar.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BusinessCalendar.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BusinessCalendar.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [BusinessCalendar.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [BusinessCalendar.Level1]
+      FROM [Catalog.BusinessCalendar.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.BusinessCalendar.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.BusinessCalendar.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.BusinessCalendar.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.BusinessCalendar.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.BusinessCalendar.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BusinessCalendar] TO jetti;
+GO
+
+      
+------------------------------ END Catalog.BusinessCalendar ------------------------------
+
+      
+      
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
       
@@ -634,6 +674,7 @@ GO
         , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
         , ISNULL([Intercompany.v].description, '') [Intercompany.value], d.[Intercompany] [Intercompany.id], [Intercompany.v].type [Intercompany.type]
         , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
+        , ISNULL([BusinessCalendar.v].description, '') [BusinessCalendar.value], d.[BusinessCalendar] [BusinessCalendar.id], [BusinessCalendar.v].type [BusinessCalendar.type]
         , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
         , d.[AddressShipping] [AddressShipping]
         , d.[AddressBilling] [AddressBilling]
@@ -666,6 +707,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Company.v] [Intercompany.v] WITH (NOEXPAND) ON [Intercompany.v].id = d.[Intercompany]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
+        LEFT JOIN dbo.[Catalog.BusinessCalendar.v] [BusinessCalendar.v] WITH (NOEXPAND) ON [BusinessCalendar.v].id = d.[BusinessCalendar]
         LEFT JOIN dbo.[Catalog.ResponsibilityCenter.v] [ResponsibilityCenter.v] WITH (NOEXPAND) ON [ResponsibilityCenter.v].id = d.[ResponsibilityCenter]
         LEFT JOIN dbo.[Catalog.TaxOffice.v] [TaxOffice.v] WITH (NOEXPAND) ON [TaxOffice.v].id = d.[TaxOffice]
     ;
@@ -1010,6 +1052,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[ShortName] [ShortName]
         , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
+        , ISNULL([BusinessCalendar.v].description, '') [BusinessCalendar.value], d.[BusinessCalendar] [BusinessCalendar.id], [BusinessCalendar.v].type [BusinessCalendar.type]
         , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
         , d.[OpeningDate] [OpeningDate]
         , d.[ClosingDate] [ClosingDate]
@@ -1046,6 +1089,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
+        LEFT JOIN dbo.[Catalog.BusinessCalendar.v] [BusinessCalendar.v] WITH (NOEXPAND) ON [BusinessCalendar.v].id = d.[BusinessCalendar]
         LEFT JOIN dbo.[Catalog.ResponsibilityCenter.v] [ResponsibilityCenter.v] WITH (NOEXPAND) ON [ResponsibilityCenter.v].id = d.[ResponsibilityCenter]
         LEFT JOIN dbo.[Catalog.TaxOffice.v] [TaxOffice.v] WITH (NOEXPAND) ON [TaxOffice.v].id = d.[TaxOffice]
         LEFT JOIN dbo.[Catalog.Person.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]

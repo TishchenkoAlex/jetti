@@ -31,6 +31,46 @@
     GO
 ------------------------------ END Register.Info.Holiday ------------------------------
 
+------------------------------ BEGIN Register.Info.BusinessCalendar ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.BusinessCalendar]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BusinessCalendar"')) [BusinessCalendar]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DayType"')) [DayType]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."DayTransfer"'),127) [DayTransfer]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Year"')) [Year]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.BusinessCalendar';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.BusinessCalendar] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.BusinessCalendar] ON [dbo].[Register.Info.BusinessCalendar]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.BusinessCalendar ------------------------------
+
+------------------------------ BEGIN Register.Info.BusinessCalendar.Months ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.BusinessCalendar.Months]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BusinessCalendar"')) [BusinessCalendar]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."TotalDay"')) [TotalDay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkDay"')) [WorkDay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours40"')) [WorkHours40]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours36"')) [WorkHours36]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours24"')) [WorkHours24]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.BusinessCalendar.Months';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.BusinessCalendar.Months] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.BusinessCalendar.Months] ON [dbo].[Register.Info.BusinessCalendar.Months]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.BusinessCalendar.Months ------------------------------
+
 ------------------------------ BEGIN Register.Info.PriceList ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.PriceList]
