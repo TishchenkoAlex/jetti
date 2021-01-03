@@ -503,6 +503,64 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     return query;
   }
 
+  static CreateTableRegisterAccumulationTOv2() {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'number') {
+        return `
+        , SUM(ISNULL([${prop}], 0)) [${prop}]
+        , SUM(ISNULL([${prop}.In], 0)) [${prop}.In]
+        , SUM(ISNULL([${prop}.Out], 0)) [${prop}.Out]`;
+      }
+      return `
+        , [${prop}]`;
+    };
+
+    let query = '';
+    for (const register of RegisteredRegisterAccumulation) {
+      const doc = createRegisterAccumulation({ type: register.type });
+      const props = doc.Props();
+      let select = ''; let groupBy = '';
+      for (const prop in excludeRegisterAccumulatioProps(doc)) {
+        const dimension = !!props[prop].dimension;
+        const resource = !!props[prop].resource;
+        const type = props[prop].type || 'string';
+        const field = simleProperty(prop, type) || '';
+        if (dimension) {
+          groupBy += field;
+        }
+        if (dimension || resource) select += field;
+      }
+
+      query += `\n
+      RAISERROR('${register.type} start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]${select}
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[${register.type}]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]${groupBy}
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] (
+          [date],
+          [company]${groupBy});
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[${register.type}.TO] TO jetti;
+      GO
+      RAISERROR('${register.type} end', 0 ,1) WITH NOWAIT;
+      GO`;
+    }
+
+    return query;
+  }
+
+
   static RegisterAccumulationClusteredTable(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
@@ -575,8 +633,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'${type}') IS NOT NULL DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'${type}') IS NULL RETURN;
+      DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
       INSERT INTO [${type}]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,

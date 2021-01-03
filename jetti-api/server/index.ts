@@ -123,6 +123,8 @@ Global.init().then(e => {
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
     fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTOv2();
+    fs.writeFile('CreateTableRegisterAccumulationTotalsv2.sql', script, (err) => { });
 
     script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
     fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
