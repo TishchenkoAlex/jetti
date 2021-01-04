@@ -27,6 +27,8 @@ export async function InsertRegistersIntoDB(doc: DocumentBaseServer, Registers: 
   }
 
   for (const rec of Registers.Accumulation) {
+    if (rec.company === '9F00DDE0-F043-11E9-9115-B72821305A00' &&
+      (rec.type === 'Register.Accumulation.PL' || rec.type === 'Register.Accumulation.Balance')) continue; // HOLDING
     const date = rec.date ? rec.date : doc.date;
     const data = { ...rec, ...rec['data'], company: rec.company || doc.company, document: doc.id };
     delete data.type; delete data.company; delete data.kind; delete data.calculated;
