@@ -115,6 +115,7 @@ export interface JTL {
   util: {
     groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string
+    parseDate: (date: string, format: string, delimiter: string) => Date
     round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
@@ -204,6 +205,7 @@ export const lib: JTL = {
   util: {
     groupArray,
     formatDate,
+    parseDate,
     round,
     addAttachments,
     delAttachments,
@@ -795,6 +797,18 @@ function formatDate(date: Date): string {
   const mm = date.getMonth() + 1;
   const yy = date.getFullYear();
   return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy}`;
+
+}
+
+// stringToDate("17/9/2014","dd/MM/yyyy","/");
+function parseDate(date: string, format: string, delimiter: string): Date {
+  const formatItems = format.toLowerCase().split(delimiter);
+  const dateItems = date.split(delimiter);
+  const monthIndex = formatItems.indexOf('mm');
+  const dayIndex = formatItems.indexOf('dd');
+  const yearIndex = formatItems.indexOf('yyyy');
+  const month = parseInt(dateItems[monthIndex], undefined) - 1;
+  return new Date(dateItems[yearIndex] as any, month, dateItems[dayIndex] as any);
 }
 
 function groupArray<T>(array: T[], groupField = ''): T[] {
