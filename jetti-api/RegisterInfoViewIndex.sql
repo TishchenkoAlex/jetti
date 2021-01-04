@@ -449,6 +449,25 @@
     GO
 ------------------------------ END Register.Info.LoanOwner ------------------------------
 
+------------------------------ BEGIN Register.Info.Intl ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.Intl]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Catalog"')) [Catalog]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Property"')) [Property]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Language"')) [Language]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Value"')) [Value]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Intl';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Intl] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Intl] ON [dbo].[Register.Info.Intl]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.Intl ------------------------------
+
 ------------------------------ BEGIN Register.Info.RoyaltySales ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
