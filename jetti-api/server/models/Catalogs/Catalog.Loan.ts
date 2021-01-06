@@ -78,7 +78,7 @@ export class CatalogLoan extends DocumentBase {
   @Props({ type: 'Catalog.LoanTypes' })
   loanType: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', required: true })
   Department: Ref = null;
 
   @Props({ type: 'number', order: 777 })

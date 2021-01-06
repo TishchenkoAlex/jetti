@@ -25,6 +25,7 @@ import { CatalogCatalogServer } from './Catalogs/Catalog.Catalog.server';
 import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server';
 import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
 import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
+import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -56,6 +57,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Person.Contract', Class: CatalogPersonContractServer },
   { type: 'Catalog.Catalog', Class: CatalogCatalogServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
+  { type: 'Catalog.Loan', Class: CatalogLoanServer },
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
