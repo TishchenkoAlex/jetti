@@ -37,8 +37,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.AccountablePersons') IS NOT NULL DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.AccountablePersons') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons') > 0 DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AccountablePersons') = 0 RETURN;
       INSERT INTO [Register.Accumulation.AccountablePersons]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -110,8 +110,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.PaymentBatch') IS NOT NULL DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.PaymentBatch') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PaymentBatch') > 0 DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PaymentBatch') = 0 RETURN;
       INSERT INTO [Register.Accumulation.PaymentBatch]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -191,8 +191,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Investment.Analytics') IS NOT NULL DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Investment.Analytics') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Investment.Analytics') > 0 DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Investment.Analytics') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Investment.Analytics]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -272,8 +272,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.OrderPayment') IS NOT NULL DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.OrderPayment') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.OrderPayment') > 0 DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.OrderPayment') = 0 RETURN;
       INSERT INTO [Register.Accumulation.OrderPayment]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -347,8 +347,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.AP') IS NOT NULL DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.AP') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AP') > 0 DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AP') = 0 RETURN;
       INSERT INTO [Register.Accumulation.AP]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -422,8 +422,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.AR') IS NOT NULL DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.AR') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AR') > 0 DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AR') = 0 RETURN;
       INSERT INTO [Register.Accumulation.AR]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -492,8 +492,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Bank') IS NOT NULL DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Bank') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Bank') > 0 DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Bank') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Bank]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -553,8 +553,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Balance') IS NOT NULL DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Balance') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance') > 0 DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Balance]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -615,8 +615,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Balance.RC') IS NOT NULL DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Balance.RC') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance.RC') > 0 DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance.RC') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Balance.RC]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -682,8 +682,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Balance.Report') IS NOT NULL DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Balance.Report') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance.Report') > 0 DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance.Report') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Balance.Report]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -748,8 +748,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Cash') IS NOT NULL DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Cash') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Cash') > 0 DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Cash') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Cash]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -814,8 +814,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Cash.Transit') IS NOT NULL DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Cash.Transit') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit') > 0 DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Cash.Transit') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Cash.Transit]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -887,8 +887,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Inventory') IS NOT NULL DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Inventory') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Inventory') > 0 DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Inventory') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -964,8 +964,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Loan') IS NOT NULL DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Loan') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Loan') > 0 DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Loan') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Loan]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1031,8 +1031,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.PL') IS NOT NULL DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.PL') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PL') > 0 DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PL') = 0 RETURN;
       INSERT INTO [Register.Accumulation.PL]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1094,8 +1094,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.PL.RC') IS NOT NULL DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.PL.RC') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PL.RC') > 0 DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PL.RC') = 0 RETURN;
       INSERT INTO [Register.Accumulation.PL.RC]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1182,8 +1182,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Sales') IS NOT NULL DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Sales') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Sales') > 0 DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Sales') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1276,8 +1276,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Salary') IS NOT NULL DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Salary') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Salary') > 0 DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Salary') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Salary]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1349,8 +1349,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Depreciation') IS NOT NULL DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Depreciation') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Depreciation') > 0 DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Depreciation') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Depreciation]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1421,8 +1421,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.CashToPay') IS NOT NULL DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.CashToPay') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.CashToPay') > 0 DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.CashToPay') = 0 RETURN;
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1501,8 +1501,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.BudgetItemTurnover') IS NOT NULL DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.BudgetItemTurnover') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover') > 0 DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.BudgetItemTurnover') = 0 RETURN;
       INSERT INTO [Register.Accumulation.BudgetItemTurnover]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1578,8 +1578,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Intercompany') IS NOT NULL DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Intercompany') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Intercompany') > 0 DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Intercompany') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Intercompany]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1655,8 +1655,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.Acquiring') IS NOT NULL DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.Acquiring') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Acquiring') > 0 DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Acquiring') = 0 RETURN;
       INSERT INTO [Register.Accumulation.Acquiring]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -1730,8 +1730,8 @@
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT TOP 1 [type] FROM deleted WHERE [type] = N'Register.Accumulation.StaffingTable') IS NOT NULL DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT TOP 1 [type] FROM inserted WHERE [type] = N'Register.Accumulation.StaffingTable') IS NULL RETURN;
+      IF (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.StaffingTable') > 0 DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted);
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.StaffingTable') = 0 RETURN;
       INSERT INTO [Register.Accumulation.StaffingTable]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,

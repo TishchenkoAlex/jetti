@@ -390,6 +390,42 @@ RAISERROR('Catalog.BudgetItem end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BudgetItem ------------------------------
 
+------------------------------ BEGIN Catalog.BusinessCalendar ------------------------------
+
+RAISERROR('Catalog.BusinessCalendar start', 0 ,1) WITH NOWAIT;
+      
+BEGIN TRY
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessCalendar.v];
+END TRY
+BEGIN CATCH
+END CATCH;
+GO
+CREATE OR ALTER VIEW dbo.[Catalog.BusinessCalendar.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+      FROM dbo.[Documents]
+      WHERE [type] = N'Catalog.BusinessCalendar'
+;
+GO
+CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessCalendar.v] ON [Catalog.BusinessCalendar.v](id);
+        
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.deleted] ON [Catalog.BusinessCalendar.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.code.f] ON [Catalog.BusinessCalendar.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.description.f] ON [Catalog.BusinessCalendar.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.description] ON [Catalog.BusinessCalendar.v](description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.code] ON [Catalog.BusinessCalendar.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.user] ON [Catalog.BusinessCalendar.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessCalendar.v.company] ON [Catalog.BusinessCalendar.v](company,id);
+GO
+GRANT SELECT ON dbo.[Catalog.BusinessCalendar.v]TO jetti;
+GO
+
+ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessCalendar.v];
+RAISERROR('Catalog.BusinessCalendar end', 0 ,1) WITH NOWAIT;
+      
+------------------------------ END Catalog.BusinessCalendar ------------------------------
+
 ------------------------------ BEGIN Catalog.BusinessDirection ------------------------------
 
 RAISERROR('Catalog.BusinessDirection start', 0 ,1) WITH NOWAIT;
@@ -561,6 +597,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Intercompany"')) [Intercompany]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessCalendar"')) [BusinessCalendar]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressShipping"')), '') [AddressShipping]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."AddressBilling"')), '') [AddressBilling]
@@ -893,6 +930,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessRegion"')) [BusinessRegion]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessCalendar"')) [BusinessCalendar]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDate'),127) [OpeningDate]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ClosingDate'),127) [ClosingDate]
