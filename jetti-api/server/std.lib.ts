@@ -21,8 +21,6 @@ import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catal
 import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
-import * as iconv from 'iconv-lite';
-import * as xml2js from 'xml2js';
 import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
@@ -135,9 +133,6 @@ export interface JTL {
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
-    decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
-    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
-    xmlStringToJSON: (xmlString: string) => string,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
     isEqualObjects: (object1: Object, object2: Object) => boolean
   };
@@ -223,9 +218,6 @@ export const lib: JTL = {
     getObjectPropertyById,
     exchangeDB,
     taskPoolTx,
-    decodeBase64StringAsUTF8,
-    converStringEncoding,
-    xmlStringToJSON,
     executeGETRequest,
     jettiPoolTx,
     isEqualObjects
@@ -634,29 +626,9 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   finally { await lib.util.adminMode(false, tx); }
 }
 
-function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
-  const buff = new Buffer(string, 'base64');
-  return iconv.decode(Buffer.from(buff), encodingIn).toString();
-}
-
-function converStringEncoding(string: string, encodingIn: string, ecnodingOut: string) {
-  const buff = Buffer.from(string, encodingIn as any);
-  return iconv.decode(buff, ecnodingOut).toString();
-}
-
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
-}
-
-function xmlStringToJSON(xmlString: string): string {
-  const parser = new xml2js.Parser();
-  let result = '';
-  parser.parseString(xmlString, (err, res: string) => {
-    if (err) throw new Error(err);
-    result = res;
-  });
-  return result;
 }
 
 async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
