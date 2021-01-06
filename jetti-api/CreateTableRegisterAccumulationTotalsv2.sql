@@ -573,6 +573,53 @@
       RAISERROR('Register.Accumulation.Cash.Transit end', 0 ,1) WITH NOWAIT;
       GO
 
+      RAISERROR('Register.Accumulation.EmployeeTimekeeping start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , [isActive]
+        , [PeriodMonth]
+        , [KindTimekeeping]
+        , [Employee]
+        , [Person]
+        , [StaffingTable]
+        , SUM(ISNULL([Days], 0)) [Days]
+        , SUM(ISNULL([Days.In], 0)) [Days.In]
+        , SUM(ISNULL([Days.Out], 0)) [Days.Out]
+        , SUM(ISNULL([Hours], 0)) [Hours]
+        , SUM(ISNULL([Hours.In], 0)) [Hours.In]
+        , SUM(ISNULL([Hours.Out], 0)) [Hours.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.EmployeeTimekeeping]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , [isActive]
+        , [PeriodMonth]
+        , [KindTimekeeping]
+        , [Employee]
+        , [Person]
+        , [StaffingTable]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.EmployeeTimekeeping.TO] ON [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] (
+          [date],
+          [company]
+        , [isActive]
+        , [PeriodMonth]
+        , [KindTimekeeping]
+        , [Employee]
+        , [Person]
+        , [StaffingTable]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.EmployeeTimekeeping.TO] AS SELECT * FROM [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.EmployeeTimekeeping.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.EmployeeTimekeeping end', 0 ,1) WITH NOWAIT;
+      GO
+
       RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO.v] WITH SCHEMABINDING AS

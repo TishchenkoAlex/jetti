@@ -387,6 +387,34 @@
     RAISERROR('Register.Accumulation.Cash.Transit finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.EmployeeTimekeeping start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.EmployeeTimekeeping.v] WITH SCHEMABINDING AS
+    SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."PeriodMonth"'),127) [PeriodMonth]
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, '$."KindTimekeeping"')) [KindTimekeeping]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTable"')) [StaffingTable]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, 1, -1) [Days]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, 1,  null) [Days.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, null,  1) [Days.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, 1, -1) [Hours]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, 1,  null) [Hours.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, null,  1) [Hours.Out]
+      FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.EmployeeTimekeeping';
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.EmployeeTimekeeping.id] ON [Register.Accumulation.EmployeeTimekeeping.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.EmployeeTimekeeping] ON [Register.Accumulation.EmployeeTimekeeping.v]([id], [kind], [parent], [date], [document], [company], [calculated], [isActive], [PeriodMonth], [KindTimekeeping], [Employee], [Person], [StaffingTable], [Days], [Days.In], [Days.Out], [Hours], [Hours.In], [Hours.Out]);
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.EmployeeTimekeeping] AS SELECT * FROM [Register.Accumulation.EmployeeTimekeeping.v] WITH (NOEXPAND);
+    GO
+    GRANT SELECT, DELETE ON [Register.Accumulation.EmployeeTimekeeping] TO JETTI;
+    GO
+    RAISERROR('Register.Accumulation.EmployeeTimekeeping finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory.v] WITH SCHEMABINDING AS
