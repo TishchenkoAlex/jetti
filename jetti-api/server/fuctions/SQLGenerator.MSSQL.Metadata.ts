@@ -636,8 +636,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'${type}');
       IF (@COUNT_D) > 0 DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
       IF (@COUNT_D) = 1 DELETE FROM [${type}] WHERE id = (SELECT id FROM deleted);
-      DECLARE @COUNT_I BIGINT = (SELECT COUNT(*) FROM inserted WHERE type = N'${type}');
-      IF (@COUNT_D) = 0 RETURN;
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'${type}') = 0 RETURN;
 
       INSERT INTO [${type}]
       SELECT
