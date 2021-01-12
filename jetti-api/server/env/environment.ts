@@ -106,7 +106,7 @@ export const sqlConfigTask: ConnectionConfigAndPool = {
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 20 * 60 * 1000,
+    requestTimeout: 3 * 60 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {
