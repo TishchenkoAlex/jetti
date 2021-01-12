@@ -90,6 +90,57 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
 
       
+------------------------------ BEGIN Operation.CashShifts ------------------------------
+
+      RAISERROR('Operation.CashShifts start', 0 ,1) WITH NOWAIT;
+      
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CashShifts.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Amount"')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f1"')) [f1]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f2"')) [f2]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."UserId"')) [UserId]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SashShiftNumber"')), '') [SashShiftNumber]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."ChecksLoaded"')), 0) [ChecksLoaded]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."ProductionCalculated"')), 0) [ProductionCalculated]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."startBalance"')), 0) [startBalance]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."endBalance"')), 0) [endBalance]
+      FROM dbo.[Documents]
+      WHERE JSON_VALUE(doc, N'$."Operation"') = '72D21520-144D-11EB-B23D-A9B204614E62'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.CashShifts.v] ON [Operation.CashShifts.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.CashShifts.v.date] ON[Operation.CashShifts.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CashShifts.v.parent] ON [Operation.CashShifts.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CashShifts.v.deleted] ON [Operation.CashShifts.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CashShifts.v.code] ON [Operation.CashShifts.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CashShifts.v.user] ON [Operation.CashShifts.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CashShifts.v.company] ON [Operation.CashShifts.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.CashShifts.v]TO jetti; 
+GO
+ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CashShifts.v];
+      RAISERROR('Operation.CashShifts finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.CashShifts ------------------------------
+
+      
 ------------------------------ BEGIN Operation.CHECK_JETTI_FRONT ------------------------------
 
       RAISERROR('Operation.CHECK_JETTI_FRONT start', 0 ,1) WITH NOWAIT;

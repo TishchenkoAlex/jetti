@@ -491,6 +491,45 @@
       RAISERROR('Register.Accumulation.Cash.Transit end', 0 ,1) WITH NOWAIT;
       GO
 
+      RAISERROR('Register.Accumulation.EmployeeTimekeeping start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) AS [isActive]
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PeriodMonth"')) AS [PeriodMonth]
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."KindTimekeeping"')) AS [KindTimekeeping]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) AS [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTable"')) AS [StaffingTable]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, 1, -1), 0)) [Days]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, 1, null), 0)) [Days.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Days"')) * IIF(kind = 1, null, 1), 0)) [Days.Out]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, 1, -1), 0)) [Hours]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, 1, null), 0)) [Hours.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Hours"')) * IIF(kind = 1, null, 1), 0)) [Hours.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.EmployeeTimekeeping'
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"'))
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PeriodMonth"'))
+        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."KindTimekeeping"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTable"'))
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.EmployeeTimekeeping.TO] ON [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] ([date], [company], [isActive], [PeriodMonth], [KindTimekeeping], [Employee], [Person], [StaffingTable]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.EmployeeTimekeeping.TO] AS SELECT * FROM [dbo].[Register.Accumulation.EmployeeTimekeeping.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.EmployeeTimekeeping.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.EmployeeTimekeeping end', 0 ,1) WITH NOWAIT;
+      GO
+
       RAISERROR('Register.Accumulation.Inventory start', 0 ,1) WITH NOWAIT;
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Inventory.TO.v] WITH SCHEMABINDING AS
