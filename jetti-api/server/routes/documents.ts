@@ -167,11 +167,12 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
         serverDoc.deleted = !!!serverDoc.deleted;
         serverDoc.posted = false;
 
-        await tx.none(`
+        await tx.none(
+          `UPDATE "Documents" SET deleted = @p3, posted = @p4, timestamp = GETDATE() WHERE id = @p1;
+        ${serverDoc.isDoc ? `
           DELETE FROM "Register.Account" WHERE document = @p1;
           DELETE FROM "Register.Info" WHERE document = @p1;
-          DELETE FROM "Accumulation" WHERE document = @p1;
-          UPDATE "Documents" SET deleted = @p3, posted = @p4, timestamp = GETDATE() WHERE id = @p1;
+          DELETE FROM "Accumulation" WHERE document = @p1;` : ''}
         `, [id, serverDoc.date, serverDoc.deleted, 0]);
 
         if (!doc.deleted) {
