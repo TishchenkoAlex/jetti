@@ -7,6 +7,7 @@ export type CatalogTypes =
   'Catalog.Balance' |
   'Catalog.Balance.Analytics' |
   'Catalog.BankAccount' |
+  'Catalog.BusinessCalendar' |
   'Catalog.Brand' |
   'Catalog.CashFlow' |
   'Catalog.CashRegister' |
@@ -136,6 +137,7 @@ export type ComplexTypes =
   'Types.CounterpartieOrPerson' |
   'Types.PersonOrCounterpartieBankAccount' |
   'Types.CompanyOrCounterpartieOrPerson' |
+  'Types.CounterpartieOrPersonContract' |
   'Types.CompanyOrCounterpartieOrPersonOrRetailClient' |
   'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalanceOrIncome' |

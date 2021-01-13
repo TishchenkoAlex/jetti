@@ -21,8 +21,6 @@ import { IAttachmentsSettings, CatalogAttachment } from './models/Catalogs/Catal
 import { x100 } from './x100.lib';
 import { TASKS_POOL } from './sql.pool.tasks';
 import { IQueueRow } from './models/Tasks/common';
-import * as iconv from 'iconv-lite';
-import * as xml2js from 'xml2js';
 import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
@@ -115,6 +113,7 @@ export interface JTL {
   util: {
     groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string
+    parseDate: (date: string, format: string, delimiter: string) => Date
     round: (num: number, precision?: number) => number
     addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
     delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
@@ -134,10 +133,8 @@ export interface JTL {
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
-    decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string
-    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
-    xmlStringToJSON: (xmlString: string) => string,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
+    isEqualObjects: (object1: Object, object2: Object) => boolean
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -203,6 +200,7 @@ export const lib: JTL = {
   util: {
     groupArray,
     formatDate,
+    parseDate,
     round,
     addAttachments,
     delAttachments,
@@ -220,11 +218,9 @@ export const lib: JTL = {
     getObjectPropertyById,
     exchangeDB,
     taskPoolTx,
-    decodeBase64StringAsUTF8,
-    converStringEncoding,
-    xmlStringToJSON,
     executeGETRequest,
-    jettiPoolTx
+    jettiPoolTx,
+    isEqualObjects
   },
   queue: {
     insertQueue,
@@ -630,29 +626,9 @@ export async function unPostById(id: Ref, tx: MSSQL) {
   finally { await lib.util.adminMode(false, tx); }
 }
 
-function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
-  const buff = new Buffer(string, 'base64');
-  return iconv.decode(Buffer.from(buff), encodingIn).toString();
-}
-
-function converStringEncoding(string: string, encodingIn: string, ecnodingOut: string) {
-  const buff = Buffer.from(string, encodingIn as any);
-  return iconv.decode(buff, ecnodingOut).toString();
-}
-
 function taskPoolTx(): MSSQL {
   return new MSSQL(TASKS_POOL,
     { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
-}
-
-function xmlStringToJSON(xmlString: string): string {
-  const parser = new xml2js.Parser();
-  let result = '';
-  parser.parseString(xmlString, (err, res: string) => {
-    if (err) throw new Error(err);
-    result = res;
-  });
-  return result;
 }
 
 async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
@@ -692,6 +668,19 @@ async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityP
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
+}
+
+export function isEqualObjects(object1: Object, object2: Object): boolean {
+  const keysObject1 = Object.keys(object1);
+  const keysObject2 = Object.keys(object2);
+  if (keysObject1.length !== keysObject2.length ||
+    keysObject1.join().length !== keysObject2.join().length)
+    return false;
+  keysObject1.forEach(keyObj1 => {
+    if (!keysObject2.includes(keyObj1) ||
+      object1[keyObj1] !== object2[keyObj1]) return false;
+  });
+  return true;
 }
 
 export function getAdminTX(): MSSQL {
@@ -780,6 +769,18 @@ function formatDate(date: Date): string {
   const mm = date.getMonth() + 1;
   const yy = date.getFullYear();
   return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy}`;
+
+}
+
+// stringToDate("17/9/2014","dd/MM/yyyy","/");
+function parseDate(date: string, format: string, delimiter: string): Date {
+  const formatItems = format.toLowerCase().split(delimiter);
+  const dateItems = date.split(delimiter);
+  const monthIndex = formatItems.indexOf('mm');
+  const dayIndex = formatItems.indexOf('dd');
+  const yearIndex = formatItems.indexOf('yyyy');
+  const month = parseInt(dateItems[monthIndex], undefined) - 1;
+  return new Date(dateItems[yearIndex] as any, month, dateItems[dayIndex] as any);
 }
 
 function groupArray<T>(array: T[], groupField = ''): T[] {

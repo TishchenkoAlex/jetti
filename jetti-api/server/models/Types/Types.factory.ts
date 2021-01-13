@@ -12,9 +12,10 @@ import { TypesUserOrGroup } from './Types.UserOrGroup';
 import { TypesCashOrBank } from './Types.CashOrBank';
 import { TypesCashRecipient } from './Types.CashRecipient';
 import { TypesCounterpartieOrPerson } from './Types.CounterpartieOrPerson';
+import { TypesCounterpartieOrPersonContract } from './Types.CounterpartieOrPersonContract';
 import { TypesPersonOrCounterpartieBankAccount } from './Types.PersonOrCounterpartieBankAccount';
 import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpartieOrPerson';
-import { RegisteredDocument, createDocument } from '../documents.factory';
+import { createDocument, RegisteredDocumentsTypes } from '../documents.factory';
 import { DocumentOptions } from '../document';
 import { Type } from '../type';
 import { TypesExpenseOrIncome } from './Types.ExpenseOrIncome';
@@ -33,10 +34,10 @@ export function allTypes(): { type: AllTypes, description: string }[] {
 }
 
 export function documentsTypes(): { type: AllTypes, description: string }[] {
-  return RegisteredDocument()
-    .map(el => ({
-      type: el.type as AllTypes,
-      description: (<DocumentOptions>(createDocument(el.type).Prop())).description
+  return RegisteredDocumentsTypes()
+    .map(type => ({
+      type: type as AllTypes,
+      description: (<DocumentOptions>(createDocument(type).Prop())).description
     }));
 }
 
@@ -81,6 +82,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
   { type: 'Types.CounterpartieOrPerson', Class: TypesCounterpartieOrPerson },
+  { type: 'Types.CounterpartieOrPersonContract', Class: TypesCounterpartieOrPersonContract },
   { type: 'Types.PersonOrCounterpartieBankAccount', Class: TypesPersonOrCounterpartieBankAccount },
   { type: 'Types.CompanyOrCounterpartieOrPerson', Class: TypesCompanyOrCounterpartieOrPerson },
   { type: 'Types.CompanyOrCounterpartieOrPersonOrRetailClient', Class: TypesCompanyOrCounterpartieOrPersonOrRetailClient },

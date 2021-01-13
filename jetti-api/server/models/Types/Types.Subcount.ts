@@ -1,5 +1,5 @@
 import { DocumentOptions } from '../document';
-import { createDocument, RegisteredDocument } from '../documents.factory';
+import { createDocument, RegisteredDocumentsTypes } from '../documents.factory';
 import { AllTypes } from '../documents.types';
 import { buildTypesQueryList } from './../../fuctions/SQLGenerator.MSSQL';
 import { TypesBase } from './TypesBase';
@@ -7,8 +7,8 @@ import { TypesBase } from './TypesBase';
 export class TypesSubcount extends TypesBase {
 
   QueryList() {
-    const select = RegisteredDocument()
-      .map(el => ({ type: el.type as AllTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
+    const select = RegisteredDocumentsTypes()
+      .map(type => ({ type: type as AllTypes, description: (<DocumentOptions>(createDocument(type).Prop())).description }));
 
     select.push({ type: 'number', description: 'number' });
     select.push({ type: 'date', description: 'date' });
@@ -22,7 +22,7 @@ export class TypesSubcount extends TypesBase {
 
   getTypes() {
     return [
-      ...RegisteredDocument().map(e => e.type),
+      ...RegisteredDocumentsTypes(),
       'number',
       'date',
       'datetime',
@@ -31,6 +31,4 @@ export class TypesSubcount extends TypesBase {
       'table'
     ];
   }
-
 }
-

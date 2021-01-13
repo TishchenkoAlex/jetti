@@ -51,6 +51,8 @@ spec:
           value: ei362NQNrfyLMrzJ0fECu1gQn7Hbv1Y5KllJIQGbbgY=
         - name: JETTI_IS_HOST
           value: https://is.jetti-app.com
+        - name: REGISTER_ACCUMULATION_SOURCE
+          value: "[x100-data]."
         - name: REFRESH_ID
           value: "0002"
         - name: NODE_ENV

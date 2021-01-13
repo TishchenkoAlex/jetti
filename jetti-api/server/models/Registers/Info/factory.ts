@@ -25,11 +25,18 @@ import { RegisterInfoEmployeeHistory } from './EmployeeHistory';
 import { RegisterInfoExchangeRatesNational } from './ExchangeRates.National';
 import { RegisterInfoProductModifier } from './ProductModifier';
 import { RegisterInfoSelfEmployed } from './SelfEmployed';
+import { RegisterInfoStaffingTableHistory } from './StaffingTableHistory';
+import { RegisterInfoEmploymentType } from './EmploymentType';
+import { RegisterInfoIntl } from './Intl';
+import { RegisterInfoBusinessCalendar } from './BusinessCalendar';
+import { RegisterInfoBusinessCalendarMonths } from './BusinessCalendar.Months';
 
 export type RegisterInfoTypes =
     'Register.Info.Dynamic' |
     'Register.Info.Holiday' |
     'Register.Info.PriceList' |
+    'Register.Info.BusinessCalendar' |
+    'Register.Info.BusinessCalendar.Months' |
     'Register.Info.SelfEmployed' |
     'Register.Info.SettlementsReconciliation' |
     'Register.Info.ExchangeRates' |
@@ -38,6 +45,7 @@ export type RegisterInfoTypes =
     'Register.Info.ProductSpecificationByDepartment' |
     'Register.Info.Depreciation' |
     'Register.Info.RLS' |
+    'Register.Info.Intl' |
     'Register.Info.RLS.Period' |
     'Register.Info.BudgetItemRule' |
     'Register.Info.DepartmentCompanyHistory' |
@@ -51,6 +59,8 @@ export type RegisterInfoTypes =
     'Register.Info.LoanOwner' |
     'Register.Info.ProductModifier' |
     'Register.Info.EmployeeHistory' |
+    'Register.Info.EmploymentType' |
+    'Register.Info.StaffingTableHistory' |
     'Register.Info.TaxCheck' |
     'Register.Info.CounterpartiePriceList';
 
@@ -58,6 +68,8 @@ export type RegistersInfo =
     RegisterInfoDynamic |
     RegisterInfoHoliday |
     RegisterInfoPriceList |
+    RegisterInfoBusinessCalendar |
+    RegisterInfoBusinessCalendarMonths |
     RegisterInfoDepartmentStatus |
     RegisterInfoRoyaltySales |
     RegisterInfoSettlementsReconciliation |
@@ -66,6 +78,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
     RegisterInfoSettings |
+    RegisterInfoIntl |
     RegisterInfoSelfEmployed |
     RegisterInfoProductSpecificationByDepartment |
     RegisterInfoIntercompanyHistory |
@@ -75,6 +88,8 @@ export type RegistersInfo =
     RegisterInfoLoanOwner |
     RegisterInfoProductModifier |
     RegisterInfoEmployeeHistory |
+    RegisterInfoEmploymentType |
+    RegisterInfoStaffingTableHistory |
     RegisterInfoTaxCheck |
     RegisterInfoRLS;
 
@@ -86,6 +101,8 @@ export interface IRegisteredRegisterInfo {
 const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.Dynamic', Class: RegisterInfoDynamic },
     { type: 'Register.Info.Holiday', Class: RegisterInfoHoliday },
+    { type: 'Register.Info.BusinessCalendar', Class: RegisterInfoBusinessCalendar },
+    { type: 'Register.Info.BusinessCalendar.Months', Class: RegisterInfoBusinessCalendarMonths },
     { type: 'Register.Info.PriceList', Class: RegisterInfoPriceList },
     { type: 'Register.Info.SelfEmployed', Class: RegisterInfoSelfEmployed },
     { type: 'Register.Info.ProductModifier', Class: RegisterInfoProductModifier },
@@ -107,8 +124,11 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.CompanyPrice', Class: RegisterInfoCompanyPrice },
     { type: 'Register.Info.ShareEmission', Class: RegisterInfoShareEmission },
     { type: 'Register.Info.LoanOwner', Class: RegisterInfoLoanOwner },
+    { type: 'Register.Info.Intl', Class: RegisterInfoIntl },
     { type: 'Register.Info.RoyaltySales', Class: RegisterInfoRoyaltySales },
     { type: 'Register.Info.EmployeeHistory', Class: RegisterInfoEmployeeHistory },
+    { type: 'Register.Info.EmploymentType', Class: RegisterInfoEmploymentType },
+    { type: 'Register.Info.StaffingTableHistory', Class: RegisterInfoStaffingTableHistory },
     { type: 'Register.Info.TaxCheck', Class: RegisterInfoTaxCheck },
 ];
 

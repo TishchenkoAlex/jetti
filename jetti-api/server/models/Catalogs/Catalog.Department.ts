@@ -34,6 +34,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.BusinessRegion' })
   BusinessRegion: Ref = null;
 
+  @Props({ type: 'Catalog.BusinessCalendar' })
+  BusinessCalendar: Ref = null;
+
   @Props({ type: 'Catalog.ResponsibilityCenter', required: true, isProtected: true })
   ResponsibilityCenter: Ref = null;
 
@@ -75,6 +78,12 @@ export class CatalogDepartment extends DocumentBase {
 
   @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта' })
   Latitude = '';
+
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.' })
+  AreaTotal = '';
+
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.' })
+  AreaTrade = '';
 
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
   IntegrationType = '';

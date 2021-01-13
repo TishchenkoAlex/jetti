@@ -16,7 +16,7 @@ export class RegisterAccumulationCashToPay extends RegisterAccumulation {
   @Props({ type: 'Document.CashRequest', required: true, dimension: true, isIndexed: true })
   CashRequest: Ref = null;
 
-  @Props({ type: 'Catalog.Contract', required: true, dimension: true })
+  @Props({ type: 'Types.CounterpartieOrPersonContract', required: true, dimension: true })
   Contract: Ref = null;
 
   @Props({ type: 'Catalog.Person.BankAccount', required: true, dimension: true })

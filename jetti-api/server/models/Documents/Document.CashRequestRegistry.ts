@@ -178,8 +178,8 @@ export class CashRequest {
 
   @Props({
     type: 'Catalog.Counterpartie.BankAccount', label: 'Cash recipient bank account', owner: [
-      { dependsOn: 'CashRecipient', filterBy: 'owner' },
-      { dependsOn: 'currency', filterBy: 'currency' }]
+      { dependsOn: 'CashRecipient', filterBy: 'owner' }
+    ]
   })
   CashRecipientBankAccount: Ref = null;
 

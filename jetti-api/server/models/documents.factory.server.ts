@@ -6,7 +6,7 @@ import { lib } from '../std.lib';
 import { createDocument, IFlatDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue, PatchValue, MenuItem } from './common-types';
+import { calculateDescription, RefValue } from './common-types';
 import { DocumentBase, DocumentOptions, Ref } from './document';
 import { DocTypes } from './documents.types';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
@@ -24,6 +24,8 @@ import { DocumentCashRequestRegistryServer } from './Documents/Document.CashRequ
 import { CatalogCatalogServer } from './Catalogs/Catalog.Catalog.server';
 import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server';
 import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
+import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
+import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -55,8 +57,10 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Person.Contract', Class: CatalogPersonContractServer },
   { type: 'Catalog.Catalog', Class: CatalogCatalogServer },
   { type: 'Catalog.Employee', Class: CatalogEmployeeServer },
+  { type: 'Catalog.Loan', Class: CatalogLoanServer },
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
+  { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
@@ -109,12 +113,12 @@ export async function createDocumentServer<T extends DocumentBaseServer>
         if (result[c.parameter] === undefined) result[c.parameter] = Props[c.parameter].value;
       });
 
+
       Prop.commands = [
-        ...(Operation && Operation.commandsOnServer || []),
-        ...(Operation && Operation.commandsOnClient || []),
+        ...Operation.commandsOnServer || [],
+        ...(Operation.commandsOnClient || []).map(command => ({ ...command, isClientCommand: true }))
       ];
 
-      Prop.copyTo = [];
       for (const o of ((Operation && Operation.CopyTo) || [])) {
         const base = await lib.doc.byIdT<CatalogOperation>(o.Operation, tx);
         if (base) {

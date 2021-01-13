@@ -87,8 +87,8 @@ async function getTransformedRegisterMovementsByDocId(docID: string): Promise<an
     , [Analytics].id [Analytics.id], [Analytics].description [Analytics.value], 'Types.Catalog' [Analytics.type], [Analytics].code [Analytics.code]
     , [Analytics2].id [Analytics2.id], [Analytics2].description [Analytics2.value], 'Types.Catalog' [Analytics2.type], [Analytics2].code [Analytics2.code]
     , [Currency].id [Currency.id], [Currency].description [Currency.value], 'Catalog.Currency' [Currency.type], [Currency].code [Currency.code]
-    , ISNULL(TRY_CONVERT(MONEY, r.Amount), 0) [Amount]
-    , ISNULL(TRY_CONVERT(MONEY, r.AmountRC), 0) [AmountRC]
+    , ISNULL(TRY_CONVERT(MONEY, r.Amount), 0) * IIF(kind = 1, 1, -1) [Amount]
+    , ISNULL(TRY_CONVERT(MONEY, r.AmountRC), 0) * IIF(kind = 1, 1, -1) [AmountRC]
     , r.Info "Info"
   FROM ${TRANSFORMED_REGISTER_MOVEMENTS_TABLE} r
     LEFT JOIN dbo.[Documents] company ON company.id = r.company

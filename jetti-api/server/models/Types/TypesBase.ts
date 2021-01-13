@@ -8,7 +8,9 @@ export interface ITypes {
 }
 
 export class TypesBase implements ITypes {
+
   QueryList(): string {
+
     const select = this.getTypes()
       .map(el => ({ type: el, description: (createDocument(el as DocTypes).Prop() as DocumentOptions).description }));
     return buildTypesQueryList(select);

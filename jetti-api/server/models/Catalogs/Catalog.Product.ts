@@ -22,10 +22,10 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'boolean', hidden: false, hiddenInList: true, isAdditional: true })
   isfolder = false;
 
-  @Props({ type: 'Catalog.ProductKind', label: 'Kind', order: 5, onChangeServer: true, useIn: 'all' })
+  @Props({ type: 'Catalog.ProductKind', label: 'Kind', order: 5, onChangeServer: true, useIn: 'all', isIndexed: true })
   ProductKind: Ref = null;
 
-  @Props({ type: 'Catalog.ProductCategory', label: 'Сategory', order: 666, useIn: 'all' })
+  @Props({ type: 'Catalog.ProductCategory', label: 'Сategory', order: 666, useIn: 'all', isIndexed: true })
   ProductCategory: Ref = null;
 
   @Props({ type: 'Catalog.Specification', label: 'Specification', order: 666, useIn: 'all' })
@@ -108,6 +108,9 @@ export class CatalogProduct extends DocumentBase {
 
   @Props({ type: 'boolean', order: 666, useIn: 'all' })
   isHot = false;
+
+  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  isPromo = false;
 
   @Props({ type: 'table', label: 'Products', order: 666 })
   Product: Product[] = [new Product()];

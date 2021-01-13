@@ -1,7 +1,6 @@
 import { Type } from './../type';
-import { DocTypes } from '../documents.types';
 import { buildSubcountQueryList } from './../../fuctions/SQLGenerator.MSSQL';
-import { createDocument, RegisteredDocument } from './../../models/documents.factory';
+import { createDocument, RegisteredDocumentsTypes } from './../../models/documents.factory';
 import { DocumentBase, DocumentOptions, JDocument, Props, Ref } from './../document';
 
 @JDocument({
@@ -17,8 +16,8 @@ export class CatalogDocuments extends DocumentBase {
 
 
   QueryList() {
-    const select = RegisteredDocument().filter(el => Type.isDocument(el.type))
-      .map(el => ({ type: el.type as DocTypes, description: (<DocumentOptions>(createDocument(el.type).Prop())).description }));
+    const select = RegisteredDocumentsTypes(el => Type.isDocument(el.type))
+      .map(type => ({ type, description: (<DocumentOptions>(createDocument(type).Prop())).description }));
 
     return buildSubcountQueryList(select);
   }

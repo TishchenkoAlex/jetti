@@ -99,6 +99,7 @@ import { Global } from './global';
 import { defaultTypeValue } from './Types/Types.factory';
 import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
+import { CatalogBusinessCalendar } from './Catalogs/Catalog.BusinessCalendar';
 
 export interface INoSqlDocument {
   id: Ref;
@@ -139,44 +140,41 @@ export interface IFlatDocument {
 }
 
 export function createDocument<T extends DocumentBase>(type: DocTypes, document?: IFlatDocument): T {
-  const doc = RegisteredDocument().find(el => el.type === type);
-  if (doc) {
-    const result = <T>new doc.Class;
-    if (doc.dynamic) {
-      const docMeta = Global.dynamicMeta().Metadata.find(e => e.type === type);
-      const Props = docMeta!.Props();
-      Object.keys(Props)
-        .forEach(propName => {
-          const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
-          result[propName] = defVal || defaultTypeValue(Props[propName].type);
-        });
-      result.Props = () => ({ ...Props });
-      result.Prop = () => ({ ...docMeta!.Prop() });
-      result.type = type;
-      if (!document && !result.date) result.date = new Date;
-    } else {
-      const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
-      ArrayProps.forEach(prop => result[prop].length = 0);
-    }
-    if (document) result.map(document);
 
-    return result;
-  } else throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
+  let result: DocumentBase;
+  const doc = RegisteredDocuments().get(type);
+  if (!doc) throw new Error(`createDocument: can't create '${type}' type! '${type}' is not registered`);
+  result = <T>new doc.Class;
+  if (doc.dynamic) {
+    const docMeta = Global.dynamicMeta().Metadata.find(e => e.type === type);
+    const Props = docMeta!.Props();
+    Object.keys(Props)
+      .forEach(propName => {
+        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
+        result[propName] = defVal || defaultTypeValue(Props[propName].type);
+      });
+    result.Props = () => ({ ...Props });
+    result.Prop = () => ({ ...docMeta!.Prop() });
+    result.type = type;
+    if (!document && !result.date) result.date = new Date;
+  } else {
+    const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
+    ArrayProps.forEach(prop => result[prop].length = 0);
+  }
+  if (document) result.map(document);
+  return result as T;
 }
 
 export interface RegisteredDocumentType { type: DocTypes; Class: typeof DocumentBase; dynamic?: boolean; }
 
-export function RegisteredDocument(): RegisteredDocumentType[] {
-  return [
-    ...RegisteredDocumentDynamic(),
-    ...RegisteredDocumentStatic
-  ];
+
+export function RegisteredDocumentsTypes(filter?: (DocTypes) => boolean): DocTypes[] {
+  if (filter) return [...RegisteredDocuments().keys()].filter(filter);
+  return [...RegisteredDocuments().keys()];
 }
 
-export function RegisteredDocumentDynamic(): RegisteredDocumentType[] {
-  return [
-    ...global['dynamicMeta'] ? global['dynamicMeta']['RegisteredDocument'] : []
-  ];
+export function RegisteredDocuments(): Map<DocTypes, RegisteredDocumentType> {
+  return Global.RegisteredDocuments();
 }
 
 export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
@@ -187,6 +185,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
+  { type: 'Catalog.BusinessCalendar', Class: CatalogBusinessCalendar },
   { type: 'Catalog.Balance.Analytics', Class: CatalogBalanceAnalytics },
   { type: 'Catalog.BankAccount', Class: CatalogBankAccount },
   { type: 'Catalog.CashFlow', Class: CatalogCashFlow },

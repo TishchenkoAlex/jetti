@@ -12,7 +12,7 @@ export const JTW_KEY = process.env.JTW_KEY!;
 export const bpApiHost = 'https://bp.x100-group.com/JettiProcesses/hs';
 export const LOGIC_USECASHREQUESTAPPROVING = process.env.LOGIC_USECASHREQUESTAPPROVING || '0';
 export const REGISTER_ACCUMULATION_SOURCE = process.env.REGISTER_ACCUMULATION_SOURCE || '';
-export const TRANSFORMED_REGISTER_MOVEMENTS_TABLE = '[dbo].[_tempBalanceRC]';
+export const TRANSFORMED_REGISTER_MOVEMENTS_TABLE = '[dbo].[Register.Accumulation.Balance.RC]';
 
 const DB_PORT = parseInt(process.env.DB_PORT as string, undefined);
 
@@ -106,7 +106,7 @@ export const sqlConfigTask: ConnectionConfigAndPool = {
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 20 * 60 * 1000,
+    requestTimeout: 3 * 60 * 60 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {

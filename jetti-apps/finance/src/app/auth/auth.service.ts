@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import * as jwt_decode from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, tap } from 'rxjs/operators';
 import { IAccount, ILoginResponse } from '../../../../../jetti-api/server/models/common-types';
 import { environment } from 'src/environments/environment';
+import jwt_decode, { JwtPayload } from 'jwt-decode';
 export const ANONYMOUS_USER: ILoginResponse = { account: undefined, token: '', photo: undefined };
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthService {
 
   get token() { return localStorage.getItem('jetti_token') || ''; }
   set token(value) { localStorage.setItem('jetti_token', value); }
-  get tokenPayload() { return jwt_decode(this.token); }
+  get tokenPayload() { return jwt_decode<JwtPayload>(this.token); }
 
   constructor(private router: Router, private http: HttpClient, private msalService: MsalService) { }
 

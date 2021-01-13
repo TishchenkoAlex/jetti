@@ -45,13 +45,15 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
         and totalAmount = cast(@p3 as money)
         and receiptId=''
         ${taxCheck.operationId ? 'and [document] = @p4' : ''}`;
-
+    const date =  taxCheck.operationTime;
+    new Date(new Date(new Date(date.setHours(0)).setMinutes(0)).setSeconds(0)).setUTCMinutes(0)
     return await tx.oneOrNone<RegisterInfoTaxCheck>(queryText,
         [
             taxCheck.clientInn,
             taxCheck.inn,
             taxCheck.totalAmount.toString(),
-            taxCheck.operationId
+            taxCheck.operationId,
+            date
         ]);
 }
 

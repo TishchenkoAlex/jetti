@@ -381,6 +381,35 @@
     
 ------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
 
+------------------------------ BEGIN Register.Accumulation.EmployeeTimekeeping ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.EmployeeTimekeeping]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, isActive, PeriodMonth, KindTimekeeping, Employee, Person, StaffingTable
+      , d.[Days] * IIF(r.kind = 1, 1, -1) [Days], d.[Days] * IIF(r.kind = 1, 1, null) [Days.In], d.[Days] * IIF(r.kind = 1, null, 1) [Days.Out]
+      , d.[Hours] * IIF(r.kind = 1, 1, -1) [Hours], d.[Hours] * IIF(r.kind = 1, 1, null) [Hours.In], d.[Hours] * IIF(r.kind = 1, null, 1) [Hours.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [isActive] BIT N'$.isActive'
+        , [PeriodMonth] DATE N'$.PeriodMonth'
+        , [KindTimekeeping] NVARCHAR(250) N'$.KindTimekeeping'
+        , [Employee] UNIQUEIDENTIFIER N'$.Employee'
+        , [Person] UNIQUEIDENTIFIER N'$.Person'
+        , [StaffingTable] UNIQUEIDENTIFIER N'$.StaffingTable'
+        , [Days] MONEY N'$.Days'
+        , [Hours] MONEY N'$.Hours'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.EmployeeTimekeeping';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.EmployeeTimekeeping] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.EmployeeTimekeeping ------------------------------
+
 ------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory]

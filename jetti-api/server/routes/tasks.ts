@@ -14,16 +14,28 @@ router.post('/jobs/add', async (req: Request, res: Response, next: NextFunction)
     await sdbq.tx(async tx => {
       await lib.util.adminMode(true, tx);
       try {
-      req.body.data.user = User(req);
-      req.body.data.userId = User(req).email;
-      req.body.data.tx = tx;
-      const result = await JQueue.add(req.body.data, req.body.opts);
-      res.json(mapJob(result));
-    } catch (ex) { throw new Error(ex); }
-    finally { await lib.util.adminMode(false, tx); }
+        req.body.data.user = User(req);
+        req.body.data.userId = User(req).email;
+        req.body.data.tx = tx;
+        const result = await JQueue.add(req.body.data, req.body.opts);
+        res.json(mapJob(result));
+      } catch (ex) { throw new Error(ex); }
+      finally { await lib.util.adminMode(false, tx); }
     });
   } catch (err) { next(err); }
 });
+
+router.get('/jobsCount', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await JQueue.getJobCounts());
+  } catch (err) { next(err); }
+})
+
+router.get('/jobsActive', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await JQueue.getActiveCount());
+  } catch (err) { next(err); }
+})
 
 router.get('/jobs', async (req: Request, res: Response, next: NextFunction) => {
   try {

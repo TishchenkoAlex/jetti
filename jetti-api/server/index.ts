@@ -11,6 +11,8 @@ import 'reflect-metadata';
 import * as socketIO from 'socket.io';
 import * as ioredis from 'socket.io-redis';
 import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
+import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
+import { Global } from './models/global';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { JQueue } from './models/Tasks/tasks';
 import { router as auth } from './routes/auth';
@@ -29,8 +31,7 @@ import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
 import * as redis from 'redis';
-import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
-import { Global } from './models/global';
+
 
 // tslint:disable: no-shadowed-variable
 
@@ -102,8 +103,14 @@ Global.init().then(e => {
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
     fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
 
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true) as string;
+    fs.writeFile('CatalogsViewIndexDynamic.sql', script, (err) => { });
+
     script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
     fs.writeFile('CatalogsView.sql', script, (err) => { });
+
+    script = SQLGenegatorMetadata.CreateViewCatalogs(true) as string;
+    fs.writeFile('CatalogsViewDynamic.sql', script, (err) => { });
 
     script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
     fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
@@ -116,12 +123,12 @@ Global.init().then(e => {
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
     fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTOv2();
+    fs.writeFile('CreateTableRegisterAccumulationTotalsv2.sql', script, (err) => { });
 
     script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
     fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
 
-    script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
   }
 });
 

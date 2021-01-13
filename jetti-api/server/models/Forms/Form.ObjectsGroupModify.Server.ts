@@ -324,7 +324,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     ${queryOb.fields.join(`,\n`)}
     FROM "Documents" d
     ${queryOb.joins.join(`\n`)}
-    WHERE ${filterBuilder(listFilter, '').where}`.trim();
+    WHERE ${filterBuilder(listFilter).where}`.trim();
   }
 
   async getRecieverType(): Promise<DocTypes | string> {

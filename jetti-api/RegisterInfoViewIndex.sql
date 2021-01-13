@@ -31,6 +31,46 @@
     GO
 ------------------------------ END Register.Info.Holiday ------------------------------
 
+------------------------------ BEGIN Register.Info.BusinessCalendar ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.BusinessCalendar]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BusinessCalendar"')) [BusinessCalendar]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DayType"')) [DayType]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."DayTransfer"'),127) [DayTransfer]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Year"')) [Year]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.BusinessCalendar';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.BusinessCalendar] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.BusinessCalendar] ON [dbo].[Register.Info.BusinessCalendar]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.BusinessCalendar ------------------------------
+
+------------------------------ BEGIN Register.Info.BusinessCalendar.Months ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.BusinessCalendar.Months]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BusinessCalendar"')) [BusinessCalendar]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."TotalDay"')) [TotalDay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkDay"')) [WorkDay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours40"')) [WorkHours40]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours36"')) [WorkHours36]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."WorkHours24"')) [WorkHours24]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.BusinessCalendar.Months';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.BusinessCalendar.Months] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.BusinessCalendar.Months] ON [dbo].[Register.Info.BusinessCalendar.Months]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.BusinessCalendar.Months ------------------------------
+
 ------------------------------ BEGIN Register.Info.PriceList ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.PriceList]
@@ -449,6 +489,25 @@
     GO
 ------------------------------ END Register.Info.LoanOwner ------------------------------
 
+------------------------------ BEGIN Register.Info.Intl ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.Intl]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Catalog"')) [Catalog]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Property"')) [Property]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Language"')) [Language]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Value"')) [Value]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Intl';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Intl] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Intl] ON [dbo].[Register.Info.Intl]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.Intl ------------------------------
+
 ------------------------------ BEGIN Register.Info.RoyaltySales ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.RoyaltySales]
@@ -490,6 +549,54 @@
     
     GO
 ------------------------------ END Register.Info.EmployeeHistory ------------------------------
+
+------------------------------ BEGIN Register.Info.EmploymentType ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.EmploymentType]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."EmploymentType"')) [EmploymentType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) [DepartmentCompany]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."JobTitle"')) [JobTitle]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) [StaffingPosition]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SalaryRate"')) [SalaryRate]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.EmploymentType';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.EmploymentType] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.EmploymentType] ON [dbo].[Register.Info.EmploymentType]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.EmploymentType ------------------------------
+
+------------------------------ BEGIN Register.Info.StaffingTableHistory ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.StaffingTableHistory]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) [DepartmentCompany]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingPosition"')) [StaffingPosition]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"')) [SalaryAnalytic]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Currency"')) [Currency]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."AccrualType"')) [AccrualType]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."ActivationDate"'),127) [ActivationDate]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."CloseDate"'),127) [CloseDate]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Cost"')) [Cost]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.StaffingTableHistory';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.StaffingTableHistory] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.StaffingTableHistory] ON [dbo].[Register.Info.StaffingTableHistory]([company], [date], [id])
+    
+    GO
+------------------------------ END Register.Info.StaffingTableHistory ------------------------------
 
 ------------------------------ BEGIN Register.Info.TaxCheck ------------------------------
 

@@ -11,7 +11,7 @@ export const environment = {
   auth: `${domain}/auth/`,
   socket: domain,
   host: domain,
-  PowerBIURL: 'https://app.powerbi.com/groups/38bc78d2-f2a8-413e-a387-ec5a8623a308/list/dashboards',
+  PowerBIURL: 'https://app.powerbi.com/Redirect?action=OpenApp&appId=be0489b5-9ccc-4f9c-a224-cfec72a95c05&ctid=b91c98b1-d543-428b-9469-f5f8f25bc37b',
   title: 'Jetti [SMV]',
   path: '',
   BPAPI

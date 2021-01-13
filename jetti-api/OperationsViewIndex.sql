@@ -186,6 +186,7 @@ CREATE OR ALTER VIEW dbo.[Operation.OperName2.v] WITH SCHEMABINDING AS
       WHERE JSON_VALUE(doc, N'$."Operation"') = '8D128C20-3E20-11EA-A722-63A01E818155'
 ; 
 GO
+<<<<<<< HEAD
 CREATE UNIQUE CLUSTERED INDEX[Operation.OperName2.v] ON[Operation.OperName2.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[Operation.OperName2.v.date] ON[Operation.OperName2.v](date, id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.OperName2.v.parent] ON [Operation.OperName2.v](parent,id);
@@ -193,6 +194,15 @@ CREATE UNIQUE CLUSTERED INDEX[Operation.OperName2.v] ON[Operation.OperName2.v](i
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.OperName2.v.code] ON [Operation.OperName2.v](code,id);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.OperName2.v.user] ON [Operation.OperName2.v]([user],id);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.OperName2.v.company] ON [Operation.OperName2.v](company,id);
+=======
+CREATE UNIQUE CLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.IncomeBank_CRAUD_LoanInternational.v.date] ON[Operation.IncomeBank_CRAUD_LoanInternational.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.parent] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.deleted] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.code] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.user] ON [Operation.IncomeBank_CRAUD_LoanInternational.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.company] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](company,id);
+>>>>>>> 994c07af61a0529f4e27f3a25bc59889422deac5
       
 GO
 GRANT SELECT ON dbo.[Operation.OperName2.v]TO jetti; 
@@ -204,7 +214,65 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.OperName2 ------------------------------
 
       
+<<<<<<< HEAD
 ------------------------------ BEGIN Operation.respPerson ------------------------------
+=======
+------------------------------ BEGIN Operation.LOT_Sales ------------------------------
+
+      RAISERROR('Operation.LOT_Sales start', 0 ,1) WITH NOWAIT;
+      
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LOT_Sales.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Operation.LOT_Sales.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Amount"')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f1"')) [f1]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f2"')) [f2]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Customer"')) [Customer]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CompanySeller"')) [CompanySeller]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department_CompanySeller"')) [Department_CompanySeller]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Loan_Customer"')) [Loan_Customer]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Transaction_Id"')), '') [Transaction_Id]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Alias"')), '') [Alias]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Title"')), '') [Title]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Income_CompanySeller"')) [Income_CompanySeller]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Expense_CompanySeller"')) [Expense_CompanySeller]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Income"')) [Income]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."DocReceived"')), 0) [DocReceived]
+      FROM dbo.[Documents]
+      WHERE JSON_VALUE(doc, N'$."Operation"') = '8C711060-B1AD-11EA-B30E-316ED2102292'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.LOT_Sales.v] ON [Operation.LOT_Sales.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.LOT_Sales.v.date] ON[Operation.LOT_Sales.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LOT_Sales.v.parent] ON [Operation.LOT_Sales.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LOT_Sales.v.deleted] ON [Operation.LOT_Sales.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LOT_Sales.v.code] ON [Operation.LOT_Sales.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LOT_Sales.v.user] ON [Operation.LOT_Sales.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LOT_Sales.v.company] ON [Operation.LOT_Sales.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.LOT_Sales.v]TO jetti; 
+GO
+ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.LOT_Sales.v];
+      RAISERROR('Operation.LOT_Sales finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.LOT_Sales ------------------------------
+
+      
+------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
+>>>>>>> 994c07af61a0529f4e27f3a25bc59889422deac5
 
       RAISERROR('Operation.respPerson start', 0 ,1) WITH NOWAIT;
       
@@ -228,6 +296,7 @@ CREATE OR ALTER VIEW dbo.[Operation.respPerson.v] WITH SCHEMABINDING AS
       WHERE JSON_VALUE(doc, N'$."Operation"') = '1D6E2830-5CA1-11EA-9517-37B915E1B97B'
 ; 
 GO
+<<<<<<< HEAD
 CREATE UNIQUE CLUSTERED INDEX[Operation.respPerson.v] ON[Operation.respPerson.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[Operation.respPerson.v.date] ON[Operation.respPerson.v](date, id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.respPerson.v.parent] ON [Operation.respPerson.v](parent,id);
@@ -235,6 +304,15 @@ CREATE UNIQUE CLUSTERED INDEX[Operation.respPerson.v] ON[Operation.respPerson.v]
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.respPerson.v.code] ON [Operation.respPerson.v](code,id);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.respPerson.v.user] ON [Operation.respPerson.v]([user],id);
       CREATE UNIQUE NONCLUSTERED INDEX [Operation.respPerson.v.company] ON [Operation.respPerson.v](company,id);
+=======
+CREATE UNIQUE CLUSTERED INDEX [Operation.LotModelsVsDepartment.v] ON [Operation.LotModelsVsDepartment.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.LotModelsVsDepartment.v.date] ON[Operation.LotModelsVsDepartment.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LotModelsVsDepartment.v.parent] ON [Operation.LotModelsVsDepartment.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LotModelsVsDepartment.v.deleted] ON [Operation.LotModelsVsDepartment.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LotModelsVsDepartment.v.code] ON [Operation.LotModelsVsDepartment.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LotModelsVsDepartment.v.user] ON [Operation.LotModelsVsDepartment.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.LotModelsVsDepartment.v.company] ON [Operation.LotModelsVsDepartment.v](company,id);
+>>>>>>> 994c07af61a0529f4e27f3a25bc59889422deac5
       
 GO
 GRANT SELECT ON dbo.[Operation.respPerson.v]TO jetti; 

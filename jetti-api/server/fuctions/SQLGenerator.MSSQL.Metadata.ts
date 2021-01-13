@@ -1,8 +1,12 @@
+// tslint:disable:max-line-length
+// tslint:disable:no-shadowed-variable
+// tslint:disable:forin
+
 import { Global } from './../models/global';
 import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
 import { DocTypes, PrimitiveTypes } from './../models/documents.types';
 import { DocumentOptions, PropOptions } from '../models/document';
-import { createDocument, RegisteredDocument } from '../models/documents.factory';
+import { createDocument, RegisteredDocuments, RegisteredDocumentsTypes } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
 import { excludeRegisterAccumulatioProps, SQLGenegator } from './SQLGenerator.MSSQL';
@@ -11,9 +15,6 @@ import { getIndexedOperationById, getIndexedOperations, IIndexedOperation } from
 import { Type } from '../models/type';
 import { MSSQL } from '../mssql';
 
-// tslint:disable:max-line-length
-// tslint:disable:no-shadowed-variable
-// tslint:disable:forin
 
 export class SQLGenegatorMetadata {
 
@@ -23,28 +24,42 @@ export class SQLGenegatorMetadata {
 
   static QueryRegisterAccumulationView(doc: { [x: string]: any }, type: string) {
 
+    let select = ''; let fields = '';
     const simleProperty = (prop: string, type: string) => {
-      if (type === 'boolean') return `
+      switch (type) {
+        case 'boolean': {
+          return `
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
-      if (type === 'number')
-        return `
+        }
+        case 'number': {
+          fields += `, [${prop}.In], [${prop}.Out]`;
+          return `
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1) [${prop}]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1,  null) [${prop}.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null,  1) [${prop}.Out]`;
-      if (type === 'date') return `
+        }
+        case 'date': {
+          return `
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      if (type === 'datetime') return `
+        }
+        case 'datetime': {
+          return `
         , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) [${prop}]`;
-      if (type === 'enum') return `
+        }
+        case 'enum': {
+          return `
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
-      return `
+        }
+        default: {
+          return `
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
+        }
+      }
     };
 
     const complexProperty = (prop: string, type: string) => `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
 
-    let select = ''; let fields = '';
     for (const prop in excludeRegisterAccumulatioProps(doc)) {
       fields += `, [${prop}]`;
       const propType: string = doc[prop].type || 'string';
@@ -58,14 +73,12 @@ export class SQLGenegatorMetadata {
     const query = `
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
-    DROP TABLE IF EXISTS [${type}];
-    GO
     CREATE OR ALTER VIEW [${type}.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]${select}
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
-    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id], [date]) WITH(ONLINE = ON);-- ON PS_month([date]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields}) WITH(ONLINE = ON);-- ON PS_month([date]);
+    CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -241,7 +254,7 @@ export class SQLGenegatorMetadata {
 
     subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS ${select}; `);
 
-    subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v] ON[${type}.v](id);
+    subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);
       CREATE UNIQUE NONCLUSTERED INDEX[${type}.v.date] ON[${type}.v](date, id) INCLUDE([company]);
       CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
       CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);
@@ -263,7 +276,7 @@ export class SQLGenegatorMetadata {
   }
 
 
-  static CreateViewCatalogs() {
+  static CreateViewCatalogs(dynamic = false) {
     let query = `CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
     SELECT
     'https://x100-jetti.web.app/' + d.type + '/' + TRY_CONVERT(varchar(36), d.id) as link,
@@ -275,13 +288,12 @@ export class SQLGenegatorMetadata {
     GO
     GRANT SELECT ON[dbo].[Catalog.Documents] TO jetti;
     GO`;
-    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
-    for (const type of allTypes) {
+    const registeredCatalogs = [...RegisteredDocuments().values()].filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic);
+    for (const registeredCatalog of registeredCatalogs) {
       query += `
-      ${this.typeSpliter(type, true)}
-      ${this.CreateViewCatalog(type)}
-      ${this.typeSpliter(type, false)}
+      ${this.typeSpliter(registeredCatalog.type, true)}
+      ${this.CreateViewCatalog(registeredCatalog.type)}
+      ${this.typeSpliter(registeredCatalog.type, false)}
       `;
     }
 
@@ -323,20 +335,20 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? subQueries : subQueries.join('\nGO\n');
   }
 
-  static CreateViewCatalogsIndex(withSecurityPolicy = true) {
+  static CreateViewCatalogsIndex(withSecurityPolicy = true, dynamic = false) {
 
-    const registeredDocuments = RegisteredDocument().filter(e => !Type.isOperation(e.type));
-    const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    const registeredCatalogs = [...RegisteredDocuments().values()].filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic);
+
     let query = '';
 
-    for (const type of allTypes) {
-      const doc = createDocument(type);
+    for (const registeredCatalog of registeredCatalogs) {
+      const doc = createDocument(registeredCatalog.type);
       if (doc['QueryList']) continue;
-      query += `${this.typeSpliter(type, true)}
-RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
-      ${this.CreateViewCatalogIndex(type, withSecurityPolicy)}
-RAISERROR('${type} end', 0 ,1) WITH NOWAIT;
-      ${this.typeSpliter(type, false)}`;
+      query += `${this.typeSpliter(registeredCatalog.type, true)}
+RAISERROR('${registeredCatalog.type} start', 0 ,1) WITH NOWAIT;
+      ${this.CreateViewCatalogIndex(registeredCatalog.type, withSecurityPolicy)}
+RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
+      ${this.typeSpliter(registeredCatalog.type, false)}`;
     }
 
     query += `
@@ -369,7 +381,7 @@ BEGIN CATCH
 END CATCH;`);
 
       subQueries.push(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS${select};`);
-      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX[${type}.v]ON[${type}.v](id);${Object.keys(Props)
+      subQueries.push(`CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);${Object.keys(Props)
         .filter(key => Props[key].isIndexed)
         .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
         .join('\n')
@@ -399,8 +411,17 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 
   static CreateDocumentIndexes() {
 
+    const types = {
+      catalogs: [...RegisteredDocuments().values()].filter(t => Type.isCatalog(t.type)),
+      documents: [...RegisteredDocuments().values()].filter(t => Type.isDocument(t.type))
+    };
+
+    // const registeredCatalogs = ;
+    // const allTypes = lib.util.groupArray<any>(registeredDocuments, 'type').sort();
+    // const allCatalogs = registeredCatalogs.sort();
+
     let select = '';
-    for (const catalog of RegisteredDocument().filter(d => d.type.includes('Catalog.'))) {
+    for (const catalog of types.catalogs) {
       const doc = createDocument(catalog.type);
       if (doc['QueryList']) continue;
       select += `
@@ -410,13 +431,13 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     INCLUDE([posted],[deleted],[isfolder],[date],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
     WHERE ([type]='${catalog.type}')`;
     }
-    for (const catalog of RegisteredDocument().filter(d => d.type.includes('Document.'))) {
+    for (const document of types.documents) {
       select += `
-    DROP INDEX IF EXISTS [${catalog.type}] ON Documents;
-    CREATE UNIQUE NONCLUSTERED INDEX [${catalog.type}]
+    DROP INDEX IF EXISTS [${document.type}] ON Documents;
+    CREATE UNIQUE NONCLUSTERED INDEX [${document.type}]
     ON [dbo].[Documents]([date],[id],[parent])
     INCLUDE([posted],[deleted],[isfolder],[description],[code],[doc],[user],[info],[timestamp],[ExchangeCode],[ExchangeBase],[type],[company])
-    WHERE ([type]='${catalog.type}')`;
+    WHERE ([type]='${document.type}')`;
     }
     return select;
   }
@@ -434,7 +455,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, null, 1), 0)) [${prop}.Out]`;
       }
       if (type === 'boolean') return `
-        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) [${prop}]`;
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
       return `
         , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
     };
@@ -469,7 +490,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]${groupBy}
       GO
-      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy}) WITH(ONLINE = ON);-- ON PS_month([date]);
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] ([date], [company]${indexGroupBy});
       GO
       CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
       GO
@@ -481,6 +502,64 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 
     return query;
   }
+
+  static CreateTableRegisterAccumulationTOv2() {
+
+    const simleProperty = (prop: string, type: string) => {
+      if (type === 'number') {
+        return `
+        , SUM(ISNULL([${prop}], 0)) [${prop}]
+        , SUM(ISNULL([${prop}.In], 0)) [${prop}.In]
+        , SUM(ISNULL([${prop}.Out], 0)) [${prop}.Out]`;
+      }
+      return `
+        , [${prop}]`;
+    };
+
+    let query = '';
+    for (const register of RegisteredRegisterAccumulation) {
+      const doc = createRegisterAccumulation({ type: register.type });
+      const props = doc.Props();
+      let select = ''; let groupBy = '';
+      for (const prop in excludeRegisterAccumulatioProps(doc)) {
+        const dimension = !!props[prop].dimension;
+        const resource = !!props[prop].resource;
+        const type = props[prop].type || 'string';
+        const field = simleProperty(prop, type) || '';
+        if (dimension) {
+          groupBy += field;
+        }
+        if (dimension || resource) select += field;
+      }
+
+      query += `\n
+      RAISERROR('${register.type} start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]${select}
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[${register.type}]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]${groupBy}
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [${register.type}.TO] ON [dbo].[${register.type}.TO.v] (
+          [date],
+          [company]${groupBy});
+      GO
+      CREATE OR ALTER VIEW [dbo].[${register.type}.TO] AS SELECT * FROM [dbo].[${register.type}.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[${register.type}.TO] TO jetti;
+      GO
+      RAISERROR('${register.type} end', 0 ,1) WITH NOWAIT;
+      GO`;
+    }
+
+    return query;
+  }
+
 
   static RegisterAccumulationClusteredTable(doc: { [x: string]: any }, type: string) {
 
@@ -537,8 +616,10 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
     DROP TABLE IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}.v];
     SELECT
-      r.id, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
       d.exchangeRate${fields}
     INTO [${type}]
     FROM [Accumulation] r
@@ -552,8 +633,11 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     AS
     BEGIN
       SET NOCOUNT ON;
-      IF (SELECT COUNT(*) FROM deleted) > 0 DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted);
-      IF (SELECT COUNT(*) FROM inserted) = 0 RETURN;
+      DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'${type}');
+      IF (@COUNT_D) > 0 DELETE FROM [${type}] WHERE id IN (SELECT id FROM deleted WHERE type = N'${type}');
+      IF (@COUNT_D) = 1 DELETE FROM [${type}] WHERE id = (SELECT id FROM deleted WHERE type = N'${type}');
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'${type}') = 0 RETURN;
+
       INSERT INTO [${type}]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
@@ -568,7 +652,7 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     GO
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO
-    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED (id);
+    ALTER TABLE [${type}] ADD CONSTRAINT [PK_${type}] PRIMARY KEY NONCLUSTERED ([id]);
     CREATE CLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}];
     RAISERROR('${type} finish', 0 ,1) WITH NOWAIT;
     GO
