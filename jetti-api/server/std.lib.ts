@@ -11,7 +11,6 @@ import { createDocumentServer, DocumentBaseServer } from './models/documents.fac
 import { DocTypes, AllDocTypes } from './models/documents.types';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
 import { RegisterAccumulation } from './models/Registers/Accumulation/RegisterAccumulation';
-import { RegistersInfo } from './models/Registers/Info/factory';
 import { RegisterInfo } from './models/Registers/Info/RegisterInfo';
 import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
 import { MSSQL } from './mssql';
@@ -25,7 +24,6 @@ import axios from 'axios';
 import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { Type } from './models/type';
-import { Global } from './models/global';
 import { getIndexedOperationById } from './models/indexedOperation';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
@@ -967,7 +965,11 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
   return result;
 }
 
+
 async function getObjectPropertyById(id: Ref, propPath: string, tx: MSSQL) {
+
+  // https://github.com/tediousjs/tedious/blob/820dd2390dd6d119463822df3d7612c623db21ea/src/data-types/uniqueidentifier.ts
+  const isGUID2 = (value: string): boolean => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
   const isGUID = (val: string): boolean => {
     return val.length === 36 && val.split('-').length === 5 && val.split('-')[0].length === 8;

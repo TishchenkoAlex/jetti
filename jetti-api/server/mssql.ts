@@ -5,7 +5,9 @@ import { ConnectionConfigAndPool } from './env/environment';
 
 export class SqlPool {
 
-  constructor(public config: ConnectionConfigAndPool) { }
+  constructor(public config: ConnectionConfigAndPool) {
+    this.config.options!['validateBulkLoadParameters'] = true;
+  }
 
   pool = new Pool<Connection>({
     create: () => {
@@ -23,6 +25,7 @@ export class SqlPool {
           if (error.code === 'ESOCKET') connection['hasError'] = true;
           return reject(error);
         }));
+        connection.connect();
       });
     },
     validate: connecion => !connecion['closed'] && !connecion['hasError'],

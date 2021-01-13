@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, map, sampleTime, take } from 'rxjs/operators';
-import * as IO from 'socket.io-client';
+// import * as IO from 'socket.io-client';
 import { IJob, IJobs } from '../../../../../jetti-api/server/models/common-types';
 import { AuthService } from '../auth/auth.service';
 import { ApiService } from '../services/api.service';
@@ -29,11 +29,11 @@ export class EventsService implements OnDestroy {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 
       const wsAuto = (url: string, onmessage: (data: any) => void) => {
-        const socket = IO(url, {transports: ['websocket']});
-        socket.on('customTask', (data: any) => onmessage(data));
-        socket.on('sync', (data: any) => onmessage(data));
-        socket.on('batch', (data: any) => onmessage(data));
-        socket.on('post', (data: any) => onmessage(data));
+        /*        const socket = IO(url, {transports: ['websocket']});
+               socket.on('customTask', (data: any) => onmessage(data));
+               socket.on('sync', (data: any) => onmessage(data));
+               socket.on('batch', (data: any) => onmessage(data));
+               socket.on('post', (data: any) => onmessage(data)); */
       };
 
       wsAuto(wsUrl, data => this.debonce$.next(data));

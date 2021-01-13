@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Injectable, isDevMode } from '@angular/core';
 import { MessageService } from 'primeng/components/common/messageservice';
 import { Observable, of as observableOf, throwError } from 'rxjs';
-import { catchError, map, tap, finalize } from 'rxjs/operators';
+import { catchError, map, finalize } from 'rxjs/operators';
 import { dateReviver, dateReviverLocal } from '../../../../jetti-api/server/fuctions/dateReviver';
 import { AuthService } from './auth/auth.service';
 import { LoadingService } from './common/loading.service';

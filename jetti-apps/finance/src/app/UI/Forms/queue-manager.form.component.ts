@@ -9,7 +9,7 @@ import { LoadingService } from 'src/app/common/loading.service';
 import { take, filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MenuItem } from 'primeng/api';
-import * as IO from 'socket.io-client';
+// import * as IO from 'socket.io-client';
 import { IFormControlPlacing } from 'src/app/common/dynamic-form/dynamic-form-base';
 
 @Component({
@@ -43,27 +43,27 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 
-      const socket = IO(wsUrl, { transports: ['websocket'] });
-      socket.on('sync', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.IOData = [data.data.message, ...this.IOData];
-        if (this.IOData.length > 1000) this.IOData.length = 1000;
-        this.cd.detectChanges();
-      });
+      /*       const socket = IO(wsUrl, { transports: ['websocket'] });
+            socket.on('sync', (data: any) => {
+              if (data && data.data && data.data.message)
+                this.IOData = [data.data.message, ...this.IOData];
+              if (this.IOData.length > 1000) this.IOData.length = 1000;
+              this.cd.detectChanges();
+            });
 
-      socket.on('customTask', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.IOData = [data.data.message, ...this.IOData];
-        if (this.IOData.length > 1000) this.IOData.length = 1000;
-        this.cd.detectChanges();
-      });
+            socket.on('customTask', (data: any) => {
+              if (data && data.data && data.data.message)
+                this.IOData = [data.data.message, ...this.IOData];
+              if (this.IOData.length > 1000) this.IOData.length = 1000;
+              this.cd.detectChanges();
+            });
 
-      socket.on('timeout', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.IOData = [data.data.message, ...this.IOData];
-        if (this.IOData.length > 1000) this.IOData.length = 1000;
-        this.cd.detectChanges();
-      });
+            socket.on('timeout', (data: any) => {
+              if (data && data.data && data.data.message)
+                this.IOData = [data.data.message, ...this.IOData];
+              if (this.IOData.length > 1000) this.IOData.length = 1000;
+              this.cd.detectChanges();
+            }); */
     });
   }
 
@@ -82,7 +82,7 @@ export class QueueManagerComponent extends _baseDocFormComponent implements OnIn
         //   label: 'Получить процецессы (get workers)', command: () => this.executeServerMethod('getWorkers')
         // }
       ],
-      add: [ {
+      add: [{
         label: 'Создать', command: () => this.executeServerMethod('addJobCustomTask')
       }],
       remove: [{

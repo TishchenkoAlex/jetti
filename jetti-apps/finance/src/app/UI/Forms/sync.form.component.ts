@@ -1,4 +1,4 @@
-import * as IO from 'socket.io-client';
+// import * as IO from 'socket.io-client';
 import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { _baseDocFormComponent } from 'src/app/common/form/_base.form.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -32,20 +32,20 @@ export class SyncFormComponent extends _baseDocFormComponent implements OnInit, 
     this.auth.userProfile$.pipe(filter(u => !!(u && u.account))).subscribe(u => {
       const wsUrl = `${environment.socket}?token=${u.token}`;
 
-      const socket = IO(wsUrl, { transports: ['websocket'] });
-      socket.on('sync', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.IOData = [data.data.message, ...this.IOData];
-        if (this.IOData.length > 1000) this.IOData.length = 1000;
-        this.cd.detectChanges();
-      });
+      /*       const socket = IO(wsUrl, { transports: ['websocket'] });
+            socket.on('sync', (data: any) => {
+              if (data && data.data && data.data.message)
+                this.IOData = [data.data.message, ...this.IOData];
+              if (this.IOData.length > 1000) this.IOData.length = 1000;
+              this.cd.detectChanges();
+            });
 
-      socket.on('timeout', (data: any) => {
-        if (data && data.data && data.data.message)
-          this.IOData = [data.data.message, ...this.IOData];
-        if (this.IOData.length > 1000) this.IOData.length = 1000;
-        this.cd.detectChanges();
-      });
+            socket.on('timeout', (data: any) => {
+              if (data && data.data && data.data.message)
+                this.IOData = [data.data.message, ...this.IOData];
+              if (this.IOData.length > 1000) this.IOData.length = 1000;
+              this.cd.detectChanges();
+            }); */
     });
   }
 

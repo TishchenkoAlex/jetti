@@ -1,4 +1,3 @@
-import * as Queue from 'bull';
 import { ColumnDef } from './column';
 import { DocumentOptions, Ref } from './document';
 import { AllDocTypes, AllTypes } from './documents.types';
@@ -68,13 +67,24 @@ export interface IJob {
   message: string;
 }
 
+interface JobInformation {
+  key: string;
+  name: string;
+  id?: string;
+  endDate?: number;
+  tz?: string;
+  cron: string;
+  every: number;
+  next: number;
+}
+
 export interface IJobs {
   Active: IJob[];
   Completed: IJob[];
   Delayed: IJob[];
   Failed: IJob[];
   Waiting: IJob[];
-  RepeatableJobs?: Queue.JobInformation[];
+  RepeatableJobs?: JobInformation[];
 }
 
 export interface IJWTPayload {

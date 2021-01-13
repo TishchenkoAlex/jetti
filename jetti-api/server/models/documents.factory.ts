@@ -48,7 +48,7 @@ import { CatalogSubSystem } from './Catalogs/Catalog.SubSystem';
 import { CatalogUnit } from './Catalogs/Catalog.Unit';
 import { CatalogUser } from './Catalogs/Catalog.User';
 import { DocumentBase, Ref } from './document';
-import { DocTypes, AllTypes } from './documents.types';
+import { DocTypes } from './documents.types';
 import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';

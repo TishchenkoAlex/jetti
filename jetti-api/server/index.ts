@@ -8,8 +8,11 @@ import * as httpServer from 'http';
 import * as path from 'path';
 import * as os from 'os';
 import 'reflect-metadata';
-import * as socketIO from 'socket.io';
-import * as ioredis from 'socket.io-redis';
+
+import { Server as SocketIO } from 'socket.io';
+import { createAdapter } from 'socket.io-redis';
+import { RedisClient } from 'redis';
+
 import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
 import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
 import { Global } from './models/global';
@@ -30,22 +33,10 @@ import { router as exchange } from './routes/exchange';
 import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
-import * as redis from 'redis';
-
 
 // tslint:disable: no-shadowed-variable
-
 const app = express();
 export const HTTP = httpServer.createServer(app);
-export const IO = socketIO(HTTP);
-
-export const subscriber = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
-export const publisher = redis.createClient({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH });
-
-subscriber.on('message', function (channel, message) {
-  if (channel === 'updateDynamicMeta') updateDynamicMeta();
-});
-subscriber.subscribe('updateDynamicMeta');
 
 const root = './';
 app.use(compression());
@@ -83,51 +74,61 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 
 app.use(errorHandler);
 
+export const IO = new SocketIO(HTTP, { cors: { origin: '*.*', methods: ['GET', 'POST'] } });
 IO.use(authIO);
-IO.adapter(ioredis({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+const pubClient = new RedisClient({ host: REDIS_DB_HOST, password: REDIS_DB_AUTH });
+const subClient = pubClient.duplicate();
+IO.adapter(createAdapter({ pubClient, subClient }));
 IO.of('/').adapter.on('error', (error) => { });
 
-let script = '';
-
+export const subscriber = new RedisClient(({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+export const publisher = new RedisClient(({ host: REDIS_DB_HOST, auth_pass: REDIS_DB_AUTH }));
+subscriber.on('message', function (channel, message) {
+  if (channel === 'updateDynamicMeta') updateDynamicMeta();
+});
+subscriber.subscribe('updateDynamicMeta');
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
 
 Global.init().then(e => {
   if (!Global.isProd) {
+    let script = '';
+    const ef = () => { };
 
-    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, (err) => { }));
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, ef));
 
-    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, (err) => { }));
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, ef));
 
-    script = SQLGenegatorMetadata.CreateViewCatalogsIndex() as string;
-    fs.writeFile('CatalogsViewIndex.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
+    fs.writeFile('CatalogsViewIndex.sql', script, ef);
 
-    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true) as string;
-    fs.writeFile('CatalogsViewIndexDynamic.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true);
+    fs.writeFile('CatalogsViewIndexDynamic.sql', script, ef);
 
-    script = SQLGenegatorMetadata.CreateViewCatalogs() as string;
-    fs.writeFile('CatalogsView.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogs();
+    fs.writeFile('CatalogsView.sql', script, ef);
 
-    script = SQLGenegatorMetadata.CreateViewCatalogs(true) as string;
-    fs.writeFile('CatalogsViewDynamic.sql', script, (err) => { });
+    script = SQLGenegatorMetadata.CreateViewCatalogs(true);
+    fs.writeFile('CatalogsViewDynamic.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-    fs.writeFile('RegisterInfoViewIndex.sql', script, (err) => { });
+    fs.writeFile('RegisterInfoViewIndex.sql', script, ef);
 
     script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
-    fs.writeFile('RegisterAccumulationClusteredTables.sql', script, (err) => { });
+    fs.writeFile('RegisterAccumulationClusteredTables.sql', script, ef);
 
     script = SQLGenegatorMetadata.RegisterAccumulationView();
-    fs.writeFile('RegisterAccumulationView.sql', script, (err) => { });
+    fs.writeFile('RegisterAccumulationView.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
-    fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, (err) => { });
+    fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, ef);
+
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTOv2();
-    fs.writeFile('CreateTableRegisterAccumulationTotalsv2.sql', script, (err) => { });
+    fs.writeFile('CreateTableRegisterAccumulationTotalsv2.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, (err) => { });
+    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, ef);
 
   }
 });

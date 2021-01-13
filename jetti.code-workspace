@@ -5,14 +5,7 @@
 			"path": "jetti-api"
 		},
 		{
-			"name": "ng8",
-			"path": "ng8"
-		},
-		{
 			"path": "jetti-apps/finance"
-		},
-		{
-			"path": "jetti-is"
 		}
 	],
 	"settings": {
