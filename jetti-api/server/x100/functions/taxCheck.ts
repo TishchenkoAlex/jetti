@@ -38,11 +38,17 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
             taxCheck.inn
         ]);
     const queryText = `
+    declare @p1 money;
+    declare @p2 money;
+
+    set @p1 ='632137773955';
+    set @p2 ='860602427047';
+
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
     WHERE clientInn = @p1
-        and inn = @p2
-        and totalAmount = cast(@p3 as money)
+    and inn = @p2
+    and totalAmount = ${toNumberString(taxCheck.totalAmount)}
         and receiptId=''
         ${taxCheck.operationId ? 'and [document] = @p4' : ''}`;
     const date =  taxCheck.operationTime;
@@ -185,4 +191,11 @@ function getTaxCheckDescription(taxCheck: ITaxCheck): string {
 function getTaxCheckURL(taxCheck: ITaxCheck, urlType = 'print' || 'json'): string {
     if (taxCheck.URL) return taxCheck.URL;
     return `${AttachmentType_apiHost}/${taxCheck.inn}/${taxCheck.receiptId}/${urlType}`;
+}
+function toNumberString(num) {
+    if (Number.isInteger(num)) {
+      return num + '.0';
+    } else {
+      return num.toString();
+    }
 }
