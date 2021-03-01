@@ -41,8 +41,8 @@ export async function findTaxCheckInRegisterInfo(taxCheck: ITaxCheck, tx: MSSQL)
     declare @p1 money;
     declare @p2 money;
 
-    set @p1 ='632137773955';
-    set @p2 ='860602427047';
+    set @p1 = ${taxCheck.clientInn};
+    set @p2 ${taxCheck.inn};
 
     SELECT *
     FROM [dbo].[Register.Info.TaxCheck]
